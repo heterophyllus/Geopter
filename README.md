@@ -1,36 +1,49 @@
-# GeOpter
+# Geopter
 
+![demo](images/Geopter_demo.png)
 ## Overview
-GeOpter is optical design software based on geometrical ray tracing.
+Geopter is optical design software based on geometrical ray tracing.
 
-Unlike other projects regarding optics, GeOpter features to provide graphical user interface.  GeOpter could be good environment to concentrate on optical design without complex scripting.
+As the first noteworthy feature, Geopter provides intuitive graphical user interface. While there are many projects on optical simulation library, what seems to be unsatisfactory is their usability. Geopter aims to be comprehensive environment where the user can focus on optical design. 
 
-From the viewpoint of license, GeOpter is a free and open source software.  The user has an access to most internal aspects.
+From the viewpoint of license, Geopter is a free and open source software. Although some powerful production such as Zemax, CODEV etc have been published, they are not open and not affordable for non-professional users.  In contrast, Geopter is available freely and is distributed with source code so that the user has an access to its most internal aspects bringing knowledge out of closed community.
 
 ## Getting Started
-Prebuilt package are distributed in Release page.
+### Prebuilt Binaries
+Prebuilt binaries can be downloaded in Release page.
 
-Use cmake if you prefer to build source codes.
+### Build
+Qt is supposed to be installed in your computer.
+All dependencies except Qt itself have been included in this repository, so QtCreator can build project by reading CMakeLists.txt.
+
+
+Another way is to create Visual Studio Solution using CMake.
+
+### Examples
+Some example lens is stored in "example" folder in json format.  In Geopter GUI, go File->Open and select a json file.
 
 ## Dependencies
-This software is built with:
 
-|library|description|
+
+|Library|Description|
 |---|---|
-|Qt|GUI library|
-|QCustomPlot|Graph plotting library |
-|nlohman/json|JSON utility|
-|Eigen|template library for linear algebra|
-
+|[Qt](https://www.qt.io)|widget toolkit for GUI|
+|[Qt Advansed Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System)|Flexible docking layout system|
+|[QCustomPlot](https://www.qcustomplot.com)|Graph plotting library |
+|[nlohman/json](https://github.com/nlohmann/json)|JSON utility|
+|[Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)|template library for linear algebra|
+|[ttk592/spline](https://github.com/ttk592/spline)|spline interpolation|
 
 ## License
-This software is licensed under GPL license.
+This software is licensed under GPL license - see the [LICENSE](LICENSE.md) for details.
 
 ## Contributing
-
+Contributions and feedbacks are greatly appreciated.
+Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Acknowledgement
-Our respect and gratitude go to the following projects that provide great implementation reference for optical simulation computation.
+The author would like to express respect and gratitude to the following excellent projects for their reference implementation of optical calculation.
 
-- mjhoptics/ray-optics
-- Goptical
+- [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Python implementation of geometrical optical simulation.
+- [Goptical](https://www.gnu.org/software/goptical/) : C++ implemenation of optical simulation. It has a great deal of functionalities, but the original project has not been updated since 2012.
+- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A progressive fork of Goptical.  It still continues to be developed with greatest effort.
