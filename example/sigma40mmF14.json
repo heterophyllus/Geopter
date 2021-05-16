@@ -1,0 +1,496 @@
+{
+    "OpticalSpec": {
+        "FieldSpec": {
+            "F0": {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "vlx": 0.0,
+                "vly": 0.0,
+                "vux": 0.0,
+                "vuy": 0.0,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 0.0
+            },
+            "F1": {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "vlx": 0.00766754,
+                "vly": 0.115265,
+                "vux": 0.00766754,
+                "vuy": 0.136101,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 8.3805
+            },
+            "F2": {
+                "color": [
+                    0.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                "vlx": 0.0252151,
+                "vly": 0.191559,
+                "vux": 0.0252151,
+                "vuy": 0.235382,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 13.968
+            },
+            "F3": {
+                "color": [
+                    0.3333333333333333,
+                    1.0,
+                    0.4980392156862745,
+                    1.0
+                ],
+                "vlx": 0.061882,
+                "vly": 0.273621,
+                "vux": 0.061882,
+                "vuy": 0.356087,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 19.55
+            },
+            "F4": {
+                "color": [
+                    1.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                "vlx": 0.142067,
+                "vly": 0.372398,
+                "vux": 0.142067,
+                "vuy": 0.521553,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 25.1415
+            },
+            "F5": {
+                "color": [
+                    0.3333333333333333,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "vlx": 0.21917,
+                "vly": 0.433136,
+                "vux": 0.21917,
+                "vuy": 0.633331,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 27.935
+            },
+            "FieldType": 0,
+            "NumFields": 6
+        },
+        "PupilSpec": {
+            "type": 1,
+            "value": 1.45
+        },
+        "WvlSpec": {
+            "NumWvls": 6,
+            "ReferenceIndex": 1,
+            "W0": {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 656.273,
+                "weight": 1.0
+            },
+            "W1": {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 587.562,
+                "weight": 1.0
+            },
+            "W2": {
+                "color": [
+                    0.0,
+                    1.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 546.074,
+                "weight": 1.0
+            },
+            "W3": {
+                "color": [
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "value": 486.133,
+                "weight": 1.0
+            },
+            "W4": {
+                "color": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                ],
+                "value": 435.834,
+                "weight": 1.0
+            },
+            "W5": {
+                "color": [
+                    1.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                "value": 404.656,
+                "weight": 1.0
+            }
+        }
+    },
+    "Surfaces": {
+        "NumSurfaces": 31,
+        "S0": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Medium": "AIR",
+            "Thickness": 10000000000.0,
+            "Type": "SPH"
+        },
+        "S1": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.008952254938735244,
+            "Label": "L1",
+            "Medium": "TAF1_HOYA",
+            "Thickness": 5.5478,
+            "Type": "SPH"
+        },
+        "S10": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.0006091312922805644,
+            "Label": "L6",
+            "Medium": "FCD705_HOYA",
+            "Thickness": 12.4672,
+            "Type": "SPH"
+        },
+        "S11": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.030579075961482596,
+            "Label": "L7",
+            "Medium": "E-F5_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "S12": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.004050552515615893,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "S13": {
+            "Aperture": {
+                "Radius": 24.0,
+                "Type": "Circular"
+            },
+            "Curvature": 0.012008348203671191,
+            "Label": "L8",
+            "Medium": "TAF1_HOYA",
+            "Thickness": 5.882,
+            "Type": "SPH"
+        },
+        "S14": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.0026521660372634632,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 8.7665,
+            "Type": "SPH"
+        },
+        "S15": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.011056858790645014,
+            "Label": "L9",
+            "Medium": "E-FDS1-W_HOYA",
+            "Thickness": 5.3037,
+            "Type": "SPH"
+        },
+        "S16": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.0018957759268685478,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "S17": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.017973844461539566,
+            "Label": "L10",
+            "Medium": "FCD515_HOYA",
+            "Thickness": 11.866,
+            "Type": "SPH"
+        },
+        "S18": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.022418609239157238,
+            "Label": "L11",
+            "Medium": "E-FL5_HOYA",
+            "Thickness": 2.482,
+            "Type": "SPH"
+        },
+        "S19": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.025390699386814607,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 7.3907,
+            "Type": "SPH"
+        },
+        "S2": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0019454900913271412,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "S20": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "S21": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0119014889952882,
+            "Label": "L12",
+            "Medium": "FCD100_HOYA",
+            "Thickness": 6.8887,
+            "Type": "SPH"
+        },
+        "S22": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.031053971802993605,
+            "Label": "L13",
+            "Medium": "E-FD2_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "S23": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.015100220161209951,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 7.8613,
+            "Type": "SPH"
+        },
+        "S24": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.037056800664057865,
+            "Label": "L14",
+            "Medium": "E-F1_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "S25": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.008262482545505623,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "S26": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.015457814079595376,
+            "Label": "L15",
+            "Medium": "FCD515_HOYA",
+            "Thickness": 6.7685,
+            "Type": "SPH"
+        },
+        "S27": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.024494494862279705,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "S28": {
+            "Aperture": {
+                "Radius": 15.3,
+                "Type": "Circular"
+            },
+            "Coef0": -2.73662e-06,
+            "Coef1": 3.07519e-09,
+            "Coef2": 3.90515e-11,
+            "Coef3": -1.94154e-14,
+            "Coef4": 0.0,
+            "Coef5": 0.0,
+            "Coef6": 0.0,
+            "Coef7": 0.0,
+            "Coef8": 0.0,
+            "Coef9": 0.0,
+            "Curvature": -0.002325381304399389,
+            "Label": "L16AS",
+            "Medium": "M-TAFD305_HOYA",
+            "Thickness": 4.6315,
+            "Type": "ASP"
+        },
+        "S29": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Coef0": 3.26804e-06,
+            "Coef1": 3.98767e-09,
+            "Coef2": 3.58258e-11,
+            "Coef3": 0.0,
+            "Coef4": 0.0,
+            "Coef5": 0.0,
+            "Coef6": 0.0,
+            "Coef7": 0.0,
+            "Coef8": 0.0,
+            "Coef9": 0.0,
+            "Curvature": -0.018186282087421457,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 39.0002,
+            "Type": "ASP"
+        },
+        "S3": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.005211147896025093,
+            "Label": "L2",
+            "Medium": "FCD100_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "S30": {
+            "Curvature": 0.0
+        },
+        "S4": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.03305872552001375,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 12.0599,
+            "Type": "SPH"
+        },
+        "S5": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.002358599039342611,
+            "Label": "L3",
+            "Medium": "FCD100_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "S6": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.019676672910730872,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 13.2984,
+            "Type": "SPH"
+        },
+        "S7": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.02619234083569283,
+            "Label": "L4",
+            "Medium": "E-FD2_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "S8": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.005795623145400593,
+            "Label": "L5",
+            "Medium": "TAFD5F_HOYA",
+            "Thickness": 9.3857,
+            "Type": "SPH"
+        },
+        "S9": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.017760727479397557,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "Stop": 20
+    },
+    "title": ""
+}
