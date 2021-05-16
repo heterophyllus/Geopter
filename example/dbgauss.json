@@ -1,0 +1,219 @@
+{
+    "OpticalSpec": {
+        "FieldSpec": {
+            "F0": {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "vlx": 0.0,
+                "vly": 0.0,
+                "vux": 0.0,
+                "vuy": 0.0,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 0.0
+            },
+            "F1": {
+                "color": [
+                    0.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                "vlx": 0.0,
+                "vly": 0.25,
+                "vux": 0.0,
+                "vuy": 0.2,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 10.0
+            },
+            "F2": {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "vlx": 0.0,
+                "vly": 0.4,
+                "vux": 0.0,
+                "vuy": 0.4,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 14.0
+            },
+            "FieldType": 0,
+            "NumFields": 3
+        },
+        "PupilSpec": {
+            "type": 0,
+            "value": 50.0
+        },
+        "WvlSpec": {
+            "NumWvls": 3,
+            "ReferenceIndex": 1,
+            "W0": {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 656.273,
+                "weight": 1.0
+            },
+            "W1": {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 587.6,
+                "weight": 1.0
+            },
+            "W2": {
+                "color": [
+                    0.3333333333333333,
+                    0.6666666666666666,
+                    1.0,
+                    1.0
+                ],
+                "value": 486.133,
+                "weight": 1.0
+            }
+        }
+    },
+    "Surfaces": {
+        "NumSurfaces": 13,
+        "S0": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Medium": "AIR",
+            "Thickness": 1000000.0,
+            "Type": "SPH"
+        },
+        "S1": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.017792840801403784,
+            "Label": "",
+            "Medium": "N-SSK2_SCHOTT",
+            "Thickness": 8.75,
+            "Type": "SPH"
+        },
+        "S10": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.005636604924047876,
+            "Label": "",
+            "Medium": "N-SK16_SCHOTT",
+            "Thickness": 7.0,
+            "Type": "SPH"
+        },
+        "S11": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.012592645668262114,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 61.487536,
+            "Type": "SPH"
+        },
+        "S12": {
+            "Curvature": 0.0
+        },
+        "S2": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.006566600431556981,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.5,
+            "Type": "SPH"
+        },
+        "S3": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.026537432906735253,
+            "Label": "",
+            "Medium": "N-SK2_SCHOTT",
+            "Thickness": 12.5,
+            "Type": "SPH"
+        },
+        "S4": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "F5_SCHOTT",
+            "Thickness": 3.8,
+            "Type": "SPH"
+        },
+        "S5": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.041268937283596006,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 16.369445,
+            "Type": "SPH"
+        },
+        "S6": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 13.747957,
+            "Type": "SPH"
+        },
+        "S7": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.03523942191842708,
+            "Label": "",
+            "Medium": "F5_SCHOTT",
+            "Thickness": 3.8,
+            "Type": "SPH"
+        },
+        "S8": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "N-SK16_SCHOTT",
+            "Thickness": 11.0,
+            "Type": "SPH"
+        },
+        "S9": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.026367511428997827,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.5,
+            "Type": "SPH"
+        },
+        "Stop": 6
+    },
+    "title": ""
+}
