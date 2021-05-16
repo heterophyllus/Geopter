@@ -1,6 +1,6 @@
 # Geopter
 
-![demo](images/Geopter_demo.png)
+![demo](images/Geopter_demo_windows.png)
 ## Overview
 Geopter is optical design software based on geometrical ray tracing.
 
@@ -19,11 +19,11 @@ All dependencies except Qt itself have been included in this repository, so QtCr
 
 Another way is to create Visual Studio Solution using CMake.
 
+
 ### Examples
-Some example lens is stored in "example" folder in json format.  In Geopter GUI, go File->Open and select a json file.
+Some example lenses are stored in "example" folder in json format.  In Geopter GUI, go File->Open and select a json file.
 
 ## Dependencies
-
 
 |Library|Description|
 |---|---|
@@ -36,6 +36,7 @@ Some example lens is stored in "example" folder in json format.  In Geopter GUI,
 
 ## License
 This software is licensed under GPL license - see the [LICENSE](LICENSE.md) for details.
+
 
 ## Contributing
 Contributions and feedbacks are greatly appreciated.
