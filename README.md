@@ -6,7 +6,7 @@ Geopter is optical design software based on geometrical ray tracing.
 
 As the first noteworthy feature, Geopter provides intuitive graphical user interface. While there are many projects on optical simulation library, what seems to be unsatisfactory is their usability. Geopter aims to be comprehensive environment where the user can focus on optical design. 
 
-From the viewpoint of license, Geopter is a free and open source software. Although some powerful production such as Zemax, CODEV etc have been published, they are not open and not affordable for non-professional users.  In contrast, Geopter is available freely and is distributed with source code so that the user has an access to its most internal aspects bringing knowledge out of closed community.
+From the viewpoint of license, Geopter is a free and open source software. Although some powerful production such as Zemax, CODEV etc have been published, they are not open and not affordable for non-professional users.  Geopter is available freely and is distributed with source code so that the user has an access to its most internal aspects, getting an introductory experience of optical design.
 
 ## Getting Started
 ### Prebuilt Binaries
