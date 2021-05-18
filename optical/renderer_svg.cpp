@@ -6,20 +6,28 @@
 
 using namespace geopter;
 
-RendererSvg::RendererSvg(double width, double height) :
+RendererSvg::RendererSvg(int width, int height) :
     filename_("out.svg"),
     width_(width),
-    height_(height)
+    height_(height),
+    grid_rows_(1),
+    grid_cols_(1),
+    current_cell_row_(0),
+    current_cell_col_(0)
 {
-    clear();
+
 }
 
 RendererSvg::RendererSvg(std::string filename, double width, double height) :
     filename_(filename),
     width_(width),
-    height_(height)
+    height_(height),
+    grid_rows_(1),
+    grid_cols_(1),
+    current_cell_row_(0),
+    current_cell_col_(0)
 {
-    clear();
+
 }
 
 RendererSvg::~RendererSvg()
@@ -31,66 +39,13 @@ RendererSvg::~RendererSvg()
 void RendererSvg::clear()
 {
     out_.str("");
-
-    /*
-    // background
-    svg_begin_rect (0, 0, width_, height_);
-    svg_add_fill (rgb_white);
-    svg_end ();
-
-    out_ << "<defs>" << std::endl;
-
-    // dot shaped point
-      out_ << "<g id=\""
-           << "dot"
-           << "\">" << std::endl;
-      svg_begin_line (1, 1, 0, 0, true);
-      out_ << "</g>" << std::endl;
-
-      // cross shaped point
-      out_ << "<g id=\""
-           << "cross"
-           << "\">" << std::endl;
-      svg_begin_line (-3, 0, 3, 0, true);
-      svg_begin_line (0, -3, 0, 3, true);
-      out_ << "</g>" << std::endl;
-
-      // square shaped point
-      out_ << "<g id=\""
-           << "square"
-           << "\">" << std::endl;
-      svg_begin_line (-3, -3, -3, 3, true);
-      svg_begin_line (-3, 3, 3, 3, true);
-      svg_begin_line (3, 3, 3, -3, true);
-      svg_begin_line (3, -3, -3, -3, true);
-      out_ << "</g>" << std::endl;
-
-      // round shaped point
-      out_ << "<g id=\""
-           << "round"
-           << "\">" << std::endl;
-      svg_begin_ellipse (0, 0, 3, 3, false);
-      out_ << " fill=\"none\" />";
-      out_ << "</g>" << std::endl;
-
-      // triangle shaped point
-      out_ << "<g id=\""
-           << "triangle"
-           << "\">" << std::endl;
-      svg_begin_line (0, -3, -3, 3, true);
-      svg_begin_line (-3, 3, 3, 3, true);
-      svg_begin_line (0, -3, +3, +3, true);
-      out_ << "</g>" << std::endl;
-
-      out_ << "</defs>" << std::endl;
-      */
 }
 
 void RendererSvg::write(std::ostream &s)
 {
     s << "<?xml version=\"1.0\" standalone=\"no\"?>" << std::endl;
 
-    s << "<svg width=\"" << width_ << "px\" height=\"" << height_ << "px\" "
+    s << "<svg width=\"" << (width_) << "px\" height=\"" << (height_) << "px\" " << " viewbox=\"0,0,500,500\" "
       << "version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" "
          "xmlns:xlink=\"http://www.w3.org/1999/xlink\">"
       << std::endl;
@@ -104,7 +59,15 @@ void RendererSvg::write(std::ostream &s)
 
 void RendererSvg::draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color)
 {
-    svg_begin_line(p1(0), p1(1), p2(0), p2(1));
+    Eigen::Vector2i cp1 = convert(p1);
+    Eigen::Vector2i cp2 = convert(p2);
+
+    double cx1 = cp1(0);
+    double cy1 = cp1(1);
+    double cx2 = cp2(0);
+    double cy2 = cp2(1);
+
+    svg_begin_line(cx1, cy1, cx2, cy2);
     svg_add_stroke(color);
     svg_end();
 }
@@ -119,7 +82,7 @@ void RendererSvg::draw_polyline(std::vector<Eigen::Vector2d> &pts, const Rgb& co
 
     out_ << " points=\"";
     for(int i = 0; i < count; i++){
-        Eigen::Vector2d cp = convert(pts[i]);
+        Eigen::Vector2i cp = convert(pts[i]);
         out_ << cp(0) << "," << cp(1) << " ";
         //out_ << pts[i](0) << "," << pts[i](1) << " ";
     }
@@ -135,12 +98,56 @@ void RendererSvg::draw_polyline(std::vector<double> &x, std::vector<double> &y, 
     out_ << " points=\"";
     for(int i = 0; i < count; i++){
         Eigen::Vector2d p({x[i], y[i]});
-        Eigen::Vector2d cp = convert(p);
+        Eigen::Vector2i cp = convert(p);
         out_ << cp(0) << "," << cp(1) << " ";
         //out_ << x[i] << "," << y[i] << " ";
     }
     out_ << "\" />" << std::endl;
 
+}
+
+void RendererSvg::set_grid_layout(int rows, int cols)
+{
+    grid_rows_ = rows;
+    grid_cols_ = cols;
+}
+
+void RendererSvg::set_current_cell(int row, int col)
+{
+    current_cell_row_ = row;
+    current_cell_col_ = col;
+}
+
+void RendererSvg::set_x_axis_range(double xmin, double xmax)
+{
+    x_range_min_ = xmin;
+    x_range_max_ = xmax;
+}
+
+void RendererSvg::set_y_axis_range(double ymin, double ymax)
+{
+    y_range_max_ = ymax;
+    y_range_min_ = ymin;
+}
+
+void RendererSvg::draw_x_axis(bool state)
+{
+    if(state){
+        Eigen::Vector2d p1({x_range_min_, 0});
+        Eigen::Vector2d p2({x_range_max_, 0});
+        this->draw_line(p1, p2, rgb_black);
+    }
+}
+
+void RendererSvg::draw_y_axis(bool state)
+{
+    if(state){
+        if(state){
+            Eigen::Vector2d p1({0, y_range_min_});
+            Eigen::Vector2d p2({0,y_range_max_});
+            this->draw_line(p1, p2, rgb_black);
+        }
+    }
 }
 
 void RendererSvg::svg_add_stroke(const Rgb& rgb)
@@ -152,30 +159,20 @@ void RendererSvg::svg_add_stroke(const Rgb& rgb)
 
 void RendererSvg::svg_begin_line(double x1, double y1, double x2, double y2, bool terminate)
 {
-    Eigen::Vector2d p1({x1, y1});
-    Eigen::Vector2d p2({x2, y2});
-
-    Eigen::Vector2d cp1 = convert(p1);
-    Eigen::Vector2d cp2 = convert(p2);
-
-    double cx1 = cp1(0);
-    double cy1 = cp1(1);
-    double cx2 = cp2(0);
-    double cy2 = cp2(1);
-
+    /*
     out_ << "<line "
            << "x1=\"" << (cx1) << "\" "
            << "y1=\"" << (cy1) << "\" "
            << "x2=\"" << (cx2) << "\" "
            << "y2=\"" << (cy2) << "\" ";
 
-    /*
+    */
     out_ << "<line "
            << "x1=\"" << (x1) << "\" "
            << "y1=\"" << (y1) << "\" "
            << "x2=\"" << (x2) << "\" "
            << "y2=\"" << (y2) << "\" ";
-           */
+
 
     if (terminate){
         out_ << " />" << std::endl;
@@ -231,21 +228,21 @@ void RendererSvg::write_srgb(const Rgb& rgb)
 }
 
 
-void RendererSvg::set_view_box(double min_x, double min_y, double max_x, double max_y)
-{
-    bmin_(0) = min_x;
-    bmin_(1) = min_y;
-    bmax_(0) = max_x;
-    bmax_(1) = max_y;
-}
 
-Eigen::Vector2d RendererSvg::convert(const Eigen::Vector2d& p)
+Eigen::Vector2i RendererSvg::convert(const Eigen::Vector2d& p)
 {
-    const double s = ( p(0) - bmin_(0) ) / ( bmax_(0) - bmin_(0) );
-    const double t = ( p(1) - bmin_(1) ) / ( bmax_(1) - bmin_(1) );
+    double cell_width = (double)width_/(double)grid_cols_;
+    double cell_height = (double)height_/(double)grid_rows_;
+    double x_range = x_range_max_ - x_range_min_;
+    double y_range = y_range_max_ - y_range_min_;
 
-    Eigen::Vector2d cp;
-    cp(0) = s * width_;
-    cp(1) = (1.0 - t) * height_;
+    long int lcl_x = (long int)( cell_width*(p(0)-x_range_min_)/x_range );
+    long int lcl_y = (long int)( cell_height - cell_height*(p(1)-y_range_min_)/y_range );
+
+    Eigen::Vector2i cp;
+    cp(0) = cell_width*current_cell_col_ + lcl_x;
+    cp(1) = cell_height*current_cell_row_ + lcl_y;
+
     return cp;
 }
+

@@ -9,20 +9,30 @@ namespace geopter {
 class RendererSvg : public Renderer
 {
 public:
-    RendererSvg(double width = 800, double height = 600);
-    RendererSvg(std::string filename, double width = 800, double height = 600);
+    RendererSvg(int width = 500, int height = 500);
+    RendererSvg(std::string filename, double width = 500, double height = 500);
     ~RendererSvg();
 
     void write(std::ostream &s);
 
+    /** canvas size */
+    void set_viewport(int w, int h);
+
     void clear() override;
+
+    void set_grid_layout(int rows, int cols) override;
+    void set_current_cell(int row, int col) override;
 
     void draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color) override;
     void draw_polyline(std::vector<Eigen::Vector2d>& pts, const Rgb& color) override;
     void draw_polyline(std::vector<double>& x, std::vector<double>& y, const Rgb& color) override;
     //void draw_text(std::string str, Rgb color=rgb_black) override;
 
-    void set_view_box(double min_x, double min_y, double max_x, double max_y);
+    void draw_x_axis(bool state= true) override;
+    void draw_y_axis(bool state= true) override;
+    void set_x_axis_range(double xmin, double xmax) override;
+    void set_y_axis_range(double ymin, double ymax) override;
+
 
 private:
     void svg_add_stroke(const Rgb& rgb);
@@ -32,17 +42,25 @@ private:
     void svg_begin_ellipse (double x, double y, double rx, double ry, bool terminate = false);
     void svg_end();
     void write_srgb(const Rgb& rgb);
+    Eigen::Vector2i convert(const Eigen::Vector2d& p);
 
-    Eigen::Vector2d convert(const Eigen::Vector2d& p);
 
+    /** contents */
     std::ostringstream out_;
-    std::string filename_;
-    double width_;
-    double height_;
 
-    Eigen::Vector2d bmin_;
-    Eigen::Vector2d bmax_;
-    Eigen::Vector2d size_;
+    std::string filename_;
+    int width_;
+    int height_;
+
+    double x_range_min_;
+    double x_range_max_;
+    double y_range_min_;
+    double y_range_max_;
+
+    int grid_rows_;
+    int grid_cols_;
+    int current_cell_row_;
+    int current_cell_col_;
 };
 
 }

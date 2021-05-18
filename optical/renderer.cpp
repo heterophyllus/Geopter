@@ -37,6 +37,16 @@ void Renderer::draw_polyline(std::vector<double>& x, std::vector<double>& y, con
 
 }
 
+void Renderer::draw_x_axis(bool state)
+{
+
+}
+
+void Renderer::draw_y_axis(bool state)
+{
+
+}
+
 void Renderer::set_x_axis_range(double xmin, double xmax)
 {
 

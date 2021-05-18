@@ -22,9 +22,10 @@ public:
     virtual void draw_polyline(std::vector<double>& x, std::vector<double>& y, const Rgb& color);
     virtual void draw_text(std::string str, const Rgb& color);
 
+    virtual void draw_x_axis(bool state= true);
+    virtual void draw_y_axis(bool state= true);
     virtual void set_x_axis_range(double xmin, double xmax);
     virtual void set_y_axis_range(double ymin, double ymax);
-
     virtual void set_x_axis_label(std::string label);
     virtual void set_y_axis_label(std::string label);
 
