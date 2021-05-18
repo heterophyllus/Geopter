@@ -42,7 +42,11 @@ std::string Glass::display_name() const
 
 double Glass::rindex(double wv_nm) const
 {
-    return formula_func_ptr_(wv_nm/1000.0, coefs_);
+    if(formula_func_ptr_){
+        return formula_func_ptr_(wv_nm/1000.0, coefs_);
+    }else{
+        return 1.0;
+    }
 }
 
 double Glass::abbe_d() const

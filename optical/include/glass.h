@@ -29,8 +29,6 @@ public:
 
     void compute_refractive_index();
 
-    bool search_from_catalog(std::string catname);
-
     void set_supplier(std::string sup);
     std::string supplier() const;
 
