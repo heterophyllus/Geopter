@@ -44,10 +44,17 @@ void ParaxialRay::append(double ht, double slp, double aoi)
 
 ParaxialRayAtSurface ParaxialRay::at(int i)
 {
-    return par_ray_at_srfs_[i];
+    if( i < 0 ) {
+        return par_ray_at_srfs_[par_ray_at_srfs_.size() + i];
+    }else if( i < (int)par_ray_at_srfs_.size()) {
+        return par_ray_at_srfs_[i];
+    }else {
+        ParaxialRayAtSurface tmp;
+        return tmp;
+    }
 }
 
-ParaxialRayAtSurface ParaxialRay::back()
+ParaxialRayAtSurface ParaxialRay::last()
 {
     return par_ray_at_srfs_.back();
 }
@@ -70,6 +77,7 @@ void ParaxialRay::print(std::ostringstream& oss)
     oss << std::setw(idx_w) << std::right << "S";
     oss << std::setw(val_w) << std::right << "HT";
     oss << std::setw(val_w) << std::right << "SLP";
+    oss << std::setw(val_w) << std::right << "AOI";
     oss << std::endl;
 
     for(int i = 0; i < num_srf; i++)
@@ -77,6 +85,7 @@ void ParaxialRay::print(std::ostringstream& oss)
         oss << std::setw(idx_w) << std::right << i;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i].ht;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i].slp;
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i].aoi;
         oss << std::endl;
     }
     oss << std::ends;

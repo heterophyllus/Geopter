@@ -8,18 +8,26 @@
 
 namespace geopter {
 
+
+
 class Renderer
 {
 public:
     Renderer();
     virtual ~Renderer();
 
+    enum LineStyle
+    {
+        Solid,
+        Dots
+    };
+
     virtual void set_grid_layout(int rows, int cols);
     virtual void set_current_cell(int row, int col);
 
-    virtual void draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color);
-    virtual void draw_polyline(std::vector<Eigen::Vector2d>& pts, const Rgb& color);
-    virtual void draw_polyline(std::vector<double>& x, std::vector<double>& y, const Rgb& color);
+    virtual void draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color, int line_style=0);
+    virtual void draw_polyline(std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0);
+    virtual void draw_polyline(std::vector<double>& x, std::vector<double>& y, const Rgb& color, int line_style=0);
     virtual void draw_text(std::string str, const Rgb& color);
 
     virtual void draw_x_axis(bool state= true);
@@ -42,6 +50,7 @@ public:
 
 protected:
     int current_cell_index_;
+    int line_width_;
 };
 
 } //namespace geopter

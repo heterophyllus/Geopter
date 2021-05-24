@@ -1,16 +1,22 @@
+#include <iomanip>
+#include <fstream>
+#include <limits>
+
 #include "trace.h"
 #include "trace_error.h"
 
 #include "optical_model.h"
 #include "sequential_model.h"
 #include "paraxial_model.h"
+#include "paraxial_ray.h"
 #include "optical_spec.h"
 #include "pupil_spec.h"
 #include "field_spec.h"
-
+#include "wvl_spec.h"
 #include "surface.h"
 #include "gap.h"
 #include "aperture.h"
+#include "surface_profile.h"
 
 using namespace geopter;
 
@@ -19,17 +25,17 @@ Trace::Trace()
 
 }
 
-Ray Trace::trace_base(const OpticalModel& opt_model, PupilCrd pupil, const Field& fld, double wvl)
+Ray Trace::trace_pupil_ray(const OpticalModel& opt_model, PupilCrd pupil, const Field& fld, double wvl)
 {
     auto vig_pupil = fld.apply_vignetting(pupil);
     auto osp = opt_model.optical_spec();
     //auto fod = osp->paraxial_data().fod;
-    opt_model.paraxial_model()->compute_first_order();
+    //opt_model.paraxial_model()->compute_first_order();
     auto fod = opt_model.paraxial_model()->first_order_data();
     double eprad = fod.enp_radius;
     PupilCrd aim_pt;
-    aim_pt(0) = 0.0;
-    aim_pt(1) = 0.0;
+    //aim_pt(0) = 0.0;
+    //aim_pt(1) = 0.0;
     aim_pt = fld.aim_pt();
 
     Eigen::Vector3d pt1;
@@ -44,26 +50,161 @@ Ray Trace::trace_base(const OpticalModel& opt_model, PupilCrd pupil, const Field
     dir0 = dir0/length;
     //dir0.normalize();
 
-    return Trace::trace(*opt_model.seq_model(), pt0, dir0, wvl);
+    return Trace::trace_ray_from_object(*opt_model.seq_model(), pt0, dir0, wvl);
 
 }
 
-Ray Trace::trace_base(const OpticalModel& opt_model, Eigen::Vector2d pupil, int fld_idx, double wvl)
+Ray Trace::trace_pupil_ray(const OpticalModel& opt_model, Eigen::Vector2d pupil, int fi, int wi)
 {
-    auto fld = opt_model.optical_spec()->field_of_view()->field(fld_idx);
-    return trace_base(opt_model, pupil, *fld, wvl);
+    auto fld = opt_model.optical_spec()->field_of_view()->field(fi);
+    double wvl = opt_model.optical_spec()->spectral_region()->wvl(wi)->value();
+    return trace_pupil_ray(opt_model, pupil, *fld, wvl);
 }
 
 
+std::vector<Ray> Trace::trace_fan_rays(const OpticalModel &opt_model, const Field &fld, double wvl, double azimuth, int nrd)
+{
+    const double step = 2.0/(double)(nrd-1);
+
+    PupilCrd pupil;
+    PupilCrd vig_pupil;
+
+    Ray ray;
+    std::vector<Ray> rays;
+
+    auto deg2rad = [](double deg) { return deg*M_PI/180.0; };
+
+    for(int ri = 0; ri < nrd; ri++){
+        pupil(0) = (-1.0 + (double)ri*step) * cos(deg2rad(azimuth));
+        pupil(1) = (-1.0 + (double)ri*step) * sin(deg2rad(azimuth));
+
+        ray = trace_pupil_ray(opt_model, pupil, fld, wvl);
+        rays.push_back(ray);
+    }
+
+    return rays;
+}
 
 
+Eigen::Vector2d Trace::trace_coddington(const OpticalModel &opt_model, const Field &fld, double wvl)
+{
+    /*
+     * R. Kingslake, "Lens Design Fundamentals", p292
+     */
+
+    Eigen::Vector2d s_t;
+
+    Path path = opt_model.seq_model()->path(wvl);
+
+    // on axis
+    double l = -path[0].gap->thi();
+    double l_prime;
+    double n_before = path[0].rndx;
+    double n_after;
+    for(int i = 1; i < (int)path.size()-1; i++) {
+
+        n_after = path[i].rndx;
+
+        double c = path[i].srf->profile()->cv();
+        double d = path[i].gap->thi();
+        double phi = c*(n_after - n_before);
+        l_prime = n_after/(phi + (n_before/l));
+
+        n_before = n_after;
+        l = l_prime - d;
+    }
+
+    // Here, we have l_prime
+
+    // off axis
+    Ray ray = trace_pupil_ray(opt_model, PupilCrd({0.0, 0.0}), fld, wvl);
+
+    double s_before, t_before, s_after, t_after;
+    double obl_pwr_s, obl_pwr_t;
+    double sinI, sinI_prime, cosI, cosI_prime, sinU, sinU_prime, cosU, cosU_prime;
+
+
+    // Opening Equation
+    if(std::isinf(path[0].gap->thi())){
+        s_before = std::numeric_limits<double>::infinity();
+        t_before = std::numeric_limits<double>::infinity();
+    }else{
+        auto dir0 = ray.at(0).after_dir;
+        double cosUpr = dir0(2);
+        double B = opt_model.seq_model()->gap(0)->thi();
+        double Zpr = ray.z(1);
+
+        s_before = (B - Zpr)/cosUpr;
+        t_before = s_before;
+    }
+
+
+    for(int i = 1; i < ray.size()-1; i++) {
+        Surface* surf = path[i].srf;
+
+        n_before = path[i-1].rndx;
+        n_after = path[i].rndx;
+        cosI = cos(ray.aoi(i));
+        cosI_prime = cos(ray.aor(i));
+        sinI = sqrt(1.0 - cosI*cosI);
+        sinI_prime = sinI * n_before/n_after;
+
+        cosU = ray.at(i-1).after_dir(2); //ray.at(i-1).after_dir.norm();
+        sinU = sqrt(1.0 - cosU*cosU);
+        cosU_prime = ray.at(i).after_dir(2);//ray.at(i).after_dir.norm();
+
+        if(surf->profile()->name() == "SPH") {
+            double c = surf->profile()->cv();
+            obl_pwr_s = c*(n_after*cosI_prime - n_before*cosI);
+            obl_pwr_t = obl_pwr_s;
+        }else{ // aspherical
+            double sinI_U = sinI*cosU - cosI*sinU;
+            double y = ray.y(i);
+            double cs = sinI_U/y;
+            obl_pwr_s = cs*(n_after*cosI_prime - n_before*cosI);
+
+            double d2z_dy2 = surf->profile()->deriv_2nd(y);
+            double cosI_U = cosI*cosU + sinI*sinU;
+            double ct = d2z_dy2 * pow( cosI_U, 3);
+            obl_pwr_t = ct*(n_after*cosI_prime - n_before*cosI);
+        }
+
+
+
+        double z1 = ray.z(i);
+        double z2 = ray.z(i+1);
+        double d = path[i].gap->thi();
+
+        double D = (d + z2 - z1)/cosU_prime;
+
+
+        s_after = n_after/(n_before/s_before + obl_pwr_s);
+        t_after = n_after*cosI_prime*cosI_prime / ( (n_before*cosI*cosI/t_before) + obl_pwr_t );
+
+
+        s_before = s_after - D;
+        t_before = t_after - D;
+
+    }
+
+    // Closing Equation
+    double z = ray.z(ray.size()-1-1);
+    double zs = s_after*cosU_prime + z - l_prime;
+    double zt = t_after*cosU_prime + z - l_prime;
+
+    s_t(0) = zs;
+    s_t(1) = zt;
+
+    return s_t;
+}
 
 
 Eigen::Vector2d Trace::aim_chief_ray(const OpticalModel& opt_model, const Field& fld, double wvl)
 {
     auto seq_model = opt_model.seq_model();
     if(wvl == 0.0){
-        wvl = seq_model->central_wavelength();
+        //wvl = seq_model->central_wavelength();
+        wvl = opt_model.optical_spec()->spectral_region()->reference_wvl();
     }
     int stop = seq_model->stop_surface();
     Eigen::Vector2d xy_target({0.0,0.0});
@@ -167,7 +308,7 @@ double Trace::y_stop_coordinate(double y1, const SequentialModel& seq_model, int
     Ray ray_trace_result;
     try {
         //RayTraceResult ray_tr_rslt = RayTrace::trace(seq_model, pt0, dir0, wvl);
-        ray_trace_result = Trace::trace(seq_model, pt0, dir0, wvl);
+        ray_trace_result = Trace::trace_ray_from_object(seq_model, pt0, dir0, wvl);
         //ray_at_srfs = ray_tr_rslt.rays;
     }
     catch (TraceMissedSurfaceError& ray_miss) {
@@ -218,14 +359,14 @@ Eigen::Vector3d Trace::reflect(Eigen::Vector3d d_in, Eigen::Vector3d normal)
     return d_out;
 }
 
-Ray Trace::trace(const SequentialModel& seq_model, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl)
+Ray Trace::trace_ray_from_object(const SequentialModel& seq_model, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl)
 {
     auto path = seq_model.path(wvl);
-    return trace_raw(path, pt0, dir0, wvl);
+    return trace_ray_from_object(path, pt0, dir0, wvl);
 }
 
 
-Ray Trace::trace_raw(Path path, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl, double eps)
+Ray Trace::trace_ray_from_object(Path path, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl, double eps)
 {
     //std::vector<RayAtSurface> ray_at_srfs;
 
@@ -362,6 +503,12 @@ Ray Trace::trace_raw(Path path, Eigen::Vector3d pt0, Eigen::Vector3d dir0, doubl
         }
         catch(TraceBlockedByApertureError& ray_blocked){
             ray_trace_result.set_status(RayStatus::Blocked);
+
+            ray_at_srf.intersect_pt = before_pt;
+            ray_at_srf.after_dir = before_dir;
+            ray_at_srf.after_dist = dst_b4;
+            ray_at_srf.normal = before_normal;
+            ray_trace_result.append(ray_at_srf);
 
             ray_at_srf.intersect_pt = inc_pt;
             ray_at_srf.after_dir = after_dir;

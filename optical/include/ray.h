@@ -24,11 +24,12 @@ struct RayAtSurface
     /** directional cosine after surface interaction */
     Eigen::Vector3d after_dir;
 
-
     double after_dist;
 
     /** optical path length from the previous to the current */
     double optical_path;
+
+    RayAtSurface* before;
 };
 
 
@@ -63,6 +64,31 @@ public:
 
     void set_status(int s);
     int status() const;
+
+    /* aliases */
+    /** x intersect coordinate at the given surface */
+    double x(int i) const;
+
+    /** y intersect coordinate at the given surface */
+    double y(int i) const;
+
+    /** z intersect coordinate at the given surface */
+    double z(int i) const;
+
+    /** direcional cosine after the given surface */
+    double L(int i) const;
+    double M(int i) const;
+    double N(int i) const;
+
+    /** angle of incidence at the given surface in radian */
+    double aoi(int i) const;
+
+    /** angle of refraction at the given surface in radian */
+    double aor(int i);
+
+    double srl(int i);
+    double srm(int i);
+    double srn(int i);
 
     void print(std::ostringstream& oss);
     void print();

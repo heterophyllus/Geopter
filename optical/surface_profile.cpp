@@ -37,7 +37,7 @@ void SurfaceProfile::set_radius(double r)
 {
     if(std::isnan(r)){
         return;
-    }else if(std::isnan(r)){
+    }else if(std::isinf(r)){
         cv_ = 0.0;
     }else{
         cv_ = 1.0/r;
@@ -75,43 +75,21 @@ double SurfaceProfile::sag(double x, double y) const
     return 0.0;
 }
 
-/*
-IntersectPointAndDistance SurfaceProfile::intersect(Vector3d p0, Vector3d d, double eps, int z_dir)
+double SurfaceProfile::deriv_1st(double h) const
 {
-    return intersect_spencer(p0,d,eps,z_dir);
+    return 0.0;
 }
-*/
+
+double SurfaceProfile::deriv_2nd(double h) const
+{
+    return 0.0;
+}
 
 void SurfaceProfile::intersect(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps, int z_dir)
 {
     intersect_spencer(pt, s, p0, d, eps, z_dir);
 }
 
-/*
-IntersectPointAndDistance SurfaceProfile::intersect_spencer(Vector3d p0, Vector3d d, double eps, int z_dir)
-{
-    Vector3d p = p0;
-    double s1 = -f(p)/d.dot(df(p));
-    double delta = abs(s1);
-
-    int iter = 0;
-
-    while(delta > eps && iter < 50)
-    {
-        p = p0 + s1*d;
-        auto s2 = s1 - f(p)/d.dot(df(p));
-        delta = abs(s2-s1);
-        s1 = s2;
-        iter++;
-    }
-
-    IntersectPointAndDistance sd;
-    sd.intersect_point = p;
-    sd.distance = s1;
-
-    return sd;
-}
-*/
 
 void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps, int z_dir)
 {
@@ -129,14 +107,6 @@ void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, Eigen::Ve
         s1 = s2;
         iter++;
     }
-
-    /*
-    IntersectPointAndDistance sd;
-    sd.intersect_point = p;
-    sd.distance = s1;
-
-    return sd;
-    */
 
     pt = p;
     s = s1;

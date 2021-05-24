@@ -42,6 +42,7 @@ private slots:
     void showRealRayTrace();
     void showParaxialRayTrace();
     void showRayFan();
+    void showLongitudinal();
 
     // Help menu
     void showAbout();

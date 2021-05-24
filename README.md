@@ -4,18 +4,17 @@
 ## Overview
 Geopter is optical design software based on geometrical ray tracing.
 
-As the first noteworthy feature, Geopter provides intuitive graphical user interface. While there are many projects on optical simulation library, what seems to be unsatisfactory is their usability. Geopter aims to be comprehensive environment where the user can focus on optical design. 
+As the first noteworthy feature, Geopter provides intuitive graphical user interface, putting a priority on usability.  Geopter aims to be a comprehensive environment where the user can focus on optical design. 
 
-From the viewpoint of license, Geopter is a free and open source software. Although some powerful production such as Zemax, CODEV etc have been published, they are not open and not affordable for non-professional users.  Geopter is available freely and is distributed with source code so that the user has an access to its most internal aspects, getting an introductory experience of optical design.
+From the viewpoint of license, Geopter is a free and open source software, distributed with source codes so that the user has an access to its most internal aspects. It will provide an introductory experience of optical design and computing.
 
 ## Getting Started
 ### Prebuilt Binaries
-Prebuilt binaries can be downloaded in [Release page](https://github.com/heterophyllus/Geopter/releases/latest).
+Prebuilt binaries for Windows can be downloaded in [Release page](https://github.com/heterophyllus/Geopter/releases/latest).
 
-### Build
+### Build from Source
 Qt is supposed to be installed in your computer.
-All dependencies except Qt itself have been included in this repository, so QtCreator can build project by reading CMakeLists.txt.
-
+All of the dependencies except Qt itself have been included in this repository, so QtCreator can build project by reading CMakeLists.txt.
 
 Another way is to create Visual Studio Solution using CMake.
 
@@ -35,7 +34,7 @@ Some example lenses are stored in "example" folder in json format.  In Geopter G
 |[ttk592/spline](https://github.com/ttk592/spline)|spline interpolation|
 
 ## License
-This software is licensed under GPL license - see the [LICENSE](LICENSE.md) for details.
+This project is licensed under GPL license - see the [LICENSE](LICENSE.md) for details.
 
 
 ## Contributing
@@ -45,6 +44,7 @@ Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, 
 ## Acknowledgement
 The author would like to express respect and gratitude to the following excellent projects for their reference implementation of optical calculation.
 
-- [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Python implementation of geometrical optical simulation.
-- [Goptical](https://www.gnu.org/software/goptical/) : C++ implemenation of optical simulation. It has a great deal of functionalities, but the original project has not been updated since 2012.
-- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A progressive fork of Goptical.  It still continues to be developed with greatest effort.
+- [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Highly matured python module for geometrical optical simulation.  Most of Geopter's optics calculation is based on translation of this implementation.
+- [Goptical](https://www.gnu.org/software/goptical/) : C++ implemenation of optical simulation with great deal of functionalities. The original project, however, has not been updated since 2012.
+- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A progressive fork of Goptical.  It still continues to be maintained with greatest effort.
+

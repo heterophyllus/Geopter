@@ -45,6 +45,7 @@
 
 #include "layout.h"
 #include "ray_fan.h"
+#include "longitudinal.h"
 
 #include "rgb.h"
 

@@ -20,6 +20,7 @@ set(OPTICAL_SRCS
     sequential_model.cpp
     paraxial_model.cpp
     paraxial_ray.cpp
+    first_order.cpp
     element_model.cpp
     element.cpp
     optical_spec.cpp
@@ -43,6 +44,7 @@ set(OPTICAL_SRCS
     decenter_data.cpp
     ray.cpp
     ray_fan.cpp
+    longitudinal.cpp
     trace.cpp
     trace_error.cpp
     layout.cpp

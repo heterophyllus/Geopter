@@ -1,0 +1,124 @@
+{
+    "OpticalSpec": {
+        "FieldSpec": {
+            "F0": {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "vlx": 0.0,
+                "vly": 0.0,
+                "vux": 0.0,
+                "vuy": 0.0,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 0.0
+            },
+            "F1": {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "vlx": 0.0,
+                "vly": 0.0,
+                "vux": 0.0,
+                "vuy": 0.0,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 6.0
+            },
+            "FieldType": 0,
+            "NumFields": 2
+        },
+        "PupilSpec": {
+            "type": 0,
+            "value": 4.0
+        },
+        "WvlSpec": {
+            "NumWvls": 1,
+            "ReferenceIndex": 0,
+            "W0": {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 587.562,
+                "weight": 1.0
+            }
+        }
+    },
+    "Surfaces": {
+        "NumSurfaces": 7,
+        "S0": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Medium": "AIR",
+            "Thickness": 1000000.0,
+            "Type": "SPH"
+        },
+        "S1": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "S2": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "S3": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.13532715339332838,
+            "Label": "",
+            "Medium": "N-BK7_SCHOTT",
+            "Thickness": 1.05,
+            "Type": "SPH"
+        },
+        "S4": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.1931098408774911,
+            "Label": "",
+            "Medium": "E-BACED20_HOYA",
+            "Thickness": 0.4,
+            "Type": "SPH"
+        },
+        "S5": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.06164278008938203,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 11.285856,
+            "Type": "SPH"
+        },
+        "S6": {
+            "Curvature": 0.0
+        },
+        "Stop": 2
+    },
+    "title": ""
+}

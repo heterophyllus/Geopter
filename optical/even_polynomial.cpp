@@ -142,3 +142,50 @@ void EvenPolynomial::update_max_nonzero_index()
         i++;
     }
 }
+
+double EvenPolynomial::deriv_1st(double h) const
+{
+    double k = conic_;
+    double z_sqrt = sqrt(1.0 - cv_*cv_*h*h*(k+1));
+
+    double z1 = 2*cv_*h/ ( 1.0 + z_sqrt );
+
+    double z2_denom = pow(cv_,3)*pow(h,3)*(k+1);
+    double z2_num = z_sqrt*pow(1.0 + z_sqrt, 2);
+    double z2 = z2_denom/z2_num;
+
+    double z3 = 0.0;
+    for (int i = 0; i < num_coefs_; i++) {
+        z3 += 2*(i+2) * coefs_[i] * pow(h, 2*(i+1) + 1);
+    }
+
+    return (z1 + z2 + z3);
+}
+
+double EvenPolynomial::deriv_2nd(double h) const
+{
+    double k = conic_;
+    double z_sqrt = sqrt(1.0 - cv_*cv_*h*h*(k+1));
+
+    double z1 = 2*cv_ / (1.0 + z_sqrt);
+
+    double z2_denom = 5*pow(cv_,3)*pow(h,2)*(k+1);
+    double z2_num = z_sqrt*pow(1.0 + z_sqrt, 2);
+    double z2 = z2_denom/z2_num;
+
+    double z3_denom = pow(cv_,5)*pow(h,4)*pow(k+1, 2);
+    double z3_num = pow(-cv_*cv_*h*h*(k+1)+1 , 3.0/2.0) * pow(z_sqrt + 1.0 , 2);
+    double z3 = z3_denom/z3_num;
+
+    double z4_denom = -2*pow(cv_,5)*pow(h,4)*pow(k+1, 2);
+    double z4_num = ( cv_*cv_*h*h*(k+1) - 1.0 ) * pow( 1.0 + z_sqrt , 3);
+    double z4 = z4_denom/z4_num;
+
+    double z5 = 0.0;
+    for(int i = 0; i < num_coefs_; i++) {
+        double numeric_coef = ( 2*(i+1) + 1 ) * ( 2*(i+1) + 2 );
+        z5 += numeric_coef * coefs_[i] * pow(h, 2*(i+1));
+    }
+
+    return (z1 + z2 + z3 + z4 + z5);
+}

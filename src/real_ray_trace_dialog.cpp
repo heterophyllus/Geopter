@@ -104,7 +104,7 @@ void RealRayTraceDialog::doPupilRayTrace()
     double wvl = opm->optical_spec()->spectral_region()->wvl(wi)->value();
 
     // trace
-    Ray ray_trace_result = Trace::trace_base(*opm, pupil_crd, *fld, wvl);
+    Ray ray_trace_result = Trace::trace_pupil_ray(*opm, pupil_crd, *fld, wvl);
 
     // construct output text
     std::ostringstream oss;
@@ -139,7 +139,7 @@ void RealRayTraceDialog::doObjectRayTrace()
     Eigen::Vector3d dir0({L,M,N});
     double wvl = opm->optical_spec()->spectral_region()->wvl(wi)->value();
 
-    Ray ray_trace_result = Trace::trace(*opm->seq_model(), p0, dir0, wvl);
+    Ray ray_trace_result = Trace::trace_ray_from_object(*opm->seq_model(), p0, dir0, wvl);
 
     std::ostringstream oss;
     oss << "Real Ray Trace..." <<  std::endl;

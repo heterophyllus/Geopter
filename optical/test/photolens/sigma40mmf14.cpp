@@ -1,6 +1,7 @@
 
 #include <fstream>
 #include <stdio.h>
+#include <limits>
 
 #include "optical_core.h"
 
@@ -55,7 +56,8 @@ int main()
 
     opm->seq_model()->gap(0)->set_thi(d0);
     // group 1
-    opm->seq_model()->add_surface(  111.7037,  5.5478, std::make_shared<BuchdahlGlass>(1.77250, 49.62));
+    /*
+    opm->seq_model()->append(  111.7037,  5.5478, std::make_shared<BuchdahlGlass>(1.77250, 49.62));
     opm->seq_model()->add_surface(  514.0093,  0.1500);
     opm->seq_model()->add_surface(  191.8963,  1.5000, std::make_shared<BuchdahlGlass>(1.43700, 95.10));
     opm->seq_model()->add_surface(   30.2492, 12.0599);
@@ -91,13 +93,54 @@ int main()
 
     opm->seq_model()->surface(28)->set_profile(std::make_unique<EvenPolynomial>(-1.0/430.0370, k, coefs1));
     opm->seq_model()->surface(29)->set_profile(std::make_unique<EvenPolynomial>( -1.0/54.9865, k, coefs2));
+    */
+
+    // group 1
+    opm->seq_model()->append(  111.7037,  5.5478, "77250.4962");
+    opm->seq_model()->append(  514.0093,  0.1500);
+    opm->seq_model()->append(  191.8963,  1.5000, "43700.9510");
+    opm->seq_model()->append(   30.2492, 12.0599);
+    opm->seq_model()->append(  423.9805,  1.5000, "43700.9510");
+    opm->seq_model()->append(   50.8216, 13.2984);
+    opm->seq_model()->append(  -38.1791,  1.5000, "64769.3384");
+    opm->seq_model()->append(  172.5440,  9.3857, "83481.4272");
+    opm->seq_model()->append(  -56.3040,  0.1500);
+    opm->seq_model()->append(-1641.6822, 12.4672, "55032.7550");
+    opm->seq_model()->append(  -32.7021,  1.5000, "60342.3801");
+    opm->seq_model()->append(  246.8799,  0.1500);
+    opm->seq_model()->append(   83.2754,  5.8820, "77250.4962");
+    opm->seq_model()->append(  -377.0503,    d14);
+    //group 2
+    opm->seq_model()->append(   90.4416,  5.3037, "92286.2088");
+    opm->seq_model()->append( -527.4885,  0.1500);
+    opm->seq_model()->append(   55.6364, 11.8660, "59282.6863");
+    opm->seq_model()->append(  -44.6058,  2.4820, "58144.4089");
+    opm->seq_model()->append(   39.3845,     d19);
+    //stop
+    opm->seq_model()->append(  std::numeric_limits<float>::infinity()  ,  1.5000);
+    //opm->seq_model()->set_stop();
+    //group3
+    opm->seq_model()->append(   84.0231,  6.8887, "43700.9510");
+    opm->seq_model()->append(  -32.2020,  1.5000, "64769.3384");
+    opm->seq_model()->append(   66.2242,  7.8613);
+    opm->seq_model()->append(  -26.9856,  1.5000, "62588.3574");
+    opm->seq_model()->append( -121.0290,  0.1500);
+    opm->seq_model()->append(   64.6922,  6.7685, "59282.6863");
+    opm->seq_model()->append(  -40.8255,  0.1500);
+    opm->seq_model()->append( -430.0370,  4.6315, "85135.4010");
+    opm->seq_model()->append(  -54.9865,      BF);
+
+    opm->seq_model()->surface(28)->set_profile(std::make_unique<EvenPolynomial>(-1.0/430.0370, k, coefs1));
+    opm->seq_model()->surface(29)->set_profile(std::make_unique<EvenPolynomial>( -1.0/54.9865, k, coefs2));
+
+    opm->seq_model()->set_stop(20);
 
     // set ray cutting aperture
     opm->seq_model()->surface(9)->set_clear_aperture(std::make_unique<Circular>(24.0));
     opm->seq_model()->surface(29)->set_clear_aperture(std::make_unique<Circular>(15.8));
+    opm->update_model();
     opm->seq_model()->compute_vignetting();
 
-    opm->update_model();
     opm->update_model();
 
     opm->seq_model()->compute_vignetting();
@@ -136,15 +179,22 @@ int main()
 
     /* draw layout */
     std::cout << "layout..." << std::endl;
-    RendererSvg *renderer = new RendererSvg("layout.svg", 300, 300);
-    renderer->set_view_box(-10, -50, 250, 50);
+    {
+    RendererSvg *renderer = new RendererSvg("layout.svg", 500, 500);
+    renderer->set_x_axis_range(-20, 180);
+    renderer->set_y_axis_range(-100,100);
 
     Layout layout(opm.get(), renderer);
     layout.draw_elements();
     layout.draw_reference_rays();
-
     delete renderer;
+    }
 
+    /* ray fan */
+    RendererSvg *renderer = new RendererSvg("ray_fan.svg", 800, 800);
+    RayFan rayfan(opm.get(),renderer);
+    rayfan.plot(0.5);
+    delete renderer;
 
     /* save */
     FileIO::save_to_json(*opm, "photolens.json");

@@ -53,7 +53,7 @@ void RayFan::plot(double scale, int nrd)
         // trace chief ray
         Field* fld = opt_model_->optical_spec()->field_of_view()->field(fi);
         double ref_wvl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
-        Ray chief_ray = Trace::trace_base(*opt_model_, PupilCrd({0.0, 0.0}), *fld, ref_wvl);
+        Ray chief_ray = Trace::trace_pupil_ray(*opt_model_, PupilCrd({0.0, 0.0}), *fld, ref_wvl);
         double x0 = chief_ray.last().intersect_pt(0);
         double y0 = chief_ray.last().intersect_pt(1);
 
@@ -79,7 +79,7 @@ void RayFan::plot(double scale, int nrd)
                 pupil(0) = 0.0;
                 pupil(1) = -1.0 + (double)ri*step;
 
-                tangential_ray = Trace::trace_base(*opt_model_, pupil, *fld, wvl);
+                tangential_ray = Trace::trace_pupil_ray(*opt_model_, pupil, *fld, wvl);
 
                 if(tangential_ray.status() == RayStatus::PassThrough){
                     double y = tangential_ray.last().intersect_pt(1);
@@ -92,7 +92,7 @@ void RayFan::plot(double scale, int nrd)
                 pupil(0) = -1.0 + (double)ri*step;
                 pupil(1) = 0.0;
 
-                sagittal_ray = Trace::trace_base(*opt_model_, pupil, *fld, wvl);
+                sagittal_ray = Trace::trace_pupil_ray(*opt_model_, pupil, *fld, wvl);
                 if(sagittal_ray.status() == RayStatus::PassThrough){
                     double x = sagittal_ray.last().intersect_pt(0);
                     vig_pupil = fld->apply_vignetting(pupil);
@@ -127,12 +127,16 @@ void RayFan::plot(double scale, int nrd)
             renderer_->set_x_axis_range(-1.0, 1.0);
             renderer_->set_y_axis_label("dy");
             renderer_->draw_polyline(spy, sdy, render_color);
+            renderer_->draw_x_axis();
+            renderer_->draw_y_axis();
 
             renderer_->set_current_cell(num_flds - fi -1, 1);
             renderer_->set_y_axis_range(-scale, scale);
             renderer_->set_x_axis_range(-1.0, 1.0);
             renderer_->set_y_axis_label("dx");
             renderer_->draw_polyline(spx, sdx, render_color);
+            renderer_->draw_x_axis();
+            renderer_->draw_y_axis();
         }
 
     }

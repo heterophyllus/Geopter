@@ -15,22 +15,12 @@ class Trace
 public:
     Trace();
 
-    /**
-     * @brief Trace ray specified by relative aperture and field point
-     * @param opt_model instance of :class:`~.OpticalModel` to trace
-     * @param pupil relative pupil coordinates of ray
-     * @param fld instance of :class:`~.Field`
-     * @param wvl ray trace wavelength in nm
-     * @return
-     */
-    static Ray trace_base(const OpticalModel& opt_model, Eigen::Vector2d pupil, const Field& fld, double wvl);
+    /** Trace ray specified by relative aperture and field point */
+    static Ray trace_pupil_ray(const OpticalModel& opt_model, Eigen::Vector2d pupil, const Field& fld, double wvl);
 
-    static Ray trace_base(const OpticalModel& opt_model, Eigen::Vector2d pupil, int fld_idx, double wvl);
+    static Ray trace_pupil_ray(const OpticalModel& opt_model, Eigen::Vector2d pupil, int fi, int wi);
 
-    // /** returns a list of RayPkgs for the boundary rays for field fld */
-    //static RayPkgs trace_boundary_rays_at_field(OpticalModel *opt_model, Field *fld, double wvl, bool use_named_tuples=false);
-
-    //static RaySet trace_boundary_rays(OpticalModel* opt_model, bool use_named_tuples=false);
+    static std::vector<Ray> trace_fan_rays(const OpticalModel& opt_model, const Field& fld, double wvl, double azimuth, int nrd);
 
 
     static Eigen::Vector2d aim_chief_ray(const OpticalModel& opt_model, const Field& fld, double wvl=0.0);
@@ -44,7 +34,8 @@ public:
     static void apply_paraxial_vignetting(const OpticalModel& opt_model);
 
 
-    // belows are from ray_trace.h
+    /** Trace astigmatism using Coddington equation */
+    static Eigen::Vector2d trace_coddington(const OpticalModel& opt_model, const Field& fld, double wvl);
 
 
     /** refract incoming direction, d_in, about normal */
@@ -53,28 +44,11 @@ public:
     /** reflect incoming direction, d_in, about normal */
     static Eigen::Vector3d reflect(Eigen::Vector3d d_in, Eigen::Vector3d normal);
 
-    /**
-     * @brief fundamental raytrace function
-     * @param seq_model the sequential model to be traced
-     * @param pt0 starting point in coords of first interface
-     * @param dir0 starting direction cosines in coords of first interface
-     * @param wvl wavelength in nm
-     * @return
-     */
-    static Ray trace(const SequentialModel& seq_model, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl);
+    /** Trace ray originated from the given point in object space */
+    static Ray trace_ray_from_object(const SequentialModel& seq_model, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl);
 
-    /**
-     * @brief fundamental raytrace function
-     * @param path an iterator containing interfaces and gaps to be traced.
-              for each iteration, the sequence or generator should return a
-              list containing: **Intfc, Gap, Trfm, Index, Z_Dir
-     * @param pt0 starting point in coords of first interface
-     * @param dir0 starting direction cosines in coords of first interface
-     * @param wvl wavelength in nm
-     * @param eps accuracy tolerance for surface intersection calculation
-     * @return (**ray**, **op_delta**, **wvl**)
-     */
-    static Ray trace_raw(Path path, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl, double eps=1.0e-12);
+    /** Trace ray originated from the given point in object space */
+    static Ray trace_ray_from_object(Path path, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl, double eps=1.0e-12);
 
 private:
 

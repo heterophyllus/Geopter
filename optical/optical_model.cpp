@@ -85,12 +85,6 @@ ElementModel* OpticalModel::elem_model() const
 
 void OpticalModel::set_default_model()
 {
-    //seq_model_->clear();
-    seq_model_->initialize_arrays();
-    seq_model_->gap(0)->set_thi(1.0e+6);
-    seq_model_->add_surface(0.0, 0.0, std::make_shared<Air>());
-    seq_model_->set_stop();
-
     optical_spec_->pupil_spec()->set_pupil_type(PupilType::EPD);
     optical_spec_->pupil_spec()->set_value(2.0);
 
@@ -99,6 +93,14 @@ void OpticalModel::set_default_model()
 
     optical_spec_->spectral_region()->clear();
     optical_spec_->spectral_region()->add(SpectralLine::d, 1.0, rgb_black);
+
+    //seq_model_->clear();
+    seq_model_->initialize_arrays();
+    seq_model_->gap(0)->set_thi(1.0e+6);
+    seq_model_->append(0.0, 0.0);
+    seq_model_->set_stop(1);
+
+
 
     //update_model();
 }

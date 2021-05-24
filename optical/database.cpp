@@ -1,3 +1,5 @@
+#include <math.h>
+
 #ifdef _MSC_VER
     #include "msdirent.h"
 #else
@@ -7,6 +9,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cstdlib>
+
 
 #include "database.h"
 #include "file_io.h"
@@ -84,7 +87,8 @@ std::shared_ptr<Medium> Database::find(std::string medium_name)
     }else if(FileIO::contains(medium_name, ".")){
         // assume glasscode
         std::vector<std::string> nd_and_vd = FileIO::split(medium_name, '.');
-        double nd = std::stod(nd_and_vd[0]) / 10000.0 + 1.0;
+        int nd_digit = nd_and_vd[0].size();
+        double nd = std::stod(nd_and_vd[0]) / pow(10.0, nd_digit) + 1.0;
         double vd = std::stod(nd_and_vd[1]) / 100.0;
         auto buchdalh_glass = std::make_shared<BuchdahlGlass>(nd, vd);
         return buchdalh_glass;

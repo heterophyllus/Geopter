@@ -24,6 +24,11 @@ int Ray::size() const
 
 void Ray::append(RayAtSurface ray_at_srf)
 {
+    if(ray_at_srfs_.empty()){
+        ray_at_srf.before = nullptr;
+    }else{
+        ray_at_srf.before = &ray_at_srfs_.back();
+    }
     ray_at_srfs_.push_back(ray_at_srf);
 }
 
@@ -55,6 +60,60 @@ void Ray::set_status(int s)
 int Ray::status() const
 {
     return status_;
+}
+
+double Ray::x(int i) const
+{
+    return ray_at_srfs_[i].intersect_pt(0);
+}
+
+double Ray::y(int i) const
+{
+    return ray_at_srfs_[i].intersect_pt(1);
+}
+
+double Ray::z(int i) const
+{
+    return ray_at_srfs_[i].intersect_pt(2);
+}
+
+double Ray::L(int i) const
+{
+    return ray_at_srfs_[i].after_dir(0);
+}
+
+double Ray::M(int i) const
+{
+    return ray_at_srfs_[i].after_dir(1);
+}
+
+double Ray::N(int i) const
+{
+    return ray_at_srfs_[i].after_dir(2);
+}
+
+double Ray::aoi(int i) const
+{
+    if(i > 0) {
+        Eigen::Vector3d inc_dir = ray_at_srfs_[i-1].after_dir;
+        Eigen::Vector3d normal = ray_at_srfs_[i].normal;
+        double cosI = inc_dir.dot(normal) / (inc_dir.norm() * normal.norm());
+        return acos(cosI);
+    }else{
+        Eigen::Vector3d inc_dir = ray_at_srfs_[0].after_dir;
+        Eigen::Vector3d normal = ray_at_srfs_[0].normal;
+        double cosI = inc_dir.dot(normal) / (inc_dir.norm() * normal.norm());
+        return acos(cosI);
+    }
+}
+
+double Ray::aor(int i)
+{
+    Eigen::Vector3d after_dir = ray_at_srfs_[i].after_dir;
+    Eigen::Vector3d normal = ray_at_srfs_[i].normal;
+    double cosI = after_dir.dot(normal) / (after_dir.norm() * normal.norm());
+
+    return acos(cosI);
 }
 
 void Ray::print(std::ostringstream& oss)

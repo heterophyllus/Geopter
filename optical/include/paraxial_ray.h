@@ -12,6 +12,7 @@ struct ParaxialRayAtSurface
     double ht  = 0.0;
     double slp = 0.0;
     double aoi = 0.0;
+    double n   = 1.0;
 };
 
 /** This struct is used to define initial input for compute_first_order, etc */
@@ -39,7 +40,7 @@ public:
     ParaxialRayAtSurface at(int i);
 
     /** Return the last surface data */
-    ParaxialRayAtSurface back();
+    ParaxialRayAtSurface last();
 
     /** Write ray data to standard output */
     void print();

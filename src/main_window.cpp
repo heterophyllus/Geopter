@@ -13,6 +13,7 @@
 #include "layout_dialog.h"
 #include "real_ray_trace_dialog.h"
 #include "transverse_ray_fan_dialog.h"
+#include "longitudinal_setting_dialog.h"
 #include "renderer_qcp.h"
 
 #include "qdebugstream.h"
@@ -45,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionReal_Ray_Trace,     SIGNAL(triggered()), this, SLOT(showRealRayTrace()));
     QObject::connect(ui->actionParaxial_Ray_Trace, SIGNAL(triggered()), this, SLOT(showParaxialRayTrace()));
     QObject::connect(ui->actionTransverse_Ray_Fan, SIGNAL(triggered()), this, SLOT(showRayFan()));
+    QObject::connect(ui->actionLongitudinal_Aberration, SIGNAL(triggered()), this, SLOT(showLongitudinal()));
 
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -130,6 +132,14 @@ void MainWindow::saveAs()
 
     FileIO::save_to_json(*opt_model_, json_path);
 
+    std::ostringstream oss;
+    opt_model_->seq_model()->print(oss);
+    std::fstream fout;
+    fout.open("seq_model.txt", std::ios::out);
+    fout << oss.str() << std::endl;
+    fout.close();
+
+
     QMessageBox::information(this,tr("Info"), tr("Saved to JSON file"));
 }
 
@@ -148,7 +158,7 @@ void MainWindow::openFile()
     FileIO::load_from_json(*opt_model_,json_path);
 
     opt_model_->update_model();
-    opt_model_->update_model(); // FIXME: must be twice updated
+    //opt_model_->update_model(); // FIXME: must be twice updated
 
     lens_data_manager_->setOpticalModel(opt_model_);
     lens_data_manager_->syncTableWithModel();
@@ -240,6 +250,15 @@ void MainWindow::showRayFan()
     dock->showSettingDlg();   
 }
 
+void MainWindow::showLongitudinal()
+{
+    PlotViewDock *dock = new PlotViewDock("Longitudinal Aberration");
+    dockManager_->addDockWidgetFloating(dock);
+    dock->resize(300,200);
+
+    dock->possessDlg(std::make_unique<LongitudinalSettingDialog>(opt_model_.get(), dock));
+    dock->showSettingDlg();
+}
 
 /*********************************************************************************************************************************
  *

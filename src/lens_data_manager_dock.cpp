@@ -113,6 +113,8 @@ void LensDataManagerDock::syncTableWithModel()
     connectValidateCell(true);
 
     table_->update();
+
+
 }
 
 
@@ -145,9 +147,9 @@ void LensDataManagerDock::syncRowWithModel(int row)
 
         if(row == 0){
             setCellEditable(row, Column::Label, false);
-            setCellEditable(row, Column::Radius, false);
-            setCellEditable(row, Column::Thickness, false);
-            setCellEditable(row, Column::Material, false);
+            //setCellEditable(row, Column::Radius, false);
+            //setCellEditable(row, Column::Thickness, false);
+            //setCellEditable(row, Column::Material, false);
             setCellEditable(row, Column::Mode, false);
             setCellEditable(row, Column::SurfaceType, false);
             setCellEditable(row, Column::SemiDiameter, false);
@@ -288,6 +290,7 @@ void LensDataManagerDock::remove()
 {
     int currentRow = table_->currentRow();
     table_->removeRow(currentRow);
+    opt_model_->seq_model()->remove(currentRow);
 
     updateVerticalHeader();
 }
@@ -309,7 +312,8 @@ void LensDataManagerDock::insertRow(int row)
 
 
     // add surface to optical model
-    opt_model_->seq_model()->insert(row-1);
+    //opt_model_->seq_model()->insert(row-1);
+    opt_model_->seq_model()->insert(row);
     opt_model_->update_model();
 
 
@@ -364,7 +368,7 @@ void LensDataManagerDock::setValueToCell(int row, int col, double val)
         item->setText("Infinity");
     }
     else{
-        item->setText(QString::number(val));
+        item->setText(QString::number(val, 'f', 10));
     }
 
 }
@@ -483,7 +487,10 @@ bool LensDataManagerDock::validateRadiusInput(int row)
     }
 
     bool isDouble;
-    double val = text.toDouble(&isDouble);
+    double val = item->data(Qt::EditRole).toDouble(&isDouble);
+    //double val = text.toDouble(&isDouble);
+
+    qDebug() << "Radius Input: text= " << text << ", val= " << val;
 
     if(isDouble){
         if(std::isinf(val)) {
@@ -491,7 +498,7 @@ bool LensDataManagerDock::validateRadiusInput(int row)
             setValueToCell(row,col,"Infinity");
             opt_model_->seq_model()->surface(row)->profile()->set_cv(0.0);
         }else{
-            opt_model_->seq_model()->surface(row)->profile()->set_cv(1.0/val);
+            opt_model_->seq_model()->surface(row)->profile()->set_radius(val);
         }
         return true;
     }else{
@@ -524,8 +531,10 @@ bool LensDataManagerDock::validateThicknessInput(int row)
         if(std::isinf(val)){
             //item->setText("Infinity");
             setValueToCell(row,col,"Infinity");
+            opt_model_->seq_model()->gap(row)->set_thi(std::numeric_limits<double>::infinity());
+        }else{
+            opt_model_->seq_model()->gap(row)->set_thi(val);
         }
-        opt_model_->seq_model()->gap(row)->set_thi(val);
         return true;
     }else{
         //item->setText(QString::number(0.0));

@@ -3,11 +3,12 @@
 #include <fstream>
 #include <filesystem>
 #include <iomanip>
+#include <limits>
 
 #include "nlohmann/json.hpp"
 
 #include "file_io.h"
-
+#include "database.h"
 #include "optical_model.h"
 #include "optical_spec.h"
 #include "pupil_spec.h"
@@ -119,6 +120,7 @@ bool FileIO::save_to_json(const OpticalModel& opt_model, std::string json_path)
         if(surface_type == "ASP"){
             EvenPolynomial *prf = dynamic_cast<EvenPolynomial*>(s->profile());
             if(prf){
+                json_data["Surfaces"][srf_idx]["Conic"] = prf->conic();
                 for(int ci = 0; ci < prf->coef_count(); ci++){
                     json_data["Surfaces"][srf_idx]["Coef" + std::to_string(ci)] = prf->coef(ci);
                 }
@@ -251,18 +253,30 @@ bool FileIO::load_from_json(OpticalModel& opt_model, std::string json_path)
 
             std::string surface_type  = json_data["Surfaces"][srf_idx]["Type"].get<std::string>();
             double      cv            = json_data["Surfaces"][srf_idx]["Curvature"].get<double>();
-            double      thi           = json_data["Surfaces"][srf_idx]["Thickness"].get<double>();
+
+            double thi;
+            std::string thi_str;
+            try {
+                //thi = json_data["Surfaces"][srf_idx]["Thickness"].get<double>();
+                thi = json_data.at("Surfaces").at(srf_idx).at("Thickness");
+
+            }  catch (...) {
+                //thi_str = json_data["Surfaces"][srf_idx]["Thickness"].get<std::string>();
+                thi = 10000000.0;
+            }
+
             std::string medium_name   = json_data["Surfaces"][srf_idx]["Medium"].get<std::string>();
 
             if(surface_type == "SPH"){
-                opt_model.seq_model()->add_surface(1.0/cv,thi,medium_name);
+                opt_model.seq_model()->append(std::make_unique<Spherical>(cv), thi, opt_model.database()->find(medium_name));
             }else if(surface_type == "ASP"){
-                opt_model.seq_model()->add_surface(std::make_unique<EvenPolynomial>(cv),thi,medium_name);
-                EvenPolynomial* prf = dynamic_cast<EvenPolynomial*>(opt_model.seq_model()->current_surface()->profile());
+                std::vector<double> coefs;
                 for(int ci = 0 ; ci < 10; ci++){
                     double val = json_data["Surfaces"][srf_idx]["Coef" + std::to_string(ci)].get<double>();
-                    prf->set_coef(ci, val);
+                    coefs.push_back(val);
                 }
+                double k = json_data["Surfaces"][srf_idx]["Conic"].get<double>();
+                opt_model.seq_model()->append(std::make_unique<EvenPolynomial>(cv, k, coefs), thi, opt_model.database()->find(medium_name));
             }
 
             std::string surface_label = json_data["Surfaces"][srf_idx]["Label"].get<std::string>();
@@ -284,7 +298,14 @@ bool FileIO::load_from_json(OpticalModel& opt_model, std::string json_path)
 
         }
          // obect space gap
-        double thi0 = json_data["Surfaces"]["S0"]["Thickness"].get<double>();
+        double thi0;
+        try {
+            thi0 = json_data.at("Surfaces").at("S0").at("Thickness").get<double>();
+        }  catch (...) {
+            thi0 = std::numeric_limits<double>::infinity();
+            //thi0 = 10000000.0;
+        }
+
         opt_model.seq_model()->gap(0)->set_thi(thi0);
 
         // set stop

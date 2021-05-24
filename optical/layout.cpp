@@ -76,13 +76,13 @@ void Layout::draw_reference_rays()
         fld = opt_model_->optical_spec()->field_of_view()->field(fi);
         color = fld->render_color();
 
-        ray = Trace::trace_base(*opt_model_, Eigen::Vector2d({0.0,0.0}), *fld, ref_wvl);
+        ray = Trace::trace_pupil_ray(*opt_model_, Eigen::Vector2d({0.0,0.0}), *fld, ref_wvl);
         draw_single_ray(ray, color);
 
-        ray = Trace::trace_base(*opt_model_, Eigen::Vector2d({0.0,1.0}), *fld, ref_wvl);
+        ray = Trace::trace_pupil_ray(*opt_model_, Eigen::Vector2d({0.0,1.0}), *fld, ref_wvl);
         draw_single_ray(ray, color);
 
-        ray = Trace::trace_base(*opt_model_, Eigen::Vector2d({0.0,-1.0}), *fld, ref_wvl);
+        ray = Trace::trace_pupil_ray(*opt_model_, Eigen::Vector2d({0.0,-1.0}), *fld, ref_wvl);
         draw_single_ray(ray, color);
     }
 }
@@ -106,7 +106,7 @@ void Layout::draw_fan_rays(int nrd)
         for(int ri = 0; ri < nrd; ri++) {
             pupil(0) = 0.0;
             pupil(1) = -1.0 + (double)ri*step;
-            ray = Trace::trace_base(*opt_model_, pupil, *fld, ref_wvl);
+            ray = Trace::trace_pupil_ray(*opt_model_, pupil, *fld, ref_wvl);
             draw_single_ray(ray, color);
         }
 

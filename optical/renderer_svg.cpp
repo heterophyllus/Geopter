@@ -57,7 +57,7 @@ void RendererSvg::write(std::ostream &s)
 }
 
 
-void RendererSvg::draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color)
+void RendererSvg::draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color, int line_style)
 {
     Eigen::Vector2i cp1 = convert(p1);
     Eigen::Vector2i cp2 = convert(p2);
@@ -72,7 +72,7 @@ void RendererSvg::draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& c
     svg_end();
 }
 
-void RendererSvg::draw_polyline(std::vector<Eigen::Vector2d> &pts, const Rgb& color)
+void RendererSvg::draw_polyline(std::vector<Eigen::Vector2d> &pts, const Rgb& color, int line_style)
 {
     int count = pts.size();
     if(count < 3) return;
@@ -89,7 +89,7 @@ void RendererSvg::draw_polyline(std::vector<Eigen::Vector2d> &pts, const Rgb& co
     out_ << "\" />" << std::endl;
 }
 
-void RendererSvg::draw_polyline(std::vector<double> &x, std::vector<double> &y, const Rgb& color)
+void RendererSvg::draw_polyline(std::vector<double> &x, std::vector<double> &y, const Rgb& color, int line_style)
 {
     out_ << "<polyline fill=\"none\"";
     svg_add_stroke(color);

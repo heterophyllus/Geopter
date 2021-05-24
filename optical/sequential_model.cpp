@@ -1,29 +1,25 @@
-#include "sequential_model.h"
-#include "optical_spec.h"
-#include "wvl_spec.h"
-#include "field_spec.h"
-#include "pupil_spec.h"
-
-#include "database.h"
-#include "optical_model.h"
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 #include <algorithm>
 #include <iomanip>
+#include <limits>
 
+#include "sequential_model.h"
+#include "optical_spec.h"
+#include "wvl_spec.h"
+#include "field_spec.h"
+#include "pupil_spec.h"
+#include "database.h"
+#include "optical_model.h"
 #include "medium.h"
 #include "air.h"
 #include "glass.h"
-
 #include "surface.h"
 #include "gap.h"
 #include "surface_profile.h"
 #include "aperture.h"
-
 #include "glass_catalog.h"
-
 #include "trace.h"
 #include "file_io.h"
 
@@ -31,7 +27,7 @@
 using namespace geopter;
 
 SequentialModel::SequentialModel(OpticalModel* opt_model) :
-    optical_model_(opt_model)
+    opt_model_(opt_model)
 {
     initialize_arrays();
 }
@@ -68,7 +64,6 @@ void SequentialModel::clear()
     }
     rndx_.clear();
 
-    wvlns_.clear();
 }
 
 void SequentialModel::initialize_arrays()
@@ -110,14 +105,14 @@ void SequentialModel::initialize_arrays()
 
 void SequentialModel::update_model(bool update_sd)
 {
-    auto osp = optical_model_->optical_spec();
+    auto osp = opt_model_->optical_spec();
     auto ref_wl = osp->spectral_region()->reference_index();
 
-    wvlns_.clear();
+    std::vector<double> wvlns;
     for(int i = 0; i < osp->spectral_region()->wvl_count(); i++){
-        wvlns_.push_back(osp->spectral_region()->wavelength(i));
+        wvlns.push_back(osp->spectral_region()->wavelength(i));
     }
-    rndx_ = calc_ref_indices_for_spectrum(wvlns_);
+    rndx_ = calc_ref_indices_for_spectrum(wvlns);
     auto n_before = rndx_[0];
 
     z_dirs_.clear();
@@ -210,10 +205,94 @@ double SequentialModel::z_dir(int n) const
     }
 }
 
+Path SequentialModel::path(int wi, int start, int stop, int step) const
+{
+
+    double wl = opt_model_->optical_spec()->spectral_region()->wvl(wi)->value();
+
+    int gap_start;
+    if(step < 0){
+        gap_start = start-1;
+    }
+    else{
+        gap_start = start;
+    }
+
+    int max_size = std::max({(int)interfaces_.size(),
+                             (int)gaps_.size(),
+                             (int)rndx_.size(),
+                             (int)lcl_tfrms_.size(),
+                             (int)z_dirs_.size()});
+    if(stop < 0){
+        stop = max_size;
+    }
+
+    PathComponent path_component;
+    Path path;
+    int path_itr_cnt = 0;
+
+    int ifc_itr = start;
+    int gap_itr = gap_start;
+    int rndx_itr = start;
+    int lcl_tfrm_itr = start;
+    int z_dir_itr = start;
+
+    for(int main_itr = start; main_itr < stop; main_itr+=step)
+    {
+        if(ifc_itr < (int)interfaces_.size()){
+            path_component.srf = interfaces_[ifc_itr].get();
+        }else{
+            path_component.srf = nullptr;
+        }
+        ifc_itr += step;
+
+        if(gap_itr < (int)gaps_.size()){
+            path_component.gap = gaps_[gap_itr].get();
+        }else{
+            path_component.gap = nullptr;
+        }
+        gap_itr += step;
+
+        if(rndx_itr < (int)rndx_.size()){
+            if(path_component.gap){
+                //path_component.rndx = path_component.gap->medium()->rindex(wl);
+                path_component.rndx = rndx_[rndx_itr][wi];
+            }else{
+                path_component.rndx = 1.0;
+            }
+        }else{
+            path_component.rndx = 1.0; // should be None
+        }
+        rndx_itr += step;
+
+        if(z_dir_itr < (int)z_dirs_.size()){
+            path_component.z_dir = z_dirs_[z_dir_itr];
+        }else{
+            path_component.z_dir = 1.0; // should be None
+        }
+        z_dir_itr += step;
+
+        if(lcl_tfrm_itr < (int)lcl_tfrms_.size()){
+            path_component.tfrm = lcl_tfrms_[lcl_tfrm_itr];
+        }else{
+            path_component.tfrm.rotation = Eigen::Matrix3d::Identity(3,3);
+            path_component.tfrm.transfer = Eigen::Vector3d::Zero(3);
+        }
+        lcl_tfrm_itr += step;
+
+        path.push_back(path_component);
+
+        path_itr_cnt++;
+    }
+
+    return path;
+}
+
 Path SequentialModel::path(double wl, int start, int stop, int step) const
 {
     if(wl < 0){
-        wl = central_wavelength();
+        //wl = central_wavelength();
+        wl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
     }
 
     int gap_start;
@@ -315,21 +394,18 @@ std::vector< std::vector<double> > SequentialModel::calc_ref_indices_for_spectru
     return indices;
 }
 
-double SequentialModel::central_wavelength() const
-{
-    return optical_model_->optical_spec()->spectral_region()->reference_wvl();
-}
+
 
 double SequentialModel::central_rndx(int i)
 {
-    int central_wvl = optical_model_->optical_spec()->spectral_region()->reference_index();
+    int central_wvl = opt_model_->optical_spec()->spectral_region()->reference_index();
 
     if(i >= 0){
         return rndx_[i][central_wvl];
     }
     else{
-        int index = rndx_.size() + i;
-        return rndx_[index][central_wvl];
+        int j = rndx_.size() + i;
+        return rndx_[j][central_wvl];
     }
 
 }
@@ -356,17 +432,93 @@ int SequentialModel::stop_surface() const
     return stop_surface_;
 }
 
+void SequentialModel::insert(int i, std::shared_ptr<Surface> s, std::shared_ptr<Gap> g)
+{
+    cur_surface_ = i;
+
+    int num_ifcs = interfaces_.size();
+    if(num_ifcs > 2)
+    {
+        if(stop_surface_ >= cur_surface_ /*&& stop_surface_ < num_ifcs-2*/ )
+        {
+            stop_surface_ += 1;
+        }
+    }
+
+    int surf = cur_surface_;
+
+    /* insert interface */
+    auto ifcs_itr = interfaces_.begin();
+    std::advance(ifcs_itr, surf);
+    interfaces_.insert(ifcs_itr,s);
+
+    /* insert gap */
+    if(g)
+    {
+        auto gap_itr = gaps_.begin();
+        std::advance(gap_itr,surf);
+        gaps_.insert(gap_itr, g);
+    }
+
+
+    /* insert transform */
+
+    Tfrm tfrm;
+    tfrm.rotation = Eigen::Matrix3d::Identity(3,3);
+    tfrm.transfer = Eigen::Vector3d::Zero(3);
+
+    auto gbl_tfrm_itr = gbl_tfrms_.begin();
+    std::advance(gbl_tfrm_itr, surf);
+
+
+    auto lcl_tfrm_itr = lcl_tfrms_.begin();
+    std::advance(lcl_tfrm_itr, surf);
+    lcl_tfrms_.insert(lcl_tfrm_itr, tfrm);
+
+
+    /* insert z_dir */
+    double new_z_dir;
+    if(surf > 1){
+        new_z_dir = z_dirs_[surf-1];
+    }
+    else{
+        new_z_dir = 1.0;
+    }
+    auto z_dir_itr = z_dirs_.begin();
+    std::advance(z_dir_itr, surf);
+    z_dirs_.insert(z_dir_itr,new_z_dir);
+
+
+    /* insert rndx_ */
+    int num_wvl = opt_model_->optical_spec()->spectral_region()->wvl_count();
+    std::vector<double> rindex;
+    for(int i = 0; i < num_wvl; i++)
+    {
+        double w = opt_model_->optical_spec()->spectral_region()->wavelength(i);
+        rindex.push_back(g->medium()->rindex(w));
+    }
+
+    auto rndx_itr = rndx_.begin();
+    std::advance(rndx_itr, surf);
+    rndx_.insert(rndx_itr,rindex);
+
+    if(s->interact_mode() == "reflect"){
+        // update_reflections(start=surf)
+    }
+}
+
+/*
 void SequentialModel::insert(std::shared_ptr<Surface> s, std::shared_ptr<Gap> g)
 {
     int num_ifcs = interfaces_.size();
     if(num_ifcs > 2)
     {
-        if(stop_surface_ > cur_surface_ /*&& stop_surface_ < num_ifcs-2*/ )
+        if(stop_surface_ > cur_surface_ && stop_surface_ < num_ifcs-2 )
         {
             stop_surface_ += 1;
         }
     }
-    cur_surface_ += 1;
+    //cur_surface_ += 1;
 
     int surf = cur_surface_;
 
@@ -407,12 +559,12 @@ void SequentialModel::insert(std::shared_ptr<Surface> s, std::shared_ptr<Gap> g)
     std::advance(z_dir_itr, surf);
     z_dirs_.insert(z_dir_itr,new_z_dir);
 
-    int num_wvl = optical_model_->optical_spec()->spectral_region()->wvl_count();
+    int num_wvl = opt_model_->optical_spec()->spectral_region()->wvl_count();
     std::vector<double> wvls;
     std::vector<double> rindex;
     for(int i = 0; i < num_wvl; i++)
     {
-        double w = optical_model_->optical_spec()->spectral_region()->wavelength(i);
+        double w = opt_model_->optical_spec()->spectral_region()->wavelength(i);
         wvls.push_back(w);
         rindex.push_back(g->medium()->rindex(w));
     }
@@ -425,7 +577,7 @@ void SequentialModel::insert(std::shared_ptr<Surface> s, std::shared_ptr<Gap> g)
         // update_reflections(start=surf)
     }
 }
-
+*/
 
 void SequentialModel::insert(int i)
 {
@@ -435,8 +587,9 @@ void SequentialModel::insert(int i)
     s->profile()->set_cv(0.0);
     auto g = std::make_shared<Gap>(0.0, std::make_shared<Air>());
 
-    this->insert(s, g);
+    this->insert(i, s, g);
 }
+
 
 void SequentialModel::remove(int i)
 {
@@ -447,6 +600,15 @@ void SequentialModel::remove(int i)
         auto gap_itr = gaps_.begin();
         gaps_.erase(gap_itr + i);
 
+        auto rndx_itr = rndx_.begin();
+        rndx_.erase(rndx_itr + i);
+
+        auto lcl_tfrm_itr = lcl_tfrms_.begin();
+        lcl_tfrms_.erase(lcl_tfrm_itr + i);
+
+        auto gbl_tfrm_itr = gbl_tfrms_.begin();
+        gbl_tfrms_.erase(gbl_tfrm_itr + i);
+
         // update stop surface
         if( i < stop_surface_ ) {
             stop_surface_ -= 1;
@@ -455,6 +617,7 @@ void SequentialModel::remove(int i)
 
 }
 
+/*
 void SequentialModel::add_surface(double radius, double thickness, std::string medium_display_name)
 {
     auto s = std::make_shared<Surface>();
@@ -475,13 +638,13 @@ void SequentialModel::add_surface(double radius, double thickness, std::string m
         g = std::make_shared<Gap>(thickness, std::make_shared<Air>());
     }
     else{
-        /*
+
         std::vector<std::string> g_c = FileIO::split(medium_display_name, '_');
         std::string glass_name = g_c[0];
         std::string catalog_name = g_c[1];
         std::shared_ptr<Glass> mat = optical_model_->database()->glass_catalog(catalog_name)->glass(glass_name);
-        */
-        std::shared_ptr<Medium> mat = optical_model_->database()->find(medium_display_name);
+
+        std::shared_ptr<Medium> mat = opt_model_->database()->find(medium_display_name);
         if(mat){
             g = std::make_shared<Gap>(thickness, mat);
         }else{
@@ -494,8 +657,9 @@ void SequentialModel::add_surface(double radius, double thickness, std::string m
 
     this->insert(s, g);
 }
+*/
 
-
+/*
 void SequentialModel::add_surface(double radius, double thickness, std::shared_ptr<Medium> med)
 {
     auto s = std::make_shared<Surface>();
@@ -513,8 +677,9 @@ void SequentialModel::add_surface(double radius, double thickness, std::shared_p
 
     this->insert(s, g);
 }
+*/
 
-
+/*
 void SequentialModel::add_surface(std::unique_ptr<SurfaceProfile> prf, double thickness, std::string medium_display_name)
 {
     auto s = std::make_shared<Surface>();
@@ -527,7 +692,7 @@ void SequentialModel::add_surface(std::unique_ptr<SurfaceProfile> prf, double th
         g = std::make_shared<Gap>(thickness, std::make_shared<Air>());
     }
     else{
-        std::shared_ptr<Medium> mat = optical_model_->database()->find(medium_display_name);
+        std::shared_ptr<Medium> mat = opt_model_->database()->find(medium_display_name);
         if(mat){ //found
             g = std::make_shared<Gap>(thickness, mat);
         }else{   //not found
@@ -537,11 +702,75 @@ void SequentialModel::add_surface(std::unique_ptr<SurfaceProfile> prf, double th
 
     this->insert(s, g);
 }
+*/
 
+void SequentialModel::append(std::unique_ptr<SurfaceProfile> prf, double thi, std::shared_ptr<Medium> med)
+{
+    auto s = std::make_shared<Surface>();
+    s->set_profile(std::move(prf));
+
+    std::shared_ptr<Gap> g;
+    if(med){
+        g = std::make_shared<Gap>(thi, med);
+    }else{
+        g = std::make_shared<Gap>(thi, std::make_shared<Air>());
+    }
+
+    int last_surf = interfaces_.size() - 1; // just before image
+    this->insert(last_surf, s, g);
+}
+
+void SequentialModel::append(std::unique_ptr<SurfaceProfile> prf, double thi, std::string medium_display_name)
+{
+    auto s = std::make_shared<Surface>();
+
+    s->set_profile(std::move(prf));
+
+    std::shared_ptr<Gap> g;
+    if(medium_display_name == "" || medium_display_name == "AIR")
+    {
+        g = std::make_shared<Gap>(thi, std::make_shared<Air>());
+    }
+    else{
+        std::shared_ptr<Medium> mat = opt_model_->database()->find(medium_display_name);
+        if(mat){ //found
+            g = std::make_shared<Gap>(thi, mat);
+        }else{   //not found
+            g = std::make_shared<Gap>(thi, std::make_shared<Air>());
+        }
+    }
+
+    int last_surf = interfaces_.size() - 1; // just before image
+    this->insert(last_surf, s, g);
+}
+
+
+void SequentialModel::append(double radius, double thi, std::string medium_display_name)
+{
+    auto s = std::make_shared<Surface>();
+    s->profile()->set_radius(radius);
+
+    std::shared_ptr<Gap> g;
+    if(medium_display_name == "" || medium_display_name == "AIR")
+    {
+        g = std::make_shared<Gap>(thi, std::make_shared<Air>());
+    }
+    else{
+        std::shared_ptr<Medium> mat = opt_model_->database()->find(medium_display_name);
+        if(mat){ //found
+            g = std::make_shared<Gap>(thi, mat);
+        }else{   //not found
+            g = std::make_shared<Gap>(thi, std::make_shared<Air>());
+        }
+    }
+
+    int last_surf = interfaces_.size() - 1; // just before image
+    this->insert(last_surf, s, g);
+}
 
 void SequentialModel::set_semi_diameters()
 {
-    int num_fields = optical_model_->optical_spec()->field_of_view()->field_count();
+    int num_fields = opt_model_->optical_spec()->field_of_view()->field_count();
     //int num_wvls = optical_model_->optical_spec()->spectral_region()->wvl_count();
     int num_srfs = (int)interfaces_.size();
 
@@ -552,7 +781,7 @@ void SequentialModel::set_semi_diameters()
     pupils.push_back(Eigen::Vector2d({1.0, 0.0}));
     pupils.push_back(Eigen::Vector2d({-1.0, 0.0}));
 
-    double wvl = optical_model_->optical_spec()->spectral_region()->reference_wvl();
+    double wvl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
 
     Ray r2, r3, r4, r5;
     RayAtSurface ray_at_srf;
@@ -560,13 +789,13 @@ void SequentialModel::set_semi_diameters()
 
     for(int fi = 0; fi < num_fields; fi++)
     {
-        auto fld = optical_model_->optical_spec()->field_of_view()->field(fi);
+        auto fld = opt_model_->optical_spec()->field_of_view()->field(fi);
 
         // trace marginal rays
-        r2 = Trace::trace_base(*optical_model_, Eigen::Vector2d({ 0.0,  1.0}), *fld, wvl);
-        r3 = Trace::trace_base(*optical_model_, Eigen::Vector2d({ 0.0, -1.0}), *fld, wvl);
-        r4 = Trace::trace_base(*optical_model_, Eigen::Vector2d({ 1.0,  0.0}), *fld, wvl);
-        r5 = Trace::trace_base(*optical_model_, Eigen::Vector2d({-1.0,  0.0}), *fld, wvl);
+        r2 = Trace::trace_pupil_ray(*opt_model_, Eigen::Vector2d({ 0.0,  1.0}), *fld, wvl);
+        r3 = Trace::trace_pupil_ray(*opt_model_, Eigen::Vector2d({ 0.0, -1.0}), *fld, wvl);
+        r4 = Trace::trace_pupil_ray(*opt_model_, Eigen::Vector2d({ 1.0,  0.0}), *fld, wvl);
+        r5 = Trace::trace_pupil_ray(*opt_model_, Eigen::Vector2d({-1.0,  0.0}), *fld, wvl);
 
         // check all surfaces
         Eigen::Vector3d pt;
@@ -584,12 +813,17 @@ void SequentialModel::set_semi_diameters()
             pt = r5.at(si).intersect_pt;
             double sd5 = sqrt(pt(0)*pt(0) + pt(1)*pt(1));
 
-            std::vector<double> sd_vec({sd2,sd3,sd4,sd5});
-            double max_sd = *std::max_element(sd_vec.begin(), sd_vec.end());
+            if(std::isinf(sd2 + sd3 + sd4 + sd5)){ // at least one of them is inf
+                max_semi_diameters[si] = std::numeric_limits<double>::infinity();
+            }else{
+                std::vector<double> sd_vec({sd2,sd3,sd4,sd5});
+                double max_sd = *std::max_element(sd_vec.begin(), sd_vec.end());
 
-            if(max_semi_diameters[si] < max_sd){
-                max_semi_diameters[si] = max_sd;
+                if(max_semi_diameters[si] < max_sd){
+                    max_semi_diameters[si] = max_sd;
+                }
             }
+
 
         }
 
@@ -607,7 +841,7 @@ void SequentialModel::print(std::ostringstream& oss)
 {
     const int idx_w = 4;
     const int val_w = 16;
-    const int prec  = 4;
+    const int prec  = 6;
 
     // header labels
     oss << std::setw(idx_w) << std::right << "S";
@@ -628,7 +862,7 @@ void SequentialModel::print(std::ostringstream& oss)
     oss << std::setw(val_w) << std::right << "GblTfrm(Z)";
     oss << std::endl;
 
-    double ref_wvl = optical_model_->optical_spec()->spectral_region()->reference_wvl();
+    double ref_wvl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
     Path p = path(ref_wvl);
 
     for(int i = 0; i < (int)p.size(); i++)
@@ -1000,28 +1234,21 @@ double SequentialModel::length(int s1, int s2) const
 void SequentialModel::compute_vignetting()
 {
     //int num_wvls = optical_model_->optical_spec()->spectral_region()->wvl_count();
-    int num_flds = optical_model_->optical_spec()->field_of_view()->field_count();
+    int num_flds = opt_model_->optical_spec()->field_of_view()->field_count();
 
-    optical_model_->optical_spec()->update_model();
+    opt_model_->optical_spec()->update_model();
 
     for(int fi = 1; fi < num_flds; fi++) {
 
-        Field* fld = optical_model_->optical_spec()->field_of_view()->field(fi);
+        Field* fld = opt_model_->optical_spec()->field_of_view()->field(fi);
 
         double max_vuy = 0.0;
         double max_vly = 0.0;
         double max_vux = 0.0;
         double max_vlx = 0.0;
 
+        double wvl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
 
-        double wvl = optical_model_->optical_spec()->spectral_region()->reference_wvl();
-
-        /*
-        double vuy = compute_vuy(*fld, wvl);
-        double vly = compute_vly(*fld, wvl);
-        double vux = compute_vux(*fld, wvl);
-        double vlx = compute_vlx(*fld, wvl);
-        */
         double vuy = compute_vignetting_factor(*fld, wvl, 2);
         double vly = compute_vignetting_factor(*fld, wvl, 3);
         double vux = compute_vignetting_factor(*fld, wvl, 4);
@@ -1048,10 +1275,9 @@ void SequentialModel::compute_vignetting()
     }
 }
 
+/*
 double SequentialModel::compute_vuy(Field& fld, double wvl)
 {
-    std::cout << "compute_vuy" << std::endl;
-
     const double eps = 1.0e-3;
     double orig_vuy = fld.vuy();
 
@@ -1072,14 +1298,13 @@ double SequentialModel::compute_vuy(Field& fld, double wvl)
         m = (a+b)/2.0;
         fld.set_vuy(m);
 
-        ray = Trace::trace_base(*optical_model_, pupil, fld, wvl);
+        ray = Trace::trace_pupil_ray(*opt_model_, pupil, fld, wvl);
         if(ray.status() == RayStatus::PassThrough){
             b = m;
         }else{
             a = m;
         }
 
-        std::cout << loop_cnt << ": (a,b)= " << a << ", " << b << std::endl;;
         loop_cnt ++;
         if( (abs(a-b) < eps) || (loop_cnt > 50)){
             break;
@@ -1113,7 +1338,7 @@ double SequentialModel::compute_vly(Field& fld, double wvl)
         m = (a+b)/2.0;
         fld.set_vly(m);
 
-        ray = Trace::trace_base(*optical_model_, pupil, fld, wvl);
+        ray = Trace::trace_pupil_ray(*opt_model_, pupil, fld, wvl);
         if(ray.status() == RayStatus::PassThrough){
             b = m;
         }else{
@@ -1153,7 +1378,7 @@ double SequentialModel::compute_vux(Field& fld, double wvl)
 
         m = (a+b)/2.0;
         fld.set_vux(m);
-        ray = Trace::trace_base(*optical_model_, pupil, fld, wvl);
+        ray = Trace::trace_pupil_ray(*opt_model_, pupil, fld, wvl);
         if(ray.status() == RayStatus::PassThrough){
             b = m;
         }else{
@@ -1194,7 +1419,7 @@ double SequentialModel::compute_vlx(Field& fld, double wvl)
 
         m = (a+b)/2.0;
         fld.set_vlx(m);
-        ray = Trace::trace_base(*optical_model_, pupil, fld, wvl);
+        ray = Trace::trace_pupil_ray(*opt_model_, pupil, fld, wvl);
         if(ray.status() == RayStatus::PassThrough){
             b = m;
         }else{
@@ -1212,7 +1437,7 @@ double SequentialModel::compute_vlx(Field& fld, double wvl)
 
     return FileIO::round_n(b, 4);
 }
-
+*/
 
 double SequentialModel::compute_vignetting_factor(Field& fld, double wvl, int pupil_ray_index)
 {
@@ -1263,7 +1488,7 @@ double SequentialModel::compute_vignetting_factor(Field& fld, double wvl, int pu
     }
 
     Ray ray;
-    ray = Trace::trace_base(*optical_model_, pupil, fld, wvl);
+    ray = Trace::trace_pupil_ray(*opt_model_, pupil, fld, wvl);
     if(ray.status() == RayStatus::PassThrough){
         return 0.0; // no vignetting
     }
@@ -1295,7 +1520,7 @@ double SequentialModel::compute_vignetting_factor(Field& fld, double wvl, int pu
             break;
         }
 
-        ray = Trace::trace_base(*optical_model_, pupil, fld, wvl);
+        ray = Trace::trace_pupil_ray(*opt_model_, pupil, fld, wvl);
         if(ray.status() == RayStatus::PassThrough){
             b = m;
         }else{

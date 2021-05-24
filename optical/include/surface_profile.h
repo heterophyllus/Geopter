@@ -42,13 +42,9 @@ public:
     /** Returns the sagitta (z coordinate) of the surface at x, y */
     virtual double sag(double x, double y) const;
 
-    /** Return a 2d polyline approximating the surface profile
-     *  @param sd semi-diameter of the profile
-     *  @param dir +1 for profile from neg to postive direction, -1 if otherwise
-     *  @param steps number of points to generate
-     */
-    //virtual Profile profile(SemiDiameter sd, int dir=1, int steps=6){};
-    //virtual void profile(std::vector<Vector2d>& prf, SemiDiameter sd, int dir=1, int steps=6){};
+    virtual double deriv_1st(double h) const;
+    virtual double deriv_2nd(double h) const;
+
 
     /**
      * @brief Intersect a profile, starting from an arbitrary point
@@ -57,8 +53,6 @@ public:
      * @param eps numeric tolerance for convergence of any iterative procedure
      * @param z_dir +1 if propagation positive direction, -1 if otherwise
      */
-    //virtual IntersectPointAndDistance intersect(Vector3d p0, Vector3d d, double eps=1.0e-12, int z_dir=1.0);
-
     virtual void intersect(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps=1.0e-12, int z_dir=1);
 
     /**
@@ -69,8 +63,6 @@ public:
      * @param eps numeric tolerance for convergence of any iterative procedure
      * @param z_dir +1 if propagation positive direction, -1 if otherwise
      */
-    //virtual IntersectPointAndDistance intersect_spencer(Vector3d p0, Vector3d d, double eps=1.0e-12, int z_dir=1.0);
-
     virtual void intersect_spencer(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps=1.0e-12, int z_dir=1.0);
 
 

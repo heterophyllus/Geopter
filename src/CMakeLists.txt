@@ -51,6 +51,10 @@ set(PROJECT_SOURCES
     transverse_ray_fan_dialog.cpp
     transverse_ray_fan_dialog.h
     transverse_ray_fan_dialog.ui
+
+    longitudinal_setting_dialog.cpp
+    longitudinal_setting_dialog.h
+    longitudinal_setting_dialog.ui
 )
 
 add_executable( Geopter ${PROJECT_SOURCES} )

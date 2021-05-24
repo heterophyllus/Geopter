@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "plot_view_dock.h"
 #include "qcustomplot.h"
 
@@ -38,7 +40,14 @@ PlotViewDock::~PlotViewDock()
 {
     settingDlgPtr_.reset();
 
-    delete customPlot_;
+
+    try {
+        delete customPlot_;
+    }  catch (...) {
+        std::cout << "Error: ~PlotViewDock" << std::endl;
+    }
+
+
     //delete toolbar_;
 }
 

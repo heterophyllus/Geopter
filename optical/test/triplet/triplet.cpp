@@ -23,7 +23,7 @@ int main()
     opm->set_name("Sasian Triplet 50/4");
     oss << opm->name() << std::endl;
 
-    oss << "OpticalSpecs" << std::endl;
+    oss << "Setting OpticalSpecs...";
     opm->optical_spec()->pupil_spec()->set_pupil_type(PupilType::EPD);
     opm->optical_spec()->pupil_spec()->set_value(12.5);
     opm->optical_spec()->pupil_spec()->print(oss);
@@ -41,19 +41,24 @@ int main()
     opm->optical_spec()->spectral_region()->print(oss);
 
     oss << std::endl;
+    std::cout << "done" << std::endl;
 
     // create model
-
+    std::cout << "creating model";
     opm->seq_model()->gap(0)->set_thi(1.0e+10);
-    opm->seq_model()->add_surface(  23.7130,  4.831, std::make_shared<BuchdahlGlass>(1.691, 54.71));
-    opm->seq_model()->add_surface(7331.2880,  5.86);
-    opm->seq_model()->add_surface( -24.4560,  0.975, std::make_shared<BuchdahlGlass>(1.672, 32.25));
-    opm->seq_model()->set_stop();
-    opm->seq_model()->add_surface(  21.8960,  4.822);
-    opm->seq_model()->add_surface(  86.7590,  3.127, std::make_shared<BuchdahlGlass>(1.691, 54.71));
-    opm->seq_model()->add_surface( -20.4942, 41.2365);
+
+    opm->seq_model()->append(std::make_unique<Spherical>(1.0/23.7130),    4.831, std::make_shared<BuchdahlGlass>(1.691, 54.71));
+    opm->seq_model()->append(std::make_unique<Spherical>(1.0/7331.2880),  5.860);
+    opm->seq_model()->append(std::make_unique<Spherical>(-1.0/24.4560),   0.975, std::make_shared<BuchdahlGlass>(1.672, 32.25));
+    opm->seq_model()->append(std::make_unique<Spherical>(1.0/21.8960),    4.822);
+    opm->seq_model()->append(std::make_unique<Spherical>(1.0/86.7590),    3.127, std::make_shared<BuchdahlGlass>(1.691, 54.71));
+    opm->seq_model()->append(std::make_unique<Spherical>(-1.0/20.4942),  41.2365);
+
+    opm->seq_model()->set_stop(3);
 
     opm->update_model();
+
+    std::cout << "done" << std::endl;
 
     oss << "Sequential Model:" << std::endl;
     opm->seq_model()->print(oss);
@@ -73,6 +78,7 @@ int main()
     oss << "Principle Ray :" << std::endl;
     opm->paraxial_model()->pr().print(oss);
 
+
     // output text
     fout.open("triplet.txt", std::ios::out);
     fout << oss.str() << std::endl;
@@ -80,7 +86,8 @@ int main()
 
     // layout
     RendererSvg *renderer = new RendererSvg("triplet_layout.svg", 400, 300);
-    renderer->set_view_box(-10, -30, 100, 30);
+    renderer->set_x_axis_range(-10, 100);
+    renderer->set_y_axis_range(-30,30);
     Layout layout(opm.get(), renderer);
     layout.draw_elements();
     layout.draw_reference_rays();

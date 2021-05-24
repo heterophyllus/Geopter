@@ -72,8 +72,9 @@ Eigen::Vector3d OpticalSpec::obj_coord(const Field& fld)
 
     //auto fov = _field_of_view;
     //auto fod = _parax_data.fod;
-    opt_model_->paraxial_model()->compute_first_order();
-    auto fod = opt_model_->paraxial_model()->first_order_data();
+    //opt_model_->paraxial_model()->compute_first_order();
+    //auto fod = opt_model_->paraxial_model()->first_order_data();
+    auto fod = opt_model_->paraxial_model()->compute_first_order();
 
     Eigen::Vector3d ang_dg;
     Eigen::Vector3d img_pt;
