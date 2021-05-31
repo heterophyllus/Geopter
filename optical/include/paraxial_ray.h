@@ -30,23 +30,28 @@ public:
     ~ParaxialRay();
 
     void append(ParaxialRayAtSurface par_comp);
-    void append(double ht, double slp, double aoi= 0);
+    void append(double ht, double slp, double aoi= 0, double n = 1.0);
 
     void clear();
 
     /** Return number of components, usually equal to number of surfaces. */
-    int size();
+    int size() const;
 
     ParaxialRayAtSurface at(int i);
 
-    /** Return the last surface data */
-    ParaxialRayAtSurface last();
+    ParaxialRayAtSurface at_first();
+
+    /** Return the data at the last surface */
+    ParaxialRayAtSurface at_last();
+
+    /** Return the data at image */
+    ParaxialRayAtSurface at_image();
 
     /** Write ray data to standard output */
-    void print();
+    void print() const;
 
     /** Write property data to stream */
-    void print(std::ostringstream& oss);
+    void print(std::ostringstream& oss) const;
 
 private:
     std::vector<ParaxialRayAtSurface> par_ray_at_srfs_;
