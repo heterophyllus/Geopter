@@ -23,12 +23,6 @@ void FirstOrderData::print(std::ostringstream& oss)
     oss << std::setw(fixed_w) << std::left << "ffl";
     oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << ffl << std::endl;
 
-    oss << std::setw(fixed_w) << std::left << "pp1";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << pp1 << std::endl;
-
-    oss << std::setw(fixed_w) << std::left << "ppk";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << ppk << std::endl;
-
     oss << std::setw(fixed_w) << std::left << "bfl";
     oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << bfl << std::endl;
 
@@ -49,12 +43,6 @@ void FirstOrderData::print(std::ostringstream& oss)
 
     oss << std::setw(fixed_w) << std::left << "enp_radius";
     oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << enp_radius << std::endl;
-
-    oss << std::setw(fixed_w) << std::left << "na obj";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << obj_na << std::endl;
-
-    oss << std::setw(fixed_w) << std::left << "na img";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << img_na << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "img_dist";
     oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << img_dist << std::endl;
