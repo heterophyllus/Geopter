@@ -40,9 +40,9 @@ set(PROJECT_SOURCES
     layout_dialog.h
     layout_dialog.ui
 
-    real_ray_trace_dialog.h
-    real_ray_trace_dialog.cpp
-    real_ray_trace_dialog.ui
+    single_ray_trace_dialog.h
+    single_ray_trace_dialog.cpp
+    single_ray_trace_dialog.ui
 
     paraxial_trace_dialog.h
     paraxial_trace_dialog.cpp

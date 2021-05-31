@@ -39,7 +39,7 @@ private slots:
     // Analysis menu
     void showLayout();
     void showFirstOrderData();
-    void showRealRayTrace();
+    void showSingleRayTrace();
     void showParaxialRayTrace();
     void showRayFan();
     void showLongitudinal();

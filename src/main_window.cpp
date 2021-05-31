@@ -11,7 +11,8 @@
 #include "plot_view_dock.h"
 #include "general_configuration_dialog.h"
 #include "layout_dialog.h"
-#include "real_ray_trace_dialog.h"
+#include "paraxial_trace_dialog.h"
+#include "single_ray_trace_dialog.h"
 #include "transverse_ray_fan_dialog.h"
 #include "longitudinal_setting_dialog.h"
 #include "renderer_qcp.h"
@@ -43,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Analysis menu
     QObject::connect(ui->actionLayout,             SIGNAL(triggered()), this, SLOT(showLayout()));
     QObject::connect(ui->actionFirst_Order_Data,   SIGNAL(triggered()), this, SLOT(showFirstOrderData()));
-    QObject::connect(ui->actionReal_Ray_Trace,     SIGNAL(triggered()), this, SLOT(showRealRayTrace()));
+    QObject::connect(ui->actionSingle_Ray_Trace,     SIGNAL(triggered()), this, SLOT(showSingleRayTrace()));
     QObject::connect(ui->actionParaxial_Ray_Trace, SIGNAL(triggered()), this, SLOT(showParaxialRayTrace()));
     QObject::connect(ui->actionTransverse_Ray_Fan, SIGNAL(triggered()), this, SLOT(showRayFan()));
     QObject::connect(ui->actionLongitudinal_Aberration, SIGNAL(triggered()), this, SLOT(showLongitudinal()));
@@ -193,6 +194,7 @@ void MainWindow::showFirstOrderData()
 {
     std::ostringstream ss;
 
+    opt_model_->update_model();
     opt_model_->paraxial_model()->first_order_data().print(ss);
 
     TextViewDock *dock = new TextViewDock("First Order Data");
@@ -201,41 +203,35 @@ void MainWindow::showFirstOrderData()
 
     // This analysis does not have setting dialog so just shows the result.
     dock->setStringStreamToText(ss);
+
+    double ref_wvl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
+    Eigen::Matrix2d system_mat = opt_model_->paraxial_model()->compute_system_matrix(1,4,ref_wvl);
+    qDebug() << "SystemMatrix= ";
+    qDebug() << system_mat(0,0) << " " << system_mat(0,1);
+    qDebug() << system_mat(1,0) << " " << system_mat(1,1);
 }
 
 
 void MainWindow::showParaxialRayTrace()
 {
     opt_model_->paraxial_model()->update_model();
-    ParaxialRay ax_ray = opt_model_->paraxial_model()->ax();
-    ParaxialRay pr_ray = opt_model_->paraxial_model()->pr();
 
-    std::ostringstream oss;
-
-    oss << "Axial Merginal Ray : " << std::endl;
-    ax_ray.print(oss);
-
-    oss << "Principle Ray : " << std::endl;
-    pr_ray.print(oss);
-
-
-    std::cout << oss.str() << std::endl;
-
-    TextViewDock *dock = new TextViewDock("Paraxial Ray");
+    TextViewDock *dock = new TextViewDock("Paraxial Ray Trace");
     dockManager_->addDockWidgetFloating(dock);
     dock->resize(300,200);
 
-    dock->setStringStreamToText(oss);
+    dock->possessDlg(std::make_unique<ParaxialTraceDialog>(opt_model_.get(), dock));
+    dock->showSettingDlg();
 
 }
 
-void MainWindow::showRealRayTrace()
+void MainWindow::showSingleRayTrace()
 {
-    TextViewDock *dock = new TextViewDock("Real Ray Trace");
+    TextViewDock *dock = new TextViewDock("Single Ray Trace");
     dockManager_->addDockWidgetFloating(dock);
     dock->resize(300,200);
 
-    dock->possessDlg(std::make_unique<RealRayTraceDialog>(opt_model_.get(), dock));
+    dock->possessDlg(std::make_unique<SingleRayTraceDialog>(opt_model_.get(), dock));
     dock->showSettingDlg();
 }
 

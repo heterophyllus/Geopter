@@ -7,7 +7,7 @@ RendererQCP::RendererQCP(QCustomPlot* customPlot)
 {
     customPlot_ = customPlot;
     current_cell_index_ = 0;
-    line_width_ = 1;
+    line_width_ = 2;
 }
 
 RendererQCP::~RendererQCP()

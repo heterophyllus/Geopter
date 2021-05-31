@@ -205,6 +205,17 @@ double SequentialModel::z_dir(int n) const
     }
 }
 
+
+int SequentialModel::image_surface() const
+{
+    return interfaces_.size()-1;
+}
+
+int SequentialModel::last_surface() const
+{
+    return interfaces_.size()-1 -1; // image - 1
+}
+
 Path SequentialModel::path(int wi, int start, int stop, int step) const
 {
 
@@ -310,6 +321,8 @@ Path SequentialModel::path(double wl, int start, int stop, int step) const
                              (int)z_dirs_.size()});
     if(stop < 0){
         stop = max_size;
+    }else{
+        stop++;
     }
 
     PathComponent path_component;

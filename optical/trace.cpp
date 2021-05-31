@@ -368,7 +368,6 @@ Ray Trace::trace_ray_from_object(const SequentialModel& seq_model, Eigen::Vector
 
 Ray Trace::trace_ray_from_object(Path path, Eigen::Vector3d pt0, Eigen::Vector3d dir0, double wvl, double eps)
 {
-    //std::vector<RayAtSurface> ray_at_srfs;
 
     Ray ray_trace_result;
 
@@ -416,8 +415,8 @@ Ray Trace::trace_ray_from_object(Path path, Eigen::Vector3d pt0, Eigen::Vector3d
         try {
             auto after = *path_itr;
 
-            auto rt = tfrm_from_before.rotation;
-            auto t = tfrm_from_before.transfer;
+            Eigen::Matrix3d rt = tfrm_from_before.rotation;
+            Eigen::Vector3d t = tfrm_from_before.transfer;
 
             Eigen::Vector3d b4_pt  = rt*(before_pt - t);
             Eigen::Vector3d b4_dir = rt*(before_dir);
@@ -426,7 +425,7 @@ Ray Trace::trace_ray_from_object(Path path, Eigen::Vector3d pt0, Eigen::Vector3d
             Eigen::Vector3d pp_pt_before = b4_pt + pp_dst*b4_dir;
 
             auto ifc = after.srf;
-            auto z_dir_after = after.z_dir;
+            double z_dir_after = after.z_dir;
 
             // intersect ray with profile
             double pp_dst_intrsct;

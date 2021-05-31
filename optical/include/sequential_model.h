@@ -107,6 +107,12 @@ public:
     /** Return overall length from s1 to s2 */
     double length(int s1, int s2) const;
 
+    /** Return image surface index */
+    int image_surface() const;
+
+    /** Return index of the surface just anterior to the image */
+    int last_surface() const;
+
 private:
     /** generate transform rotation and translation from s1 coords to s2 coords */
     Tfrm forward_transform(const Surface& s1, double zdist, const Surface& s2);

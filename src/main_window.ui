@@ -41,7 +41,7 @@
     <addaction name="actionParaxial_Ray_Trace"/>
     <addaction name="actionTransverse_Ray_Fan"/>
     <addaction name="actionLongitudinal_Aberration"/>
-    <addaction name="actionReal_Ray_Trace"/>
+    <addaction name="actionSingle_Ray_Trace"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -104,7 +104,7 @@
     <string>Log</string>
    </property>
   </action>
-  <action name="actionReal_Ray_Trace">
+  <action name="actionSingle_Ray_Trace">
    <property name="text">
     <string>Single Ray Trace</string>
    </property>
