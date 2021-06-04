@@ -173,20 +173,20 @@ void ParaxialModel::compute_paraxial_ray(ParaxialRay& ax_ray, ParaxialRay& pr_ra
     }else if (pupil_type == PupilType::FNO) {
 
         double Fno = opt_model_->optical_spec()->pupil_spec()->value();
-        double uk = -1.0/(2.0 * Fno);
-        double yk = img_dist*uk;
-        Eigen::Vector2d nu_y_k({nk*uk, yk});
+        double uk_prime = asin(-1.0/(2.0 * nk * Fno));
+        double yk = -img_dist*uk_prime;
+        Eigen::Vector2d nu_y_k({nk*uk_prime, yk});
         Eigen::Matrix2d sys_mat = compute_system_matrix(1, seq_model->last_surface(), ref_wvl);
         Eigen::Vector2d nu_y_1 = sys_mat.inverse() * nu_y_k;
         double nu1 = nu_y_1(0);
-        double u1 = nu1/n0;
-        double y1 = nu_y_1(1);
-        double nu0 = nu1;
-        double c1 = path[1].c;
-        double i1 = u1 + y1*c1;
-        double u1_prime = i1-y1*c1;
         double n1 = path[0].n;
         double n1_prime = path[1].n;
+        double u1 = nu1/n0;
+        double y1 = nu_y_1(1);
+        double c1 = path[1].c;
+        double i1 = u1 + y1*c1;
+        double i1_prime = i1*(n1/n1_prime);
+        double u1_prime = i1_prime - y1*c1;
         double i0 = u1;
         double u0_prime = u1;
         double y0 = 0.0;
@@ -210,12 +210,12 @@ void ParaxialModel::compute_paraxial_ray(ParaxialRay& ax_ray, ParaxialRay& pr_ra
         double nu1 = nu_y_1(0);
         double u1 = nu1/n0;
         double y1 = nu_y_1(1);
-        double nu0 = nu1;
-        double c1 = path[1].c;
-        double i1 = u1 + y1*c1;
-        double u1_prime = i1-y1*c1;
         double n1 = path[0].n;
         double n1_prime = path[1].n;
+        double c1 = path[1].c;
+        double i1 = u1 + y1*c1;
+        double i1_prime = i1*(n1/n1_prime);
+        double u1_prime = i1_prime - y1*c1;
         double i0 = u1;
         double u0_prime = u1;
         double y0 = 0.0;
@@ -372,170 +372,8 @@ void ParaxialModel::compute_paraxial_ray(ParaxialRay& ax_ray, ParaxialRay& pr_ra
 
 }
 
-/*
-void ParaxialModel::paraxial_trace(ParaxialRay& p_ray, ParaxialRay& p_ray_bar, int start, ParaxialRayHtAndSlp start_yu, ParaxialRayHtAndSlp start_yu_bar, double wvl)
-{
-    p_ray.clear();
-    p_ray_bar.clear();
 
-    //double wvl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
-    Path path = opt_model_->seq_model()->path(wvl);
-
-
-    int path_itr_cnt = 0;
-    auto path_itr = path.begin();
-    auto before = *path_itr;
-    auto z_dir_before = before.z_dir;
-    double n_before;
-    if(z_dir_before > 0.0){
-        n_before = before.rndx;
-    }else{
-        n_before = -before.rndx;
-    }
-
-
-    double enp_dist = compute_entrance_pupil_distance();
-
-    ParaxialRayAtSurface b4_yui;
-    b4_yui.ht  = start_yu.ht;
-    b4_yui.slp = start_yu.slp;
-
-
-    ParaxialRayAtSurface b4_yui_bar;
-    b4_yui_bar.ht = start_yu_bar.ht;
-    b4_yui_bar.slp = start_yu_bar.slp;
-
-    if(start == 1)
-    {
-        // compute object coords from 1st surface data
-        double t0 = before.gap->thi();
-        double obj_ht;
-        double obj_htb;
-        if(abs(start_yu.slp) < __DBL_EPSILON__){
-            obj_ht = start_yu.ht;
-        }else{
-            obj_ht = start_yu.ht - t0*start_yu.slp;
-        }
-
-        if(abs(start_yu_bar.slp) < __DBL_EPSILON__){
-            obj_htb = start_yu_bar.ht;
-        }else{
-            obj_htb = start_yu_bar.ht - t0*start_yu_bar.slp;
-        }
-
-        b4_yui.ht  = obj_ht;
-        b4_yui.slp = start_yu.slp;
-
-        b4_yui_bar.ht  = obj_htb;
-        b4_yui_bar.slp = start_yu_bar.slp;
-    }
-
-    double cv = before.srf->profile()->cv();
-
-    // calculate angle of incidence (aoi)
-    double aoi     = b4_yui.slp + b4_yui.ht*cv;
-    double aoi_bar = b4_yui_bar.slp + b4_yui_bar.ht*cv;
-
-    b4_yui.aoi = aoi;
-    b4_yui_bar.aoi = aoi_bar;
-
-    b4_yui.n = n_before;
-    b4_yui_bar.n = n_before;
-
-    p_ray.append(b4_yui);
-    p_ray_bar.append(b4_yui_bar);
-
-    while(true)
-    {
-        ++path_itr;
-        ++path_itr_cnt;
-
-        try {
-            auto after = *path_itr;
-
-            double z_dir_after = after.z_dir;
-            double n_after;
-            if(z_dir_after > 0){
-                n_after = after.rndx;
-            }else{
-                n_after = -after.rndx;
-            }
-
-            // Transfer
-            double t = before.gap->thi();
-            double cur_ht;
-            double cur_htb;
-            if(abs(b4_yui.slp) < __DBL_EPSILON__){ // u == 0.0
-                cur_ht = b4_yui.ht; 
-            }else{
-                cur_ht = b4_yui.ht + t*b4_yui.slp;
-            }
-
-            if(abs(b4_yui_bar.slp) < __DBL_EPSILON__){ // u_bar == 0.0
-                cur_htb = b4_yui_bar.ht;
-            }else{
-                if(std::isinf(t)){
-                    cur_htb = -b4_yui_bar.slp * enp_dist;
-                }else{
-                    cur_htb = b4_yui_bar.ht + t*b4_yui_bar.slp;
-                }
-            }
-
-            // Refraction/Reflection
-            auto srf = after.srf;
-            double k = n_before/n_after;
-
-            // calculate slope after refraction/reflection
-            double pwr = srf->optical_power();
-            double cur_slp = k*b4_yui.slp - cur_ht*pwr/n_after;
-            double cur_slpb = k*b4_yui_bar.slp - cur_htb*pwr/n_after;
-
-            // calculate angle of incidence (aoi)
-            cv = srf->profile()->cv();
-            aoi = cur_slp + cur_ht*cv;
-            aoi_bar = cur_slpb + cur_htb*cv;
-
-            //ParaxialRayComponent yu;
-            ParaxialRayAtSurface yu;
-            yu.ht = cur_ht;
-            yu.slp = cur_slp;
-            yu.aoi = aoi;
-            yu.n = n_before;
-
-            //ParaxialRayComponent yu_bar;
-            ParaxialRayAtSurface yu_bar;
-            yu_bar.ht = cur_htb;
-            yu_bar.slp = cur_slpb;
-            yu_bar.aoi = aoi_bar;
-            yu_bar.n = n_before;
-
-
-            p_ray.append(yu);
-            p_ray_bar.append(yu_bar);
-
-            b4_yui = yu;
-            b4_yui_bar = yu_bar;
-
-            n_before = n_after;
-            z_dir_before = z_dir_after;
-            before = after;
-
-
-            if(path_itr_cnt == (int)path.size()-1){
-                break;
-            }
-
-        }  catch (...) {
-            break;
-        }
-    }
-
-
-}
-*/
-
-
-Eigen::Matrix2d ParaxialModel::compute_system_matrix(int start, int end, double wvl)
+Eigen::Matrix2d ParaxialModel::compute_system_matrix(int start, int end, double wvl) const
 {
     Eigen::Matrix2d system_mat = Eigen::Matrix2d::Identity(2,2);
     Eigen::Matrix2d refraction_mat;
@@ -601,9 +439,17 @@ Eigen::Matrix2d ParaxialModel::compute_system_matrix(int start, int end, double 
 }
 
 
+ParaxialPath ParaxialModel::paraxial_path(int start, int end, double wvl) const
+{
+    if(start <= end) {
+        return forward_paraxial_path(start, end, wvl);
+    } else {
+        return reverse_paraxial_path(start, end, wvl);
+    }
+}
 
 
-ParaxialPath ParaxialModel::forward_paraxial_path(int start, int end, double wvl)
+ParaxialPath ParaxialModel::forward_paraxial_path(int start, int end, double wvl) const
 {
     assert(start <= end);
 
@@ -631,7 +477,7 @@ ParaxialPath ParaxialModel::forward_paraxial_path(int start, int end, double wvl
     return pr_path;
 }
 
-ParaxialPath ParaxialModel::reverse_paraxial_path(int start, int end, double wvl)
+ParaxialPath ParaxialModel::reverse_paraxial_path(int start, int end, double wvl) const
 {
     assert(start >= end);
 
@@ -658,7 +504,7 @@ ParaxialPath ParaxialModel::reverse_paraxial_path(int start, int end, double wvl
     return pr_path;
 }
 
-double ParaxialModel::compute_entrance_pupil_distance()
+double ParaxialModel::compute_entrance_pupil_distance() const
 {
     auto seq_model = opt_model_->seq_model();
     int stop = seq_model->stop_surface();
@@ -681,7 +527,7 @@ double ParaxialModel::compute_entrance_pupil_distance()
     return enp_dist;
 }
 
-double ParaxialModel::compute_exit_pupil_distance()
+double ParaxialModel::compute_exit_pupil_distance() const
 {
     auto seq_model = opt_model_->seq_model();
     int last_surf_idx = seq_model->surface_count() -1-1;
@@ -704,7 +550,7 @@ double ParaxialModel::compute_exit_pupil_distance()
     return exp_dist;
 }
 
-void ParaxialModel::nodal_points(int start, int end, double *pp1, double *pp2)
+void ParaxialModel::nodal_points(int start, int end, double *pp1, double *pp2) const
 {
     double ref_wvl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
     Eigen::Matrix2d sys_mat = compute_system_matrix(start, end, ref_wvl);
