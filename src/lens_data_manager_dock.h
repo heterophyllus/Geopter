@@ -22,9 +22,7 @@ enum Column{
     Thickness,
     Material,
     Mode,
-    SemiDiameter,
-    ApertureShape,
-    MaxAperture,
+    SemiDiameter
 };
 
 

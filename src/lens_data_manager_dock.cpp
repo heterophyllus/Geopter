@@ -1,3 +1,6 @@
+#include <fstream>
+#include <memory>
+
 #include "lens_data_manager_dock.h"
 
 #include "surface_property_dialog.h"
@@ -16,8 +19,6 @@
 #include <QDebug>
 
 
-#include <fstream>
-#include <memory>
 
 LensDataManagerDock::LensDataManagerDock(std::shared_ptr<OpticalModel> opt_model, QString label, QWidget *parent) :
     ads::CDockWidget(label, parent),
@@ -70,7 +71,7 @@ void LensDataManagerDock::initialize()
 {
     table_->clear();
 
-    QStringList hHeaderLabels = {"Label", "Surface Type", "Radius", "Thickness", "Material", "Mode", "SemiDiameter", "Aperture", "MaxAperture"};
+    QStringList hHeaderLabels = {"Label", "Surface Type", "Radius", "Thickness", "Material", "Mode", "SemiDiameter"};
     table_->setColumnCount(hHeaderLabels.size());
     table_->setHorizontalHeaderLabels(hHeaderLabels);
 
@@ -92,29 +93,18 @@ void LensDataManagerDock::syncTableWithModel()
 
     int num_srf = opt_model_->seq_model()->surface_count();
     table_->setCurrentCell(0,0);
-
     table_->setRowCount(num_srf);
-
-    // make image surface thickness and material uneditable
-    //int last_row = table_->rowCount() -1;
-    //setCellEditable(last_row, Column::Thickness, false);
-    //setCellEditable(last_row, Column::Material, false);
 
     // s0..sI
     for(int i = 0; i < num_srf; i++){
         syncRowWithModel(i);
     }
 
-    //sI
-    //setValueToCell(num_srf-1, Column::Radius, "Infinity");
-
     updateVerticalHeader();
 
     connectValidateCell(true);
 
     table_->update();
-
-
 }
 
 
@@ -140,8 +130,6 @@ void LensDataManagerDock::syncRowWithModel(int row)
         setValueToCell(row, Column::Mode, QString().fromStdString(interact_mode));
         setValueToCell(row, Column::SurfaceType, QString().fromStdString(surface_type));
         setValueToCell(row, Column::SemiDiameter, sd);
-        setValueToCell(row, Column::ApertureShape, QString().fromStdString(aperture_type));
-        setValueToCell(row, Column::MaxAperture, max_ap);
 
         updateRowColor(row);
 
@@ -153,8 +141,7 @@ void LensDataManagerDock::syncRowWithModel(int row)
             setCellEditable(row, Column::Mode, false);
             setCellEditable(row, Column::SurfaceType, false);
             setCellEditable(row, Column::SemiDiameter, false);
-            setCellEditable(row, Column::ApertureShape, false);
-            setCellEditable(row, Column::MaxAperture, false);
+
         }
 
 
@@ -179,8 +166,6 @@ void LensDataManagerDock::syncRowWithModel(int row)
         setCellEditable(row, Column::Mode, false);
         setCellEditable(row, Column::SurfaceType, false);
         setCellEditable(row, Column::SemiDiameter, false);
-        setCellEditable(row, Column::ApertureShape, false);
-        setCellEditable(row, Column::MaxAperture, false);
     }
 
 }
@@ -389,8 +374,6 @@ void LensDataManagerDock::validateCellDoubleClicked(int row, int col)
 {
     switch (col) {
     case Column::SurfaceType:
-    case Column::ApertureShape:
-    case Column::MaxAperture:
     case Column::Mode:
     case Column::SemiDiameter:
         showSurfacePropertyDlg(row);
@@ -403,17 +386,6 @@ void LensDataManagerDock::validateCellDoubleClicked(int row, int col)
 void LensDataManagerDock::validateItemDoubleClicked(QTableWidgetItem* item)
 {
     if(item){
-        /*
-        switch (item->column()) {
-        case Column::SurfaceType:
-        case Column::ApertureShape:
-        case Column::MaxAperture:
-        case Column::Mode:
-        case Column::SemiDiameter:
-            showSurfacePropertyDlg(item->row());
-            break;
-        }
-        */
         validateCellDoubleClicked(item->row(), item->column());
     }
 
@@ -446,10 +418,7 @@ void LensDataManagerDock::validateCellInput(int row, int col)
 
     if(!ok){
         QMessageBox::warning(this,tr("Error"), tr("Invalid input"));
-    }else{
-        qDebug() << "Input: " << "(" << row << ", " << col << ")";
     }
-
 }
 
 bool LensDataManagerDock::validateLabelInput(int row)
@@ -618,15 +587,13 @@ void LensDataManagerDock::updateRowColor(int row)
         setColorToCell(row, Column::SurfaceType, Qt::white);
     }
 
-    QString aperture_type = table_->item(row, Column::ApertureShape)->text();
+    std::string aperture_type = opt_model_->seq_model()->surface(row)->aperture_shape();
     if("Circular" == aperture_type){
-        setColorToCell(row, Column::ApertureShape, light_yellow);
-        setColorToCell(row, Column::MaxAperture,   light_yellow);
+        setColorToCell(row, Column::SemiDiameter, light_yellow);
     }else if("Rectangle" == aperture_type){
-
+        setColorToCell(row, Column::SemiDiameter, light_yellow);
     }else{
-        setColorToCell(row, Column::ApertureShape, Qt::white);
-        setColorToCell(row, Column::MaxAperture,   Qt::white);
+        setColorToCell(row, Column::SemiDiameter, Qt::white);
     }
 
 }
