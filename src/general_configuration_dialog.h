@@ -22,19 +22,19 @@ public:
     explicit GeneralConfigurationDialog(std::shared_ptr<geopter::OpticalModel> opt_model, QWidget *parent = nullptr);
     ~GeneralConfigurationDialog();
 
-    void setAgfDirectoryPath(QString currentDirPath);
+
     QString getAgfDirectoryPath();
 
+
 private slots:
-    void browseAgfDirectory();
+    void browseAgfFiles();
 
 private:
-    Ui::GeneralConfigurationDialog *ui;
-
-    std::shared_ptr<geopter::OpticalModel> opt_model_;
-    QString agfDirPath_;
-
     void updateCatalogList();
+
+    Ui::GeneralConfigurationDialog *ui;
+    std::shared_ptr<geopter::OpticalModel> opt_model_;
+
 };
 
 #endif // GENERAL_CONFIGURATION_DIALOG_H

@@ -11,11 +11,9 @@ GeneralConfigurationDialog::GeneralConfigurationDialog(std::shared_ptr<geopter::
 {
     ui->setupUi(this);
 
-    agfDirPath_ = QString().fromStdString(opt_model_->database()->agf_dir());
-    ui->editAGFpath->setText(agfDirPath_);
     updateCatalogList();
 
-    QObject::connect(ui->buttonBrowseAGF, SIGNAL(clicked()), this, SLOT(browseAgfDirectory()));
+    QObject::connect(ui->buttonBrowseAGF, SIGNAL(clicked()), this, SLOT(browseAgfFiles()));
 }
 
 GeneralConfigurationDialog::~GeneralConfigurationDialog()
@@ -23,37 +21,28 @@ GeneralConfigurationDialog::~GeneralConfigurationDialog()
     delete ui;
 }
 
-void GeneralConfigurationDialog::browseAgfDirectory()
+void GeneralConfigurationDialog::browseAgfFiles()
 {
-    QString currentAgfPath = agfDirPath_;
-
-    QFileDialog::Options options =
-          QFileDialog::ShowDirsOnly | QFileDialog::HideNameFilterDetails |
-          QFileDialog::DontUseCustomDirectoryIcons;
-
-    QString dirName = QFileDialog::getExistingDirectory( this, tr("Select AGF directory"), currentAgfPath, options);
-
-    if(dirName.isEmpty()){
+    // open file selection dialog
+    QStringList filePaths = QFileDialog::getOpenFileNames(this,
+                                                          tr("select AGF"),
+                                                          QApplication::applicationDirPath(),
+                                                          tr("AGF files(*.agf);;All Files(*.*)"));
+    if(filePaths.empty()){
         return;
-    }else{
-        agfDirPath_ = dirName;
-        ui->editAGFpath->setText(agfDirPath_);
-
-        opt_model_->database()->load_all_agf(agfDirPath_.toStdString());
-        updateCatalogList();
     }
 
+    std::vector< std::string > agf_paths;
+    for(auto &qspath : filePaths) {
+        agf_paths.push_back(qspath.toStdString());
+    }
+
+    opt_model_->database()->load_all_agf(agf_paths);
+
+    updateCatalogList();
+
 }
 
-void GeneralConfigurationDialog::setAgfDirectoryPath(QString currentDirPath)
-{
-    agfDirPath_ = currentDirPath;
-}
-
-QString GeneralConfigurationDialog::getAgfDirectoryPath()
-{
-    return agfDirPath_;
-}
 
 void GeneralConfigurationDialog::updateCatalogList()
 {

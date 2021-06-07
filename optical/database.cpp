@@ -106,39 +106,26 @@ std::shared_ptr<Medium> Database::find(std::string medium_name)
 }
 
 
-bool Database::load_all_agf(const std::string agf_dir_path)
+bool Database::load_all_agf(const std::vector<std::string>& agf_paths)
 {
-    DIR* dp;
-    dirent* entry;
+    if(agf_paths.empty()) {
+        return false;
+    }
 
-    dp = opendir(agf_dir_path.c_str());
-    if(dp == nullptr) return false;
-
-    clear();
+    this->clear();
 
     std::unique_ptr<GlassCatalog> cat;
 
-    while(true){
-        entry = readdir(dp);
-        if(entry){
-            std::string agf_path = agf_dir_path + "/" + entry->d_name;
-
-            cat = std::make_unique<GlassCatalog>();
-            if(cat->load_agf(agf_path)){
-                catalogs_.push_back(std::move(cat));
-            }else{
-                cat.reset();
-                std::cout << "Failed to open " << agf_path << std::endl;
-            }
-        }
-        else{
-            break;
+    for(auto itr = agf_paths.begin(); itr != agf_paths.end(); itr++) {
+        std::string agf_path = *itr;
+        cat = std::make_unique<GlassCatalog>();
+        if(cat->load_agf(agf_path)){
+            catalogs_.push_back(std::move(cat));
+        }else{
+            cat.reset();
+            std::cout << "Failed to open " << agf_path << std::endl;
         }
     }
-
-    //create_glass_hash();
-
-    agf_dir_ = agf_dir_path;
 
     return true;
 

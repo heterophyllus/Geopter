@@ -63,9 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     // database(glass catalog .etc)
     database_ = std::make_shared<Database>();
     agf_dir_path_ = QApplication::applicationDirPath().toStdString() + "/AGF";
-    if(!database_->load_all_agf(agf_dir_path_)){
-        QMessageBox::warning(this, tr("AGF load error"), tr("Failed to load AGF from the directory") + QString().fromStdString(agf_dir_path_));
-    }
+    loadAgfsFromDir(QString().fromStdString(agf_dir_path_));
 
     // optical model
     opt_model_ = std::make_shared<OpticalModel>(database_);
@@ -96,6 +94,26 @@ void MainWindow::closeEvent(QCloseEvent* event)
     // that all top level windows of the dock manager are properly closed
     dockManager_->deleteLater();
     QMainWindow::closeEvent(event);
+}
+
+
+void MainWindow::loadAgfsFromDir(QString agfDir)
+{
+    std::vector< std::string > agf_paths;
+
+    QStringList nameFilters;
+    nameFilters.append("*.agf");
+    nameFilters.append("*.AGF");
+
+    QDir dir(agfDir);
+    QStringList entry = dir.entryList(nameFilters, QDir::Files);
+    for (QString file : entry) {
+        qDebug() << dir.filePath(file);
+        agf_paths.push_back(dir.filePath(file).toStdString());
+    }
+
+    database_->load_all_agf(agf_paths);
+
 }
 
 

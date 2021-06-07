@@ -32,18 +32,15 @@ public:
     /** Return number of loaded glass catalogs */
     int catalog_count() const;
 
-    /** load all AGF files in the directory and create catalog list */
-    bool load_all_agf(const std::string agf_dir_path);
+    /** load AGF files  */
+    bool load_all_agf(const std::vector<std::string>& agf_paths);
 
     std::shared_ptr<Medium> find(std::string medium_name);
 
 private:
-
-    std::string agf_dir_;
     std::vector< std::unique_ptr<GlassCatalog> > catalogs_;
-
     std::map< std::string, std::shared_ptr<Medium> > glass_hash_;
-
+    std::string agf_dir_;
     void create_glass_hash();
 };
 

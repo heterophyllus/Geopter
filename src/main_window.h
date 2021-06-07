@@ -48,6 +48,8 @@ private slots:
     void showAbout();
 
 private:
+    void loadAgfsFromDir(QString agfDir);
+
     Ui::MainWindow *ui;
 
     ads::CDockManager* dockManager_;
