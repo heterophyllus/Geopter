@@ -94,26 +94,32 @@ double Ray::N(int i) const
 
 double Ray::aoi(int i) const
 {
+    Eigen::Vector3d inc_dir;
+    Eigen::Vector3d normal;
+
     if(i > 0) {
-        Eigen::Vector3d inc_dir = ray_at_srfs_[i-1].after_dir;
-        Eigen::Vector3d normal = ray_at_srfs_[i].normal;
-        double cosI = inc_dir.dot(normal) / (inc_dir.norm() * normal.norm());
-        return acos(cosI);
+        inc_dir = ray_at_srfs_[i-1].after_dir;
+        normal = ray_at_srfs_[i].normal;
     }else{
-        Eigen::Vector3d inc_dir = ray_at_srfs_[0].after_dir;
-        Eigen::Vector3d normal = ray_at_srfs_[0].normal;
-        double cosI = inc_dir.dot(normal) / (inc_dir.norm() * normal.norm());
-        return acos(cosI);
+        inc_dir = ray_at_srfs_[0].after_dir;
+        normal = ray_at_srfs_[0].normal;
     }
+
+    // We need signed value
+    double tanU1 = inc_dir(1)/inc_dir(2);
+    double tanU2 = normal(1)/normal(2);
+    double tanI = (tanU1 - tanU2)/(1.0 + tanU1*tanU2); // I = U1-U2
+    return atan(tanI);
 }
 
 double Ray::aor(int i)
 {
     Eigen::Vector3d after_dir = ray_at_srfs_[i].after_dir;
     Eigen::Vector3d normal = ray_at_srfs_[i].normal;
-    double cosI = after_dir.dot(normal) / (after_dir.norm() * normal.norm());
-
-    return acos(cosI);
+    double tanU1 = after_dir(1)/after_dir(2);
+    double tanU2 = normal(1)/normal(2);
+    double tanI_prime = (tanU1 - tanU2)/(1.0 + tanU1*tanU2);
+    return atan(tanI_prime);
 }
 
 void Ray::print(std::ostringstream& oss)
