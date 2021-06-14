@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include <iomanip>
 #include <fstream>
 #include <limits>
@@ -38,17 +41,23 @@ Ray Trace::trace_pupil_ray(const OpticalModel& opt_model, PupilCrd pupil, const 
     //aim_pt(1) = 0.0;
     aim_pt = fld.aim_pt();
 
+    Eigen::Vector3d pt0 = osp->obj_coord(fld);
+
     Eigen::Vector3d pt1;
     pt1(0) = eprad*vig_pupil(0) + aim_pt(0);
     pt1(1) = eprad*vig_pupil(1) + aim_pt(1);
     pt1(2) = fod.obj_dist + fod.enp_dist;
 
-    Eigen::Vector3d pt0 = osp->obj_coord(fld);
-    Eigen::Vector3d dir0 = pt1 - pt0;
+    Eigen::Vector3d dir0;
+    if(std::isinf(fod.obj_dist)){
+
+    }else{
+        dir0 = pt1 - pt0;
+    }
     double length = dir0.norm();
 
-    dir0 = dir0/length;
-    //dir0.normalize();
+    //dir0 = dir0/length;
+    dir0.normalize();
 
     return Trace::trace_ray_from_object(*opt_model.seq_model(), pt0, dir0, wvl);
 
@@ -146,10 +155,12 @@ Eigen::Vector2d Trace::trace_coddington(const OpticalModel &opt_model, const Fie
         n_after = path[i].rndx;
         cosI = cos(ray.aoi(i));
         cosI_prime = cos(ray.aor(i));
-        sinI = sqrt(1.0 - cosI*cosI);
+        //sinI = sqrt(1.0 - cosI*cosI);
+        sinI = sin(ray.aoi(i));
         sinI_prime = sinI * n_before/n_after;
+        //cosI_prime = sqrt(1.0 - sinI_prime*sinI_prime);
 
-        cosU = ray.at(i-1).after_dir(2); //ray.at(i-1).after_dir.norm();
+        cosU = ray.at(i-1).after_dir(2);//ray.at(i-1).after_dir.norm();
         sinU = sqrt(1.0 - cosU*cosU);
         cosU_prime = ray.at(i).after_dir(2);//ray.at(i).after_dir.norm();
 
@@ -400,6 +411,7 @@ Ray Trace::trace_ray_from_object(Path path, Eigen::Vector3d pt0, Eigen::Vector3d
     double opl_eic = 0.0;
     int surf = 0;
     RayAtSurface ray_at_srf;
+    ray_trace_result.set_status(RayStatus::PassThrough); //as default
 
     // loop of remaining surfaces in path
     while(true)
@@ -514,7 +526,8 @@ Ray Trace::trace_ray_from_object(Path path, Eigen::Vector3d pt0, Eigen::Vector3d
             ray_at_srf.after_dist = 0.0;
             ray_at_srf.normal = normal;
             ray_trace_result.append(ray_at_srf);
-            break;
+            // continue to trace
+            //break;
         }
 
         if(path_index == (int)path.size()-1){ // stop iteration
@@ -524,7 +537,7 @@ Ray Trace::trace_ray_from_object(Path path, Eigen::Vector3d pt0, Eigen::Vector3d
             ray_at_srf.after_dist = 0.0;
             ray_at_srf.normal = normal;
             ray_trace_result.append(ray_at_srf);
-            ray_trace_result.set_status(RayStatus::PassThrough);
+            //ray_trace_result.set_status(RayStatus::PassThrough);
 
             op_delta += opl;
             break;
