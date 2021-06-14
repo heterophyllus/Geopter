@@ -26,6 +26,8 @@ public:
 
     void update_model();
 
+    void print(std::ostringstream& oss);
+
 private:
     OpticalModel* opt_model_;
     std::unique_ptr<WvlSpec> spectral_region_;

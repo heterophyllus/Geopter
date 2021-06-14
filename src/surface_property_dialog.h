@@ -27,6 +27,9 @@ private slots:
     /** Show stacked property tab.  Called when the list item is changed  */
     void showStackedPropertyTab(int i);
 
+
+    void initializeCoefsTable(int type);
+
     /** Show stacked aperture setting tab.  Called when the combobox(Aperture Type) index is changed */
     void showStackedApertureTab(int i);
 
@@ -38,7 +41,7 @@ private:
     std::shared_ptr<OpticalModel> opt_model_;
     int surface_index_;
 
-    void initializeCoefsTable(int type);
+
     void setValueToCell(QTableWidget* table, int row, int col, double val);
 };
 

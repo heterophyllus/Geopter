@@ -252,16 +252,19 @@ bool FileIO::load_from_json(OpticalModel& opt_model, std::string json_path)
             std::string srf_idx = "S" + std::to_string(si);
 
             std::string surface_type  = json_data["Surfaces"][srf_idx]["Type"].get<std::string>();
-            double      cv            = json_data["Surfaces"][srf_idx]["Curvature"].get<double>();
+            double cv = 0.0;
+
+            try {
+                cv = json_data["Surfaces"][srf_idx]["Curvature"].get<double>();
+            }  catch (...) {
+                cv = 0.0;
+            }
 
             double thi;
-            std::string thi_str;
-            try {
-                //thi = json_data["Surfaces"][srf_idx]["Thickness"].get<double>();
-                thi = json_data.at("Surfaces").at(srf_idx).at("Thickness");
 
+            try {
+                thi = json_data.at("Surfaces").at(srf_idx).at("Thickness");
             }  catch (...) {
-                //thi_str = json_data["Surfaces"][srf_idx]["Thickness"].get<std::string>();
                 thi = 10000000.0;
             }
 

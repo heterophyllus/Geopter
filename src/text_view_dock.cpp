@@ -20,6 +20,8 @@ TextViewDock::TextViewDock(QString label, QWidget *parent) :
     // Text Edit
     textEdit_ = new QTextEdit;
     this->setWidget(textEdit_);
+    //textEdit_->setLineWrapColumnOrWidth(200);
+    textEdit_->setLineWrapMode(QTextEdit::NoWrap);
 
     // Set monospaced font to format text
     //QFont fnt("Courier",16);

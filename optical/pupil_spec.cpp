@@ -71,7 +71,7 @@ void PupilSpec::print(std::ostringstream &oss)
 {
     constexpr int label_w = 15;
 
-    oss << std::setw(label_w) << std::left << "Pupil Type: ";
+    oss << std::setw(label_w) << std::left << "Type: ";
     switch (pupil_type_) {
     case PupilType::EPD:
         oss << "Entrance Pupil Diameter";
@@ -89,8 +89,8 @@ void PupilSpec::print(std::ostringstream &oss)
     oss << std::endl;
 
 
-    oss << std::setw(label_w) << std::left << "Pupil Value: ";
-    oss << value_;
+    oss << std::setw(label_w) << std::left << "Value: ";
+    oss << value_ << std::endl;
     oss << std::endl;
 
 }

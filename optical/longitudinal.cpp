@@ -94,7 +94,7 @@ void Longitudinal::plot_lsa(double scale)
             pupil(1) = (double)ri/(double)(num_data_-1);
             ray = Trace::trace_pupil_ray(*opt_model_, pupil, *fld0, wvl);
 
-            if(ray.status() == RayStatus::PassThrough){
+            //if(ray.status() == RayStatus::PassThrough){
                 py.push_back(pupil(1));
 
                 int at_image = ray.size()-1;
@@ -102,7 +102,7 @@ void Longitudinal::plot_lsa(double scale)
                 double M = ray.M(at_image);
                 double N = ray.N(at_image);
                 lsa.push_back(-y*N/M);
-            }
+            //}
         }
 
         /* interpolation */

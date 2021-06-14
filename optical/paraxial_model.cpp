@@ -173,10 +173,11 @@ void ParaxialModel::compute_paraxial_ray(ParaxialRay& ax_ray, ParaxialRay& pr_ra
     }else if (pupil_type == PupilType::FNO) {
 
         double Fno = opt_model_->optical_spec()->pupil_spec()->value();
-        double uk_prime = asin(-1.0/(2.0 * nk * Fno));
-        double yk = -img_dist*uk_prime;
-        Eigen::Vector2d nu_y_k({nk*uk_prime, yk});
         Eigen::Matrix2d sys_mat = compute_system_matrix(1, seq_model->last_surface(), ref_wvl);
+        double bfl = -nk*sys_mat(1,1)/sys_mat(0,1);
+        double uk_prime = asin(-1.0/(2.0 * nk * Fno));
+        double yk = -bfl*uk_prime;
+        Eigen::Vector2d nu_y_k({nk*uk_prime, yk});
         Eigen::Vector2d nu_y_1 = sys_mat.inverse() * nu_y_k;
         double nu1 = nu_y_1(0);
         double n1 = path[0].n;
@@ -560,7 +561,7 @@ void ParaxialModel::nodal_points(int start, int end, double *pp1, double *pp2) c
     double Bk = sys_mat(0,0);
     double Ck = sys_mat(1,1);
 
-    if(abs(Ak) < __DBL_EPSILON__) {
+    if(abs(Ak) < std::numeric_limits<double>::epsilon()) {
         *pp1 = 1000; // large value
         *pp2 = 1000;
     }else {

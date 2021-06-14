@@ -15,6 +15,8 @@ SurfacePropertyDialog::SurfacePropertyDialog(std::shared_ptr<OpticalModel> opt_m
     ui->listSurfaceProperty->setCurrentRow(0);
     ui->stackSurfaceProperty->setCurrentIndex(0);
 
+    QObject::connect(ui->comboSurfaceType, SIGNAL(currentIndexChanged(int)), this, SLOT(initializeCoefsTable(int)));
+
     QObject::connect(ui->comboApertureType, SIGNAL(currentIndexChanged(int)), this, SLOT(showStackedApertureTab(int)));
     ui->comboApertureType->setCurrentIndex(0);
     ui->stackApertureType->setCurrentIndex(0);

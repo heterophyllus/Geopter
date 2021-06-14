@@ -106,3 +106,16 @@ Eigen::Vector3d OpticalSpec::obj_coord(const Field& fld)
 
     return obj_pt;
 }
+
+void OpticalSpec::print(std::ostringstream &oss)
+{
+    oss << "Pupil Specs..." << std::endl;
+    pupil_->print(oss);
+
+    oss << "Wavelengths..." << std::endl;
+    spectral_region_->print(oss);
+
+    oss << "Fields..." << std::endl;
+    field_of_view_->print(oss);
+
+}

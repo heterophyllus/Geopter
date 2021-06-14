@@ -94,7 +94,7 @@ void WvlSpec::print(std::ostringstream &oss)
 
 
     // header labels
-    oss << "Wavelengths:" << std::endl;
+    //oss << "Wavelengths:" << std::endl;
     oss << std::setw(idx_w) << std::right << "W";
     oss << std::setw(val_w) << std::right << "Value";
     oss << std::setw(val_w) << std::right << "Weight";
@@ -105,7 +105,7 @@ void WvlSpec::print(std::ostringstream &oss)
     for(int i = 0; i < num_wvls; i++)
     {
         if(i == reference_index_){
-            oss << std::setw(idx_w) << std::right << i << "*";
+            oss << std::setw(idx_w) << std::right << std::to_string(i) + "*";
         }else{
             oss << std::setw(idx_w) << std::right << i;
         }

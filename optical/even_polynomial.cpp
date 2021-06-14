@@ -174,7 +174,7 @@ double EvenPolynomial::deriv_2nd(double h) const
     double z2 = z2_denom/z2_num;
 
     double z3_denom = pow(cv_,5)*pow(h,4)*pow(k+1, 2);
-    double z3_num = pow(-cv_*cv_*h*h*(k+1)+1 , 3.0/2.0) * pow(z_sqrt + 1.0 , 2);
+    double z3_num = pow(z_sqrt, 3) * pow(z_sqrt + 1.0 , 2);
     double z3 = z3_denom/z3_num;
 
     double z4_denom = -2*pow(cv_,5)*pow(h,4)*pow(k+1, 2);
@@ -184,6 +184,7 @@ double EvenPolynomial::deriv_2nd(double h) const
     double z5 = 0.0;
     for(int i = 0; i < num_coefs_; i++) {
         double numeric_coef = ( 2*(i+1) + 1 ) * ( 2*(i+1) + 2 );
+        double z5_comp = numeric_coef * coefs_[i] * pow(h, 2*(i+1));
         z5 += numeric_coef * coefs_[i] * pow(h, 2*(i+1));
     }
 
