@@ -1,0 +1,385 @@
+{
+    "OpticalSpec": {
+        "FieldSpec": {
+            "F0": {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "vlx": 0.0,
+                "vly": 0.0,
+                "vux": 0.0,
+                "vuy": 0.0,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 0.0
+            },
+            "F1": {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.4980392156862745,
+                    1.0
+                ],
+                "vlx": 0.0696945,
+                "vly": 0.374748,
+                "vux": 0.0696945,
+                "vuy": 0.212692,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 22.2
+            },
+            "F2": {
+                "color": [
+                    0.0,
+                    0.6666666666666666,
+                    1.0,
+                    1.0
+                ],
+                "vlx": 0.148941,
+                "vly": 0.529289,
+                "vux": 0.148941,
+                "vuy": 0.410774,
+                "wt": 1.0,
+                "x": 0.0,
+                "y": 31.7
+            },
+            "FieldType": 0,
+            "NumFields": 3
+        },
+        "PupilSpec": {
+            "type": 1,
+            "value": 2.065
+        },
+        "WvlSpec": {
+            "NumWvls": 6,
+            "ReferenceIndex": 1,
+            "W0": {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 656.273,
+                "weight": 1.0
+            },
+            "W1": {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 587.6,
+                "weight": 1.0
+            },
+            "W2": {
+                "color": [
+                    0.3333333333333333,
+                    1.0,
+                    0.0,
+                    1.0
+                ],
+                "value": 546.074,
+                "weight": 1.0
+            },
+            "W3": {
+                "color": [
+                    0.3333333333333333,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "value": 486.133,
+                "weight": 1.0
+            },
+            "W4": {
+                "color": [
+                    0.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                "value": 435.834,
+                "weight": 1.0
+            },
+            "W5": {
+                "color": [
+                    1.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                "value": 404.656,
+                "weight": 1.0
+            }
+        }
+    },
+    "Surfaces": {
+        "NumSurfaces": 22,
+        "S0": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Medium": "AIR",
+            "Thickness": 1000000.0,
+            "Type": "SPH"
+        },
+        "S1": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 10.0,
+            "Type": "SPH"
+        },
+        "S10": {
+            "Aperture": {
+                "Radius": 8.3,
+                "Type": "Circular"
+            },
+            "Curvature": 0.0027025382861167015,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 4.26298,
+            "Type": "SPH"
+        },
+        "S11": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.022673623841406164,
+            "Label": "",
+            "Medium": "S-LAH59_OHARA",
+            "Thickness": 3.0,
+            "Type": "SPH"
+        },
+        "S12": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.0005382789194709545,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 8.71275,
+            "Type": "SPH"
+        },
+        "S13": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Coef0": -4.8992092861e-05,
+            "Coef1": 6.1949699715e-10,
+            "Coef2": -1.2500220906e-09,
+            "Coef3": 5.6567321954e-12,
+            "Coef4": 0.0,
+            "Coef5": 0.0,
+            "Coef6": 0.0,
+            "Coef7": 0.0,
+            "Coef8": 0.0,
+            "Coef9": 0.0,
+            "Conic": 0.0,
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "S-FPM2_OHARA",
+            "Thickness": 5.4,
+            "Type": "ASP"
+        },
+        "S14": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Coef0": -1.066253035e-05,
+            "Coef1": -9.6382651819e-09,
+            "Coef2": -6.8821065476e-10,
+            "Coef3": 3.3476497962e-12,
+            "Coef4": 0.0,
+            "Coef5": 0.0,
+            "Coef6": 0.0,
+            "Coef7": 0.0,
+            "Coef8": 0.0,
+            "Coef9": 0.0,
+            "Conic": 0.0,
+            "Curvature": -0.0400690084491114,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 5.11947,
+            "Type": "ASP"
+        },
+        "S15": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Coef0": 1.0710823842e-05,
+            "Coef1": 3.2153423282e-08,
+            "Coef2": 3.3940082833e-10,
+            "Coef3": -7.052430311e-13,
+            "Coef4": 0.0,
+            "Coef5": 0.0,
+            "Coef6": 0.0,
+            "Coef7": 0.0,
+            "Coef8": 0.0,
+            "Coef9": 0.0,
+            "Conic": 0.0,
+            "Curvature": -0.05878872172661609,
+            "Label": "",
+            "Medium": "L-LAM69_OHARA",
+            "Thickness": 2.5,
+            "Type": "ASP"
+        },
+        "S16": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Coef0": -3.5706165113e-05,
+            "Coef1": -9.4676861855e-09,
+            "Coef2": 1.2368357029e-10,
+            "Coef3": -2.3643105236e-13,
+            "Coef4": 0.0,
+            "Coef5": 0.0,
+            "Coef6": 0.0,
+            "Coef7": 0.0,
+            "Coef8": 0.0,
+            "Coef9": 0.0,
+            "Conic": 0.0,
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.5,
+            "Type": "ASP"
+        },
+        "S17": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "N-BK7_SCHOTT",
+            "Thickness": 1.2,
+            "Type": "SPH"
+        },
+        "S18": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.5,
+            "Type": "SPH"
+        },
+        "S19": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "N-BK7_SCHOTT",
+            "Thickness": 0.8,
+            "Type": "SPH"
+        },
+        "S2": {
+            "Aperture": {
+                "Radius": 8.6,
+                "Type": "Circular"
+            },
+            "Curvature": -0.04288293387880426,
+            "Label": "",
+            "Medium": "S-TIH6_OHARA",
+            "Thickness": 1.6,
+            "Type": "SPH"
+        },
+        "S20": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 2.0,
+            "Type": "SPH"
+        },
+        "S21": {
+            "Curvature": 0.0
+        },
+        "S3": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.03631980166482707,
+            "Label": "",
+            "Medium": "S-LAM61_OHARA",
+            "Thickness": 5.5,
+            "Type": "SPH"
+        },
+        "S4": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.03631980166482707,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 0.2,
+            "Type": "SPH"
+        },
+        "S5": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.04012792783393458,
+            "Label": "",
+            "Medium": "S-NPH1_OHARA",
+            "Thickness": 4.4,
+            "Type": "SPH"
+        },
+        "S6": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.012221196320686635,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 1.3,
+            "Type": "SPH"
+        },
+        "S7": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.0,
+            "Label": "",
+            "Medium": "AIR",
+            "Thickness": 4.8048,
+            "Type": "SPH"
+        },
+        "S8": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": -0.031077510107183223,
+            "Label": "",
+            "Medium": "S-TIH1_OHARA",
+            "Thickness": 1.1,
+            "Type": "SPH"
+        },
+        "S9": {
+            "Aperture": {
+                "Type": "None"
+            },
+            "Curvature": 0.06897969375775159,
+            "Label": "",
+            "Medium": "S-FPM2_OHARA",
+            "Thickness": 4.1,
+            "Type": "SPH"
+        },
+        "Stop": 7
+    },
+    "title": ""
+}
