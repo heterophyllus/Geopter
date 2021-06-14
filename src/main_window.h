@@ -37,12 +37,16 @@ private slots:
     void showConfig();
 
     // Analysis menu
+    void showReport();
     void showLayout();
     void showFirstOrderData();
     void showSingleRayTrace();
     void showParaxialRayTrace();
     void showRayFan();
     void showLongitudinal();
+
+    // Tool menu
+    void showDebugStream();
 
     // Help menu
     void showAbout();

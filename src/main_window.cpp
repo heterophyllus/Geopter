@@ -42,9 +42,10 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionConfig, SIGNAL(triggered()), this, SLOT(showConfig()));
 
     // Analysis menu
+    QObject::connect(ui->actionReport,             SIGNAL(triggered()), this, SLOT(showReport()));
     QObject::connect(ui->actionLayout,             SIGNAL(triggered()), this, SLOT(showLayout()));
     QObject::connect(ui->actionFirst_Order_Data,   SIGNAL(triggered()), this, SLOT(showFirstOrderData()));
-    QObject::connect(ui->actionSingle_Ray_Trace,     SIGNAL(triggered()), this, SLOT(showSingleRayTrace()));
+    QObject::connect(ui->actionSingle_Ray_Trace,   SIGNAL(triggered()), this, SLOT(showSingleRayTrace()));
     QObject::connect(ui->actionParaxial_Ray_Trace, SIGNAL(triggered()), this, SLOT(showParaxialRayTrace()));
     QObject::connect(ui->actionTransverse_Ray_Fan, SIGNAL(triggered()), this, SLOT(showRayFan()));
     QObject::connect(ui->actionLongitudinal_Aberration, SIGNAL(triggered()), this, SLOT(showLongitudinal()));
@@ -197,6 +198,27 @@ void MainWindow::showConfig()
  * Analysis menu
  *
  * ********************************************************************************************************************************/
+void MainWindow::showReport()
+{
+    TextViewDock *dock = new TextViewDock("Report");
+    dockManager_->addDockWidgetFloating(dock);
+    dock->resize(300,200);
+
+    std::ostringstream oss;
+    oss << "Title: " << opt_model_->name() << std::endl;
+    oss << std::endl;
+
+    opt_model_->optical_spec()->print(oss);
+    oss << std::endl;
+
+    oss << "Sequential Model:" << std::endl;
+    opt_model_->seq_model()->print(oss);
+
+    // This analysis does not have setting dialog so just shows the result.
+    dock->setStringStreamToText(oss);
+}
+
+
 void MainWindow::showLayout()
 {
     PlotViewDock *dock = new PlotViewDock("Layout");
@@ -221,12 +243,6 @@ void MainWindow::showFirstOrderData()
 
     // This analysis does not have setting dialog so just shows the result.
     dock->setStringStreamToText(ss);
-
-    double ref_wvl = opt_model_->optical_spec()->spectral_region()->reference_wvl();
-    Eigen::Matrix2d system_mat = opt_model_->paraxial_model()->compute_system_matrix(1,4,ref_wvl);
-    qDebug() << "SystemMatrix= ";
-    qDebug() << system_mat(0,0) << " " << system_mat(0,1);
-    qDebug() << system_mat(1,0) << " " << system_mat(1,1);
 }
 
 
@@ -273,6 +289,20 @@ void MainWindow::showLongitudinal()
     dock->possessDlg(std::make_unique<LongitudinalSettingDialog>(opt_model_.get(), dock));
     dock->showSettingDlg();
 }
+
+
+
+/*********************************************************************************************************************************
+ *
+ * Tool menu
+ *
+ * ********************************************************************************************************************************/
+void MainWindow::showDebugStream()
+{
+
+}
+
+
 
 /*********************************************************************************************************************************
  *

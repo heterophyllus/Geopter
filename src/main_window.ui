@@ -36,6 +36,7 @@
     <property name="title">
      <string>Analysis</string>
     </property>
+    <addaction name="actionReport"/>
     <addaction name="actionLayout"/>
     <addaction name="actionFirst_Order_Data"/>
     <addaction name="actionParaxial_Ray_Trace"/>
@@ -49,8 +50,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuTool">
+    <property name="title">
+     <string>Tool</string>
+    </property>
+    <addaction name="actionDebug_Stream"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAnalysis"/>
+   <addaction name="menuTool"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -122,6 +130,16 @@
   <action name="actionLongitudinal_Aberration">
    <property name="text">
     <string>Longitudinal Aberration</string>
+   </property>
+  </action>
+  <action name="actionReport">
+   <property name="text">
+    <string>Report</string>
+   </property>
+  </action>
+  <action name="actionDebug_Stream">
+   <property name="text">
+    <string>Debug Stream</string>
    </property>
   </action>
  </widget>
