@@ -48,3 +48,5 @@
 *.stash
 /build*/
 
+
+geopter/optical/build/

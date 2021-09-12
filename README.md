@@ -1,16 +1,22 @@
 # Geopter
 
-![demo](images/Geopter_demo_windows.png)
-## Overview
-Geopter is optical design software based on geometrical ray tracing.
+![demo](data/screenshots/Geopter_demo_windows.png)
 
-As the first noteworthy feature, Geopter provides intuitive graphical user interface, putting a priority on usability.  Geopter aims to be a comprehensive environment where the user can focus on optical design. 
+## Introduction
+Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-From the viewpoint of license, Geopter is a free and open source software, distributed with source codes so that the user has an access to its most internal aspects. It will provide an introductory experience of optical design and computing.
+There has been several proprietary software for optical design which have highly matured features to be a definitive choice for professional use. However, there seems to be least private users due to the highest cost for annual license.
+
+Open source project might well be another option to touch optical design. The fact is that more and more optical simulation library are being developed recently. One of the disadvantage of such library is to require highly matured programming skills to master how to use.
+
+Geopter aims to be the mid-ground. This software features to put higher priority to reasonable graphical interface so as to allow the users to focus on optical design process.
+
+The primary user of this software may be fresh optical engineer or a student who are likely to start learning optics.  This software could be a starting platform offerring introductory experience of optical design.
+
 
 ## Getting Started
 ### Prebuilt Binaries
-Prebuilt binaries for Windows can be downloaded in [Release page](https://github.com/heterophyllus/Geopter/releases/latest).
+Prebuilt binaries can be downloaded in [Release page](https://github.com/heterophyllus/Geopter/releases/latest).
 
 ### Build from Source
 Qt is supposed to be installed in your computer.
@@ -44,7 +50,8 @@ Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, 
 ## Acknowledgement
 The author would like to express respect and gratitude to the following excellent projects for their reference implementation of optical calculation.
 
-- [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Highly matured python module for geometrical optical simulation.  Most of Geopter's optics calculation is based on translation of this implementation.
-- [Goptical](https://www.gnu.org/software/goptical/) : C++ implemenation of optical simulation with great deal of functionalities. The original project, however, has not been updated since 2012.
-- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A progressive fork of Goptical.  It still continues to be maintained with greatest effort.
+- [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Highly matured python module for geometrical optical simulation.  Most of Geopter's optics calculation is based on this implementation.
+- [Goptical](https://www.gnu.org/software/goptical/) : C++ implemenation of optical simulation with great deal of functionalities. Though this original project has not been updated since 2012.
+- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A modified fork of Goptical, which has been maintained with greatest effort. This project features to analyze many lens data from patent documents providing cross validation with other software.
+
 
