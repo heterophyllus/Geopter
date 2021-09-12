@@ -1,0 +1,21 @@
+@startuml model
+
+class OpticalModel {
+    - lens_assembly_ : LensAssembly
+    - opt_spec : OpticalSpec
+
+    + object_coord() : Vector3d
+    + paraxial_data()
+}
+
+class LensAssembly
+class OpticalSpec
+
+class ParaxialModel
+
+OpticalModel -right--|> ParaxialModel : creates
+OpticalModel *-- LensAssembly
+OpticalModel *-- OpticalSpec
+
+
+@enduml

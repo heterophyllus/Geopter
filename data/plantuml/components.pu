@@ -1,0 +1,10 @@
+@startuml components
+
+package "geopter" {
+    [gui] "operates" -right---|> [optical]
+}
+
+
+[Qt] -up-* [gui]
+
+@enduml

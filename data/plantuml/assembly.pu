@@ -1,0 +1,135 @@
+@startuml　Assembly
+
+class LensAssembly {
+    Construction of optical components
+    ---
+    - interfaces_ : vector
+    - gaps_ : vector
+    - stop_surface_ : int
+    ---
+    + initialize()
+    + surface() : Interface
+    + gap() : Gap
+    + surface_count() : int
+    + gap_count() : int
+    + stop_surface() : int
+    + image_surface() : int
+    + last_surface() : int
+    + insert_dummy()
+    + insert_standard()
+    + insert_asphere()
+    + remove()
+
+    - compute_local_transforms()
+    - compute_global_transforms()
+}
+
+note right : s0  g0  s1  g1  s2 g2 ...
+
+class Gap {
+    Spaced gap between interfaces, filled with medium
+    ---
+    - thi_ : double
+    - medium_ : Medium
+}
+
+
+class Transform {
+    local/global postures
+    ---
+    + transfer_ : Vector3d
+    + rotation_ : Matrix3d
+}
+
+class Interface {
+    Abstract optical surface
+    ---
+    # label_ : string
+    # interact_mode_ : string
+    # delta_n : double
+    # semi_diameter : double
+    # profile_ : SurfaceProfile
+    # clear_aperture_ : Aperture
+    # edge_aperture_ : Aperture
+    # decenter_ : DecenterData
+}
+
+
+class Surface {
+    optical refractive surface
+    ---
+    + optical_power() : double
+    + intersect() : void
+    # optical_power_ : double
+}
+
+class Mirror {
+    reflective surface
+    ---
+    + intersect()
+}
+
+
+class SurfaceProfile {
+    Surface profile of the interface
+    ---
+    # cv_ : double
+    # name_ : string
+    + f() : double
+    + df() : Vector3d
+    + normal() : Vector3d
+    + sag() : double
+    + intersect()
+}
+
+class Spherical {
+    Standard spherical surface profile
+    ---
+    + f() : double
+    + df() : Vector3d
+    + sag() : double
+    + intersect()
+}
+
+class EvenPolynomial {
+    Even aspheric profile
+    ---
+    - conic_ : double
+    - coefs_ : vector
+}
+
+
+class Aperture {
+    Mechanical shape of the interface
+    ---
+    # x_offset_ : double
+    # y_offset_ : double
+    # rotation : double
+}
+note right : edge, clear
+
+class Circular {
+    Standard rotational circular shape
+    ---
+    - radius_ : double
+}
+
+LensAssembly "1" *-- "many" Interface : has
+LensAssembly "1" *-- "many" Gap : has
+
+left to right direction
+Interface <-left- Surface
+Interface <-left- Mirror
+
+
+top to bottom direction
+Interface "1" *-- "2" Transform : has
+Interface *-- SurfaceProfile :  has
+SurfaceProfile <-- Spherical 
+SurfaceProfile <-- EvenPolynomial
+
+Interface "1" *-- "2" Aperture : has
+
+Aperture <-- Circular
+
+@enduml

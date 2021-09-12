@@ -1,0 +1,27 @@
+@startuml paraxial
+
+class ParaxialData {
+    - fod_ : FirstOrderData
+    - axial_ray_ : ParaxialRay
+    - principal_ray_ : ParaxialRay
+}
+
+class ParaxialRay {
+    par_ray_at_srfs_ : vector
+}
+
+class ParaxialRayAtSurface {
+    ht  : double
+    slp : double
+    n : double
+}
+
+class FirstOrderData {
+
+}
+
+ParaxialData "1" *-- "2" ParaxialRay
+ParaxialData *-- FirstOrderData
+ParaxialRay *-- "many" ParaxialRayAtSurface : contains
+
+@enduml

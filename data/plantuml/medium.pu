@@ -1,0 +1,36 @@
+@startuml
+
+
+class Medium {
+    # name_ : string
+    # n_ : double
+    +rindex() : double   
+}
+
+class Air {
+    + rindex() : double
+}
+
+class Glass {
+    Optical glass distributed by the supplier
+    ---
+    +set_dispersion_formula()
+    +set_dispersion_coefs()
+    +rindex() : double
+    - formula_func_ptr_
+    - supplier : string
+}
+
+class BuchdahlGlass {
+    Model glass defined by Buchdahl coefficients
+    ---
+    - v1_ : double
+    - v2_ : double
+    - omega()
+}
+
+Medium <|-- Glass
+Medium <|-- Air
+Medium <|-- BuchdahlGlass
+
+@enduml

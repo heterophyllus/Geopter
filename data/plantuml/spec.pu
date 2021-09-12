@@ -1,0 +1,64 @@
+@startuml Spec
+
+class OpticalSpec {
+    - pupil_ : PupilSpec
+    - spectral_region_ : WvlSpec
+    - field_of_view_ : FieldSpec
+    - do_aiming_ : bool
+}
+
+class PupilSpec {
+    - pupil_type_ : int
+    - value_ : double
+}
+
+class WvlSpec {
+    + wvl() : Wvl
+    + reference_wvl() : double
+    + reference_index() : int
+    + wvl_count() : int
+    + add()
+    + remove()
+    - reference_index_ : int
+    - wvls_ : vector
+}
+
+class Wvl {
+    - value_ : double
+    - weight_ : double
+    - render_color : Rgb
+}
+
+class FieldSpec {
+    + field() : Field
+    + field_count() : int
+    + max_field() : double
+    + add()
+    + remove()
+    - field_type_ : int
+    - fields_ : vector
+}
+
+class Field {
+    + aim_pt() : Vector2d
+    + apply_vignetting()
+    - x_
+    - y_
+    - vux_
+    - vuy_
+    - vlx_
+    - vly_
+    - wt_
+    - aim_pt_ : Vector2d
+    - render_color_ : Rgb
+}
+
+OpticalSpec *-- PupilSpec
+OpticalSpec *-- WvlSpec
+OpticalSpec *-- FieldSpec
+
+WvlSpec "1" *-- "many" Wvl : > contains
+FieldSpec "1" *-- "many" Field :  > contains
+
+
+@enduml
