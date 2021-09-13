@@ -135,7 +135,7 @@ bool FileIO::save_to_json(const OpticalSystem& opt_sys, std::string json_path)
 
             if(aperture_type == "Circular"){
                 double cir_ap_r = dynamic_cast<Circular*>(s->clear_aperture())->max_dimension();
-                json_data["Surfaces"][cur_idx]["Aperture"]["Radius"] = cir_ap_r;
+                json_data["Assembly"][cur_idx]["Aperture"]["Radius"] = cir_ap_r;
             }else if(aperture_type == "Rectangular"){
                 // not implemented
             }
@@ -314,9 +314,9 @@ bool FileIO::load_from_json(OpticalSystem& opt_sys, std::string json_path)
         
         // aperture
         if( json_data["Assembly"][cur_idx].contains("Aperture") ){
-            std::string aperture_type = json_data["Surfaces"][cur_idx]["Aperture"]["Type"].get<std::string>();
+            std::string aperture_type = json_data["Assembly"][cur_idx]["Aperture"]["Type"].get<std::string>();
             if(aperture_type == "Circular"){
-                double cir_ap_r = json_data["Surfaces"][cur_idx]["Aperture"]["Radius"].get<double>();
+                double cir_ap_r = json_data["Assembly"][cur_idx]["Aperture"]["Radius"].get<double>();
                 srf->set_clear_aperture(std::make_unique<Circular>(cir_ap_r));        
             }
         }
