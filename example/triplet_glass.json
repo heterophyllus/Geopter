@@ -1,0 +1,160 @@
+{
+    "Assembly": {
+        "0": {
+            "Curvature": 0.0,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 10000000000.0,
+            "Type": "SPH"
+        },
+        "1": {
+            "Curvature": 0.042170961076202926,
+            "Label": "",
+            "Material": "N-LAK9_SCHOTT",
+            "Thickness": 4.831,
+            "Type": "SPH"
+        },
+        "2": {
+            "Curvature": 0.00013640168003221264,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 5.86,
+            "Type": "SPH"
+        },
+        "3": {
+            "Curvature": -0.04088976120379457,
+            "Label": "",
+            "Material": "N-SF5_SCHOTT",
+            "Thickness": 0.975,
+            "Type": "SPH"
+        },
+        "4": {
+            "Curvature": 0.04567044208987943,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 4.822,
+            "Type": "SPH"
+        },
+        "5": {
+            "Curvature": 0.011526181721781025,
+            "Label": "",
+            "Material": "N-LAK9_SCHOTT",
+            "Thickness": 3.127,
+            "Type": "SPH"
+        },
+        "6": {
+            "Curvature": -0.04879429301948844,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 41.2365,
+            "Type": "SPH"
+        },
+        "7": {
+            "Curvature": 0.0,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "Stop": 3
+    },
+    "Note": "",
+    "Spec": {
+        "Field": {
+            "Color": [
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "Type": 0,
+            "VLX": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "VLY": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "VUX": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "VUY": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "X": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Y": [
+                0.0,
+                14.0,
+                20.0
+            ]
+        },
+        "Pupil": {
+            "Type": 0,
+            "Value": 12.5
+        },
+        "Wvl": {
+            "Color": [
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "RefIndex": 1,
+            "Value": [
+                656.273,
+                587.562,
+                486.133
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        }
+    },
+    "Title": "Sasian Triplet 50mm F4"
+}

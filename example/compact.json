@@ -1,0 +1,385 @@
+{
+    "Assembly": {
+        "0": {
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Material": "AIR",
+            "Thickness": 100000000.0,
+            "Type": "SPH"
+        },
+        "1": {
+            "Curvature": 0.0,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 10.0,
+            "Type": "SPH"
+        },
+        "10": {
+            "Aperture": {
+                "Type": "Circular",
+                "Radius": 8.1
+            },
+            "Curvature": 0.0027025382861167015,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 4.26298,
+            "Type": "SPH"
+        },
+        "11": {
+            "Curvature": 0.022673623841406164,
+            "Label": "L6",
+            "Material": "S-LAH59_OHARA",
+            "Thickness": 3.0,
+            "Type": "SPH"
+        },
+        "12": {
+            "Curvature": -0.0005382789194709545,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 8.71275,
+            "Type": "SPH"
+        },
+        "13": {
+            "Coefs": [
+                -4.8992093e-05,
+                6.19497e-10,
+                -1.2500221e-09,
+                5.6567322e-12,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": 0.0,
+            "Label": "L7",
+            "Material": "S-FPM2_OHARA",
+            "Thickness": 5.4,
+            "Type": "ASP"
+        },
+        "14": {
+            "Coefs": [
+                -1.066253035e-05,
+                -9.6382651819e-09,
+                -6.8821065476e-10,
+                3.3476497962e-12,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": -0.04006901487121418,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 5.11947,
+            "Type": "ASP"
+        },
+        "15": {
+            "Coefs": [
+                1.0710823842e-05,
+                3.2153423282e-08,
+                3.3940082833e-10,
+                -7.052430311e-13,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": -0.058788705749006326,
+            "Label": "L8",
+            "Material": "L-LAM69_OHARA",
+            "Thickness": 2.5,
+            "Type": "ASP"
+        },
+        "16": {
+            "Coefs": [
+                -3.5706165113e-05,
+                -9.4676861855e-09,
+                1.2368357029e-10,
+                -2.3643105236e-13,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": 0.0,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.5,
+            "Type": "ASP"
+        },
+        "17": {
+            "Curvature": 0.0,
+            "Label": "F1",
+            "Material": "N-BK7_SCHOTT",
+            "Thickness": 1.2,
+            "Type": "SPH"
+        },
+        "18": {
+            "Curvature": 0.0,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.5,
+            "Type": "SPH"
+        },
+        "19": {
+            "Curvature": 0.0,
+            "Label": "F2",
+            "Material": "N-BK7_SCHOTT",
+            "Thickness": 0.8,
+            "Type": "SPH"
+        },
+        "2": {
+            "Aperture": {
+                "Type": "Circular",
+                "Radius": 8.5
+            },
+            "Curvature": -0.04288293387880426,
+            "Label": "L1",
+            "Material": "S-TIH6_OHARA",
+            "Thickness": 1.6,
+            "Type": "SPH"
+        },
+        "20": {
+            "Curvature": 0.0,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 2.0,
+            "Type": "SPH"
+        },
+        "21": {
+            "Curvature": 0.0,
+            "Label": "Img",
+            "Material": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "3": {
+            "Curvature": 0.03631980166482707,
+            "Label": "L2",
+            "Material": "S-LAM61_OHARA",
+            "Thickness": 5.5,
+            "Type": "SPH"
+        },
+        "4": {
+            "Curvature": -0.03631980166482707,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.2,
+            "Type": "SPH"
+        },
+        "5": {
+            "Curvature": 0.04012792783393458,
+            "Label": "L3",
+            "Material": "S-NPH1_OHARA",
+            "Thickness": 4.4,
+            "Type": "SPH"
+        },
+        "6": {
+            "Curvature": -0.012221196320686635,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 1.3,
+            "Type": "SPH"
+        },
+        "7": {
+            "Aperture": {
+                "Type": "Circular",
+                "Radius": 9.1
+            },
+            "Curvature": 0.0,
+            "Label": "Stop",
+            "Material": "AIR",
+            "Thickness": 4.8048,
+            "Type": "SPH"
+        },
+        "8": {
+            "Curvature": -0.031077510107183223,
+            "Label": "L4",
+            "Material": "S-TIH1_OHARA",
+            "Thickness": 1.1,
+            "Type": "SPH"
+        },
+        "9": {
+            "Curvature": 0.06897969375775159,
+            "Label": "L5",
+            "Material": "S-FPM2_OHARA",
+            "Thickness": 4.1,
+            "Type": "SPH"
+        },
+        "Stop": 7
+    },
+    "Note": "",
+    "Spec": {
+        "Field": {
+            "Color": [
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.3333333333333333,
+                    0.4980392156862745,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    0.4980392156862745,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.6666666666666666,
+                    1.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "Type": 2,
+            "VLX": [
+                0.0,
+                0.0228882,
+                0.0539322,
+                0.102394,
+                0.171684,
+                0.215645
+            ],
+            "VLY": [
+                0.0,
+                0.189102,
+                0.311272,
+                0.433212,
+                0.555611,
+                0.616692
+            ],
+            "VUX": [
+                0.0,
+                0.0228882,
+                0.0539322,
+                0.102394,
+                0.171684,
+                0.215645
+            ],
+            "VUY": [
+                0.0,
+                0.0232468,
+                0.13604,
+                0.237755,
+                0.32756,
+                0.367661
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "X": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Y": [
+                0.0,
+                6.501,
+                10.835,
+                15.161,
+                19.503,
+                21.67
+            ]
+        },
+        "Pupil": {
+            "Type": 0,
+            "Value": 17.1
+        },
+        "Wvl": {
+            "Color": [
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "RefIndex": 1,
+            "Value": [
+                656.273,
+                587.6,
+                546.074,
+                486.133,
+                435.834,
+                404.656
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ]
+        }
+    },
+    "Title": ""
+}
