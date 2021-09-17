@@ -1,7 +1,7 @@
-@startuml
+@startuml material
 
 
-class Medium {
+class Material {
     # name_ : string
     # n_ : double
     +rindex() : double   
@@ -29,8 +29,8 @@ class BuchdahlGlass {
     - omega()
 }
 
-Medium <|-- Glass
-Medium <|-- Air
-Medium <|-- BuchdahlGlass
+Material <|-- Glass
+Material <|-- Air
+Material <|-- BuchdahlGlass
 
 @enduml

@@ -1,0 +1,22 @@
+@startuml system
+
+class OpticalSystem {
+    - opt_assembly_ : OpticalAssembly
+    - opt_spec : OpticalSpec
+
+    + paraxial_data()
+    + seq_data()
+}
+
+class OpticalAssembly
+class OpticalSpec
+class SequentialData
+class ParaxialData
+
+OpticalSystem ---|> ParaxialData : creates
+OpticalSystem ---|> SequentialData : creates
+OpticalSystem *-- OpticalAssembly
+OpticalSystem *-- OpticalSpec
+
+
+@enduml

@@ -1,6 +1,6 @@
 @startuml　Assembly
 
-class LensAssembly {
+class OpticalAssembly {
     Construction of optical components
     ---
     - interfaces_ : vector
@@ -16,8 +16,6 @@ class LensAssembly {
     + image_surface() : int
     + last_surface() : int
     + insert_dummy()
-    + insert_standard()
-    + insert_asphere()
     + remove()
 
     - compute_local_transforms()
@@ -30,7 +28,7 @@ class Gap {
     Spaced gap between interfaces, filled with medium
     ---
     - thi_ : double
-    - medium_ : Medium
+    - material_ : Material
 }
 
 
@@ -46,7 +44,6 @@ class Interface {
     ---
     # label_ : string
     # interact_mode_ : string
-    # delta_n : double
     # semi_diameter : double
     # profile_ : SurfaceProfile
     # clear_aperture_ : Aperture
@@ -58,9 +55,7 @@ class Interface {
 class Surface {
     optical refractive surface
     ---
-    + optical_power() : double
     + intersect() : void
-    # optical_power_ : double
 }
 
 class Mirror {
