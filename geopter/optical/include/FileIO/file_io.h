@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 
+#include "System/optical_system.h"
+
 namespace geopter {
 
-
-class OpticalSystem;
 
 
 class FileIO

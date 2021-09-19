@@ -5,19 +5,9 @@
 
 #include "Paraxial/paraxial_trace.h"
 
-#include "System/optical_system.h"
-
 #include "Spec/optical_spec.h"
-#include "Spec/wvl_spec.h"
-#include "Spec/pupil_spec.h"
-#include "Spec/field_spec.h"
-
 #include "Assembly/optical_assembly.h"
-#include "Assembly/interface.h"
-#include "Assembly/surface.h"
 #include "Assembly/surface_profile.h"
-#include "Assembly/gap.h"
-
 #include "Material/material.h"
 
 using namespace geopter;
@@ -25,7 +15,7 @@ using namespace geopter;
 ParaxialTrace::ParaxialTrace(OpticalSystem* sys)
 {
     opt_sys_ = sys;
-    //compute_starting_data();
+    compute_starting_data();
 }
 
 ParaxialTrace::~ParaxialTrace()
@@ -294,4 +284,13 @@ void ParaxialTrace::compute_starting_data()
     ref_u0_ = u0;
     ref_ybar0_ = ybar0;
     ref_ubar0_ = ubar0;
+}
+
+
+void ParaxialTrace::get_starting_coords(double *y0, double *u0, double *ybar0, double *ubar0) const
+{
+    *y0 = ref_y0_;
+    *u0 = ref_u0_;
+    *ybar0 = ref_ybar0_;
+    *ubar0 = ref_ubar0_;
 }

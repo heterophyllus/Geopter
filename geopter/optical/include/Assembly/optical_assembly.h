@@ -5,17 +5,17 @@
 #include <string>
 #include <memory>
 
+#include "Assembly/surface.h"
+#include "Assembly/gap.h"
+
 namespace geopter {
 
-class OpticalSystem;
-class Surface;
-class Gap;
 
 /** Class to contain the optical components of the optical system */
 class OpticalAssembly
 {
 public:
-    OpticalAssembly(OpticalSystem* opt_sys);
+    OpticalAssembly();
     ~OpticalAssembly();
 
     void clear();
@@ -51,7 +51,7 @@ public:
 
 
     /** add surface and gap just before the image */
-    void add_surface_and_gap(double r, double t, std::string mat_name);
+    //void add_surface_and_gap(double r, double t, std::string mat_name);
 
     void add_surface_and_gap(std::shared_ptr<Surface> s, std::shared_ptr<Gap> g);
 
@@ -64,7 +64,7 @@ public:
     /** @brief Updates semi diameter for all surfaces 
      *  @note Uses reference rays
     */
-    void set_semi_diameters();
+    //void set_semi_diameters();
 
     /** Compute and update global surface coordinates with reference to @param{ref_srf} */
     void set_global_transforms(int ref_srf=1);
@@ -82,9 +82,6 @@ public:
     void print(std::ostringstream& oss) const;
 
 private:
-    
-
-    OpticalSystem *parent_opt_sys_;
     std::vector< std::shared_ptr<Surface> > interfaces_;
     std::vector< std::shared_ptr<Gap> > gaps_;
 

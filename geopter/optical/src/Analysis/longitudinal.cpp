@@ -6,26 +6,13 @@
 
 #include "Analysis/longitudinal.h"
 
-#include "Renderer/renderer.h"
 #include "Renderer/rgb.h"
-
 #include "System/optical_system.h"
-
 #include "Assembly/optical_assembly.h"
-#include "Assembly/surface.h"
 #include "Assembly/surface_profile.h"
-
-#include "Sequential/sequential_model.h"
 #include "Sequential/ray.h"
 #include "Sequential/sequential_trace.h"
-
 #include "Spec/optical_spec.h"
-#include "Spec/field_spec.h"
-#include "Spec/wvl_spec.h"
-#include "Spec/pupil_spec.h"
-
-#include "Paraxial/paraxial_model.h"
-#include "Paraxial/paraxial_ray.h"
 
 
 using namespace geopter;
@@ -79,7 +66,7 @@ void Longitudinal::plot_lsa(double scale)
     int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
     int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
     std::vector<double> l_primes = get_l_primes();
-    double img_dst = opt_sys_->parax_data()->first_order_data().img_dist;
+    double img_dst = opt_sys_->first_order_data().img_dist;
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
 
@@ -251,7 +238,7 @@ std::vector<double> Longitudinal::get_l_primes()
     int last_surf = num_srf - 1 -1;
     int num_wvl = opt_sys_->optical_spec()->spectral_region()->wvl_count();
     for(int wi = 0; wi < num_wvl; wi++){
-        ParaxialRay ax_ray = opt_sys_->parax_data()->axial_ray(wi);
+        ParaxialRay ax_ray = opt_sys_->axial_ray(wi);
         double y = ax_ray.at(last_surf).ht;
         double u_prime = ax_ray.at(img_srf).slp;
         double l_prime = -y/u_prime;

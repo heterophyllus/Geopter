@@ -1,10 +1,10 @@
 #ifndef RAYFAN_H
 #define RAYFAN_H
 
-namespace geopter {
+#include "System/optical_system.h"
+#include "Renderer/renderer.h"
 
-class OpticalSystem;
-class Renderer;
+namespace geopter {
 
 class RayFan
 {

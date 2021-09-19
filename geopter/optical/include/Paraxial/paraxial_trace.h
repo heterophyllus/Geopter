@@ -4,10 +4,10 @@
 #include "paraxial_path.h"
 #include "paraxial_ray.h"
 
+#include "System/optical_system.h"
 
 namespace geopter {
 
-class OpticalSystem;
 
 class ParaxialTrace
 {
@@ -40,7 +40,7 @@ public:
      */
     ParaxialPath paraxial_path(int start, int end, double wvl);
 
-    //void get_starting_coords(double *y, double *u, double *ybar, double *ubar);
+    void get_starting_coords(double *y0, double *u0, double *ybar0, double *ubar0) const;
 
 private:
     ParaxialPath forward_paraxial_path(int start, int end, double wvl);

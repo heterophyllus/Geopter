@@ -44,12 +44,10 @@
 
 #include "System/optical_system.h"
 
-#include "Paraxial/paraxial_model.h"
 #include "Paraxial/paraxial_path.h"
 #include "Paraxial/paraxial_ray.h"
 #include "Paraxial/paraxial_trace.h"
 
-#include "Sequential/sequential_model.h"
 #include "Sequential/sequential_path.h"
 #include "Sequential/sequential_trace.h"
 #include "Sequential/ray.h"

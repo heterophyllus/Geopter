@@ -1,5 +1,6 @@
 #include "text_view_dock.h"
 
+#include <QApplication>
 #include <QDialog>
 #include <QToolBar>
 #include <QMenu>
@@ -23,14 +24,13 @@ TextViewDock::TextViewDock(QString label, QWidget *parent) :
     //textEdit_->setLineWrapColumnOrWidth(200);
     textEdit_->setLineWrapMode(QTextEdit::NoWrap);
 
-    // Set monospaced font to format text
-    //QFont fnt("Courier",16);
-    //textEdit_->setCurrentFont(fnt);
-
     // Tool bar
     toolBar_ = new QToolBar(this);
-    auto actionSetting = toolBar_->addAction("Setting");
-    auto actionSave = toolBar_->addAction("Save");
+
+    auto actionSetting = toolBar_->addAction(QApplication::style()->standardIcon( QStyle::SP_BrowserReload ),"Setting");
+    auto actionSave = toolBar_->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
+
+    toolBar_->setToolButtonStyle(Qt::ToolButtonIconOnly);
     this->setToolBar(toolBar_);
 
     QObject::connect(actionSetting, SIGNAL(triggered()), this, SLOT(showSettingDlg()));

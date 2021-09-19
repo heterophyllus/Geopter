@@ -1,17 +1,16 @@
 #ifndef SYSTEM_LAYOUT_H
 #define SYSTEM_LAYOUT_H
 
-#include "Renderer/rgb.h"
+#include "System/optical_system.h"
+#include "Assembly/surface.h"
+#include "Element/lens.h"
+#include "Element/dummy_interface.h"
+#include "Element/stop.h"
 #include "Sequential/ray.h"
+#include "Renderer/renderer.h"
+#include "Renderer/rgb.h"
 
 namespace geopter{
-
-class OpticalSystem;
-class Renderer;
-class Lens;
-class Surface;
-class DummyInterface;
-class Stop;
 
 /** Layout class support 2d drawing of optical system including optical elements, rays and other components. */
 class Layout

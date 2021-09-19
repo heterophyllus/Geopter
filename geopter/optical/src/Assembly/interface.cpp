@@ -1,6 +1,5 @@
 #include "Assembly/interface.h"
 
-#include "Assembly/decenter_data.h"
 #include "Assembly/circular.h"
 #include "Assembly/spherical.h"
 
@@ -8,7 +7,6 @@ using namespace geopter;
 
 Interface::Interface() :
     interact_mode_("transmit"),
-    //delta_n_(1.0),
     semi_diameter_(0.0)
 {
     label_ = "";

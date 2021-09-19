@@ -34,8 +34,8 @@ void ParaxialTraceDialog::onAccept()
     int wi = ui->comboWvl->currentIndex();
     double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi);
 
-    ParaxialRay ax_ray = opt_sys_->parax_data()->axial_ray(wi);
-    ParaxialRay pr_ray = opt_sys_->parax_data()->principle_ray(wi);
+    ParaxialRay ax_ray = opt_sys_->axial_ray(wi);
+    ParaxialRay pr_ray = opt_sys_->principle_ray(wi);
 
     const int idx_w  = 4;
     const int val_w  = 10;

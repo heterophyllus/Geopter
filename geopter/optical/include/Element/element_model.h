@@ -4,11 +4,11 @@
 #include <vector>
 #include <memory>
 
-#include "element.h"
+#include "System/optical_system.h"
+#include "Element/element.h"
 
 namespace geopter{
 
-class OpticalSystem;
 
 class ElementModel
 {

@@ -1,7 +1,5 @@
 #include "Element/stop.h"
 
-#include "Renderer/renderer.h"
-
 using namespace geopter;
 
 Stop::Stop(Surface* s) :

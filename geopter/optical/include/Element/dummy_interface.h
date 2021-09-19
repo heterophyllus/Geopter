@@ -1,11 +1,11 @@
 #ifndef DUMMY_INTERFACE_H
 #define DUMMY_INTERFACE_H
 
-#include "element.h"
+#include "Element/element.h"
+#include "Assembly/surface.h"
 
 namespace geopter {
 
-class Surface;
 
 class DummyInterface : public Element
 {

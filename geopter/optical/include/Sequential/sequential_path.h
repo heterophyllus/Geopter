@@ -3,10 +3,10 @@
 
 #include <vector>
 
+#include "Assembly/surface.h"
+
 namespace geopter {
 
-class Surface;
-class SurfaceProfile;
 
 struct SequentialPathComponent
 {

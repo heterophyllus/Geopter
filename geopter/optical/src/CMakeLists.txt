@@ -49,13 +49,13 @@ set(OPTICAL_SRCS
 
     System/optical_system.cpp
 
-    Paraxial/paraxial_model.cpp
+    #Paraxial/paraxial_data.cpp
     Paraxial/paraxial_ray.cpp
     Paraxial/paraxial_path.cpp
     Paraxial/first_order.cpp
     Paraxial/paraxial_trace.cpp
 
-    Sequential/sequential_model.cpp
+    #Sequential/sequential_data.cpp
     Sequential/sequential_path.cpp
 
     Sequential/ray.cpp

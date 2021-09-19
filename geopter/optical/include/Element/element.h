@@ -3,9 +3,9 @@
 
 #include <string>
 
-namespace geopter {
+#include "Renderer/renderer.h"
 
-class Renderer;
+namespace geopter {
 
 /** Base class to describe optical element */
 class Element

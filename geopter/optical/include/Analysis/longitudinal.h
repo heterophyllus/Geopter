@@ -3,10 +3,10 @@
 
 #include <vector>
 
-namespace geopter {
+#include "System/optical_system.h"
+#include "Renderer/renderer.h"
 
-class OpticalSystem;
-class Renderer;
+namespace geopter {
 
 class Longitudinal
 {

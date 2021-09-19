@@ -60,7 +60,7 @@ set(PROJECT_SOURCES
 add_executable( Geopter ${PROJECT_SOURCES} )
 
 target_include_directories(Geopter PRIVATE 3rdparty/Qt-Advanced-Docking)
-target_link_libraries(Geopter PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::PrintSupport QCustomPlot)
+target_link_libraries(Geopter PRIVATE Qt5::Widgets Qt5::PrintSupport QCustomPlot)
 target_link_libraries(Geopter PRIVATE qtadvanceddocking)
 
 target_include_directories(Geopter PRIVATE ${CMAKE_SOURCE_DIR}../optical/include)

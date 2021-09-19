@@ -1,8 +1,5 @@
 #include "Element/dummy_interface.h"
 
-#include "Assembly/surface.h"
-#include "Renderer/renderer.h"
-
 using namespace geopter;
 
 DummyInterface::DummyInterface(Surface* s) :

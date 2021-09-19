@@ -3,9 +3,10 @@
 
 #include "element.h"
 
+#include "Assembly/surface.h"
+
 namespace geopter{
 
-class Surface;
 
 class Stop : public Element
 {

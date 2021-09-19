@@ -1,6 +1,5 @@
 #include "Element/lens.h"
 
-#include "Renderer/renderer.h"
 
 using namespace geopter;
 

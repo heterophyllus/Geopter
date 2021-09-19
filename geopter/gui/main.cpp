@@ -19,10 +19,10 @@ int main(int argc, char *argv[])
 
     // Set monospaced font to align text
 #ifdef _WIN64
-    QFont fnt("monospace",14);
+    QFont fnt("monospace",12);
     a.setFont(fnt);
 #elif __APPLE__
-    QFont fnt("monaco",14);
+    QFont fnt("monaco",12);
     a.setFont(fnt);
 #endif
 

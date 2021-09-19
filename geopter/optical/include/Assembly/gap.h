@@ -4,9 +4,10 @@
 #include <memory>
 #include <string>
 
+#include "Material/material.h"
+
 namespace geopter {
 
-class Material;
 
 /**
  * @brief Gap container class

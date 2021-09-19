@@ -2,29 +2,12 @@
 #include "Analysis/layout.h"
 
 #include "System/optical_system.h"
-
 #include "Spec/optical_spec.h"
-#include "Spec/field_spec.h"
-#include "Spec/field.h"
-#include "Spec/wvl_spec.h"
-#include "Spec/spectral_line.h"
-
 #include "Element/element_model.h"
-#include "Element/element.h"
-#include "Element/lens.h"
-#include "Element/dummy_interface.h"
-#include "Element/stop.h"
-
-#include "Sequential/sequential_model.h"
 #include "Sequential/ray.h"
 #include "Sequential/sequential_trace.h"
-
 #include "Assembly/optical_assembly.h"
-#include "Assembly/surface.h"
 #include "Assembly/surface_profile.h"
-#include "Assembly/gap.h"
-
-#include "Renderer/renderer.h"
 
 
 using namespace geopter;
@@ -56,12 +39,13 @@ void Layout::update()
 void Layout::draw_elements()
 {
     // elements
-    opt_sys_->elem_model()->create();
+    ElementModel *modeler = new ElementModel(opt_sys_);
+    modeler->create();
 
-    int num_elems = opt_sys_->elem_model()->element_count();
+    int num_elems = modeler->element_count();
 
     for(int i = 0; i < num_elems; i++){
-        auto e = opt_sys_->elem_model()->element(i);
+        auto e = modeler->element(i);
 
         if(e->element_type() == "Lens"){
             draw_lens(dynamic_cast<Lens*>(e), rgb_black);
@@ -70,6 +54,7 @@ void Layout::draw_elements()
         }
     }
 
+    delete modeler;
 }
 
 
@@ -85,13 +70,13 @@ void Layout::draw_reference_rays()
     {
         color = opt_sys_->optical_spec()->field_of_view()->field(fi)->render_color();
 
-        ray = opt_sys_->sequential_data()->reference_ray(1,fi,ref_wvl_idx);
+        ray = opt_sys_->reference_ray(1,fi,ref_wvl_idx);
         draw_single_ray(ray, color);
 
-        ray = opt_sys_->sequential_data()->reference_ray(2,fi,ref_wvl_idx);
+        ray = opt_sys_->reference_ray(2,fi,ref_wvl_idx);
         draw_single_ray(ray, color);
 
-        ray = opt_sys_->sequential_data()->reference_ray(3,fi,ref_wvl_idx);
+        ray = opt_sys_->reference_ray(3,fi,ref_wvl_idx);
         draw_single_ray(ray, color);
     }
 }

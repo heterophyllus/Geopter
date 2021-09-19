@@ -60,14 +60,14 @@ int main()
     double inf = std::numeric_limits<double>::infinity();
     auto assembly = sys->optical_assembly();
     //assembly->set_object_distance(1.0e+10);
-    assembly->add_surface_and_gap(       inf, 1.0e+10, "AIR"); // Obj
-    assembly->add_surface_and_gap(   23.7130,  4.8310, "1.69100:54.71");
-    assembly->add_surface_and_gap( 7331.2880,  5.8600, "AIR");
-    assembly->add_surface_and_gap(  -24.4560,  0.9750, "1.67271:32.25");
-    assembly->add_surface_and_gap(   21.8960,  4.8220, "AIR");
-    assembly->add_surface_and_gap(   86.7590,  3.1270, "1.69100:54.71");
-    assembly->add_surface_and_gap(  -20.4942, 41.2365, "AIR");
-    assembly->add_surface_and_gap(       inf,     0.0, "AIR"); // Img
+    sys->add_surface_and_gap(       inf, 1.0e+10, "AIR"); // Obj
+    sys->add_surface_and_gap(   23.7130,  4.8310, "1.69100:54.71");
+    sys->add_surface_and_gap( 7331.2880,  5.8600, "AIR");
+    sys->add_surface_and_gap(  -24.4560,  0.9750, "1.67271:32.25");
+    sys->add_surface_and_gap(   21.8960,  4.8220, "AIR");
+    sys->add_surface_and_gap(   86.7590,  3.1270, "1.69100:54.71");
+    sys->add_surface_and_gap(  -20.4942, 41.2365, "AIR");
+    sys->add_surface_and_gap(       inf,     0.0, "AIR"); // Img
     assembly->set_stop(3);
 
     sys->update_model();
@@ -80,9 +80,9 @@ int main()
 
      After updating optical system, paraxial data have been computed.
     */
-    auto ax_ray = sys->parax_data()->axial_ray(ref_wi);
-    auto pr_ray = sys->parax_data()->principle_ray(ref_wi);
-    auto fod = sys->parax_data()->first_order_data();
+    auto ax_ray = sys->axial_ray(ref_wi);
+    auto pr_ray = sys->principle_ray(ref_wi);
+    auto fod = sys->first_order_data();
 
     ax_ray.print(oss);
     pr_ray.print(oss);
@@ -94,15 +94,15 @@ int main()
     
     */
     oss << "Upper marginal ray at F0" << std::endl;
-    Ray ray = sys->sequential_data()->reference_ray(2, 0, ref_wi);
+    Ray ray = sys->reference_ray(2, 0, ref_wi);
     ray.print(oss);
 
     oss << "Upper marginal ray at F2" << std::endl;
-    ray = sys->sequential_data()->reference_ray(2, 2, ref_wi);
+    ray = sys->reference_ray(2, 2, ref_wi);
     ray.print(oss);
 
     oss << "Lower marginal ray at F2" << std::endl;
-    ray = sys->sequential_data()->reference_ray(3, 2, ref_wi);
+    ray = sys->reference_ray(3, 2, ref_wi);
     ray.print(oss);
 
     // output to text

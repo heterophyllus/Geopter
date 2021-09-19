@@ -10,24 +10,12 @@
 #include "FileIO/file_io.h"
 
 #include "System/optical_system.h"
-
 #include "Spec/optical_spec.h"
-#include "Spec/pupil_spec.h"
-#include "Spec/wvl_spec.h"
-#include "Spec/field_spec.h"
-
-#include "Sequential/sequential_model.h"
-
 #include "Assembly/optical_assembly.h"
-#include "Assembly/surface.h"
-#include "Assembly/gap.h"
 #include "Assembly/surface_profile.h"
 #include "Assembly/spherical.h"
 #include "Assembly/even_polynomial.h"
-#include "Assembly/aperture.h"
 #include "Assembly/circular.h"
-
-#include "Material/material.h"
 #include "Material/material_library.h"
 #include "Material/air.h"
 

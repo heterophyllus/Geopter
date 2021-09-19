@@ -1,27 +1,9 @@
-#define _USE_MATH_DEFINES
-#include <math.h>
-
 #include "Spec/optical_spec.h"
-
-#include "System/optical_system.h"
-
-#include "Assembly/optical_assembly.h"
-
-#include "Spec/pupil_spec.h"
-#include "Spec/field_spec.h"
-#include "Spec/wvl_spec.h"
-
-#include "Sequential/sequential_trace.h"
-
-#include "Paraxial/paraxial_model.h"
-
 
 
 using namespace geopter;
 
-OpticalSpec::OpticalSpec(OpticalSystem* sys) :
-    opt_sys_(sys),
-    do_aiming_(true)
+OpticalSpec::OpticalSpec()
 {
     spectral_region_ = std::make_unique<WvlSpec>();
     pupil_           = std::make_unique<PupilSpec>();
@@ -53,33 +35,29 @@ FieldSpec* OpticalSpec::field_of_view()
 
 void OpticalSpec::update_model()
 {
-    //_spectral_region->update_model();
     pupil_->update_model();
-
-    if(do_aiming_ && (opt_sys_->optical_assembly()->surface_count() > 2))
-    {
-        int field_count = field_of_view_->field_count();
-        int ref_wi = spectral_region_->reference_index();
-
-        SequentialTrace *tracer = new SequentialTrace(opt_sys_);
-
-        for(int fi = 0; fi < field_count; fi++){
-            auto aim_pt = tracer->aim_chief_ray(fi, ref_wi);
-            field_of_view_->field(fi)->set_aim_pt(aim_pt);
-        }
-
-        delete tracer;
-    }
-
-    
 }
 
+
+void OpticalSpec::create_minimum_spec()
+{
+    field_of_view_->clear();
+    field_of_view_->add(0.0, 0.0, 1.0, rgb_black);
+
+    spectral_region_->clear();
+    spectral_region_->add(SpectralLine::d, 1.0, rgb_black);
+
+    pupil_->set_value(PupilType::EPD);
+    pupil_->set_value(10);
+}
 
 void OpticalSpec::clear()
 {
     spectral_region_->clear();
     field_of_view_->clear();
 }
+
+
 
 void OpticalSpec::print(std::ostringstream &oss)
 {

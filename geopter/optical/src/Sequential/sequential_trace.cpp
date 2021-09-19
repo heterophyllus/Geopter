@@ -5,28 +5,12 @@
 
 #include "Sequential/sequential_path.h"
 #include "Sequential/trace_error.h"
-
 #include "System/optical_system.h"
-
 #include "Spec/optical_spec.h"
-#include "Spec/field_spec.h"
-#include "Spec/wvl_spec.h"
-
 #include "Assembly/optical_assembly.h"
-#include "Assembly/surface.h"
-#include "Assembly/surface_profile.h"
-#include "Assembly/transformation.h"
-#include "Assembly/gap.h"
-
-#include "Material/material_library.h"
-#include "Material/material.h"
-#include "Material/air.h"
-
-#include "Paraxial/paraxial_model.h"
 #include "Paraxial/first_order.h"
-#include "Paraxial/paraxial_trace.h"
 #include "Paraxial/paraxial_ray.h"
-#include "Paraxial/paraxial_path.h"
+#include "Paraxial/paraxial_trace.h"
 
 using namespace geopter;
 
@@ -64,7 +48,7 @@ Ray SequentialTrace::trace_pupil_ray(Eigen::Vector2d pupil_crd, const Field *fld
         vig_pupil = fld->apply_vignetting(pupil_crd);
     }
 
-    auto fod = opt_sys_->parax_data()->first_order_data();
+    auto fod = opt_sys_->first_order_data();
     double eprad = fod.enp_radius;
     PupilCrd aim_pt;
     //aim_pt(0) = 0.0;
@@ -202,8 +186,8 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
 
         ParaxialTrace *parax_tracer = new ParaxialTrace(opt_sys_);
 
-        double y0 = opt_sys_->parax_data()->axial_ray(ref_wvl_idx_).at(0).ht;
-        double u0 = opt_sys_->parax_data()->axial_ray(ref_wvl_idx_).at(0).slp;
+        double y0 = opt_sys_->axial_ray(ref_wvl_idx_).at(0).ht;
+        double u0 = opt_sys_->axial_ray(ref_wvl_idx_).at(0).slp;
         ParaxialRay ax_ray = parax_tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
 
         double y = ax_ray.at(last_surf).ht;
@@ -368,7 +352,7 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, Eigen::Vector2d x
 {
     assert(srf_idx > 0);
 
-    double enp_dist = opt_sys_->parax_data()->first_order_data().enp_dist;
+    double enp_dist = opt_sys_->first_order_data().enp_dist;
     double obj_dist = opt_sys_->optical_assembly()->gap(0)->thi();
     double obj2enp_dist = obj_dist + enp_dist;
 
@@ -480,7 +464,7 @@ Eigen::Vector3d SequentialTrace::object_coord(const Field* fld)
 {
     Eigen::Vector3d obj_pt;
 
-    auto fod = opt_sys_->parax_data()->first_order_data();
+    auto fod = opt_sys_->first_order_data();
 
     Eigen::Vector3d ang_dg;
     Eigen::Vector3d img_pt;

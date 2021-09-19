@@ -4,13 +4,13 @@
 #include <string>
 #include <memory>
 
-#include "transformation.h"
+#include "Assembly/transformation.h"
+#include "Assembly/aperture.h"
+#include "Assembly/decenter_data.h"
+
+#include "Assembly/surface_profile.h"
 
 namespace geopter {
-
-class Aperture;
-class DecenterData;
-class SurfaceProfile;
 
 class Interface
 {
@@ -69,7 +69,6 @@ public:
 protected:
     std::string label_;
     std::string interact_mode_;
-    //double delta_n_;
 
     double semi_diameter_;
 

@@ -6,20 +6,11 @@
 
 #include "Analysis/ray_fan.h"
 
-#include "Renderer/renderer.h"
 #include "Renderer/rgb.h"
-
 #include "System/optical_system.h"
-
 #include "Spec/optical_spec.h"
-#include "Spec/field_spec.h"
-#include "Spec/wvl_spec.h"
-#include "Spec/pupil_spec.h"
-
-#include "Sequential/sequential_model.h"
 #include "Sequential/ray.h"
 #include "Sequential/sequential_trace.h"
-
 
 
 using namespace geopter;
@@ -60,7 +51,7 @@ void RayFan::plot(double scale, int nrd)
         // trace chief ray
         Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
 
-        Ray chief_ray = opt_sys_->sequential_data()->reference_ray(1,fi,ref_wvl_idx);
+        Ray chief_ray = opt_sys_->reference_ray(1,fi,ref_wvl_idx);
         double x0 = chief_ray.back().x();
         double y0 = chief_ray.back().y();
 

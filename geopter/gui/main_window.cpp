@@ -232,7 +232,7 @@ void MainWindow::showFirstOrderData()
     std::ostringstream ss;
 
     opt_sys_->update_model();
-    opt_sys_->parax_data()->first_order_data().print(ss);
+    opt_sys_->first_order_data().print(ss);
 
     TextViewDock *dock = new TextViewDock("First Order Data");
     dockManager_->addDockWidgetFloating(dock);
@@ -245,7 +245,7 @@ void MainWindow::showFirstOrderData()
 
 void MainWindow::showParaxialRayTrace()
 {
-    opt_sys_->parax_data()->update_model();
+    opt_sys_->update_model();
 
     TextViewDock *dock = new TextViewDock("Paraxial Ray Trace");
     dockManager_->addDockWidgetFloating(dock);

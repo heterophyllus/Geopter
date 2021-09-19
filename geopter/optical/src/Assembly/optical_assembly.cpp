@@ -6,33 +6,16 @@
 #include <iomanip>
 
 #include "Assembly/optical_assembly.h"
-
-#include "Assembly/surface.h"
-#include "Assembly/gap.h"
-#include "Assembly/surface_profile.h"
 #include "Assembly/spherical.h"
 
-#include "Material/material.h"
-#include "Material/material_library.h"
 #include "Material/air.h"
-#include "Material/glass.h"
-#include "Material/glass_catalog.h"
-#include "Material/buchdahl_glass.h"
 
 #include "Spec/spectral_line.h"
 #include "Spec/optical_spec.h"
-#include "Spec/wvl_spec.h"
-#include "Spec/field_spec.h"
-
-#include "System/optical_system.h"
-
-#include "Sequential/sequential_model.h"
-#include "Sequential/ray.h"
 
 using namespace geopter;
 
-OpticalAssembly::OpticalAssembly(OpticalSystem* opt_sys) :
-    parent_opt_sys_(opt_sys)
+OpticalAssembly::OpticalAssembly()
 {
 
 }
@@ -40,7 +23,6 @@ OpticalAssembly::OpticalAssembly(OpticalSystem* opt_sys) :
 OpticalAssembly::~OpticalAssembly()
 {
     clear();
-    parent_opt_sys_ = nullptr;
 }
 
 
@@ -214,7 +196,7 @@ void OpticalAssembly::add_surface_and_gap(std::shared_ptr<Surface> s, std::share
     gaps_.push_back(g);
 }
 
-
+/*
 void OpticalAssembly::add_surface_and_gap(double r, double t, std::string mat_name)
 {
     auto s = std::make_shared<Surface>();
@@ -235,7 +217,7 @@ void OpticalAssembly::add_surface_and_gap(double r, double t, std::string mat_na
     gaps_.push_back(g);
 
 }
-
+*/
 
 void OpticalAssembly::set_local_transforms()
 {
@@ -301,6 +283,7 @@ void OpticalAssembly::set_global_transforms(int ref_srf)
     }
 }
 
+/*
 void OpticalAssembly::set_semi_diameters()
 {
     const int num_srf = interfaces_.size();
@@ -343,6 +326,7 @@ void OpticalAssembly::set_semi_diameters()
     }
     
 }
+*/
 
 
 double OpticalAssembly::overall_length(int start, int end)

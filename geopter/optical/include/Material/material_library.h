@@ -5,11 +5,11 @@
 #include <string>
 #include <memory>
 
+#include "Material/material.h"
+#include "Material/glass_catalog.h"
 
 namespace geopter{
 
-class Material;
-class GlassCatalog;
 
 class MaterialLibrary
 {

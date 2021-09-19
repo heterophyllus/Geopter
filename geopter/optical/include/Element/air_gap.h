@@ -1,11 +1,11 @@
 #ifndef AIR_GAP_H
 #define AIR_GAP_H
 
-#include "element.h"
+#include "Element/element.h"
+#include "Assembly/gap.h"
 
 namespace geopter {
 
-class Gap;
 
 class AirGap : public Element
 {

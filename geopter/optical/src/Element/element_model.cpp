@@ -1,18 +1,12 @@
 #include "Element/element_model.h"
 
-#include "Element/element.h"
 #include "Element/lens.h"
 //#include "Element/mirror.h"
 #include "Element/stop.h"
 #include "Element/dummy_interface.h"
 #include "Element/air_gap.h"
-
 #include "System/optical_system.h"
-
 #include "Assembly/optical_assembly.h"
-#include "Assembly/surface.h"
-#include "Assembly/gap.h"
-
 #include "Material/material.h"
 
 

@@ -3,10 +3,11 @@
 
 #include "element.h"
 
+#include "Assembly/surface.h"
+#include "Assembly/gap.h"
+
 namespace geopter {
 
-class Surface;
-class Gap;
 
 class Lens : public Element
 {

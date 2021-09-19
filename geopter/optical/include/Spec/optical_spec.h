@@ -3,17 +3,17 @@
 
 #include <memory>
 
+#include "Spec/pupil_spec.h"
+#include "Spec/field_spec.h"
+#include "Spec/wvl_spec.h"
+
 namespace geopter {
 
-class OpticalSystem;
-class PupilSpec;
-class WvlSpec;
-class FieldSpec;
 
 class OpticalSpec
 {
 public:
-    OpticalSpec(OpticalSystem* sys);
+    OpticalSpec();
     ~OpticalSpec();
 
     PupilSpec* pupil_spec();
@@ -24,17 +24,16 @@ public:
 
     void clear();
 
+    void create_minimum_spec();
+
     void print(std::ostringstream& oss);
 
 private:
-    OpticalSystem* opt_sys_;
     std::unique_ptr<WvlSpec> spectral_region_;
     std::unique_ptr<PupilSpec> pupil_;
     std::unique_ptr<FieldSpec> field_of_view_;
 
     int stop_;
-
-    bool do_aiming_;
 };
 
 } //namespace geopter

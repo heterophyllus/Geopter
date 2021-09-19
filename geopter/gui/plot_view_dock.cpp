@@ -28,8 +28,8 @@ PlotViewDock::PlotViewDock(QString label, QWidget *parent):
 
     // Tool Bar
     toolbar_ = new QToolBar(this);
-    auto actionSetting = toolbar_->addAction("Setting");
-    auto actionSave = toolbar_->addAction("Save");
+    auto actionSetting = toolbar_->addAction(QApplication::style()->standardIcon( QStyle::SP_BrowserReload ),"Setting");
+    auto actionSave = toolbar_->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
     this->setToolBar(toolbar_);
 
     QObject::connect(actionSetting, SIGNAL(triggered()), this, SLOT(showSettingDlg()));

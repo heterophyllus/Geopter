@@ -15,14 +15,6 @@ public:
 
     void update() override;
 
-    /** Returns optical power */
-    //double optical_power() const;
-
-    //void set_optical_power(double pwr, double n_before, double n_after) override;
-    //void set_optical_power(double pwr);
-
-    //void get_y_aperture_extent(double& max_aperture, double& min_aperture);
-
     /**
      * @brief Compute intersect point and distance from the previous interface
      * @param pt intersect point
@@ -40,7 +32,6 @@ public:
     void print(std::ostringstream& oss);
 
 protected:
-    //double optical_power_;
 
 
 };

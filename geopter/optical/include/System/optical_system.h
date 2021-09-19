@@ -4,14 +4,15 @@
 #include <string>
 #include <memory>
 
-namespace geopter {
 
-class OpticalAssembly;
-class OpticalSpec;
-class MaterialLibrary;
-class ParaxialModel;
-class SequentialModel;
-class ElementModel;
+#include "Spec/optical_spec.h"
+#include "Assembly/optical_assembly.h"
+#include "Paraxial/first_order.h"
+#include "Paraxial/paraxial_ray.h"
+#include "Sequential/ray.h"
+#include "Material/material_library.h"
+
+namespace geopter {
 
 class OpticalSystem
 {
@@ -39,24 +40,17 @@ public:
      * */
     OpticalAssembly* optical_assembly() const;
 
-    /**
-     * @brief paraxial data container
-     * @note paraxial rays, first order data
-     */
-    ParaxialModel* parax_data() const;
-
-    /**
-     * @brief optical data computed by real ray tracing
-     * @note reference rays, x/y focus shifts
-     * @return SequentialModel* 
-     */
-    SequentialModel* sequential_data() const;
-
     MaterialLibrary* material_lib() const;
 
-    ElementModel* elem_model() const;
-
     void create_minimum_system();
+
+    void add_surface_and_gap(double r, double t, std::string mat_name);
+
+    ParaxialRay axial_ray(int wi) const;
+    ParaxialRay principle_ray(int wi) const;
+    FirstOrderData first_order_data() const;
+
+    Ray reference_ray(int ri, int fi, int wi) const;
 
     void update_vignetting_factors();
 
@@ -65,12 +59,52 @@ public:
     void clear();
 
 private:
+    void update_aim_pt();
+    void update_reference_rays();
+    void update_semi_diameters();
+    void update_paraxial_data();
+
     std::unique_ptr<OpticalAssembly> opt_assembly_;
     std::unique_ptr<OpticalSpec> opt_spec_;
-    std::unique_ptr<ParaxialModel> parax_data_;
-    std::unique_ptr<SequentialModel> seq_data_;
-    std::unique_ptr<ElementModel> elem_model_;
     std::unique_ptr<MaterialLibrary> material_lib_;
+
+    // -----> Paraxial Data
+    /** parallel to axis at s1 */
+    ParaxialRay p_ray_;
+
+    /** with slope at s1 */
+    ParaxialRay q_ray_;
+
+    /** paraxial axial rays computed with all wavelengths */
+    std::vector<ParaxialRay> ax_rays_;
+
+    /** paraxial principle rays computed with all wavelengths */
+    std::vector<ParaxialRay> pr_rays_;
+
+    /** first order data computed with all wavelengths */
+    FirstOrderData fod_;
+
+    // <----- Paraxial Data End
+
+
+    // -----> Sequential Data
+    /** reference rays */
+    std::vector<Ray> ref_rays1_; // chief ray
+    std::vector<Ray> ref_rays2_; // upper meridional marginal
+    std::vector<Ray> ref_rays3_; // lower meridional marginal
+    std::vector<Ray> ref_rays4_; // upper sagittal marginal
+    std::vector<Ray> ref_rays5_; // lower sagittal marginal
+
+    /** focus shifts */
+    std::vector<double> x_focus_shifts_;
+    std::vector<double> y_focus_shifts_;
+
+    int to_ray_index(int fi, int wi) const {
+        int num_fld = opt_spec_->field_of_view()->field_count();
+        return num_fld * (fi) + wi;
+    }
+
+    // <----- Sequential Data End
 
     std::string title_;
     std::string note_;
