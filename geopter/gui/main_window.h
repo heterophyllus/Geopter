@@ -8,6 +8,8 @@
 #include "DockAreaWidget.h"
 #include "DockWidget.h"
 
+#include "system_editor_dock.h"
+
 #include "optical.h"
 using namespace geopter;
 
@@ -34,15 +36,23 @@ private slots:
     void newFile();
     void saveAs();
     void openFile();
-    void showConfig();
+
+    void showPreference();
 
     // Analysis menu
-    void showReport();
+    // Preference
+    void showPrescription();
+
+    // Draw
     void showLayout();
+
+    // Paraxial
     void showFirstOrderData();
-    void showSingleRayTrace();
     void showParaxialRayTrace();
-    void showRayFan();
+
+    // Ray and Spot
+    void showSingleRayTrace();
+    void showTransverseRayFan();
     void showLongitudinal();
 
     // Tool menu
@@ -56,8 +66,9 @@ private:
 
     Ui::MainWindow *ui;
 
-    ads::CDockManager* dockManager_;
-    LensDataManagerDock* lens_data_manager_;
+    ads::CDockManager* m_dockManager;
+
+    SystemEditorDock* m_systemEditorDock;
 
     std::shared_ptr<OpticalSystem> opt_sys_;
     std::string agf_dir_path_;

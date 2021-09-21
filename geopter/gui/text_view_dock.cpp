@@ -20,14 +20,15 @@ TextViewDock::TextViewDock(QString label, QWidget *parent) :
 
     // Text Edit
     textEdit_ = new QTextEdit;
+    textEdit_->setLineWrapMode(QTextEdit::NoWrap);
     this->setWidget(textEdit_);
     //textEdit_->setLineWrapColumnOrWidth(200);
-    textEdit_->setLineWrapMode(QTextEdit::NoWrap);
+
 
     // Tool bar
     toolBar_ = new QToolBar(this);
 
-    auto actionSetting = toolBar_->addAction(QApplication::style()->standardIcon( QStyle::SP_BrowserReload ),"Setting");
+    auto actionSetting = toolBar_->addAction(QApplication::style()->standardIcon( QStyle::SP_FileDialogContentsView ),"Setting");
     auto actionSave = toolBar_->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
 
     toolBar_->setToolButtonStyle(Qt::ToolButtonIconOnly);

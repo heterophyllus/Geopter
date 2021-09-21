@@ -5,7 +5,6 @@
 
 #include "Sequential/sequential_path.h"
 #include "Sequential/trace_error.h"
-#include "System/optical_system.h"
 #include "Spec/optical_spec.h"
 #include "Assembly/optical_assembly.h"
 #include "Paraxial/first_order.h"
@@ -193,6 +192,7 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
         double y = ax_ray.at(last_surf).ht;
         double u_prime = ax_ray.at(img_srf).slp;
         double l_prime = -y/u_prime;
+
         delete parax_tracer;
 
 

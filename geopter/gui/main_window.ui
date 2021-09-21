@@ -30,19 +30,58 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
-    <addaction name="actionConfig"/>
+    <addaction name="separator"/>
+    <addaction name="actionPreference"/>
    </widget>
    <widget class="QMenu" name="menuAnalysis">
     <property name="title">
      <string>Analysis</string>
     </property>
-    <addaction name="actionReport"/>
-    <addaction name="actionLayout"/>
-    <addaction name="actionFirst_Order_Data"/>
-    <addaction name="actionParaxial_Ray_Trace"/>
-    <addaction name="actionTransverse_Ray_Fan"/>
-    <addaction name="actionLongitudinal_Aberration"/>
-    <addaction name="actionSingle_Ray_Trace"/>
+    <widget class="QMenu" name="menuDraw">
+     <property name="title">
+      <string>Draw</string>
+     </property>
+     <addaction name="action2DLayout"/>
+    </widget>
+    <widget class="QMenu" name="menuParaxial">
+     <property name="title">
+      <string>Paraxial</string>
+     </property>
+     <addaction name="actionFirstOrderData"/>
+     <addaction name="actionParaxialRayTrace"/>
+    </widget>
+    <widget class="QMenu" name="menuRaysAndSpot">
+     <property name="title">
+      <string>Rays and Spot</string>
+     </property>
+     <addaction name="actionSingleRayTrace"/>
+     <addaction name="separator"/>
+     <addaction name="actionSpotDiagram"/>
+     <addaction name="actionThroughfocusSpotDiagram"/>
+    </widget>
+    <widget class="QMenu" name="menuAberration">
+     <property name="title">
+      <string>Aberration</string>
+     </property>
+     <addaction name="actionRayAberration"/>
+     <addaction name="actionOpticalPath"/>
+     <addaction name="separator"/>
+     <addaction name="actionFieldCurvature"/>
+     <addaction name="actionGridDistortion"/>
+     <addaction name="actionLongitudinalAberration"/>
+     <addaction name="actionLateralColor"/>
+     <addaction name="actionChromaticFocusShift"/>
+     <addaction name="separator"/>
+     <addaction name="actionSeidelCoefficients"/>
+    </widget>
+    <addaction name="actionPrescription"/>
+    <addaction name="separator"/>
+    <addaction name="menuDraw"/>
+    <addaction name="separator"/>
+    <addaction name="menuParaxial"/>
+    <addaction name="separator"/>
+    <addaction name="menuRaysAndSpot"/>
+    <addaction name="menuAberration"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -54,9 +93,16 @@
     <property name="title">
      <string>Tool</string>
     </property>
-    <addaction name="actionDebug_Stream"/>
+    <addaction name="actionDebugStream"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionSetVigFactors"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuAnalysis"/>
    <addaction name="menuTool"/>
    <addaction name="menuHelp"/>
@@ -77,69 +123,99 @@
     <string>Save As</string>
    </property>
   </action>
-  <action name="actionLayout">
-   <property name="text">
-    <string>Layout</string>
-   </property>
-  </action>
-  <action name="actionTransverse_Ray_Fan">
-   <property name="text">
-    <string>Transverse Ray Fan</string>
-   </property>
-  </action>
-  <action name="actionLongitudinal_Ray_Fan">
-   <property name="text">
-    <string>Longitudinal Ray Fan</string>
-   </property>
-  </action>
-  <action name="actionSpot_Diagram">
-   <property name="text">
-    <string>Spot Diagram</string>
-   </property>
-  </action>
-  <action name="actionFirst_Order_Data">
-   <property name="text">
-    <string>First Order Data</string>
-   </property>
-  </action>
-  <action name="actionParaxial_Ray_Trace">
-   <property name="text">
-    <string>Paraxial Ray Trace</string>
-   </property>
-  </action>
-  <action name="actionLog">
-   <property name="text">
-    <string>Log</string>
-   </property>
-  </action>
-  <action name="actionSingle_Ray_Trace">
-   <property name="text">
-    <string>Single Ray Trace</string>
-   </property>
-  </action>
   <action name="actionAbout">
    <property name="text">
     <string>About Geopter</string>
    </property>
   </action>
-  <action name="actionConfig">
+  <action name="actionPreference">
    <property name="text">
-    <string>Glass Catalog</string>
+    <string>Preference</string>
    </property>
   </action>
-  <action name="actionLongitudinal_Aberration">
+  <action name="actionDebugStream">
+   <property name="text">
+    <string>Debug Stream</string>
+   </property>
+  </action>
+  <action name="action2DLayout">
+   <property name="text">
+    <string>2D Layout</string>
+   </property>
+  </action>
+  <action name="actionSetVigFactors">
+   <property name="text">
+    <string>Set Vignetting Factors</string>
+   </property>
+  </action>
+  <action name="actionFirstOrderData">
+   <property name="text">
+    <string>First Order Data</string>
+   </property>
+  </action>
+  <action name="actionParaxialRayTrace">
+   <property name="text">
+    <string>Paraxial Trace</string>
+   </property>
+  </action>
+  <action name="actionSingleRayTrace">
+   <property name="text">
+    <string>Single Ray Trace</string>
+   </property>
+  </action>
+  <action name="actionSpotDiagram">
+   <property name="text">
+    <string>Standard Spot Diagram</string>
+   </property>
+  </action>
+  <action name="actionThroughfocusSpotDiagram">
+   <property name="text">
+    <string>Throughfocus Spot Diagram</string>
+   </property>
+  </action>
+  <action name="actionRayAberration">
+   <property name="text">
+    <string>Ray Aberration</string>
+   </property>
+  </action>
+  <action name="actionFieldCurvature">
+   <property name="text">
+    <string>Field Curvature</string>
+   </property>
+  </action>
+  <action name="actionLongitudinalAberration">
    <property name="text">
     <string>Longitudinal Aberration</string>
    </property>
   </action>
-  <action name="actionReport">
+  <action name="actionOpticalPath">
    <property name="text">
-    <string>Report</string>
+    <string>Optical Path</string>
    </property>
   </action>
-  <action name="actionDebug_Stream">
+  <action name="actionGridDistortion">
    <property name="text">
-    <string>Debug Stream</string>
+    <string>Grid Distortion</string>
+   </property>
+  </action>
+  <action name="actionLateralColor">
+   <property name="text">
+    <string>Lateral Color</string>
+   </property>
+  </action>
+  <action name="actionChromaticFocusShift">
+   <property name="text">
+    <string>Chromatic Focus Shift</string>
+   </property>
+  </action>
+  <action name="actionSeidelCoefficients">
+   <property name="text">
+    <string>Seidel Coefficients</string>
+   </property>
+  </action>
+  <action name="actionPrescription">
+   <property name="text">
+    <string>Prescription</string>
    </property>
   </action>
  </widget>

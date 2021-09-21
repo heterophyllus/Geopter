@@ -6,201 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>753</width>
-    <height>534</height>
+    <width>521</width>
+    <height>554</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QListWidget" name="listSurfaceProperty">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>500</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <item>
-      <property name="text">
-       <string>Type</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Aperture</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Decenter</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QStackedWidget" name="stackSurfaceProperty">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <widget class="QWidget" name="page_Type">
-      <widget class="QComboBox" name="comboSurfaceType">
-       <property name="geometry">
-        <rect>
-         <x>160</x>
-         <y>20</y>
-         <width>161</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <item>
-        <property name="text">
-         <string>Sphere</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Even Asphere</string>
-        </property>
-       </item>
-      </widget>
-      <widget class="QLabel" name="label">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>30</y>
-         <width>101</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Surface Profile: </string>
-       </property>
-      </widget>
-      <widget class="QTableWidget" name="tableProfileData">
-       <property name="geometry">
-        <rect>
-         <x>140</x>
-         <y>70</y>
-         <width>191</width>
-         <height>351</height>
-        </rect>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="page_Aperture">
-      <widget class="QLabel" name="label_2">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>30</y>
-         <width>101</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Aperture Type: </string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="comboApertureType">
-       <property name="geometry">
-        <rect>
-         <x>120</x>
-         <y>20</y>
-         <width>131</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <item>
-        <property name="text">
-         <string>None</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Circular</string>
-        </property>
-       </item>
-      </widget>
-      <widget class="QStackedWidget" name="stackApertureType">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>70</y>
-         <width>441</width>
-         <height>391</height>
-        </rect>
-       </property>
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
-       <widget class="QWidget" name="page_None"/>
-       <widget class="QWidget" name="page_Circular">
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="editCircularRadius">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Radius: </string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="page_Decenter"/>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="2">
+   <item row="1" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -208,6 +22,277 @@
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QToolBox" name="toolBox">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="surfaceProfilePage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>497</width>
+        <height>388</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Surface Profile</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="surfaceProfileLabel">
+         <property name="text">
+          <string>Profile: </string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="surfaceProfileTypeCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Standard Sphere</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Even Asphere</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="QStackedWidget" name="surfaceProfileStack">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="sphericalPage">
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="sphericalRadiusEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Radius:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="2">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="evenAspherePage">
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Data:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QTableWidget" name="evenAsphereDataTable"/>
+           </item>
+           <item row="0" column="2">
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="aperturePage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>497</width>
+        <height>388</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Aperture</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Type:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="apertureTypeCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Circular</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="QStackedWidget" name="apertureStack">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="apertureNonePage"/>
+         <widget class="QWidget" name="apertureCircularPage">
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Radius:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="circularRadiusEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="decenterPage">
+      <attribute name="label">
+       <string>Decenter</string>
+      </attribute>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>40</y>
+         <width>151</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Not implemented</string>
+       </property>
+      </widget>
+     </widget>
     </widget>
    </item>
   </layout>

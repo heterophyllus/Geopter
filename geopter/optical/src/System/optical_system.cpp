@@ -329,3 +329,22 @@ void OpticalSystem::clear()
     opt_assembly_->clear();
     opt_spec_->clear();
 }
+
+void OpticalSystem::print(std::ostringstream &oss)
+{
+    oss << "Title : " << title_ << std::endl;
+    oss << std::endl;
+    oss << "Note: " << std::endl;
+    oss << note_ << std::endl;
+    oss << std::endl;
+
+    oss << "Specifications:" << std::endl;
+    oss << std::endl;
+    opt_spec_->print(oss);
+
+    oss << "Lens Data" << std::endl;
+    oss << std::endl;
+    opt_assembly_->print(oss);
+    oss << std::endl;
+
+}

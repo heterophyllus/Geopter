@@ -8,8 +8,12 @@ set(PROJECT_SOURCES
     main_window.cpp
     main_window.ui
 
-    lens_data_manager_dock.h
-    lens_data_manager_dock.cpp
+    system_editor_dock.cpp
+    system_editor_dock.h
+
+    system_editor_widget.h
+    system_editor_widget.cpp
+    system_editor_widget.ui
 
     general_configuration_dialog.cpp
     general_configuration_dialog.h
@@ -27,10 +31,6 @@ set(PROJECT_SOURCES
 
     renderer_qcp.h
     renderer_qcp.cpp
-
-    spec_setting_dialog.h
-    spec_setting_dialog.cpp
-    spec_setting_dialog.ui
 
     surface_property_dialog.cpp
     surface_property_dialog.h

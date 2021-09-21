@@ -5,12 +5,10 @@
 
 #include "Sequential/ray.h"
 #include "Sequential/sequential_path.h"
-
+#include "System/optical_system.h"
+#include "Spec/field.h"
 
 namespace geopter {
-
-class OpticalSystem;
-class Field;
 
 class SequentialTrace
 {

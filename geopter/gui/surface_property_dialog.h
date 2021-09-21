@@ -16,33 +16,33 @@ class SurfacePropertyDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SurfacePropertyDialog(std::shared_ptr<OpticalSystem> opt_model, int surface_index, QWidget *parent = nullptr);
+    explicit SurfacePropertyDialog(std::shared_ptr<OpticalSystem> opt_sys, int surfaceIndex, QWidget *parent = nullptr);
     ~SurfacePropertyDialog();
 
-    void syncUiWithModel();
-    void syncModelWithUi();
+    /** Update UI using current OpticalSystem */
+    void syncUiWithSystem();
+
+    /** Update OpticalSystem using current input data */
+    void syncSystemWithUi();
 
 private slots:
 
-    /** Show stacked property tab.  Called when the list item is changed  */
-    void showStackedPropertyTab(int i);
+    /** Set up and show surface profile setting. Called when comboBox(Surafce Profile Type) is changed */
+    void showSurfaceProfileStackPage(int surfaceProfileType);
 
-
-    void initializeCoefsTable(int type);
-
-    /** Show stacked aperture setting tab.  Called when the combobox(Aperture Type) index is changed */
-    void showStackedApertureTab(int i);
+    /** Show the given page of aperture stack.  Called when the combobox(Aperture Type) index is changed */
+    void showApertureStackPage(int apertureType);
 
     /** OK button clicked */
     void onAccept();
 
 private:
+    void initializeEvenAsphereDataTable();
+    void setValueToCell(QTableWidget* table, int row, int col, double val);
+
     Ui::SurfacePropertyDialog *ui;
     std::shared_ptr<OpticalSystem> opt_sys_;
     int surface_index_;
-
-
-    void setValueToCell(QTableWidget* table, int row, int col, double val);
 };
 
 #endif // SURFACE_PROPERTY_DIALOG_H

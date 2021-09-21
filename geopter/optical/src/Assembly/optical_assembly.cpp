@@ -196,28 +196,7 @@ void OpticalAssembly::add_surface_and_gap(std::shared_ptr<Surface> s, std::share
     gaps_.push_back(g);
 }
 
-/*
-void OpticalAssembly::add_surface_and_gap(double r, double t, std::string mat_name)
-{
-    auto s = std::make_shared<Surface>();
-    s->profile()->set_cv(1.0/r);
 
-    auto g = std::make_shared<Gap>();
-    g->set_thi(t);
-
-    auto m = parent_opt_sys_->material_lib()->find(mat_name);
-    if(m) {
-        g->set_material(m);
-    }
-
-    // insert surface and gap to just before the image
-    //auto s_itr = interfaces_.end() - 1;
-    //interfaces_.insert(s_itr, s);
-    interfaces_.push_back(s);
-    gaps_.push_back(g);
-
-}
-*/
 
 void OpticalAssembly::set_local_transforms()
 {
@@ -283,51 +262,6 @@ void OpticalAssembly::set_global_transforms(int ref_srf)
     }
 }
 
-/*
-void OpticalAssembly::set_semi_diameters()
-{
-    const int num_srf = interfaces_.size();
-    const int num_fld = parent_opt_sys_->optical_spec()->field_of_view()->field_count();
-    const int ref_wvl_idx = parent_opt_sys_->optical_spec()->spectral_region()->reference_index();
-
-    // initialize all surface
-    for(int si = 0; si < num_srf; si++) {
-        interfaces_[si]->set_semi_diameter(0.0);
-    }
-
-    // update semi diameter
-    Ray chief_ray, mer_upper_ray, mer_lower_ray, sag_upper_ray, sag_lower_ray;
-
-    for(int fi = 0; fi < num_fld; fi++) {
-
-        chief_ray     = parent_opt_sys_->sequential_data()->reference_ray(1,fi,ref_wvl_idx);
-        mer_upper_ray = parent_opt_sys_->sequential_data()->reference_ray(2,fi,ref_wvl_idx);
-        mer_lower_ray = parent_opt_sys_->sequential_data()->reference_ray(3,fi,ref_wvl_idx);
-        sag_upper_ray = parent_opt_sys_->sequential_data()->reference_ray(4,fi,ref_wvl_idx);
-        sag_lower_ray = parent_opt_sys_->sequential_data()->reference_ray(5,fi,ref_wvl_idx);
-
-        for(int si = 0; si < num_srf; si++) {
-
-            double chief_ray_ht     = chief_ray.at(si).height();
-            double mer_upper_ray_ht = mer_upper_ray.at(si).height();
-            double mer_lower_ray_ht = mer_lower_ray.at(si).height();
-            double sag_upper_ray_ht = sag_upper_ray.at(si).height();
-            double sag_lower_ray_ht = sag_lower_ray.at(si).height();
-
-            double ray_ht_for_cur_fld = std::max({chief_ray_ht, mer_upper_ray_ht, mer_lower_ray_ht, sag_upper_ray_ht, sag_lower_ray_ht});
-
-            double current_sd = interfaces_[si]->semi_diameter();
-
-            if(current_sd < ray_ht_for_cur_fld) {
-                interfaces_[si]->set_semi_diameter(ray_ht_for_cur_fld);
-            }
-        }
-
-    }
-    
-}
-*/
-
 
 double OpticalAssembly::overall_length(int start, int end)
 {
@@ -349,10 +283,12 @@ void OpticalAssembly::print(std::ostringstream& oss) const
 
     // header labels
     oss << std::setw(idx_w) << std::right << "S";
+    oss << std::setw(val_w) << std::right << "Label";
     oss << std::setw(val_w) << std::right << "Radius";
     oss << std::setw(val_w) << std::right << "Thickness";
-    oss << std::setw(val_w) << std::right << "Medium";
+    oss << std::setw(val_w) << std::right << "Material";
     oss << std::setw(val_w) << std::right << "Index";
+    oss << std::setw(val_w) << std::right << "Aperture";
     oss << std::setw(val_w) << std::right << "SemiDiam";
     oss << std::setw(val_w) << std::right << "LclTfrm(X)";
     oss << std::setw(val_w) << std::right << "LclTfrm(Y)";
@@ -365,29 +301,36 @@ void OpticalAssembly::print(std::ostringstream& oss) const
     int num_srf = interfaces_.size();
 
     double r, thi, nd, sd;
-    std::string mat_name;
+    std::string mat_name, label, aperture_type;
 
     for(int i = 0; i < num_srf; i++) {
 
-        r = interfaces_[i]->profile()->radius();
+        r             = interfaces_[i]->profile()->radius();
+        label         = interfaces_[i]->label();
+        sd            = interfaces_[i]->semi_diameter();
+        aperture_type = interfaces_[i]->aperture_shape();
+
+        if(aperture_type == "None"){
+            aperture_type = "-";
+        }
 
         if(i < gap_count()){
-            thi = gaps_[i]->thi();
+            thi      = gaps_[i]->thi();
             mat_name = gaps_[i]->material()->name();
-            nd = gaps_[i]->material()->rindex(SpectralLine::d);
+            nd       = gaps_[i]->material()->rindex(SpectralLine::d);
         }else{
             thi = 0.0;
             mat_name = "";
             nd = 1.0;
         }
         
-        sd = interfaces_[i]->semi_diameter();
-
         oss << std::setw(idx_w) << std::right << std::fixed << i;
+        oss << std::setw(val_w) << std::right << std::fixed << label;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << r;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << thi;
         oss << std::setw(val_w) << std::right << std::fixed << mat_name;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << nd;
+        oss << std::setw(val_w) << std::right << std::fixed << aperture_type;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << sd;
 
         // local transforms

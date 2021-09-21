@@ -3,7 +3,8 @@
 
 #include <string>
 #include <memory>
-
+#include <sstream>
+#include <vector>
 
 #include "Spec/optical_spec.h"
 #include "Assembly/optical_assembly.h"
@@ -57,6 +58,8 @@ public:
     void update_model();
 
     void clear();
+
+    void print(std::ostringstream& oss);
 
 private:
     void update_aim_pt();

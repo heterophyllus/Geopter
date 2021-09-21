@@ -11,22 +11,17 @@ SurfacePropertyDialog::SurfacePropertyDialog(std::shared_ptr<OpticalSystem> opt_
 
     this->setWindowTitle("Surface " + QString::number(surface_index_));
 
-    QObject::connect(ui->listSurfaceProperty, SIGNAL(currentRowChanged(int)), this, SLOT(showStackedPropertyTab(int)));
-    ui->listSurfaceProperty->setCurrentRow(0);
-    ui->stackSurfaceProperty->setCurrentIndex(0);
+    QObject::connect(ui->surfaceProfileTypeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(showSurfaceProfileStackPage(int)));
+    ui->sphericalRadiusEdit->setValidator(new QDoubleValidator(-10000.0, 10000.0, 8, this));
 
-    QObject::connect(ui->comboSurfaceType, SIGNAL(currentIndexChanged(int)), this, SLOT(initializeCoefsTable(int)));
-
-    QObject::connect(ui->comboApertureType, SIGNAL(currentIndexChanged(int)), this, SLOT(showStackedApertureTab(int)));
-    ui->comboApertureType->setCurrentIndex(0);
-    ui->stackApertureType->setCurrentIndex(0);
-
-    ui->editCircularRadius->setValidator(new QDoubleValidator(0, 10000, 1.0, this));
-    ui->editCircularRadius->setText(QString::number(1.0));
+    QObject::connect(ui->apertureTypeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(showApertureStackPage(int)));
+    ui->circularRadiusEdit->setValidator(new QDoubleValidator(0.0, 10000.0, 8, this));
 
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
 
-    syncUiWithModel();
+    initializeEvenAsphereDataTable();
+
+    syncUiWithSystem();
 }
 
 SurfacePropertyDialog::~SurfacePropertyDialog()
@@ -35,138 +30,132 @@ SurfacePropertyDialog::~SurfacePropertyDialog()
     delete ui;
 }
 
-void SurfacePropertyDialog::showStackedPropertyTab(int i)
+void SurfacePropertyDialog::showSurfaceProfileStackPage(int surfaceProfileType)
 {
-    ui->stackSurfaceProperty->setCurrentIndex(i);
-    ui->stackSurfaceProperty->show();
+    ui->surfaceProfileStack->setCurrentIndex(surfaceProfileType);
+    ui->surfaceProfileStack->show();
 }
 
-void SurfacePropertyDialog::showStackedApertureTab(int i)
+void SurfacePropertyDialog::showApertureStackPage(int apertureType)
 {
-    ui->stackApertureType->setCurrentIndex(i);
-    ui->stackApertureType->show();
+    ui->apertureStack->setCurrentIndex(apertureType);
+    ui->apertureStack->show();
 }
-
 
 void SurfacePropertyDialog::onAccept()
 {
-    syncModelWithUi();
+    syncSystemWithUi();
     accept();
 }
 
-void SurfacePropertyDialog::syncModelWithUi()
+void SurfacePropertyDialog::syncSystemWithUi()
 {
-    /* Surface Profile */
-    double r = ui->tableProfileData->item(0,0)->text().toDouble();
-    double cv = 1.0/r;
-
-    int surface_type = ui->comboSurfaceType->currentIndex();
+    //-----> surface profile
+    int surface_type = ui->surfaceProfileTypeCombo->currentIndex();
 
     if( surface_type == 0 ){ // Sphere
+        double r = ui->sphericalRadiusEdit->text().toDouble();
+        double cv = 1.0/r;
         opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<Spherical>(cv));
     }
     else if(surface_type == 1){ // Even Asphere
-        double k = ui->tableProfileData->item(1,0)->text().toDouble();
+        double r = ui->evenAsphereDataTable->item(0,0)->text().toDouble();
+        double cv = 1.0/r;
+        double k = ui->evenAsphereDataTable->item(1,0)->text().toDouble();
 
         std::vector<double> coefs(10, 0.0);
         for(int i = 0; i < 10; i++){
-            coefs[i] = ui->tableProfileData->item(i+2, 0)->text().toDouble();
+            coefs[i] = ui->evenAsphereDataTable->item(i+2, 0)->text().toDouble();
         }
 
         opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<EvenPolynomial>(cv,k,coefs));
     }
 
-    /* aperture */
-    int aperture_type = ui->comboApertureType->currentIndex();
+    //-----> aperture
+    int aperture_type = ui->apertureTypeCombo->currentIndex();
 
     if(aperture_type == 0){ //None
         opt_sys_->optical_assembly()->surface(surface_index_)->remove_clear_aperture();
     }
     else if(aperture_type == 1){ // Circular
-        double ap_radius = ui->editCircularRadius->text().toDouble();
+        double ap_radius = ui->circularRadiusEdit->text().toDouble();
         opt_sys_->optical_assembly()->surface(surface_index_)->set_clear_aperture(std::make_unique<Circular>(ap_radius));
     }
 
-    /* Decenter */
-    // to be implemented
+    // decenter
+    // not implemented
 }
 
 
-void SurfacePropertyDialog::syncUiWithModel()
+void SurfacePropertyDialog::syncUiWithSystem()
 {
-    /* Surface Profile */
+    //==================================
+    // surface profile
     std::string surface_type_name = opt_sys_->optical_assembly()->surface(surface_index_)->profile()->name();
 
     if(surface_type_name == "SPH"){
-
-        ui->comboSurfaceType->setCurrentIndex(0);
-
-        initializeCoefsTable(0);
+        ui->surfaceProfileTypeCombo->setCurrentIndex(0);
+        ui->surfaceProfileStack->setCurrentIndex(0);
+        ui->surfaceProfileStack->show();
 
         double r = opt_sys_->optical_assembly()->surface(surface_index_)->profile()->radius();
-        setValueToCell(ui->tableProfileData, 0, 0, r);
+        ui->sphericalRadiusEdit->setText(QString::number(r));
+        setValueToCell(ui->evenAsphereDataTable, 0, 0, r);
 
     }else if(surface_type_name == "ASP"){
-
-        ui->comboSurfaceType->setCurrentIndex(1);
-
-        initializeCoefsTable(1);
+        ui->surfaceProfileTypeCombo->setCurrentIndex(1);
+        ui->surfaceProfileStack->setCurrentIndex(1);
+        ui->surfaceProfileStack->show();
+        initializeEvenAsphereDataTable();
 
         double r = opt_sys_->optical_assembly()->surface(surface_index_)->profile()->radius();
         double k = dynamic_cast<EvenPolynomial*>(opt_sys_->optical_assembly()->surface(surface_index_)->profile())->conic();
-        setValueToCell(ui->tableProfileData, 0, 0, r);
-        setValueToCell(ui->tableProfileData, 1, 0, k);
+        setValueToCell(ui->evenAsphereDataTable, 0, 0, r);
+        setValueToCell(ui->evenAsphereDataTable, 1, 0, k);
 
         for(int i = 0; i < 10; i++){
             double coef = dynamic_cast<EvenPolynomial*>(opt_sys_->optical_assembly()->surface(surface_index_)->profile())->coef(i);
-            setValueToCell(ui->tableProfileData, i+2, 0, coef);
+            setValueToCell(ui->evenAsphereDataTable, i+2, 0, coef);
         }
+        ui->sphericalRadiusEdit->setText(QString::number(r));
     }
 
 
-    /* Aperture */
+    //=====================================================
+    // aperture
     if(opt_sys_->optical_assembly()->surface(surface_index_)->clear_aperture()){
-        ui->comboApertureType->setCurrentIndex(1);
+        ui->apertureTypeCombo->setCurrentIndex(1);
         double ap_radius = opt_sys_->optical_assembly()->surface(surface_index_)->clear_aperture()->max_dimension();
-        ui->editCircularRadius->setText(QString::number(ap_radius));
+        ui->circularRadiusEdit->setText(QString::number(ap_radius));
 
     }else{ // None
-        ui->comboApertureType->setCurrentIndex(0);
+        ui->apertureTypeCombo->setCurrentIndex(0);
     }
 
 }
 
 
-void SurfacePropertyDialog::initializeCoefsTable(int type)
+void SurfacePropertyDialog::initializeEvenAsphereDataTable()
 {
-    ui->tableProfileData->setColumnCount(1);
-    QStringList hLabels;
-    hLabels << "Value";
-    ui->tableProfileData->setHorizontalHeaderLabels(hLabels);
+    QStringList hLabels = {"Value"};
+    ui->evenAsphereDataTable->setColumnCount(hLabels.size());
+    ui->evenAsphereDataTable->setHorizontalHeaderLabels(hLabels);
 
-    if(type == 0){ // Sphere
-        ui->tableProfileData->setRowCount(1);
-
-        QStringList labels;
-        labels << "R";
-        ui->tableProfileData->setVerticalHeaderLabels(labels);
-
-    }else if(type == 1){
-        ui->tableProfileData->setRowCount(12); // R + k + coef10
-
-        QStringList labels;
-        labels << "R" << "k";
-        for(int i = 1; i <= 10; i++){
-            labels << ("A" + QString::number((i+1)*2) );
-        }
-        ui->tableProfileData->setVerticalHeaderLabels(labels);
+    QStringList vLabels;
+    vLabels << "R" << "k";
+    for(int i = 1; i <= 10; i++){
+        vLabels << ("A" + QString::number((i+1)*2) );
     }
+    ui->evenAsphereDataTable->setRowCount(vLabels.size()); // R + k + coef10
+    ui->evenAsphereDataTable->setVerticalHeaderLabels(vLabels);
 
-    /* set items */
-    for(int i = 0; i < ui->tableProfileData->rowCount(); i++){
+    /*
+    // set items
+    for(int i = 0; i < ui->evenAsphereDataTable->rowCount(); i++){
         QTableWidgetItem *item = new QTableWidgetItem;
-        ui->tableProfileData->setItem(i,0,item);
+        ui->evenAsphereDataTable->setItem(i,0,item);
     }
+    */
 
 }
 
@@ -179,7 +168,5 @@ void SurfacePropertyDialog::setValueToCell(QTableWidget* table, int row, int col
     }
 
     item->setTextAlignment(Qt::AlignRight);
-
     item->setText(QString::number(val, 'g', 8));
-
 }

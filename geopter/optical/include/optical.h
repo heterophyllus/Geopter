@@ -61,6 +61,9 @@
 #include "Element/air_gap.h"
 #include "Element/element_model.h"
 
+#include "Renderer/renderer.h"
+#include "Renderer/rgb.h"
+
 #include "Utility/utility.h"
 
 #include "FileIO/file_io.h"
