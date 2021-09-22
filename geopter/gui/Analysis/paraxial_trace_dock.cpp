@@ -1,41 +1,30 @@
 #include <iomanip>
+#include "paraxial_trace_dock.h"
+#include "Analysis/paraxial_trace_dialog.h"
 
-#include "paraxial_trace_dialog.h"
-#include "ui_paraxial_trace_dialog.h"
-
-#include "text_view_dock.h"
-
-ParaxialTraceDialog::ParaxialTraceDialog(OpticalSystem* opt_sys, TextViewDock *parent) :
-    QDialog(parent),
-    ui(new Ui::ParaxialTraceDialog),
-    parentDock_(parent),
-    opt_sys_(opt_sys)
+ParaxialTraceDock::ParaxialTraceDock(QString label, OpticalSystem* sys,  QWidget *parent) :
+    TextViewDock(label, parent),
+    m_opticalSystem(sys)
 {
-    ui->setupUi(this);
-    this->setWindowTitle("Paraxial Ray Trace Setting");
-
-    //wvl combo
-    const int num_wvl = opt_sys_->optical_spec()->spectral_region()->wvl_count();
-    for(int i = 0; i < num_wvl; i++){
-        QString wvl_item = "W" + QString::number(i+1) + ": " + QString::number(opt_sys_->optical_spec()->spectral_region()->wavelength(i));
-        ui->comboWvl->addItem(wvl_item);
-    }
-
-    QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
+    m_settingDlgPtr = std::make_unique<ParaxialTraceDialog>(m_opticalSystem, this);
 }
 
-ParaxialTraceDialog::~ParaxialTraceDialog()
+ParaxialTraceDock::~ParaxialTraceDock()
 {
-    delete ui;
+
 }
 
-void ParaxialTraceDialog::onAccept()
+void ParaxialTraceDock::updateText()
 {
-    int wi = ui->comboWvl->currentIndex();
-    double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi);
+    m_opticalSystem->update_model();
 
-    ParaxialRay ax_ray = opt_sys_->axial_ray(wi);
-    ParaxialRay pr_ray = opt_sys_->principle_ray(wi);
+    int wi;
+    dynamic_cast<ParaxialTraceDialog*>(m_settingDlgPtr.get())->getSettings(&wi);
+
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+
+    ParaxialRay ax_ray = m_opticalSystem->axial_ray(wi);
+    ParaxialRay pr_ray = m_opticalSystem->principle_ray(wi);
 
     const int idx_w  = 4;
     const int val_w  = 10;
@@ -70,10 +59,5 @@ void ParaxialTraceDialog::onAccept()
         oss << std::endl;
     }
 
-
-
-    // write to textview dock
-    parentDock_->setStringStreamToText(oss);
-
-    accept();
+    setStringStreamToText(oss);
 }

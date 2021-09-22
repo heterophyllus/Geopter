@@ -30,24 +30,22 @@ SystemEditorWidget::SystemEditorWidget(std::shared_ptr<OpticalSystem> opt_sys, Q
     ui->assemblyTable->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(ui->assemblyTable, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnAssemblyTableCell()));
 
-    QObject::connect(ui->assemblyTable, SIGNAL(cellChanged(int,int)), this, SLOT(validateCellInputOnAssemblyTable(int,int)));
-    QObject::connect(ui->assemblyTable, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(validateCellDoubleClickOnAssemblyTable(QTableWidgetItem*)));
 
     FloatDelegate *delegate = new FloatDelegate(4, ui->assemblyTable);
     ui->assemblyTable->setItemDelegate(delegate);
-
-    ui->assemblyTable->setEditTriggers(QAbstractItemView::DoubleClicked);
 
 
     //======================
     // Spec
     ui->pupilValueEdit->setValidator(new QDoubleValidator(0.0, 10000.0, 8, this));
-    QObject::connect( ui->wavelengthTable, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(validateCellDoubleClickOnWavelengthTable(int,int)) );
-    QObject::connect( ui->fieldTable,      SIGNAL(cellDoubleClicked(int, int)), this, SLOT(validateCellDoubleClickOnFieldTable(int,int)) );
 
     syncUiWithSystem();
 
     ui->tabWidget->setCurrentIndex(0); // show assembly tab
+
+    // These signal/slot connection must be after initialization
+    setConnectionValidateCellInput(true);
+
 }
 
 SystemEditorWidget::~SystemEditorWidget()
@@ -101,6 +99,9 @@ void SystemEditorWidget::initialize()
 
 void SystemEditorWidget::syncUiWithSystem()
 {
+    setConnectionValidateCellInput(false);
+    setTableEditable(true);
+
     // =========================================
     // assembly
     int surfaceCount = opt_sys_->optical_assembly()->surface_count();
@@ -132,6 +133,8 @@ void SystemEditorWidget::syncUiWithSystem()
         //}
 
     }
+
+    updateVerticalHeaderOnAssemblyTable();
 
 
     // ==========================================
@@ -198,23 +201,31 @@ void SystemEditorWidget::syncUiWithSystem()
         setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldVUY, vuy);
     }
 
+    setTableEditable(false);
+    setConnectionValidateCellInput(true);
 }
 
 void SystemEditorWidget::syncSystemWithUi()
 {
+    // This function is used mainly when specificationis edited
+
+
     // =========================================
     // assembly
-    opt_sys_->optical_assembly()->clear();
+    /*
     int surfaceCount = ui->assemblyTable->rowCount();
     for(int si = 0; si < surfaceCount; si++) {
         std::string surfaceLabel = ui->assemblyTable->item(si, AssemblyTableColumn::Label)->text().toStdString();
+
         double r = ui->assemblyTable->item(si, AssemblyTableColumn::Radius)->text().toDouble();
         double thi = ui->assemblyTable->item(si, AssemblyTableColumn::Thickness)->text().toDouble();
-        std::string materialName = ui->assemblyTable->item(si, AssemblyTableColumn::Material)->text().toStdString();
+        //std::string materialName = ui->assemblyTable->item(si, AssemblyTableColumn::Material)->text().toStdString();
 
-        opt_sys_->add_surface_and_gap(r, thi, materialName);
-        opt_sys_->optical_assembly()->surface(opt_sys_->optical_assembly()->surface_count()-1)->set_label(surfaceLabel);
+        opt_sys_->optical_assembly()->surface(si)->profile()->set_radius(r);
+        opt_sys_->optical_assembly()->surface(si)->set_label(surfaceLabel);
+        opt_sys_->optical_assembly()->gap(si)->set_thi(thi);
     }
+    */
 
 
 
@@ -235,7 +246,7 @@ void SystemEditorWidget::syncSystemWithUi()
     for(int wi = 0; wi < wvlCount; wi++) {
         double value = ui->wavelengthTable->item(wi, WavelengthTableColumn::WavelengthValue)->text().toDouble();
         double wt    = ui->wavelengthTable->item(wi, WavelengthTableColumn::WavelengthWeight)->text().toDouble();
-        QColor color = ui->wavelengthTable->item(wi, WavelengthTableColumn::WavelengthWeight)->background().color();
+        QColor color = ui->wavelengthTable->item(wi, WavelengthTableColumn::WavelengthColor)->background().color();
 
         opt_sys_->optical_spec()->spectral_region()->add(value, wt, QColorToRgb(color));
     }
@@ -385,8 +396,6 @@ void SystemEditorWidget::removeLineFromAssemblyTable()
 
 void SystemEditorWidget::insertLineOnAssemblyTable(int row)
 {
-    //connectValidateCell(false);
-
     if(ui->assemblyTable->rowCount() == 0){
         ui->assemblyTable->setRowCount(1);
     }else{
@@ -402,11 +411,6 @@ void SystemEditorWidget::insertLineOnAssemblyTable(int row)
     opt_sys_->optical_assembly()->insert_dummy(row);
     opt_sys_->update_model();
 
-
-    // input cell values
-    //syncRowWithModel(row);
-
-    //connectValidateCell(true);
 }
 
 void SystemEditorWidget::updateVerticalHeaderOnAssemblyTable()
@@ -435,6 +439,71 @@ void SystemEditorWidget::updateVerticalHeaderOnAssemblyTable()
     }
 }
 
+void SystemEditorWidget::setTableEditable(bool state)
+{
+    QColor white_smoke(245,245,245);
+
+    const int rowCount = ui->assemblyTable->rowCount();
+    QTableWidgetItem *item;
+
+    if(state){ // set editable
+
+        for(int i = 0; i < rowCount; i++) {
+            item = ui->assemblyTable->item(i, AssemblyTableColumn::SurfaceType);
+            if(!item) continue;
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+            item->setBackground(Qt::white);
+
+            item = ui->assemblyTable->item(i, AssemblyTableColumn::Mode);
+            if(!item) continue;
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+            item->setBackground(Qt::white);
+
+            item = ui->assemblyTable->item(i, AssemblyTableColumn::SemiDiameter);
+            if(!item) continue;
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+            item->setBackground(Qt::white);
+        }
+
+    }else{ // set uneditable
+
+        for(int i = 0; i < rowCount; i++) {
+            item = ui->assemblyTable->item(i, AssemblyTableColumn::SurfaceType);
+            if(!item) continue;
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            item->setBackground(white_smoke);
+
+            item = ui->assemblyTable->item(i, AssemblyTableColumn::Mode);
+            if(!item) continue;
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            item->setBackground(white_smoke);
+
+            item = ui->assemblyTable->item(i, AssemblyTableColumn::SemiDiameter);
+            if(!item) continue;
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            item->setBackground(white_smoke);
+        }
+    }
+
+}
+
+void SystemEditorWidget::setConnectionValidateCellInput(bool state)
+{
+    if(state){
+        QObject::connect(ui->assemblyTable, SIGNAL(cellChanged(int,int)), this, SLOT(validateCellInputOnAssemblyTable(int,int)));
+        QObject::connect(ui->assemblyTable, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(validateCellDoubleClickOnAssemblyTable(QTableWidgetItem*)));
+
+        QObject::connect( ui->wavelengthTable, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(validateCellDoubleClickOnWavelengthTable(int,int)) );
+        QObject::connect( ui->fieldTable,      SIGNAL(cellDoubleClicked(int, int)), this, SLOT(validateCellDoubleClickOnFieldTable(int,int)) );
+    }else{
+        QObject::disconnect(ui->assemblyTable, SIGNAL(cellChanged(int,int)), this, SLOT(validateCellInputOnAssemblyTable(int,int)));
+        QObject::disconnect(ui->assemblyTable, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(validateCellDoubleClickOnAssemblyTable(QTableWidgetItem*)));
+
+        QObject::disconnect( ui->wavelengthTable, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(validateCellDoubleClickOnWavelengthTable(int,int)) );
+        QObject::disconnect( ui->fieldTable,      SIGNAL(cellDoubleClicked(int, int)), this, SLOT(validateCellDoubleClickOnFieldTable(int,int)) );
+    }
+}
+
 void SystemEditorWidget::validateCellDoubleClickOnAssemblyTable(QTableWidgetItem *item)
 {
     if(item) {
@@ -452,7 +521,7 @@ void SystemEditorWidget::validateCellDoubleClickOnAssemblyTable(QTableWidgetItem
         case AssemblyTableColumn::Thickness :
             break;
         case AssemblyTableColumn::SurfaceType :
-            showSurfacePropertyDlg(row);
+            showSurfacePropertyDlg(row);           
             break;
         case AssemblyTableColumn::Mode :
             showSurfacePropertyDlg(row);
@@ -471,10 +540,18 @@ void SystemEditorWidget::validateCellDoubleClickOnAssemblyTable(QTableWidgetItem
     }
 }
 
+
+
+
 void SystemEditorWidget::validateCellInputOnAssemblyTable(int row, int col)
 {
-    QTableWidgetItem *item = ui->assemblyTable->item(row, col);
-    if(item) {
+    QTableWidgetItem *item;
+    try {
+        item = ui->assemblyTable->item(row, col);
+        if(!item) {
+            return;
+        }
+    }  catch (...) {
         return;
     }
 
@@ -492,8 +569,11 @@ void SystemEditorWidget::validateCellInputOnAssemblyTable(int row, int col)
         validateMaterialInput(row);
         break;
     default:
-        QMessageBox::warning(this,tr("Error"), tr("Input to invalid cell"));
+        //QMessageBox::warning(this,tr("Error"), tr("Input to invalid cell"));
+        break;
     }
+
+    //syncUiWithSystem();
 
 }
 
@@ -539,6 +619,7 @@ void SystemEditorWidget::validateRadiusInput(int row)
             setContentToCell(ui->assemblyTable, row,col,QString("Infinity"));
             opt_sys_->optical_assembly()->surface(row)->profile()->set_cv(0.0);
         }else{
+            setContentToCell(ui->assemblyTable, row,col,val);
             opt_sys_->optical_assembly()->surface(row)->profile()->set_radius(val);
         }
 
@@ -566,12 +647,15 @@ void SystemEditorWidget::validateThicknessInput(int row)
             setContentToCell(ui->assemblyTable, row, col, 0.0);
             opt_sys_->optical_assembly()->gap(row)->set_thi(0.0);
         }else{
-            opt_sys_->optical_assembly()->gap(row)->set_thi(val);
+            opt_sys_->optical_assembly()->gap(row)->set_thi(val); 
         }
     }else{
         QMessageBox::warning(this, tr("Error"), tr("Invalid thickness input"));
+        setContentToCell(ui->assemblyTable, row, col, 0.0);
         opt_sys_->optical_assembly()->gap(row)->set_thi(0.0);
     }
+
+    qDebug() << "gap(" << row << ")  thi= " << val;
 }
 
 void SystemEditorWidget::validateMaterialInput(int row)

@@ -124,6 +124,11 @@ int OpticalAssembly::image_index() const
     return interfaces_.size() - 1;
 }
 
+Surface* OpticalAssembly::image_surface() const
+{
+    return interfaces_.back().get();
+}
+
 Gap* OpticalAssembly::image_space_gap() const
 {
     int num_gaps = gaps_.size();

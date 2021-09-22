@@ -9,12 +9,15 @@
 #include "text_view_dock.h"
 #include "plot_view_dock.h"
 #include "general_configuration_dialog.h"
-#include "layout_dialog.h"
-#include "paraxial_trace_dialog.h"
-#include "single_ray_trace_dialog.h"
-#include "transverse_ray_fan_dialog.h"
-#include "longitudinal_setting_dialog.h"
-#include "renderer_qcp.h"
+
+#include "Analysis/prescription_dock.h"
+#include "Analysis/first_order_data_dock.h"
+#include "Analysis/layout_dock.h"
+#include "Analysis/paraxial_trace_dock.h"
+#include "Analysis/single_ray_trace_dock.h"
+#include "Analysis/transverse_ray_fan_dock.h"
+#include "Analysis/longitudinal_aberration_dock.h"
+#include "Analysis/renderer_qcp.h"
 
 #include "qdebugstream.h"
 
@@ -151,10 +154,7 @@ void MainWindow::saveAs()
 
 void MainWindow::openFile()
 {
-    QStringList filePaths = QFileDialog::getOpenFileNames(this,
-                                                          tr("Open JSON"),
-                                                          QApplication::applicationDirPath(),
-                                                          tr("JSON files(*.json)"));
+    QStringList filePaths = QFileDialog::getOpenFileNames(this, tr("Open JSON"), QApplication::applicationDirPath(),tr("JSON files(*.json)"));
     if(filePaths.empty()){
         //QMessageBox::warning(this,tr("Canceled"), tr("Canceled"));
         return;
@@ -185,87 +185,63 @@ void MainWindow::showPreference()
  * ********************************************************************************************************************************/
 void MainWindow::showPrescription()
 {
-    TextViewDock *dock = new TextViewDock("Prescription");
+    PrescriptionDock *dock = new PrescriptionDock("Prescription", opt_sys_.get());
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
-
-    std::ostringstream oss;
-    opt_sys_->print(oss);
-
-    // This analysis does not have setting dialog so just shows the result.
-    dock->setStringStreamToText(oss);
+    dock->updateText();
 }
 
 
 void MainWindow::showLayout()
 {
-    PlotViewDock *dock = new PlotViewDock("Layout");
+    LayoutDock *dock = new LayoutDock("2D Layout", opt_sys_.get());
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
-
-    dock->possessDlg(std::make_unique<LayoutDialog>(opt_sys_.get(), dock));
-    dock->showSettingDlg();
+    dock->updatePlot();
 }
 
 
 void MainWindow::showFirstOrderData()
 {
-    std::ostringstream ss;
-
-    opt_sys_->update_model();
-    opt_sys_->first_order_data().print(ss);
-
-    TextViewDock *dock = new TextViewDock("First Order Data");
+    FirstOrderDataDock *dock = new FirstOrderDataDock("First Order Data", opt_sys_.get());
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
-
-    // This analysis does not have setting dialog so just shows the result.
-    dock->setStringStreamToText(ss);
+    dock->updateText();
 }
 
 
 void MainWindow::showParaxialRayTrace()
 {
-    opt_sys_->update_model();
-
-    TextViewDock *dock = new TextViewDock("Paraxial Ray Trace");
+    ParaxialTraceDock *dock = new ParaxialTraceDock("Paraxial Trace", opt_sys_.get());
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
-
-    dock->possessDlg(std::make_unique<ParaxialTraceDialog>(opt_sys_.get(), dock));
-    dock->showSettingDlg();
-
+    dock->updateText();
 }
 
 void MainWindow::showSingleRayTrace()
 {
-    TextViewDock *dock = new TextViewDock("Single Ray Trace");
+    SingleRayTraceDock *dock = new SingleRayTraceDock("Single Ray Trace", opt_sys_.get());
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
-
-    dock->possessDlg(std::make_unique<SingleRayTraceDialog>(opt_sys_.get(), dock));
+    //dock->updateText();
     dock->showSettingDlg();
 }
 
 
 void MainWindow::showTransverseRayFan()
 {
-    PlotViewDock *dock = new PlotViewDock("Transverse Ray Fan");
+    TransverseRayFanDock *dock = new TransverseRayFanDock("Transverse Aberration", opt_sys_.get());
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
-
-    dock->possessDlg(std::make_unique<TransverseRayFanDialog>(opt_sys_.get(), dock));
-    dock->showSettingDlg();   
+    dock->updatePlot();
 }
 
 void MainWindow::showLongitudinal()
 {
-    PlotViewDock *dock = new PlotViewDock("Longitudinal Aberration");
+    LongitudinalAberrationDock *dock = new LongitudinalAberrationDock("Longitudinal Aberration", opt_sys_.get());
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
-
-    dock->possessDlg(std::make_unique<LongitudinalSettingDialog>(opt_sys_.get(), dock));
-    dock->showSettingDlg();
+    dock->updatePlot();
 }
 
 

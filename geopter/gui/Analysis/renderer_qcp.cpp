@@ -180,4 +180,10 @@ void RendererQCP::set_aspect_ratio(double h_per_v)
     customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atLeft)->setScaleRatio(xAxis, h_per_v);
 }
 
+void RendererQCP::set_mouse_interaction(bool state)
+{
+    customPlot_->setInteraction(QCP::iRangeDrag,   state);
+    customPlot_->setInteraction(QCP::iRangeZoom,   state);
+    customPlot_->setInteraction(QCP::iSelectItems, state);
+}
 

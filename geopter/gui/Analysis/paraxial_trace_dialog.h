@@ -2,17 +2,15 @@
 #define PARAXIAL_TRACE_DIALOG_H
 
 #include <QDialog>
+#include "text_view_dock.h"
 
 #include "optical.h"
 using namespace geopter;
 
-class TextViewDock;
 
 namespace Ui {
 class ParaxialTraceDialog;
 }
-
-
 
 class ParaxialTraceDialog : public QDialog
 {
@@ -22,14 +20,12 @@ public:
     explicit ParaxialTraceDialog(OpticalSystem* opt_sys, TextViewDock *parent = nullptr);
     ~ParaxialTraceDialog();
 
-private slots:
-    void onAccept();
+    void getSettings(int *wi);
 
 private:
     Ui::ParaxialTraceDialog *ui;
-
-    TextViewDock* parentDock_;
-    OpticalSystem* opt_sys_;
+    TextViewDock* m_parentDock;
+    OpticalSystem* m_opticalSystem;
 };
 
 #endif // PARAXIAL_TRACE_DIALOG_H

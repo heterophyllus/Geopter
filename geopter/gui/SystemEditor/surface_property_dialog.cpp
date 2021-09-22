@@ -149,13 +149,13 @@ void SurfacePropertyDialog::initializeEvenAsphereDataTable()
     ui->evenAsphereDataTable->setRowCount(vLabels.size()); // R + k + coef10
     ui->evenAsphereDataTable->setVerticalHeaderLabels(vLabels);
 
-    /*
+
     // set items
     for(int i = 0; i < ui->evenAsphereDataTable->rowCount(); i++){
         QTableWidgetItem *item = new QTableWidgetItem;
         ui->evenAsphereDataTable->setItem(i,0,item);
     }
-    */
+
 
 }
 

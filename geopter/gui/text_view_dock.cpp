@@ -19,53 +19,51 @@ TextViewDock::TextViewDock(QString label, QWidget *parent) :
     this->setMinimumSize(300,200);
 
     // Text Edit
-    textEdit_ = new QTextEdit;
-    textEdit_->setLineWrapMode(QTextEdit::NoWrap);
-    this->setWidget(textEdit_);
-    //textEdit_->setLineWrapColumnOrWidth(200);
+    m_textEdit = new QTextEdit;
+    m_textEdit->setLineWrapMode(QTextEdit::NoWrap);
+    this->setWidget(m_textEdit);
+    //m_textEdit->setLineWrapColumnOrWidth(200);
 
 
     // Tool bar
-    toolBar_ = new QToolBar(this);
+    m_toolbar = new QToolBar(this);
 
-    auto actionSetting = toolBar_->addAction(QApplication::style()->standardIcon( QStyle::SP_FileDialogContentsView ),"Setting");
-    auto actionSave = toolBar_->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
+    auto actionUpdate = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_BrowserReload ),"Update");
+    auto actionSetting = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_FileDialogContentsView ),"Setting");
+    auto actionSave = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
 
-    toolBar_->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    this->setToolBar(toolBar_);
+    //m_toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    this->setToolBar(m_toolbar);
 
+    QObject::connect(actionUpdate,  SIGNAL(triggered()), this, SLOT(updateText()));
     QObject::connect(actionSetting, SIGNAL(triggered()), this, SLOT(showSettingDlg()));
     QObject::connect(actionSave,    SIGNAL(triggered()), this, SLOT(saveToFile()));
 }
 
 TextViewDock::~TextViewDock()
 {
-    delete textEdit_;
-    delete toolBar_;
+    delete m_toolbar;
 
-    settingDlgPtr_.reset();
-}
-
-void TextViewDock::possessDlg(std::unique_ptr<QDialog> dlg)
-{
-    settingDlgPtr_ = std::move(dlg);
+    m_settingDlgPtr.reset();
 }
 
 void TextViewDock::setStringStreamToText(std::ostringstream& ss)
 {
-    textEdit_->setPlainText(QString::fromStdString(ss.str()));
+    m_textEdit->setPlainText(QString::fromStdString(ss.str()));
 }
 
 void TextViewDock::clear()
 {
-    textEdit_->clear();
+    m_textEdit->clear();
 }
 
 
 void TextViewDock::showSettingDlg()
 {
-    if(settingDlgPtr_){
-        settingDlgPtr_->exec();
+    if(m_settingDlgPtr){
+        if(m_settingDlgPtr->exec() == QDialog::Accepted){
+            updateText();
+        }
     }
 }
 
@@ -81,7 +79,12 @@ void TextViewDock::saveToFile()
     textFile.open(QIODevice::WriteOnly);
 
     QTextStream out(&textFile);
-    out << textEdit_->toPlainText() << Qt::endl;
+    out << m_textEdit->toPlainText() << Qt::endl;
 
     textFile.close();
+}
+
+void TextViewDock::updateText()
+{
+
 }

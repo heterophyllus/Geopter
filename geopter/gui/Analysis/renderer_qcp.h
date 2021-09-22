@@ -31,6 +31,8 @@ public:
 
     void set_aspect_ratio(double h_per_v) override;
 
+    void set_mouse_interaction(bool state);
+
 private:
     QCustomPlot* customPlot_;
 

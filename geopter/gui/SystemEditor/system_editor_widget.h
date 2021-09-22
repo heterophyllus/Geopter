@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QTableWidget>
+#include <QString>
+#include <QColor>
 
 #include "optical.h"
 
@@ -112,6 +114,10 @@ private:
 
     /** Update vertical header labels of assembly table */
     void updateVerticalHeaderOnAssemblyTable();
+
+    void setTableEditable(bool state);
+
+    void setConnectionValidateCellInput(bool state);
 
     void validateLabelInput(int row);
     void validateRadiusInput(int row);

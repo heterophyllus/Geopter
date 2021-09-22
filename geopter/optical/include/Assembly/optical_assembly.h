@@ -38,8 +38,12 @@ public:
     /** Returns the index of the image surface */
     int image_index() const;
 
+    /** Returns image surface pointer */
+    Surface* image_surface() const;
+
     /** Returns the last gap */
     Gap* image_space_gap() const;
+
 
     /** Set the given surface as stop */
     void set_stop(int i);
@@ -61,10 +65,6 @@ public:
     /** Remove surface and gap from sequence model */
     void remove(int i);
 
-    /** @brief Updates semi diameter for all surfaces 
-     *  @note Uses reference rays
-    */
-    //void set_semi_diameters();
 
     /** Compute and update global surface coordinates with reference to @param{ref_srf} */
     void set_global_transforms(int ref_srf=1);

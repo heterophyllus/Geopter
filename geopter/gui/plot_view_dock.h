@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "DockWidget.h"
-
+#include "Analysis/renderer_qcp.h"
 
 class QCustomPlot;
 
@@ -17,8 +17,6 @@ public:
     explicit PlotViewDock(QString label, QWidget *parent = nullptr);
     ~PlotViewDock();
 
-    void possessDlg(std::unique_ptr<QDialog> dlg);
-
     QCustomPlot* customPlot();
 
 public slots:
@@ -27,11 +25,14 @@ public slots:
     /** Save to .png file */
     void saveToFile();
 
-private:
-    QCustomPlot* customPlot_;
-    QToolBar* toolbar_;
+    virtual void updatePlot();
 
-    std::unique_ptr<QDialog> settingDlgPtr_;
+protected:
+    QCustomPlot* m_customPlot;
+    QToolBar* m_toolbar;
+    RendererQCP *m_renderer;
+    std::unique_ptr<QDialog> m_settingDlgPtr;
+
 };
 
 #endif // PLOTVIEWDOCK_H

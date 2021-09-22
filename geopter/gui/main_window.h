@@ -8,7 +8,7 @@
 #include "DockAreaWidget.h"
 #include "DockWidget.h"
 
-#include "system_editor_dock.h"
+#include "SystemEditor/system_editor_dock.h"
 
 #include "optical.h"
 using namespace geopter;

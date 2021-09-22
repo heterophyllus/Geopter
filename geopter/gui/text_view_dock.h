@@ -1,20 +1,14 @@
 #ifndef TEXT_VIEW_DOCK_H
 #define TEXT_VIEW_DOCK_H
 
+#include <memory>
+
+#include <QDialog>
+#include <QTextEdit>
 
 #include "DockWidget.h"
 
-#include <QTextEdit>
-#include <memory>
-
-
-/**
- * This dock is used to show an analysis result in text format.
- *
- * Each analysis dock has the following functions.
- *    - Setting: Modify analysis setting. When the button is clicked, the setting dialog will appear.
- *
- */
+/** This dock is used to show an analysis result in text format. */
 class TextViewDock : public ads::CDockWidget
 {
     Q_OBJECT
@@ -26,22 +20,20 @@ public:
     /** Clear text */
     void clear();
 
-    /** Show text in stringstream */
-    void setStringStreamToText(std::ostringstream& ss);
-
-    void possessDlg(std::unique_ptr<QDialog> dlg);
-
 public slots:
+    virtual void updateText();
+    virtual void setStringStreamToText(std::ostringstream& ss);
+
     void showSettingDlg();
 
     /** Save text to .txt file */
     void saveToFile();
 
-private:
-    QTextEdit *textEdit_;
-    QToolBar* toolBar_;
+protected:
+    QTextEdit *m_textEdit;
+    QToolBar* m_toolbar;
 
-    std::unique_ptr<QDialog> settingDlgPtr_;
+    std::unique_ptr<QDialog> m_settingDlgPtr;
 };
 
 #endif // TEXT_VIEW_DOCK_H

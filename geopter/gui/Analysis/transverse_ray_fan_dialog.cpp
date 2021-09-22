@@ -7,11 +7,10 @@
 #include "plot_view_dock.h"
 using namespace geopter;
 
-TransverseRayFanDialog::TransverseRayFanDialog(OpticalSystem* opt_sys, PlotViewDock *parent) :
+TransverseRayFanDialog::TransverseRayFanDialog(PlotViewDock *parent) :
     QDialog(parent),
     ui(new Ui::TransverseRayFanDialog),
-    parentDock_(parent),
-    opt_sys_(opt_sys)
+    parentDock_(parent)
 {
     ui->setupUi(this);
 
@@ -21,31 +20,15 @@ TransverseRayFanDialog::TransverseRayFanDialog(OpticalSystem* opt_sys, PlotViewD
     ui->lineEdit_Scale->setText(QString::number(0.05));
     ui->lineEdit_NRD->setValidator(new QIntValidator(0, 100, this));
     ui->lineEdit_NRD->setText(QString::number(20));
-
-    renderer_ = new RendererQCP(parentDock_->customPlot());
-
-    QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
 }
 
 TransverseRayFanDialog::~TransverseRayFanDialog()
 {
-    delete renderer_;
     delete ui;
 }
 
-void TransverseRayFanDialog::onAccept()
+void TransverseRayFanDialog::getSettings(double *scale, int *nrd)
 {
-    this->plotRayFan();
-    accept();
-}
-
-void TransverseRayFanDialog::plotRayFan()
-{
-    double scale = ui->lineEdit_Scale->text().toDouble();
-    int nrd = ui->lineEdit_NRD->text().toInt();
-
-    opt_sys_->update_model();
-    RayFan ray_fan(opt_sys_, renderer_);
-
-    ray_fan.plot(scale, nrd);
+    *scale = ui->lineEdit_Scale->text().toDouble();
+    *nrd = ui->lineEdit_NRD->text().toDouble();
 }

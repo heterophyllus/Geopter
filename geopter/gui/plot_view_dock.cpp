@@ -3,7 +3,6 @@
 #include "plot_view_dock.h"
 #include "qcustomplot.h"
 
-#include <QDialog>
 #include <QToolBar>
 #include <QMenu>
 #include <QMenuBar>
@@ -17,55 +16,54 @@ PlotViewDock::PlotViewDock(QString label, QWidget *parent):
     //this->resize(300,200);
     this->setMinimumSize(300,200);
 
-    customPlot_ = new QCustomPlot;
-    this->setWidget(customPlot_);
-    customPlot_->setMinimumSize(0,0);
 
     // QCustomPlot
-    customPlot_->setInteraction(QCP::iRangeDrag, true);
-    customPlot_->setInteraction(QCP::iRangeZoom, true);
-    customPlot_->setInteraction(QCP::iSelectItems, true);
+    m_customPlot = new QCustomPlot;
+    this->setWidget(m_customPlot);
+    m_customPlot->setMinimumSize(0,0);
+
+    m_renderer = new RendererQCP(m_customPlot);
 
     // Tool Bar
-    toolbar_ = new QToolBar(this);
+    m_toolbar = new QToolBar(this);
 
-    auto actionSetting = toolbar_->addAction(QApplication::style()->standardIcon( QStyle::SP_FileDialogContentsView ),"Setting");
-    auto actionSave = toolbar_->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
-    this->setToolBar(toolbar_);
+    auto actionUpdate = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_BrowserReload ),"Update");
+    auto actionSetting = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_FileDialogContentsView ),"Setting");
+    auto actionSave = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
+    this->setToolBar(m_toolbar);
 
+    QObject::connect(actionUpdate, SIGNAL(triggered()), this, SLOT(updatePlot()));
     QObject::connect(actionSetting, SIGNAL(triggered()), this, SLOT(showSettingDlg()));
     QObject::connect(actionSave,    SIGNAL(triggered()), this, SLOT(saveToFile()));
 }
 
 PlotViewDock::~PlotViewDock()
 {
-    settingDlgPtr_.reset();
+    m_settingDlgPtr.reset();
 
+    delete m_renderer;
 
     try {
-        delete customPlot_;
+        delete m_customPlot;
     }  catch (...) {
-        std::cout << "Error: ~PlotViewDock" << std::endl;
+        qDebug() << "delete error (QCustomPlot)";
     }
 
-
-    //delete toolbar_;
+    delete m_toolbar;
 }
 
-void PlotViewDock::possessDlg(std::unique_ptr<QDialog> dlg)
-{
-    settingDlgPtr_ = std::move(dlg);
-}
 
 QCustomPlot* PlotViewDock::customPlot()
 {
-    return customPlot_;
+    return m_customPlot;
 }
 
 void PlotViewDock::showSettingDlg()
 {
-    if(settingDlgPtr_){
-        settingDlgPtr_->exec();
+    if(m_settingDlgPtr){
+        if(m_settingDlgPtr->exec() == QDialog::Accepted){
+            updatePlot();
+        }
     }
 }
 
@@ -77,5 +75,10 @@ void PlotViewDock::saveToFile()
         return;
     }
 
-    customPlot_->savePng(filePath);
+    m_customPlot->savePng(filePath);
+}
+
+void PlotViewDock::updatePlot()
+{
+
 }
