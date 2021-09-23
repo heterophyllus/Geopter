@@ -2,11 +2,16 @@
 #define PLOTVIEWDOCK_H
 
 #include <memory>
+#include <QToolBar>
+
+#include "qcustomplot.h"
 
 #include "DockWidget.h"
-#include "Analysis/renderer_qcp.h"
+#include "Analysis/analysis_setting_dialog.h"
 
-class QCustomPlot;
+#include "optical.h"
+using namespace geopter;
+
 
 /** This dock widget is used to show an analysis result in 2d drawing */
 class PlotViewDock : public ads::CDockWidget
@@ -14,10 +19,14 @@ class PlotViewDock : public ads::CDockWidget
     Q_OBJECT
 
 public:
-    explicit PlotViewDock(QString label, QWidget *parent = nullptr);
+    explicit PlotViewDock(QString label, OpticalSystem* sys, QWidget *parent = nullptr);
     ~PlotViewDock();
 
     QCustomPlot* customPlot();
+
+    template<class D> void createSettingDialog() {
+        m_settingDlgPtr = std::make_unique<D>(m_opticalSystem, this);
+    }
 
 public slots:
     void showSettingDlg();
@@ -30,8 +39,8 @@ public slots:
 protected:
     QCustomPlot* m_customPlot;
     QToolBar* m_toolbar;
-    RendererQCP *m_renderer;
-    std::unique_ptr<QDialog> m_settingDlgPtr;
+    std::unique_ptr<AnalysisSettingDialog> m_settingDlgPtr;
+    OpticalSystem *m_opticalSystem;
 
 };
 

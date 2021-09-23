@@ -47,7 +47,6 @@
      <property name="title">
       <string>Paraxial</string>
      </property>
-     <addaction name="actionFirstOrderData"/>
      <addaction name="actionParaxialRayTrace"/>
     </widget>
     <widget class="QMenu" name="menuRaysAndSpot">

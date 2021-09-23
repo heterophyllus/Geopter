@@ -1,7 +1,7 @@
 #ifndef REAL_RAY_TRACE_DIALOG_H
 #define REAL_RAY_TRACE_DIALOG_H
 
-#include <QDialog>
+#include "Analysis/analysis_setting_dialog.h"
 #include "text_view_dock.h"
 
 #include "optical.h"
@@ -13,7 +13,7 @@ class SingleRayTraceDialog;
 
 
 /** Setting dialog for Single Ray Trace */
-class SingleRayTraceDialog : public QDialog
+class SingleRayTraceDialog : public AnalysisSettingDialog
 {
     Q_OBJECT
 
@@ -21,14 +21,15 @@ public:
     explicit SingleRayTraceDialog(OpticalSystem *sys, TextViewDock *parent = nullptr);
     ~SingleRayTraceDialog();
 
-    int getTraceType() const;
-    void getSettingsForPupilRayTrace(double *px, double *py, int *fi, int *wi) const;
-    void getSettingsForObjectRayTrace(double *x, double *y, double *tanX, double *tanY, int *wi) const;
+    void updateParentDockContent() override;
 
 private slots:
     void showStackedTab(int i);
 
 private:
+    void doPupilRayTrace();
+    void doObjectRayTrace();
+
     Ui::SingleRayTraceDialog *ui;
     TextViewDock *m_parentDock;
     OpticalSystem* m_opticalSystem;

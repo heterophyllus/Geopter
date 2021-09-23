@@ -33,38 +33,36 @@ set(PROJECT_SOURCES
     Analysis/renderer_qcp.h
     Analysis/renderer_qcp.cpp
 
-    Analysis/prescription_dock.cpp
-    Analysis/prescription_dock.h
+    Analysis/analysis_setting_dialog.cpp
+    Analysis/analysis_setting_dialog.h
 
-    Analysis/first_order_data_dock.cpp
-    Analysis/first_order_data_dock.h
+    Analysis/prescription_setting_dialog.cpp
+    Analysis/prescription_setting_dialog.h
+    Analysis/prescription_setting_dialog.ui
 
-    Analysis/layout_dock.cpp
-    Analysis/layout_dock.h
+
+
     Analysis/layout_dialog.cpp
     Analysis/layout_dialog.h
     Analysis/layout_dialog.ui
 
-    Analysis/single_ray_trace_dock.cpp
-    Analysis/single_ray_trace_dock.h
+
     Analysis/single_ray_trace_dialog.h
     Analysis/single_ray_trace_dialog.cpp
     Analysis/single_ray_trace_dialog.ui
 
-    Analysis/paraxial_trace_dock.cpp
-    Analysis/paraxial_trace_dock.h
     Analysis/paraxial_trace_dialog.h
     Analysis/paraxial_trace_dialog.cpp
     Analysis/paraxial_trace_dialog.ui
 
-    Analysis/transverse_ray_fan_dock.cpp
-    Analysis/transverse_ray_fan_dock.h
     Analysis/transverse_ray_fan_dialog.cpp
     Analysis/transverse_ray_fan_dialog.h
     Analysis/transverse_ray_fan_dialog.ui
 
-    Analysis/longitudinal_aberration_dock.h
-    Analysis/longitudinal_aberration_dock.cpp
+    Analysis/field_curvature_setting_dialog.cpp
+    Analysis/field_curvature_setting_dialog.h
+    Analysis/field_curvature_setting_dialog.ui
+
     Analysis/longitudinal_setting_dialog.cpp
     Analysis/longitudinal_setting_dialog.h
     Analysis/longitudinal_setting_dialog.ui

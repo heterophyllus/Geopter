@@ -1,28 +1,25 @@
 #include <iostream>
 
 #include "plot_view_dock.h"
-#include "qcustomplot.h"
 
-#include <QToolBar>
+#include <QApplication>
 #include <QMenu>
 #include <QMenuBar>
 #include <QFileDialog>
 
-PlotViewDock::PlotViewDock(QString label, QWidget *parent):
-    ads::CDockWidget(label,parent)
+PlotViewDock::PlotViewDock(QString label, OpticalSystem* sys, QWidget *parent):
+    ads::CDockWidget(label,parent),
+    m_opticalSystem(sys)
 {
     this->setFeature(CDockWidget::DockWidgetDeleteOnClose, true);
     this->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     //this->resize(300,200);
     this->setMinimumSize(300,200);
 
-
     // QCustomPlot
     m_customPlot = new QCustomPlot;
-    this->setWidget(m_customPlot);
     m_customPlot->setMinimumSize(0,0);
-
-    m_renderer = new RendererQCP(m_customPlot);
+    this->setWidget(m_customPlot);
 
     // Tool Bar
     m_toolbar = new QToolBar(this);
@@ -32,7 +29,7 @@ PlotViewDock::PlotViewDock(QString label, QWidget *parent):
     auto actionSave = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
     this->setToolBar(m_toolbar);
 
-    QObject::connect(actionUpdate, SIGNAL(triggered()), this, SLOT(updatePlot()));
+    QObject::connect(actionUpdate,  SIGNAL(triggered()), this, SLOT(updatePlot()));
     QObject::connect(actionSetting, SIGNAL(triggered()), this, SLOT(showSettingDlg()));
     QObject::connect(actionSave,    SIGNAL(triggered()), this, SLOT(saveToFile()));
 }
@@ -40,8 +37,6 @@ PlotViewDock::PlotViewDock(QString label, QWidget *parent):
 PlotViewDock::~PlotViewDock()
 {
     m_settingDlgPtr.reset();
-
-    delete m_renderer;
 
     try {
         delete m_customPlot;
@@ -51,7 +46,6 @@ PlotViewDock::~PlotViewDock()
 
     delete m_toolbar;
 }
-
 
 QCustomPlot* PlotViewDock::customPlot()
 {
@@ -80,5 +74,5 @@ void PlotViewDock::saveToFile()
 
 void PlotViewDock::updatePlot()
 {
-
+    m_settingDlgPtr->updateParentDockContent();
 }

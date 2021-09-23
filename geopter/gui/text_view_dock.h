@@ -2,11 +2,13 @@
 #define TEXT_VIEW_DOCK_H
 
 #include <memory>
-
-#include <QDialog>
 #include <QTextEdit>
 
 #include "DockWidget.h"
+#include "Analysis/analysis_setting_dialog.h"
+
+#include "optical.h"
+using namespace geopter;
 
 /** This dock is used to show an analysis result in text format. */
 class TextViewDock : public ads::CDockWidget
@@ -14,15 +16,20 @@ class TextViewDock : public ads::CDockWidget
     Q_OBJECT
 
 public:
-    explicit TextViewDock(QString label, QWidget *parent = nullptr);
+    explicit TextViewDock(QString label, OpticalSystem* sys, QWidget *parent = nullptr);
     ~TextViewDock();
 
     /** Clear text */
     void clear();
 
+    void setStringStreamToText(std::ostringstream& ss);
+
+    template<class D> void createSettingDialog() {
+        m_settingDlgPtr = std::make_unique<D>(m_opticalSystem, this);
+    }
+
 public slots:
     virtual void updateText();
-    virtual void setStringStreamToText(std::ostringstream& ss);
 
     void showSettingDlg();
 
@@ -32,8 +39,8 @@ public slots:
 protected:
     QTextEdit *m_textEdit;
     QToolBar* m_toolbar;
-
-    std::unique_ptr<QDialog> m_settingDlgPtr;
+    OpticalSystem *m_opticalSystem;
+    std::unique_ptr<AnalysisSettingDialog> m_settingDlgPtr;
 };
 
 #endif // TEXT_VIEW_DOCK_H

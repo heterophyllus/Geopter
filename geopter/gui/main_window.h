@@ -40,20 +40,21 @@ private slots:
     void showPreference();
 
     // Analysis menu
-    // Preference
+    // Prescription
     void showPrescription();
 
     // Draw
     void showLayout();
 
     // Paraxial
-    void showFirstOrderData();
     void showParaxialRayTrace();
 
     // Ray and Spot
     void showSingleRayTrace();
     void showTransverseRayFan();
     void showLongitudinal();
+
+    void showFieldCurvature();
 
     // Tool menu
     void showDebugStream();

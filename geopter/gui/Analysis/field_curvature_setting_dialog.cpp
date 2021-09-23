@@ -1,18 +1,18 @@
-#include "longitudinal_setting_dialog.h"
-#include "ui_longitudinal_setting_dialog.h"
+#include "field_curvature_setting_dialog.h"
+#include "ui_field_curvature_setting_dialog.h"
+
 
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QValidator>
 
-LongitudinalSettingDialog::LongitudinalSettingDialog(OpticalSystem* sys, PlotViewDock *parent) :
+FieldCurvatureSettingDialog::FieldCurvatureSettingDialog(OpticalSystem* sys, PlotViewDock *parent) :
     AnalysisSettingDialog(parent),
-    ui(new Ui::LongitudinalSettingDialog),
+    ui(new Ui::FieldCurvatureSettingDialog),
     m_parentDock(parent),
     m_opticalSystem(sys)
 {
     ui->setupUi(this);
-    setWindowTitle("Longitudinal Aberration Setting");
 
     m_renderer = new RendererQCP(m_parentDock->customPlot());
 
@@ -20,13 +20,13 @@ LongitudinalSettingDialog::LongitudinalSettingDialog(OpticalSystem* sys, PlotVie
     ui->scaleEdit->setText(QString::number(0.3));
 }
 
-LongitudinalSettingDialog::~LongitudinalSettingDialog()
+FieldCurvatureSettingDialog::~FieldCurvatureSettingDialog()
 {
     delete m_renderer;
     delete ui;
 }
 
-void LongitudinalSettingDialog::updateParentDockContent()
+void FieldCurvatureSettingDialog::updateParentDockContent()
 {
     m_renderer->clear();
 
@@ -35,9 +35,8 @@ void LongitudinalSettingDialog::updateParentDockContent()
     m_opticalSystem->update_model();
 
     Longitudinal *lon = new Longitudinal(m_opticalSystem, m_renderer);
-    lon->plot_lsa(scale);
+    lon->plot_ast(scale);
     delete lon;
 
     m_renderer->update();
 }
-

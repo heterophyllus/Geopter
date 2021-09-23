@@ -1,7 +1,7 @@
 #ifndef PARAXIAL_TRACE_DIALOG_H
 #define PARAXIAL_TRACE_DIALOG_H
 
-#include <QDialog>
+#include "Analysis/analysis_setting_dialog.h"
 #include "text_view_dock.h"
 
 #include "optical.h"
@@ -12,15 +12,15 @@ namespace Ui {
 class ParaxialTraceDialog;
 }
 
-class ParaxialTraceDialog : public QDialog
+class ParaxialTraceDialog : public AnalysisSettingDialog
 {
     Q_OBJECT
 
 public:
-    explicit ParaxialTraceDialog(OpticalSystem* opt_sys, TextViewDock *parent = nullptr);
+    explicit ParaxialTraceDialog(OpticalSystem* sys, TextViewDock *parent = nullptr);
     ~ParaxialTraceDialog();
 
-    void getSettings(int *wi);
+    void updateParentDockContent() override;
 
 private:
     Ui::ParaxialTraceDialog *ui;

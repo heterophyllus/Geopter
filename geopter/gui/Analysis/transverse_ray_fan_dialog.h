@@ -1,25 +1,32 @@
 #ifndef TRANSVERSE_RAY_FAN_DIALOG_H
 #define TRANSVERSE_RAY_FAN_DIALOG_H
 
+#include "Analysis/analysis_setting_dialog.h"
 #include "plot_view_dock.h"
+#include "Analysis/renderer_qcp.h"
+
+#include "optical.h"
+using namespace geopter;
 
 namespace Ui {
 class TransverseRayFanDialog;
 }
 
-class TransverseRayFanDialog : public QDialog
+class TransverseRayFanDialog : public AnalysisSettingDialog
 {
     Q_OBJECT
 
 public:
-    explicit TransverseRayFanDialog(PlotViewDock *parent = nullptr);
+    explicit TransverseRayFanDialog(OpticalSystem* sys, PlotViewDock *parent = nullptr);
     ~TransverseRayFanDialog();
 
-    void getSettings(double *scale, int *nrd);
+    void updateParentDockContent() override;
 
 private:
     Ui::TransverseRayFanDialog *ui;
-    PlotViewDock* parentDock_;
+    PlotViewDock* m_parentDock;
+    RendererQCP *m_renderer;
+    OpticalSystem *m_opticalSystem;
 };
 
 #endif // TRANSVERSE_RAY_FAN_DIALOG_H

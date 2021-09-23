@@ -1,7 +1,6 @@
 #include "text_view_dock.h"
 
 #include <QApplication>
-#include <QDialog>
 #include <QToolBar>
 #include <QMenu>
 #include <QMenuBar>
@@ -10,8 +9,9 @@
 #include <iostream>
 #include <sstream>
 
-TextViewDock::TextViewDock(QString label, QWidget *parent) :
-    ads::CDockWidget(label, parent)
+TextViewDock::TextViewDock(QString label, OpticalSystem* sys, QWidget *parent) :
+    ads::CDockWidget(label, parent),
+    m_opticalSystem(sys)
 {
     this->setFeature(CDockWidget::DockWidgetDeleteOnClose, true);
     this->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
@@ -23,7 +23,6 @@ TextViewDock::TextViewDock(QString label, QWidget *parent) :
     m_textEdit->setLineWrapMode(QTextEdit::NoWrap);
     this->setWidget(m_textEdit);
     //m_textEdit->setLineWrapColumnOrWidth(200);
-
 
     // Tool bar
     m_toolbar = new QToolBar(this);
@@ -86,5 +85,5 @@ void TextViewDock::saveToFile()
 
 void TextViewDock::updateText()
 {
-
+    m_settingDlgPtr->updateParentDockContent();
 }

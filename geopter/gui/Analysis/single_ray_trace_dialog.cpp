@@ -5,13 +5,11 @@
 #include <iostream>
 #include <sstream>
 
-#include "text_view_dock.h"
-#include "optical.h"
-using namespace geopter;
 
 SingleRayTraceDialog::SingleRayTraceDialog(OpticalSystem *sys, TextViewDock *parent) :
-    QDialog(parent),
+    AnalysisSettingDialog(parent),
     ui(new Ui::SingleRayTraceDialog),
+    m_parentDock(parent),
     m_opticalSystem(sys)
 {
     ui->setupUi(this);
@@ -71,24 +69,85 @@ void SingleRayTraceDialog::showStackedTab(int i)
     ui->stackedWidget->show();
 }
 
-int SingleRayTraceDialog::getTraceType() const
+void SingleRayTraceDialog::updateParentDockContent()
 {
-    return  ( -2 - ui->traceTypeButtonGroup->checkedId() );
+    const int traceType = -2 - ui->traceTypeButtonGroup->checkedId();
+
+    switch (traceType) {
+    case 0: // pupil
+        doPupilRayTrace();
+        break;
+    case 1: // object
+        doObjectRayTrace();
+        break;
+    default:
+        qDebug() << "Invalid Trace Type";
+    }
 }
 
-void SingleRayTraceDialog::getSettingsForPupilRayTrace(double *px, double *py, int *fi, int *wi) const
+void SingleRayTraceDialog::doPupilRayTrace()
 {
-    *px = ui->pupilXEdit->text().toDouble();
-    *py = ui->pupilYEdit->text().toDouble();
-    *fi = ui->fieldCombo->currentIndex();
-    *wi = ui->wvlForPupilCombo->currentIndex();
+    // Get parameters from UI
+    double px = ui->pupilXEdit->text().toDouble();
+    double py = ui->pupilYEdit->text().toDouble();
+    int fi = ui->fieldCombo->currentIndex();
+    int wi = ui->wvlForPupilCombo->currentIndex();
+
+    //Field *fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
+    Eigen::Vector2d pupil_crd({px, py});
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+
+    // trace
+    SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
+    Ray ray_trace_result = tracer->trace_pupil_ray(pupil_crd, fi, wi);
+    delete tracer;
+
+    // construct output text
+    std::ostringstream oss;
+    oss << "Real Ray Trace..." <<  std::endl;
+    oss << "Pupil Coordinate: " << "(" << pupil_crd(0) << ", " << pupil_crd(1) << ")" << std::endl;
+    oss << "Field: " << fi << std::endl;
+    oss << "Wavelength: " << wi << " " << wvl << std::endl;
+
+    ray_trace_result.print(oss);
+    oss << std::endl;
+
+    // write to textview dock
+    m_parentDock->setStringStreamToText(oss);
+
+
 }
 
-void SingleRayTraceDialog::getSettingsForObjectRayTrace(double *x, double *y, double *tanX, double *tanY, int *wi) const
+void SingleRayTraceDialog::doObjectRayTrace()
 {
-    *x = ui->objectXEdit->text().toDouble();
-    *y = ui->objectYEdit->text().toDouble();
-    *tanX = ui->objectTanXEdit->text().toDouble();
-    *tanY = ui->objectTanYEdit->text().toDouble();
-    *wi = ui->wvlForObjectCombo->currentIndex();
+    // Get parameters from UI
+    double x = ui->objectXEdit->text().toDouble();
+    double y = ui->objectYEdit->text().toDouble();
+    double z = m_opticalSystem->optical_assembly()->gap(0)->thi();
+    double tanX = ui->objectTanXEdit->text().toDouble();
+    double tanY = ui->objectTanYEdit->text().toDouble();
+    double L = tanX;
+    double M = tanY;
+    double N = 1.0;
+    int wi = ui->wvlForObjectCombo->currentIndex();
+
+    Eigen::Vector3d p0({x,y,z});
+    Eigen::Vector3d dir0({L,M,N});
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+
+    SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
+    Ray ray_trace_result = tracer->trace_ray_throughout_path(tracer->overall_sequential_path(wi), p0, dir0);
+    delete tracer;
+
+    std::ostringstream oss;
+    oss << "Real Ray Trace..." <<  std::endl;
+    oss << "Object Space Point     : " << "(" << x << ", " << y << ")" << std::endl;
+    oss << "Object Space Direction : " << "(" << L << ", " << M << ", " << N << ")" << std::endl;
+    oss << "Wavelength: " << wi << " " << wvl << std::endl;
+
+    ray_trace_result.print(oss);
+    oss << std::endl;
+
+    m_parentDock->setStringStreamToText(oss);
 }
+

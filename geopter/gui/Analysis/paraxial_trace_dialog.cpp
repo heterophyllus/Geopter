@@ -1,15 +1,16 @@
+#include <iostream>
+#include <sstream>
 #include <iomanip>
 
 #include "paraxial_trace_dialog.h"
 #include "ui_paraxial_trace_dialog.h"
 
-#include "text_view_dock.h"
 
-ParaxialTraceDialog::ParaxialTraceDialog(OpticalSystem* opt_sys, TextViewDock *parent) :
-    QDialog(parent),
+ParaxialTraceDialog::ParaxialTraceDialog(OpticalSystem* sys, TextViewDock *parent) :
+    AnalysisSettingDialog(parent),
     ui(new Ui::ParaxialTraceDialog),
     m_parentDock(parent),
-    m_opticalSystem(opt_sys)
+    m_opticalSystem(sys)
 {
     ui->setupUi(this);
     this->setWindowTitle("Paraxial Ray Trace Setting");
@@ -21,6 +22,9 @@ ParaxialTraceDialog::ParaxialTraceDialog(OpticalSystem* opt_sys, TextViewDock *p
         ui->comboWvl->addItem(wvl_item);
     }
 
+    int refWvlIndex = m_opticalSystem->optical_spec()->spectral_region()->reference_index();
+    ui->comboWvl->setCurrentIndex(refWvlIndex);
+
 }
 
 ParaxialTraceDialog::~ParaxialTraceDialog()
@@ -28,7 +32,25 @@ ParaxialTraceDialog::~ParaxialTraceDialog()
     delete ui;
 }
 
-void ParaxialTraceDialog::getSettings(int *wi)
+void ParaxialTraceDialog::updateParentDockContent()
 {
-    *wi = ui->comboWvl->currentIndex();
+    int wi = ui->comboWvl->currentIndex();
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+
+    std::ostringstream oss;
+
+    oss << "Paraxial Trace" << std::endl;
+    oss << std::endl;
+    oss << "Wavelength: " << wvl << std::endl;
+    oss << std::endl;
+
+    oss << "Axial Ray..." << std::endl;
+    m_opticalSystem->axial_ray(wi).print(oss);
+    oss << std::endl;
+
+    oss << "Principle Ray..." << std::endl;
+    m_opticalSystem->principle_ray(wi).print(oss);
+    oss << std::endl;
+
+    m_parentDock->setStringStreamToText(oss);
 }

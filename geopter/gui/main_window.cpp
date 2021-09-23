@@ -10,14 +10,17 @@
 #include "plot_view_dock.h"
 #include "general_configuration_dialog.h"
 
-#include "Analysis/prescription_dock.h"
-#include "Analysis/first_order_data_dock.h"
-#include "Analysis/layout_dock.h"
-#include "Analysis/paraxial_trace_dock.h"
-#include "Analysis/single_ray_trace_dock.h"
-#include "Analysis/transverse_ray_fan_dock.h"
-#include "Analysis/longitudinal_aberration_dock.h"
+
 #include "Analysis/renderer_qcp.h"
+
+#include "Analysis/analysis_setting_dialog.h"
+#include "Analysis/layout_dialog.h"
+#include "Analysis/transverse_ray_fan_dialog.h"
+#include "Analysis/single_ray_trace_dialog.h"
+#include "Analysis/longitudinal_setting_dialog.h"
+#include "Analysis/paraxial_trace_dialog.h"
+#include "Analysis/prescription_setting_dialog.h"
+#include "Analysis/field_curvature_setting_dialog.h"
 
 #include "qdebugstream.h"
 
@@ -46,11 +49,11 @@ MainWindow::MainWindow(QWidget *parent)
     // Analysis menu
     QObject::connect(ui->actionPrescription,           SIGNAL(triggered()), this, SLOT(showPrescription()));
     QObject::connect(ui->action2DLayout,               SIGNAL(triggered()), this, SLOT(showLayout()));
-    QObject::connect(ui->actionFirstOrderData,         SIGNAL(triggered()), this, SLOT(showFirstOrderData()));
     QObject::connect(ui->actionSingleRayTrace,         SIGNAL(triggered()), this, SLOT(showSingleRayTrace()));
     QObject::connect(ui->actionParaxialRayTrace,       SIGNAL(triggered()), this, SLOT(showParaxialRayTrace()));
     QObject::connect(ui->actionRayAberration ,         SIGNAL(triggered()), this, SLOT(showTransverseRayFan()));
     QObject::connect(ui->actionLongitudinalAberration, SIGNAL(triggered()), this, SLOT(showLongitudinal()));
+    QObject::connect(ui->actionFieldCurvature,         SIGNAL(triggered()), this, SLOT(showFieldCurvature()));
 
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -185,7 +188,8 @@ void MainWindow::showPreference()
  * ********************************************************************************************************************************/
 void MainWindow::showPrescription()
 {
-    PrescriptionDock *dock = new PrescriptionDock("Prescription", opt_sys_.get());
+    TextViewDock *dock = new TextViewDock("Prescription", opt_sys_.get());
+    dock->createSettingDialog<PrescriptionSettingDialog>();
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
     dock->updateText();
@@ -194,25 +198,18 @@ void MainWindow::showPrescription()
 
 void MainWindow::showLayout()
 {
-    LayoutDock *dock = new LayoutDock("2D Layout", opt_sys_.get());
+    PlotViewDock *dock = new PlotViewDock("2D layout", opt_sys_.get());
+    dock->createSettingDialog<LayoutDialog>();
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
     dock->updatePlot();
 }
 
 
-void MainWindow::showFirstOrderData()
-{
-    FirstOrderDataDock *dock = new FirstOrderDataDock("First Order Data", opt_sys_.get());
-    m_dockManager->addDockWidgetFloating(dock);
-    dock->resize(300,200);
-    dock->updateText();
-}
-
-
 void MainWindow::showParaxialRayTrace()
 {
-    ParaxialTraceDock *dock = new ParaxialTraceDock("Paraxial Trace", opt_sys_.get());
+    TextViewDock *dock = new TextViewDock("Paraxial Ray Trace", opt_sys_.get());
+    dock->createSettingDialog<ParaxialTraceDialog>();
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
     dock->updateText();
@@ -220,17 +217,18 @@ void MainWindow::showParaxialRayTrace()
 
 void MainWindow::showSingleRayTrace()
 {
-    SingleRayTraceDock *dock = new SingleRayTraceDock("Single Ray Trace", opt_sys_.get());
+    TextViewDock *dock = new TextViewDock("Single Ray Trace", opt_sys_.get());
+    dock->createSettingDialog<SingleRayTraceDialog>();
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
-    //dock->updateText();
-    dock->showSettingDlg();
+    dock->updateText();
 }
 
 
 void MainWindow::showTransverseRayFan()
 {
-    TransverseRayFanDock *dock = new TransverseRayFanDock("Transverse Aberration", opt_sys_.get());
+    PlotViewDock *dock = new PlotViewDock("Transverse Aberration", opt_sys_.get());
+    dock->createSettingDialog<TransverseRayFanDialog>();
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
     dock->updatePlot();
@@ -238,13 +236,21 @@ void MainWindow::showTransverseRayFan()
 
 void MainWindow::showLongitudinal()
 {
-    LongitudinalAberrationDock *dock = new LongitudinalAberrationDock("Longitudinal Aberration", opt_sys_.get());
+    PlotViewDock *dock = new PlotViewDock("Longitudinal Aberration", opt_sys_.get());
+    dock->createSettingDialog<LongitudinalSettingDialog>();
     m_dockManager->addDockWidgetFloating(dock);
     dock->resize(300,200);
     dock->updatePlot();
 }
 
-
+void MainWindow::showFieldCurvature()
+{
+    PlotViewDock *dock = new PlotViewDock("Field Curvature", opt_sys_.get());
+    dock->createSettingDialog<FieldCurvatureSettingDialog>();
+    m_dockManager->addDockWidgetFloating(dock);
+    dock->resize(300,200);
+    dock->updatePlot();
+}
 
 /*********************************************************************************************************************************
  *
