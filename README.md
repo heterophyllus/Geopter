@@ -5,13 +5,13 @@
 ## Introduction
 Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-There has been several proprietary software for optical design which have advanced features to be a definitive choice for professional work. However, there seems to be few private users due to the unaffordable cost for annual license.
+There has been several proprietary software as an optical design tool which have advanced features to be a definitive choice for professional work. However, there seem few private users due to their unaffordable cost for an annual license.
 
-Open source project might well be another option to touch optical design. The fact is that more and more optical simulation library are being developed recently. One of the disadvantage of such library is to require matured programming skills to master how to use.
+Open source project may well be another option to touch optical design. The fact is that more and more optical simulation library are being developed recently. One of the disadvantage of such library is to require matured programming skills to master how to use.
 
-Geopter aims to be the mid-ground. This software features to put higher priority to reasonable graphical interface allowing the users to focus on optical design process. Also, as is common with open source projects, the software is freely available and the users have whole access to the internal aspects.
+Geopter aims to be the mid-ground. This software features to put a higher priority to reasonable graphical interface allowing to focus on optical design process. Also, as is common with open source projects, the software is freely available and discloses whole internal aspects.
 
-The primary user of this software may be fresh optical engineer or a student who have interests in optics.  This software could be a starting platform offerring introductory experience of optical design.
+The primary user of this software may be a fresh optical engineer or a student having interests in optics.  This software could be a starting platform offerring an introductory experience of optical design.
 
 
 ## Getting Started
@@ -52,6 +52,6 @@ The author would like to express respect and gratitude to the following excellen
 
 - [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Highly matured python module for geometrical optical simulation.  Most of Geopter's optics calculation is based on this implementation.
 - [Goptical](https://www.gnu.org/software/goptical/) : C++ implemenation of optical simulation with great deal of functionalities. Though this original project has not been updated since 2012.
-- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A modified fork of Goptical, which has been maintained with greatest effort. This project features to analyze many lens data from patent documents providing cross validation with other software.
+- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A modified fork of Goptical, which has been maintained with greatest effort. This project features to analyze many lens data from patent documents.
 
 
