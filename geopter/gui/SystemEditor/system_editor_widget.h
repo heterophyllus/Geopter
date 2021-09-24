@@ -117,6 +117,8 @@ private:
     void updateVerticalHeaderOnAssemblyTable();
 
     void setAssemblyTableEditable(bool state);
+    void setWavelengthTableEditable(bool state);
+    void setFieldTableEditable(bool state);
 
     void setConnectionValidateCellInput(bool state);
 

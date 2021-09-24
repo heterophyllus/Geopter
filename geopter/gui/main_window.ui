@@ -56,22 +56,17 @@
      <addaction name="actionSingleRayTrace"/>
      <addaction name="separator"/>
      <addaction name="actionSpotDiagram"/>
-     <addaction name="actionThroughfocusSpotDiagram"/>
     </widget>
     <widget class="QMenu" name="menuAberration">
      <property name="title">
       <string>Aberration</string>
      </property>
      <addaction name="actionRayAberration"/>
-     <addaction name="actionOpticalPath"/>
      <addaction name="separator"/>
      <addaction name="actionFieldCurvature"/>
-     <addaction name="actionGridDistortion"/>
      <addaction name="actionLongitudinalAberration"/>
-     <addaction name="actionLateralColor"/>
      <addaction name="actionChromaticFocusShift"/>
      <addaction name="separator"/>
-     <addaction name="actionSeidelCoefficients"/>
     </widget>
     <addaction name="actionPrescription"/>
     <addaction name="separator"/>
@@ -147,11 +142,6 @@
     <string>Set Vignetting Factors</string>
    </property>
   </action>
-  <action name="actionFirstOrderData">
-   <property name="text">
-    <string>First Order Data</string>
-   </property>
-  </action>
   <action name="actionParaxialRayTrace">
    <property name="text">
     <string>Paraxial Trace</string>
@@ -167,14 +157,9 @@
     <string>Standard Spot Diagram</string>
    </property>
   </action>
-  <action name="actionThroughfocusSpotDiagram">
-   <property name="text">
-    <string>Throughfocus Spot Diagram</string>
-   </property>
-  </action>
   <action name="actionRayAberration">
    <property name="text">
-    <string>Ray Aberration</string>
+    <string>Transverse Ray Fan</string>
    </property>
   </action>
   <action name="actionFieldCurvature">
@@ -187,29 +172,9 @@
     <string>Longitudinal Aberration</string>
    </property>
   </action>
-  <action name="actionOpticalPath">
-   <property name="text">
-    <string>Optical Path</string>
-   </property>
-  </action>
-  <action name="actionGridDistortion">
-   <property name="text">
-    <string>Grid Distortion</string>
-   </property>
-  </action>
-  <action name="actionLateralColor">
-   <property name="text">
-    <string>Lateral Color</string>
-   </property>
-  </action>
   <action name="actionChromaticFocusShift">
    <property name="text">
     <string>Chromatic Focus Shift</string>
-   </property>
-  </action>
-  <action name="actionSeidelCoefficients">
-   <property name="text">
-    <string>Seidel Coefficients</string>
    </property>
   </action>
   <action name="actionPrescription">

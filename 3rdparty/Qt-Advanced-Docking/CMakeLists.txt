@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(QtAdvancedDockingSystem LANGUAGES CXX VERSION ${VERSION_SHORT})
 
-#find_package(Qt5 5.15 COMPONENTS Core Gui Widgets REQUIRED)
-find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt5 5.15 COMPONENTS Core Gui Widgets REQUIRED)
+#find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 
 if (UNIX AND NOT APPLE)
 	find_package(Qt5 5.5 COMPONENTS X11Extras REQUIRED)

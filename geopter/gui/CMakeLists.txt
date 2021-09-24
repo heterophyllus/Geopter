@@ -29,7 +29,6 @@ set(PROJECT_SOURCES
     SystemEditor/surface_property_dialog.h
     SystemEditor/surface_property_dialog.ui
     SystemEditor/float_delegate.h
-    #SystemEditor/float_delegate.cpp
 
     Analysis/renderer_qcp.h
     Analysis/renderer_qcp.cpp

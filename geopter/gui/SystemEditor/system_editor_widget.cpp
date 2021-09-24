@@ -26,7 +26,6 @@ SystemEditorWidget::SystemEditorWidget(std::shared_ptr<OpticalSystem> opt_sys, Q
     // Assembly
     ui->assemblyTable->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(ui->assemblyTable->verticalHeader(), SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnAssemblyTableHeader()));
-
     ui->assemblyTable->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(ui->assemblyTable, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnAssemblyTableCell()));
 
@@ -35,23 +34,23 @@ SystemEditorWidget::SystemEditorWidget(std::shared_ptr<OpticalSystem> opt_sys, Q
     ui->assemblyTable->setItemDelegate(delegate);
     m_maxInputDigit = 10;
 
+
     //======================
     // Spec
     ui->pupilValueEdit->setValidator(new QDoubleValidator(0.0, 10000.0, 8, this));
 
     ui->wavelengthTable->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(ui->wavelengthTable->verticalHeader(), SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnWavelengthTableHeader()));
-
     ui->fieldTable->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(ui->fieldTable->verticalHeader(), SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnFieldTableHeader()));
 
 
     syncUiWithSystem();
 
-    ui->tabWidget->setCurrentIndex(0); // show assembly tab
-
     // These signal/slot connection must be after initialization
     setConnectionValidateCellInput(true);
+
+    ui->tabWidget->setCurrentIndex(0); // show assembly tab
 
 }
 
@@ -141,9 +140,6 @@ void SystemEditorWidget::syncUiWithSystem()
         setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Thickness, thi);
         setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Material, QString().fromStdString(materialName));
         setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Mode, QString().fromStdString(interactMode));
-
-
-
         setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::SemiDiameter, sd);
 
         if(apertureType == "None"){
@@ -151,9 +147,6 @@ void SystemEditorWidget::syncUiWithSystem()
         }else{
             setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Aperture, QString().fromStdString(apertureType));
         }
-
-
-
     }
 
     updateVerticalHeaderOnAssemblyTable();
@@ -178,6 +171,7 @@ void SystemEditorWidget::syncUiWithSystem()
 
 
     // wavelength
+    setWavelengthTableEditable(true);
     int wvlCount = opt_sys_->optical_spec()->spectral_region()->wvl_count();
     ui->wavelengthTable->setRowCount(wvlCount);
 
@@ -194,9 +188,10 @@ void SystemEditorWidget::syncUiWithSystem()
     updateReferenceWavelengthCombo();
     int referenceWavelengthIndex = opt_sys_->optical_spec()->spectral_region()->reference_index();
     ui->referenceWavelengthCombo->setCurrentIndex(referenceWavelengthIndex);
-
+    setWavelengthTableEditable(false);
 
     // field
+    setFieldTableEditable(true);
     int fieldType = opt_sys_->optical_spec()->field_of_view()->field_type();
     ui->fieldTypeCombo->setCurrentIndex(fieldType);
 
@@ -222,6 +217,7 @@ void SystemEditorWidget::syncUiWithSystem()
         setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldVLY, vly);
         setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldVUY, vuy);
     }
+    setFieldTableEditable(false);
 
     setAssemblyTableEditable(false);
     setConnectionValidateCellInput(true);
@@ -526,6 +522,46 @@ void SystemEditorWidget::setAssemblyTableEditable(bool state)
 
 }
 
+void SystemEditorWidget::setWavelengthTableEditable(bool state)
+{
+    const int rowCount = ui->wavelengthTable->rowCount();
+    QTableWidgetItem *item;
+
+    if(state){ // set editable
+        for(int i = 0; i < rowCount; i++) {
+            item = ui->wavelengthTable->item(i, WavelengthTableColumn::WavelengthColor);
+            if(!item) continue;
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+        }
+    }else{
+        for(int i = 0; i < rowCount; i++) {
+            item = ui->wavelengthTable->item(i, WavelengthTableColumn::WavelengthColor);
+            if(!item) continue;
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        }
+    }
+}
+
+void SystemEditorWidget::setFieldTableEditable(bool state)
+{
+    const int rowCount = ui->fieldTable->rowCount();
+    QTableWidgetItem *item;
+
+    if(state){ // set editable
+        for(int i = 0; i < rowCount; i++) {
+            item = ui->fieldTable->item(i, FieldTableColumn::FieldColor);
+            if(!item) continue;
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+        }
+    }else{
+        for(int i = 0; i < rowCount; i++) {
+            item = ui->fieldTable->item(i, FieldTableColumn::FieldColor);
+            if(!item) continue;
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        }
+    }
+}
+
 void SystemEditorWidget::setConnectionValidateCellInput(bool state)
 {
     if(state){
@@ -566,6 +602,9 @@ void SystemEditorWidget::validateCellDoubleClickOnAssemblyTable(QTableWidgetItem
             showSurfacePropertyDlg(row);
             break;
         case AssemblyTableColumn::SemiDiameter :
+            showSurfacePropertyDlg(row);
+            break;
+        case AssemblyTableColumn::Aperture:
             showSurfacePropertyDlg(row);
             break;
         default:
@@ -798,6 +837,7 @@ void SystemEditorWidget::addWavelength()
     setColorToCell(ui->wavelengthTable, currentRow, WavelengthTableColumn::WavelengthColor, Qt::black);
 
     updateReferenceWavelengthCombo();
+    setWavelengthTableEditable(false);
 }
 
 void SystemEditorWidget::removeWavelength()
@@ -880,6 +920,8 @@ void SystemEditorWidget::addField()
     setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVLY, 0.0);
     setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVUY, 0.0);
     setColorToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldColor, Qt::black);
+
+    setFieldTableEditable(false);
 }
 
 void SystemEditorWidget::removeField()
