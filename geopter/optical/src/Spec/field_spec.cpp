@@ -77,11 +77,10 @@ void FieldSpec::remove(int i)
 double FieldSpec::max_field()
 {
     double max_fld_sqrd = 0.0;
-    double fld_sqrd;
 
     for(auto& f : fields_)
     {
-        fld_sqrd = f->x()*f->x() + f->y()*f->y();
+        double fld_sqrd = f->x()*f->x() + f->y()*f->y();
         if(fld_sqrd > max_fld_sqrd)
         {
             max_fld_sqrd = fld_sqrd;

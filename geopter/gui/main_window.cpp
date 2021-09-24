@@ -21,6 +21,8 @@
 #include "Analysis/paraxial_trace_dialog.h"
 #include "Analysis/prescription_setting_dialog.h"
 #include "Analysis/field_curvature_setting_dialog.h"
+#include "Analysis/chromatic_focusshift_setting_dialog.h"
+#include "Analysis/spot_diagram_setting_dialog.h"
 
 #include "qdebugstream.h"
 
@@ -46,6 +48,9 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
     QObject::connect(ui->actionPreference, SIGNAL(triggered()), this, SLOT(showPreference()));
 
+    // Edit menu
+    QObject::connect(ui->actionSetVigFactors, SIGNAL(triggered()), this, SLOT(setVignettingFactors()));
+
     // Analysis menu
     QObject::connect(ui->actionPrescription,           SIGNAL(triggered()), this, SLOT(showPrescription()));
     QObject::connect(ui->action2DLayout,               SIGNAL(triggered()), this, SLOT(showLayout()));
@@ -54,6 +59,8 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionRayAberration ,         SIGNAL(triggered()), this, SLOT(showTransverseRayFan()));
     QObject::connect(ui->actionLongitudinalAberration, SIGNAL(triggered()), this, SLOT(showLongitudinal()));
     QObject::connect(ui->actionFieldCurvature,         SIGNAL(triggered()), this, SLOT(showFieldCurvature()));
+    QObject::connect(ui->actionChromaticFocusShift,    SIGNAL(triggered()), this, SLOT(showChromaticFocusShift()));
+    QObject::connect(ui->actionSpotDiagram,            SIGNAL(triggered()), this, SLOT(showSpotDiagram()));
 
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -133,7 +140,7 @@ void MainWindow::newFile()
     opt_sys_ = std::make_shared<OpticalSystem>();
 
     opt_sys_->create_minimum_system();
-    opt_sys_->update_model();
+    //opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
     m_systemEditorDock->syncUiWithSystem();
@@ -183,6 +190,19 @@ void MainWindow::showPreference()
 
 /*********************************************************************************************************************************
  *
+ * Edit menu
+ *
+ * ********************************************************************************************************************************/
+void MainWindow::setVignettingFactors()
+{
+    opt_sys_->update_vignetting_factors();
+    opt_sys_->update_model();
+    m_systemEditorDock->syncUiWithSystem();
+}
+
+
+/*********************************************************************************************************************************
+ *
  * Analysis menu
  *
  * ********************************************************************************************************************************/
@@ -224,6 +244,14 @@ void MainWindow::showSingleRayTrace()
     dock->updateText();
 }
 
+void MainWindow::showSpotDiagram()
+{
+    PlotViewDock *dock = new PlotViewDock("Spot Diagram", opt_sys_.get());
+    dock->createSettingDialog<SpotDiagramSettingDialog>();
+    m_dockManager->addDockWidgetFloating(dock);
+    dock->resize(300,200);
+    dock->updatePlot();
+}
 
 void MainWindow::showTransverseRayFan()
 {
@@ -251,6 +279,16 @@ void MainWindow::showFieldCurvature()
     dock->resize(300,200);
     dock->updatePlot();
 }
+
+void MainWindow::showChromaticFocusShift()
+{
+    PlotViewDock *dock = new PlotViewDock("Chromatic Focus Shift", opt_sys_.get());
+    dock->createSettingDialog<ChromaticFocusShiftSettingDialog>();
+    m_dockManager->addDockWidgetFloating(dock);
+    dock->resize(300,200);
+    dock->updatePlot();
+}
+
 
 /*********************************************************************************************************************************
  *

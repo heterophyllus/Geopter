@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include "Eigen/Core"
+#include "Eigen/Dense"
+
 #include "System/optical_system.h"
 
 #include "Assembly/surface_profile.h"
@@ -219,7 +222,7 @@ void OpticalSystem::update_paraxial_data()
 
     for(int wi = 0; wi < num_wvls; wi++)
     {
-        double wvl = opt_spec_->spectral_region()->wavelength(wi);
+        double wvl = opt_spec_->spectral_region()->wvl(wi)->value();
         ParaxialRay ax_ray_for_wvl = tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
         ax_ray_for_wvl.set_name("axial ray traced with W" + std::to_string(wi));
 
@@ -292,15 +295,23 @@ void OpticalSystem::update_reference_rays()
     ref_rays4_.clear(); ref_rays4_.reserve(num_rays);
     ref_rays5_.clear(); ref_rays5_.reserve(num_rays);
 
+    Eigen::Vector2d pupil_chief({0.0,0.0});
+    Eigen::Vector2d pupil_upper_mer({0.0,1.0});
+    Eigen::Vector2d pupil_lower_mer({0.0,-1.0});
+    Eigen::Vector2d pupil_upper_sag({1.0,0.0});
+    Eigen::Vector2d pupil_lower_sag({-1.0,0.0});
+
     SequentialTrace* tracer = new SequentialTrace(this);
+    tracer->set_aperture_check(false);
+    tracer->set_apply_vig(true);
 
     for(int fi = 0; fi < num_fld; fi++) {
         for(int wi = 0; wi < num_wvl; wi++) {
-            ref_rays1_.push_back( tracer->trace_pupil_ray(Eigen::Vector2d({ 0.0,  0.0 }), fi, wi) );
-            ref_rays2_.push_back( tracer->trace_pupil_ray(Eigen::Vector2d({ 0.0,  1.0 }), fi, wi) );
-            ref_rays3_.push_back( tracer->trace_pupil_ray(Eigen::Vector2d({ 0.0, -1.0 }), fi, wi) );
-            ref_rays4_.push_back( tracer->trace_pupil_ray(Eigen::Vector2d({ 1.0,  0.0 }), fi, wi) );
-            ref_rays5_.push_back( tracer->trace_pupil_ray(Eigen::Vector2d({-1.0,  0.0 }), fi, wi) );
+            ref_rays1_.push_back( tracer->trace_pupil_ray(pupil_chief, fi, wi) );
+            ref_rays2_.push_back( tracer->trace_pupil_ray(pupil_upper_mer, fi, wi) );
+            ref_rays3_.push_back( tracer->trace_pupil_ray(pupil_lower_mer, fi, wi) );
+            ref_rays4_.push_back( tracer->trace_pupil_ray(pupil_upper_sag, fi, wi) );
+            ref_rays5_.push_back( tracer->trace_pupil_ray(pupil_lower_sag, fi, wi) );
 
             // set name
 
@@ -308,6 +319,28 @@ void OpticalSystem::update_reference_rays()
     }
 
     delete tracer;
+}
+
+void OpticalSystem::update_vignetting_factors()
+{
+    SequentialTrace *tracer = new SequentialTrace(this);
+
+    int num_fld = opt_spec_->field_of_view()->field_count();
+    for(int fi = 0; fi < num_fld; fi++){
+        Field* fld = opt_spec_->field_of_view()->field(fi);
+        std::vector<double> vig_factors = tracer->compute_vignetting_factors(*fld);
+        double vuy = vig_factors[0];
+        double vly = vig_factors[1];
+        double vux = vig_factors[2];
+        double vlx = vig_factors[3];
+        opt_spec_->field_of_view()->field(fi)->set_vuy(vuy);
+        opt_spec_->field_of_view()->field(fi)->set_vly(vly);
+        opt_spec_->field_of_view()->field(fi)->set_vux(vux);
+        opt_spec_->field_of_view()->field(fi)->set_vlx(vlx);
+    }
+
+    delete tracer;
+
 }
 
 void OpticalSystem::update_model()

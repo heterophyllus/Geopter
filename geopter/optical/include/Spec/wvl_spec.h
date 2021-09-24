@@ -30,6 +30,13 @@ public:
     /** Returns current reference wavelength index */
     int reference_index() const;
 
+    /** Returns minimum wavelength value in current spectral region */
+    double lower_wavelength() const;
+
+    /** Returns maximum wavelength value in current spectral region */
+    double higher_wavelength() const;
+
+
     /** Aliase to wavelength value at the specified index */
     double wavelength(int i) const;
 

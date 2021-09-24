@@ -33,11 +33,18 @@ SystemEditorWidget::SystemEditorWidget(std::shared_ptr<OpticalSystem> opt_sys, Q
 
     FloatDelegate *delegate = new FloatDelegate(4, ui->assemblyTable);
     ui->assemblyTable->setItemDelegate(delegate);
-
+    m_maxInputDigit = 10;
 
     //======================
     // Spec
     ui->pupilValueEdit->setValidator(new QDoubleValidator(0.0, 10000.0, 8, this));
+
+    ui->wavelengthTable->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(ui->wavelengthTable->verticalHeader(), SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnWavelengthTableHeader()));
+
+    ui->fieldTable->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(ui->fieldTable->verticalHeader(), SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnFieldTableHeader()));
+
 
     syncUiWithSystem();
 
@@ -64,11 +71,11 @@ void SystemEditorWidget::initialize()
 {
     //=========================
     // Assembly
-    //QStringList assemblyTableHorizontalHeaderLabels = {"Label", "Surface Type", "Radius", "Thickness", "Material", "Mode", "SemiDiameter"};
+    QStringList assemblyTableHHeaderLabels = {"Label", "Surface Type", "Radius", "Thickness", "Material", "Mode", "SemiDiameter", "Aperture"};
     ui->assemblyTable->clear();
     ui->assemblyTable->setRowCount(1);
-    ui->assemblyTable->setColumnCount(assemblyTableColumnCount);
-    ui->assemblyTable->setHorizontalHeaderLabels({"Label", "Surface Type", "Radius", "Thickness", "Material", "Mode", "SemiDiameter"});
+    ui->assemblyTable->setColumnCount(assemblyTableHHeaderLabels.size());
+    ui->assemblyTable->setHorizontalHeaderLabels(assemblyTableHHeaderLabels);
 
 
     //=========================
@@ -80,19 +87,21 @@ void SystemEditorWidget::initialize()
     ui->pupilValueEdit->setText(QString::number(10));
 
     // wavelength
+    QStringList wavelengthTableHeaderLabels({"Wavelength", "Weight", "Render Color"});
     ui->wavelengthTable->clear();
     ui->wavelengthTable->setRowCount(1);
-    ui->wavelengthTable->setColumnCount(wavelengthTableColumnCount);
-    ui->wavelengthTable->setHorizontalHeaderLabels({"Wavelength", "Weight", "Render Color"});
+    ui->wavelengthTable->setColumnCount(wavelengthTableHeaderLabels.size());
+    ui->wavelengthTable->setHorizontalHeaderLabels(wavelengthTableHeaderLabels);
     //updateReferenceWavelengthCombo();
 
     // field
+    QStringList fieldTableHeaderLabels = {"X", "Y", "Weight", "Color", "VUY", "VLY", "VUX", "VLX"};
     ui->fieldTypeCombo->clear();
     ui->fieldTypeCombo->addItems({"Object Angle","Object Height","Paraxial Image Height"});
     ui->fieldTable->clear();
     ui->fieldTable->setRowCount(1);
-    ui->fieldTable->setColumnCount(fieldTableColumncount);
-    ui->fieldTable->setHorizontalHeaderLabels({"X", "Y", "Weight", "Color", "VUY", "VLY", "VUX", "VLX"});
+    ui->fieldTable->setColumnCount(fieldTableHeaderLabels.size());
+    ui->fieldTable->setHorizontalHeaderLabels(fieldTableHeaderLabels);
     ui->fieldTable->setItemDelegate(new FloatDelegate(4));
 
 }
@@ -100,7 +109,7 @@ void SystemEditorWidget::initialize()
 void SystemEditorWidget::syncUiWithSystem()
 {
     setConnectionValidateCellInput(false);
-    setTableEditable(true);
+    setAssemblyTableEditable(true);
 
     // =========================================
     // assembly
@@ -110,27 +119,40 @@ void SystemEditorWidget::syncUiWithSystem()
     int imageIndex = opt_sys_->optical_assembly()->image_index();
     for(int row = 0; row <= imageIndex; row++) {
         std::string surfaceLabel = opt_sys_->optical_assembly()->surface(row)->label();
-
+        double r   = opt_sys_->optical_assembly()->surface(row)->profile()->radius();
+        double thi = opt_sys_->optical_assembly()->gap(row)->thi();
         std::string materialName = opt_sys_->optical_assembly()->gap(row)->material()->name();
         std::string surfaceType  = opt_sys_->optical_assembly()->surface(row)->profile()->name();
         std::string interactMode = opt_sys_->optical_assembly()->surface(row)->interact_mode();
         double sd                = opt_sys_->optical_assembly()->surface(row)->semi_diameter();
-        double max_ap            = opt_sys_->optical_assembly()->surface(row)->max_aperture();
+        //double max_ap            = opt_sys_->optical_assembly()->surface(row)->max_aperture();
         std::string apertureType = opt_sys_->optical_assembly()->surface(row)->aperture_shape();
 
-        setContentToCell(ui->assemblyTable, row, AssemblyTableColumn::Label, QString().fromStdString(surfaceLabel));
-        setContentToCell(ui->assemblyTable, row, AssemblyTableColumn::Material, QString().fromStdString(materialName));
-        setContentToCell(ui->assemblyTable, row, AssemblyTableColumn::Mode, QString().fromStdString(interactMode));
-        setContentToCell(ui->assemblyTable, row, AssemblyTableColumn::SurfaceType,QString().fromStdString(surfaceType));
-        setContentToCell(ui->assemblyTable, row, AssemblyTableColumn::SemiDiameter, sd);
+        setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Label, QString().fromStdString(surfaceLabel));
 
-        //if(row < imageIndex){
-            double r   = opt_sys_->optical_assembly()->surface(row)->profile()->radius();
-            double thi = opt_sys_->optical_assembly()->gap(row)->thi();
+        if(surfaceType == "SPH"){
+            setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::SurfaceType, "Standard");
+        }else if(surfaceType == "ASP"){
+            setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::SurfaceType, "Even Asphere");
+        }
 
-            setContentToCell(ui->assemblyTable, row, AssemblyTableColumn::Radius, r);
-            setContentToCell(ui->assemblyTable, row, AssemblyTableColumn::Thickness, thi);
-        //}
+
+        setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Radius, r);
+        setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Thickness, thi);
+        setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Material, QString().fromStdString(materialName));
+        setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Mode, QString().fromStdString(interactMode));
+
+
+
+        setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::SemiDiameter, sd);
+
+        if(apertureType == "None"){
+            setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Aperture, "");
+        }else{
+            setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::Aperture, QString().fromStdString(apertureType));
+        }
+
+
 
     }
 
@@ -164,9 +186,9 @@ void SystemEditorWidget::syncUiWithSystem()
         double weight = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->weight();
         Rgb    color  = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
 
-        setContentToCell(ui->wavelengthTable, wi, WavelengthTableColumn::WavelengthValue, value);
-        setContentToCell(ui->wavelengthTable, wi, WavelengthTableColumn::WavelengthWeight, weight);
-        setContentToCell(ui->wavelengthTable, wi, WavelengthTableColumn::WavelengthColor, rgbToQColor(color));
+        setValueToCell(ui->wavelengthTable, wi, WavelengthTableColumn::WavelengthValue, value);
+        setValueToCell(ui->wavelengthTable, wi, WavelengthTableColumn::WavelengthWeight, weight);
+        setColorToCell(ui->wavelengthTable, wi, WavelengthTableColumn::WavelengthColor, rgbToQColor(color));
     }
 
     updateReferenceWavelengthCombo();
@@ -191,17 +213,17 @@ void SystemEditorWidget::syncUiWithSystem()
         double vuy = opt_sys_->optical_spec()->field_of_view()->field(fi)->vuy();
         double vly = opt_sys_->optical_spec()->field_of_view()->field(fi)->vly();
 
-        setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldX, x);
-        setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldY, y);
-        setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldWeight, wt);
-        setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldColor, rgbToQColor(color));
-        setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldVLX, vlx);
-        setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldVUX, vux);
-        setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldVLY, vly);
-        setContentToCell(ui->fieldTable, fi, FieldTableColumn::FieldVUY, vuy);
+        setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldX, x);
+        setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldY, y);
+        setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldWeight, wt);
+        setColorToCell(ui->fieldTable, fi, FieldTableColumn::FieldColor, rgbToQColor(color));
+        setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldVLX, vlx);
+        setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldVUX, vux);
+        setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldVLY, vly);
+        setValueToCell(ui->fieldTable, fi, FieldTableColumn::FieldVUY, vuy);
     }
 
-    setTableEditable(false);
+    setAssemblyTableEditable(false);
     setConnectionValidateCellInput(true);
 }
 
@@ -232,6 +254,12 @@ void SystemEditorWidget::syncSystemWithUi()
     //===========================================
     // Spec
     opt_sys_->optical_spec()->clear();
+
+    // general
+    QString title = ui->titleEdit->text();
+    QString note = ui->noteEdit->toPlainText();
+    opt_sys_->set_title(title.toStdString());
+    opt_sys_->set_note(note.toStdString());
 
     // pupil
     int pupilType = ui->pupilTypeCombo->currentIndex();
@@ -277,7 +305,7 @@ void SystemEditorWidget::syncSystemWithUi()
 
 }
 
-void SystemEditorWidget::setContentToCell(QTableWidget *table, int row, int col, double value)
+void SystemEditorWidget::setValueToCell(QTableWidget *table, int row, int col, double value)
 {
     QTableWidgetItem *item = table->item(row, col);
     if(!item){
@@ -285,10 +313,10 @@ void SystemEditorWidget::setContentToCell(QTableWidget *table, int row, int col,
         table->setItem(row, col, item);
     }
     item->setTextAlignment(Qt::AlignRight);
-    item->setText(QString::number(value));
+    item->setText(QString::number(value, 'f', m_maxInputDigit));
 }
 
-void SystemEditorWidget::setContentToCell(QTableWidget *table, int row, int col, QString str)
+void SystemEditorWidget::setValueToCell(QTableWidget *table, int row, int col, QString str)
 {
     QTableWidgetItem *item = table->item(row, col);
     if(!item){
@@ -299,7 +327,7 @@ void SystemEditorWidget::setContentToCell(QTableWidget *table, int row, int col,
     item->setText(str);
 }
 
-void SystemEditorWidget::setContentToCell(QTableWidget *table, int row, int col, QColor color)
+void SystemEditorWidget::setColorToCell(QTableWidget *table, int row, int col, QColor color)
 {
     QTableWidgetItem *item = table->item(row, col);
     if (!item) {
@@ -334,7 +362,7 @@ Rgb SystemEditorWidget::QColorToRgb(QColor color)
 //*********************************************************************************************************************************
 // Assembly Tab
 
-void SystemEditorWidget::showContextMenuOnAssemblyTableHeader()
+void SystemEditorWidget::showContextMenuOnAssemblyTableCell()
 {
     QMenu contextMenu;
     QAction *action1 = contextMenu.addAction("Property");
@@ -343,7 +371,7 @@ void SystemEditorWidget::showContextMenuOnAssemblyTableHeader()
     contextMenu.exec(QCursor::pos());
 }
 
-void SystemEditorWidget::showContextMenuOnAssemblyTableCell()
+void SystemEditorWidget::showContextMenuOnAssemblyTableHeader()
 {
     QMenu contextMenu;
     contextMenu.clear();
@@ -382,7 +410,7 @@ void SystemEditorWidget::insertAfterCurrentLineOnAssemblyTable()
 {
     int currentRow = ui->assemblyTable->currentRow();
     insertLineOnAssemblyTable(currentRow + 1);
-    updateVerticalHeaderOnAssemblyTable();
+
 }
 
 void SystemEditorWidget::removeLineFromAssemblyTable()
@@ -411,6 +439,7 @@ void SystemEditorWidget::insertLineOnAssemblyTable(int row)
     opt_sys_->optical_assembly()->insert_dummy(row);
     opt_sys_->update_model();
 
+    syncUiWithSystem();
 }
 
 void SystemEditorWidget::updateVerticalHeaderOnAssemblyTable()
@@ -439,7 +468,7 @@ void SystemEditorWidget::updateVerticalHeaderOnAssemblyTable()
     }
 }
 
-void SystemEditorWidget::setTableEditable(bool state)
+void SystemEditorWidget::setAssemblyTableEditable(bool state)
 {
     QColor white_smoke(245,245,245);
 
@@ -463,6 +492,11 @@ void SystemEditorWidget::setTableEditable(bool state)
             if(!item) continue;
             item->setFlags(item->flags() | Qt::ItemIsEditable);
             item->setBackground(Qt::white);
+
+            item = ui->assemblyTable->item(i, AssemblyTableColumn::Aperture);
+            if(!item) continue;
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+            item->setBackground(Qt::white);
         }
 
     }else{ // set uneditable
@@ -479,6 +513,11 @@ void SystemEditorWidget::setTableEditable(bool state)
             item->setBackground(white_smoke);
 
             item = ui->assemblyTable->item(i, AssemblyTableColumn::SemiDiameter);
+            if(!item) continue;
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            item->setBackground(white_smoke);
+
+            item = ui->assemblyTable->item(i, AssemblyTableColumn::Aperture);
             if(!item) continue;
             item->setFlags(item->flags() ^ Qt::ItemIsEditable);
             item->setBackground(white_smoke);
@@ -591,7 +630,7 @@ void SystemEditorWidget::validateLabelInput(int row)
         opt_sys_->optical_assembly()->surface(row)->set_label(text.toStdString());
     }else{
         QMessageBox::warning(this, "Error", "Invalid label input");
-        setContentToCell(ui->assemblyTable, row, col, QString(""));
+        setValueToCell(ui->assemblyTable, row, col, QString(""));
     }
 }
 
@@ -606,7 +645,7 @@ void SystemEditorWidget::validateRadiusInput(int row)
     // "inf"
     QRegExp reg_inf("([iI]nf)(inity)*");
     if(reg_inf.exactMatch(text)){
-        setContentToCell(ui->assemblyTable, row, col, QString("Infinity"));
+        setValueToCell(ui->assemblyTable, row, col, QString("Infinity"));
         opt_sys_->optical_assembly()->surface(row)->profile()->set_cv(0.0);
         return;
     }
@@ -616,16 +655,16 @@ void SystemEditorWidget::validateRadiusInput(int row)
 
     if(isDouble){
         if(std::isinf(val)) {
-            setContentToCell(ui->assemblyTable, row,col,QString("Infinity"));
+            setValueToCell(ui->assemblyTable, row,col,QString("Infinity"));
             opt_sys_->optical_assembly()->surface(row)->profile()->set_cv(0.0);
         }else{
-            setContentToCell(ui->assemblyTable, row,col,val);
+            setValueToCell(ui->assemblyTable, row,col,val);
             opt_sys_->optical_assembly()->surface(row)->profile()->set_radius(val);
         }
 
     }else{
         QMessageBox::warning(this, tr("Error"), tr("Invalid radius input"));
-        setContentToCell(ui->assemblyTable, row,col,QString("Infinity"));
+        setValueToCell(ui->assemblyTable, row,col,QString("Infinity"));
         opt_sys_->optical_assembly()->surface(row)->profile()->set_cv(0.0);
     }
 }
@@ -644,14 +683,14 @@ void SystemEditorWidget::validateThicknessInput(int row)
     if(isDouble){
         if(std::isinf(val)){
             QMessageBox::warning(this, tr("Error"), tr("Infinity for thickness is not supported"));
-            setContentToCell(ui->assemblyTable, row, col, 0.0);
+            setValueToCell(ui->assemblyTable, row, col, 0.0);
             opt_sys_->optical_assembly()->gap(row)->set_thi(0.0);
         }else{
             opt_sys_->optical_assembly()->gap(row)->set_thi(val); 
         }
     }else{
         QMessageBox::warning(this, tr("Error"), tr("Invalid thickness input"));
-        setContentToCell(ui->assemblyTable, row, col, 0.0);
+        setValueToCell(ui->assemblyTable, row, col, 0.0);
         opt_sys_->optical_assembly()->gap(row)->set_thi(0.0);
     }
 
@@ -672,18 +711,18 @@ void SystemEditorWidget::validateMaterialInput(int row)
     if(reg_alphanumeric_.exactMatch(text)){
         auto mat = opt_sys_->material_lib()->find(text.toStdString());
         if(mat){ // found in material library
-            setContentToCell(ui->assemblyTable, row,col, QString().fromStdString(mat->name()));
+            setValueToCell(ui->assemblyTable, row,col, QString().fromStdString(mat->name()));
             opt_sys_->optical_assembly()->gap(row)->set_material(mat);
             return;
         }else{ // not found
             QMessageBox::warning(this, tr("Error"), "Material not found");
-            setContentToCell(ui->assemblyTable, row, col, tr("AIR"));
+            setValueToCell(ui->assemblyTable, row, col, tr("AIR"));
             opt_sys_->optical_assembly()->gap(row)->set_material(std::make_shared<Air>());
             return;
         }
     }else{ // not alpha numeric input
         QMessageBox::warning(this, tr("Error"), "Invalid material input");
-        setContentToCell(ui->assemblyTable, row, col, tr("AIR"));
+        setValueToCell(ui->assemblyTable, row, col, tr("AIR"));
         opt_sys_->optical_assembly()->gap(row)->set_material(std::make_shared<Air>());
     }
 
@@ -754,9 +793,9 @@ void SystemEditorWidget::addWavelength()
     ui->wavelengthTable->insertRow(rowCount);
     int currentRow = ui->wavelengthTable->rowCount()-1;
 
-    setContentToCell(ui->wavelengthTable, currentRow, WavelengthTableColumn::WavelengthValue, SpectralLine::d);
-    setContentToCell(ui->wavelengthTable, currentRow, WavelengthTableColumn::WavelengthWeight, 1.0);
-    setContentToCell(ui->wavelengthTable, currentRow, WavelengthTableColumn::WavelengthColor, Qt::black);
+    setValueToCell(ui->wavelengthTable, currentRow, WavelengthTableColumn::WavelengthValue, SpectralLine::d);
+    setValueToCell(ui->wavelengthTable, currentRow, WavelengthTableColumn::WavelengthWeight, 1.0);
+    setColorToCell(ui->wavelengthTable, currentRow, WavelengthTableColumn::WavelengthColor, Qt::black);
 
     updateReferenceWavelengthCombo();
 }
@@ -807,12 +846,12 @@ void SystemEditorWidget::validateCellDoubleClickOnWavelengthTable(int row, int c
         if(ok){
             if(items.contains(item)){ //select item from the list
                 double val = SpectralLine::wavelength(item.toStdString());
-                setContentToCell(ui->wavelengthTable, row, col, val);
+                setValueToCell(ui->wavelengthTable, row, col, val);
             }else{
                 bool isDouble;
                 double val = item.toDouble(&isDouble);
                 if(isDouble){ // directly input value
-                    setContentToCell(ui->wavelengthTable, row, col, val);
+                    setValueToCell(ui->wavelengthTable, row, col, val);
                 }
             }
         }else {
@@ -821,7 +860,7 @@ void SystemEditorWidget::validateCellDoubleClickOnWavelengthTable(int row, int c
     }else if(col == WavelengthTableColumn::WavelengthColor) {
         QColor color = QColorDialog::getColor(Qt::black, this, tr("Select Color"), QColorDialog::DontUseNativeDialog);
         if (color.isValid()) {
-            setContentToCell(ui->wavelengthTable, row, col, color);
+            setColorToCell(ui->wavelengthTable, row, col, color);
         }
     }
 }
@@ -833,14 +872,14 @@ void SystemEditorWidget::addField()
     ui->fieldTable->insertRow(rowCount);
     int currentRow = ui->fieldTable->rowCount()-1;
 
-    setContentToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldX, 0.0);
-    setContentToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldY, 0.0);
-    setContentToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldWeight, 1.0);
-    setContentToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVLX, 0.0);
-    setContentToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVUX, 0.0);
-    setContentToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVLY, 0.0);
-    setContentToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVUY, 0.0);
-    setContentToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldColor, Qt::black);
+    setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldX, 0.0);
+    setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldY, 0.0);
+    setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldWeight, 1.0);
+    setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVLX, 0.0);
+    setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVUX, 0.0);
+    setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVLY, 0.0);
+    setValueToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldVUY, 0.0);
+    setColorToCell(ui->fieldTable, currentRow, FieldTableColumn::FieldColor, Qt::black);
 }
 
 void SystemEditorWidget::removeField()
@@ -852,6 +891,7 @@ void SystemEditorWidget::removeField()
 
     int currentRow = ui->fieldTable->currentRow();
     ui->fieldTable->removeRow(currentRow);
+    opt_sys_->optical_spec()->field_of_view()->remove(currentRow);
 }
 
 void SystemEditorWidget::validateCellDoubleClickOnFieldTable(int row, int col)
@@ -859,7 +899,7 @@ void SystemEditorWidget::validateCellDoubleClickOnFieldTable(int row, int col)
     if(col == FieldTableColumn::FieldColor) {
         QColor color = QColorDialog::getColor(Qt::black, this, tr("Select Color"), QColorDialog::DontUseNativeDialog);
         if (color.isValid()) {
-            setContentToCell(ui->fieldTable, row, col, color);
+            setColorToCell(ui->fieldTable, row, col, color);
         }
     }
 }

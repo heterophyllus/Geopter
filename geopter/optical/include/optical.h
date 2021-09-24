@@ -11,6 +11,7 @@
 #include <vector>
 
 /** include all header files **/
+#include "Analysis/aberration.h"
 #include "Analysis/layout.h"
 #include "Analysis/ray_fan.h"
 #include "Analysis/longitudinal.h"

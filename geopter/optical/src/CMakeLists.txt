@@ -5,6 +5,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 set(OPTICAL_SRCS 
+    Analysis/aberration.cpp
     Analysis/ray_fan.cpp
     Analysis/longitudinal.cpp
     Analysis/layout.cpp
@@ -71,9 +72,9 @@ set(OPTICAL_SRCS
 )
 
 
-add_library(GeopterOptical STATIC ${OPTICAL_SRCS})
+add_library(geopteroptical STATIC ${OPTICAL_SRCS})
 
-target_include_directories(GeopterOptical PUBLIC ${CMAKE_SOURCE_DIR}../include)
+target_include_directories(geopteroptical PUBLIC ${CMAKE_SOURCE_DIR}../include)
 
-install(TARGETS GeopterOptical LIBRARY DESTINATION lib)
+install(TARGETS geopteroptical LIBRARY DESTINATION lib)
 install(FILES ${HEADERS} DESTINATION include/optical)

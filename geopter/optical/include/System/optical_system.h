@@ -103,8 +103,8 @@ private:
     std::vector<double> y_focus_shifts_;
 
     int to_ray_index(int fi, int wi) const {
-        int num_fld = opt_spec_->field_of_view()->field_count();
-        return num_fld * (fi) + wi;
+        int num_wvl = opt_spec_->spectral_region()->wvl_count();
+        return num_wvl * (fi) + wi;
     }
 
     // <----- Sequential Data End

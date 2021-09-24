@@ -18,7 +18,7 @@ TransverseRayFanDialog::TransverseRayFanDialog(OpticalSystem* sys, PlotViewDock 
 
     ui->lineEdit_Scale->setValidator(new QDoubleValidator(-1.0e+10, 1.0e+10, 4, this));
     ui->lineEdit_Scale->setText(QString::number(0.05));
-    ui->lineEdit_NRD->setValidator(new QIntValidator(0, 100, this));
+    ui->lineEdit_NRD->setValidator(new QIntValidator(1, 100, this));
     ui->lineEdit_NRD->setText(QString::number(20));
 }
 

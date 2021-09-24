@@ -29,6 +29,7 @@ set(PROJECT_SOURCES
     SystemEditor/surface_property_dialog.h
     SystemEditor/surface_property_dialog.ui
     SystemEditor/float_delegate.h
+    #SystemEditor/float_delegate.cpp
 
     Analysis/renderer_qcp.h
     Analysis/renderer_qcp.cpp
@@ -40,12 +41,9 @@ set(PROJECT_SOURCES
     Analysis/prescription_setting_dialog.h
     Analysis/prescription_setting_dialog.ui
 
-
-
     Analysis/layout_dialog.cpp
     Analysis/layout_dialog.h
     Analysis/layout_dialog.ui
-
 
     Analysis/single_ray_trace_dialog.h
     Analysis/single_ray_trace_dialog.cpp
@@ -66,6 +64,14 @@ set(PROJECT_SOURCES
     Analysis/longitudinal_setting_dialog.cpp
     Analysis/longitudinal_setting_dialog.h
     Analysis/longitudinal_setting_dialog.ui
+
+    Analysis/chromatic_focusshift_setting_dialog.cpp
+    Analysis/chromatic_focusshift_setting_dialog.h
+    Analysis/chromatic_focusshift_setting_dialog.ui
+
+    Analysis/spot_diagram_setting_dialog.cpp
+    Analysis/spot_diagram_setting_dialog.h
+    Analysis/spot_diagram_setting_dialog.ui
 )
 
 add_executable( Geopter ${PROJECT_SOURCES} )
@@ -75,7 +81,7 @@ target_link_libraries(Geopter PRIVATE Qt5::Widgets Qt5::PrintSupport QCustomPlot
 target_link_libraries(Geopter PRIVATE qtadvanceddocking)
 
 target_include_directories(Geopter PRIVATE ${CMAKE_SOURCE_DIR}../optical/include)
-target_link_libraries(Geopter PRIVATE GeopterOptical)
+target_link_libraries(Geopter PRIVATE geopteroptical)
 
 
 # surpress console window

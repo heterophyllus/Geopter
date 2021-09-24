@@ -27,6 +27,7 @@ SystemEditorDock::~SystemEditorDock()
 void SystemEditorDock::setOpticalSystem(std::shared_ptr<OpticalSystem> sys)
 {
     m_opticalSystem = sys;
+    m_systemEditorWidget->setOpticalSystem(m_opticalSystem);
 }
 
 void SystemEditorDock::syncSystemWithUi()

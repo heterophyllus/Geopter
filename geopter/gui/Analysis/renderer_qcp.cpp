@@ -148,6 +148,28 @@ void RendererQCP::draw_polyline(std::vector<double> &x, std::vector<double> &y, 
     polyline->setVisible(true);
 }
 
+void RendererQCP::draw_dots(std::vector<double> &x, std::vector<double> &y, const Rgb &color, double dot_size)
+{
+    int pointCount = x.size();
+    QVector<QCPCurveData> dotsData(pointCount);
+
+    for(int i = 0; i < pointCount; i++)
+    {
+        dotsData[i] = QCPCurveData(i, x[i], y[i]);
+    }
+
+    QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
+    QCPCurve* dots = new QCPCurve(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
+
+    dots->setPen(QPen(rgb_to_QColor(color), dot_size));
+    dots->setLineStyle(QCPCurve::lsNone);
+    dots->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, dot_size));
+
+    dots->data()->clear();
+    dots->data()->set(dotsData, true);
+    dots->setVisible(true);
+}
+
 void RendererQCP::set_x_axis_range(double xmin, double xmax)
 {
     //_customPlot->xAxis->setRange(xmin, xmax);

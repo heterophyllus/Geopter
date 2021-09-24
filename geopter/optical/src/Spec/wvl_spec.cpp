@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <cassert>
 
 #include "Spec/wvl_spec.h"
 
@@ -45,6 +46,34 @@ int WvlSpec::reference_index() const
 double WvlSpec::reference_wvl() const
 {
     return wvls_[reference_index_]->value();
+}
+
+double WvlSpec::lower_wavelength() const
+{
+    assert(wvls_.size() > 0);
+
+    double lower = wvls_[0]->value();
+    for(int i = 0; i < (int)wvls_.size(); i++){
+        if(lower > wvls_[i]->value()){
+            lower = wvls_[i]->value();
+        }
+    }
+
+    return lower;
+}
+
+double WvlSpec::higher_wavelength() const
+{
+    assert(wvls_.size() > 0);
+
+    double higher = wvls_[0]->value();
+    for(int i = 0; i < (int)wvls_.size(); i++){
+        if(higher < wvls_[i]->value()){
+            higher = wvls_[i]->value();
+        }
+    }
+
+    return higher;
 }
 
 double WvlSpec::wavelength(int i) const

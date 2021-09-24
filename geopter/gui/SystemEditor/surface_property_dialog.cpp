@@ -17,6 +17,8 @@ SurfacePropertyDialog::SurfacePropertyDialog(std::shared_ptr<OpticalSystem> opt_
     QObject::connect(ui->apertureTypeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(showApertureStackPage(int)));
     ui->circularRadiusEdit->setValidator(new QDoubleValidator(0.0, 10000.0, 8, this));
 
+    ui->apertureStack->setCurrentIndex(0);
+
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
 
     initializeEvenAsphereDataTable();

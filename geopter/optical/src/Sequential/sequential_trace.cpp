@@ -34,7 +34,7 @@ SequentialTrace::~SequentialTrace()
 Ray SequentialTrace::trace_pupil_ray(Eigen::Vector2d pupil_crd, int fi, int wi)
 {
     Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
-    double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi);
+    double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
 
     return trace_pupil_ray(pupil_crd, fld, wvl);
 }
@@ -70,13 +70,17 @@ Ray SequentialTrace::trace_pupil_ray(Eigen::Vector2d pupil_crd, const Field *fld
     int img = opt_sys_->optical_assembly()->image_index();
     SequentialPath path = sequential_path(0, img, wvl);
 
-    return trace_ray_throughout_path(path, pt0, dir0);
+    Ray ray = trace_ray_throughout_path(path, pt0, dir0);
+    ray.set_wvl(wvl);
+
+    return ray;
 }
 
 
 Ray SequentialTrace::trace_ray_throughout_path(const SequentialPath& seq_path, Eigen::Vector3d pt0, Eigen::Vector3d dir0)
 {
     Ray ray;
+    ray.set_status(RayStatus::PassThrough);
 
     if(seq_path.size() == 0) {
         return ray; // empty ray
@@ -581,4 +585,14 @@ void SequentialTrace::set_aperture_check(bool state)
 bool SequentialTrace::aperture_check_state() const
 {
     return do_aperture_check_;
+}
+
+void SequentialTrace::set_apply_vig(bool state)
+{
+    do_apply_vig_ = state;
+}
+
+bool SequentialTrace::apply_vig_status() const
+{
+    return do_apply_vig_;;
 }

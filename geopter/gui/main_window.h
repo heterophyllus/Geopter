@@ -39,6 +39,9 @@ private slots:
 
     void showPreference();
 
+    // Edit menu
+    void setVignettingFactors();
+
     // Analysis menu
     // Prescription
     void showPrescription();
@@ -51,10 +54,13 @@ private slots:
 
     // Ray and Spot
     void showSingleRayTrace();
+    void showSpotDiagram();
+
+    // Aberration
     void showTransverseRayFan();
     void showLongitudinal();
-
     void showFieldCurvature();
+    void showChromaticFocusShift();
 
     // Tool menu
     void showDebugStream();

@@ -103,19 +103,6 @@ void Interface::set_semi_diameter(double sd)
     semi_diameter_ = sd;
 }
 
-/*
-void Interface::set_delta_n(double dn)
-{
-    delta_n_ = dn;
-}
-*/
-
-/*
-void Interface::set_optical_power(double pwr, double n_before, double n_after)
-{
-
-}
-*/
 
 void Interface::set_edge_aperture(std::unique_ptr<Aperture> ea)
 {

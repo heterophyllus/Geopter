@@ -37,6 +37,11 @@ void Renderer::draw_polyline(std::vector<double>& x, std::vector<double>& y, con
 
 }
 
+void Renderer::draw_dots(std::vector<double> &x, std::vector<double> &y, const Rgb &color, double dot_size)
+{
+
+}
+
 void Renderer::draw_x_axis(bool state)
 {
 

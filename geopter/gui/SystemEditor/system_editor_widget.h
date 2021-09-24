@@ -21,7 +21,8 @@ enum AssemblyTableColumn{
     Thickness,
     Material,
     Mode,
-    SemiDiameter
+    SemiDiameter,
+    Aperture
 };
 
 enum WavelengthTableColumn{
@@ -115,7 +116,7 @@ private:
     /** Update vertical header labels of assembly table */
     void updateVerticalHeaderOnAssemblyTable();
 
-    void setTableEditable(bool state);
+    void setAssemblyTableEditable(bool state);
 
     void setConnectionValidateCellInput(bool state);
 
@@ -128,9 +129,9 @@ private:
 
 
     /** Set content(value, string, color, etc) to the given cell */
-    void setContentToCell(QTableWidget *table, int row, int col, double value);
-    void setContentToCell(QTableWidget *table, int row, int col, QString str);
-    void setContentToCell(QTableWidget *table, int row, int col, QColor color);
+    void setValueToCell(QTableWidget *table, int row, int col, double value);
+    void setValueToCell(QTableWidget *table, int row, int col, QString str);
+    void setColorToCell(QTableWidget *table, int row, int col, QColor color);
 
     /** Convert geopter::Rgb to QColor */
     QColor rgbToQColor(geopter::Rgb rgbColor);
@@ -142,9 +143,8 @@ private:
 
     std::shared_ptr<geopter::OpticalSystem> opt_sys_;
 
-    const int assemblyTableColumnCount = 7;
-    const int wavelengthTableColumnCount = 3;
-    const int fieldTableColumncount = 8;
+    int m_maxInputDigit;
+
 };
 
 #endif // SYSTEM_EDITOR_WIDGET_H

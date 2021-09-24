@@ -40,6 +40,7 @@ void LayoutDialog::onAccept()
 void LayoutDialog::updateParentDockContent()
 {
     m_renderer->clear();
+    m_renderer->set_mouse_interaction(true);
 
     m_opticalSystem->update_model();
 
