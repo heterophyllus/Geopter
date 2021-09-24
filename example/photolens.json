@@ -1,0 +1,371 @@
+{
+    "Assembly": {
+        "0": {
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Material": "AIR",
+            "Thickness": 10000000000.0,
+            "Type": "SPH"
+        },
+        "1": {
+            "Curvature": 0.008952254938735244,
+            "Label": "L1",
+            "Material": "TAF1_HOYA",
+            "Thickness": 5.5478,
+            "Type": "SPH"
+        },
+        "10": {
+            "Curvature": -0.0006091312922805644,
+            "Label": "L6",
+            "Material": "FCD705_HOYA",
+            "Thickness": 12.4672,
+            "Type": "SPH"
+        },
+        "11": {
+            "Curvature": -0.030579075961482596,
+            "Label": "L7",
+            "Material": "E-F5_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "12": {
+            "Curvature": 0.004050552515615893,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "13": {
+            "Curvature": 0.012008348203671191,
+            "Label": "L8",
+            "Material": "TAF1_HOYA",
+            "Thickness": 5.882,
+            "Type": "SPH"
+        },
+        "14": {
+            "Aperture": {
+                "Radius": 25.0,
+                "Type": "Circular"
+            },
+            "Curvature": -0.0026521660372634632,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 8.7665,
+            "Type": "SPH"
+        },
+        "15": {
+            "Curvature": 0.011056858790645014,
+            "Label": "L9",
+            "Material": "E-FDS1-W_HOYA",
+            "Thickness": 5.3037,
+            "Type": "SPH"
+        },
+        "16": {
+            "Curvature": -0.0018957759268685478,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "17": {
+            "Curvature": 0.017973844461539566,
+            "Label": "L10",
+            "Material": "FCD515_HOYA",
+            "Thickness": 11.866,
+            "Type": "SPH"
+        },
+        "18": {
+            "Curvature": -0.022418609239157238,
+            "Label": "L11",
+            "Material": "E-FL5_HOYA",
+            "Thickness": 2.482,
+            "Type": "SPH"
+        },
+        "19": {
+            "Curvature": 0.025390699386814607,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 7.3907,
+            "Type": "SPH"
+        },
+        "2": {
+            "Curvature": 0.0019454900913271412,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "20": {
+            "Curvature": 0.0,
+            "Label": "Stop",
+            "Material": "AIR",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "21": {
+            "Curvature": 0.0119014889952882,
+            "Label": "L12",
+            "Material": "FCD100_HOYA",
+            "Thickness": 6.8887,
+            "Type": "SPH"
+        },
+        "22": {
+            "Curvature": -0.031053971802993605,
+            "Label": "L13",
+            "Material": "E-FD2_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "23": {
+            "Curvature": 0.015100220161209951,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 7.8613,
+            "Type": "SPH"
+        },
+        "24": {
+            "Curvature": -0.037056800664057865,
+            "Label": "L14",
+            "Material": "E-F1_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "25": {
+            "Curvature": -0.008262482545505623,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "26": {
+            "Curvature": 0.015457814079595376,
+            "Label": "L15",
+            "Material": "FCD515_HOYA",
+            "Thickness": 6.7685,
+            "Type": "SPH"
+        },
+        "27": {
+            "Curvature": -0.024494494862279705,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "28": {
+            "Coefs": [
+                -2.73662e-06,
+                3.07519e-09,
+                3.90515e-11,
+                -1.94154e-14,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": -0.002325381304399389,
+            "Label": "L16",
+            "Material": "M-TAFD305_HOYA",
+            "Thickness": 4.6315,
+            "Type": "ASP"
+        },
+        "29": {
+            "Aperture": {
+                "Radius": 16.0,
+                "Type": "Circular"
+            },
+            "Coefs": [
+                3.26804e-06,
+                3.98767e-09,
+                3.58258e-11,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": -0.018186282087421457,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 39.0002,
+            "Type": "ASP"
+        },
+        "3": {
+            "Curvature": 0.005211147896025093,
+            "Label": "L2",
+            "Material": "FCD100_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "30": {
+            "Curvature": 0.0,
+            "Label": "Img",
+            "Material": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "4": {
+            "Curvature": 0.03305872552001375,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 12.0599,
+            "Type": "SPH"
+        },
+        "5": {
+            "Curvature": 0.002358599039342611,
+            "Label": "L3",
+            "Material": "FCD100_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "6": {
+            "Curvature": 0.019676672910730872,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 13.2984,
+            "Type": "SPH"
+        },
+        "7": {
+            "Curvature": -0.02619234083569283,
+            "Label": "L4",
+            "Material": "E-FD2_HOYA",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "8": {
+            "Curvature": 0.005795623145400593,
+            "Label": "L5",
+            "Material": "TAFD5G_HOYA",
+            "Thickness": 9.3857,
+            "Type": "SPH"
+        },
+        "9": {
+            "Curvature": -0.017760727479397557,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.15,
+            "Type": "SPH"
+        },
+        "Stop": 20
+    },
+    "Note": "JPA 2020-12952 ex1\nSIGMA 40mm F1.4 DG HSM Art\nhttps://www.sigma-global.com/jp/lenses/a018_40_14/\n",
+    "Spec": {
+        "Field": {
+            "Color": [
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "Type": 2,
+            "VLX": [
+                0.0,
+                0.0077667236,
+                0.1580429077
+            ],
+            "VLY": [
+                0.0,
+                0.2289123535,
+                0.3683319092
+            ],
+            "VUX": [
+                0.0,
+                0.0077667236,
+                0.1580429077
+            ],
+            "VUY": [
+                0.0,
+                0.3234176636,
+                0.5961914063
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "X": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Y": [
+                0.0,
+                15.0,
+                21.63
+            ]
+        },
+        "Pupil": {
+            "Type": 1,
+            "Value": 1.455
+        },
+        "Wvl": {
+            "Color": [
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "RefIndex": 1,
+            "Value": [
+                656.273,
+                587.562,
+                546.074,
+                486.133,
+                435.834
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ]
+        }
+    },
+    "Title": "Photographic Lens Example"
+}
