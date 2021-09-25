@@ -64,7 +64,7 @@ void Layout::draw_reference_rays()
     int num_flds = opt_sys_->optical_spec()->field_of_view()->field_count();
 
     Rgb color;
-    Ray ray;
+    std::shared_ptr<Ray> ray;
     
     for(int fi = 0; fi < num_flds; fi++)
     {
@@ -84,11 +84,11 @@ void Layout::draw_reference_rays()
 
 void Layout::draw_fan_rays(int nrd)
 {
-    int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
+    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
     int num_flds = opt_sys_->optical_spec()->field_of_view()->field_count();
 
     Rgb color;
-    Ray ray;
+    std::shared_ptr<Ray> ray;
     Eigen::Vector2d pupil;
     
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
@@ -97,12 +97,14 @@ void Layout::draw_fan_rays(int nrd)
 
     for(int fi = 0; fi < num_flds; fi++)
     {
+        Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
+
         color = opt_sys_->optical_spec()->field_of_view()->field(fi)->render_color();
 
         for(int ri = 0; ri < nrd; ri++) {
             pupil(0) = 0.0;
             pupil(1) = -1.0 + (double)ri*step;
-            ray = tracer->trace_pupil_ray(pupil, fi, ref_wvl_idx);
+            ray = tracer->trace_pupil_ray(pupil, fld, ref_wvl_val);
             draw_single_ray(ray, color);
         }
 
@@ -248,13 +250,13 @@ void Layout::draw_surface(Surface* srf, double max_y, const Rgb& color)
     renderer_->draw_polyline(pts,color);
 }
 
-void Layout::draw_single_ray(const Ray& ray, const Rgb& color)
+void Layout::draw_single_ray(const std::shared_ptr<Ray>& ray, const Rgb& color)
 {
-    for(int i = 1; i < ray.size(); i++)
+    for(int i = 1; i < ray->size(); i++)
     {
-        Eigen::Vector3d pt_to = ray.at(i).intersect_pt;
+        Eigen::Vector3d pt_to = ray->at(i)->intersect_pt;
 
-        Eigen::Vector3d pt_from = ray.at(i-1).intersect_pt;
+        Eigen::Vector3d pt_from = ray->at(i-1)->intersect_pt;
 
         Surface* cur_srf = opt_sys_->optical_assembly()->surface(i);
         Surface* prev_srf = opt_sys_->optical_assembly()->surface(i-1);

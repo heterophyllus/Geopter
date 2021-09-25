@@ -114,25 +114,16 @@ PupilCrd Field::apply_vignetting(PupilCrd pupil) const
 {
     PupilCrd vig_pupil = pupil;
 
-    if(pupil(0) < 0.0){
-        if(vlx_ != 0.0){
-            vig_pupil(0) *= (1.0 - vlx_);
-        }
-    }else{
-        if(vux_ != 0.0){
-            vig_pupil(0) *= (1.0 - vux_);
-        }
+    if(pupil(0) < 0.0){ 
+        vig_pupil(0) *= (1.0 - vlx_);
+    }else{ 
+        vig_pupil(0) *= (1.0 - vux_);
     }
 
-    if(pupil(1) < 0.0){
-        if(vly_ != 0.0){
-            vig_pupil(1) *= (1.0 - vly_);
-        }
-    }
-    else{
-        if(vuy_ != 0.0){
-            vig_pupil(1) *= (1.0 - vuy_);
-        }
+    if(pupil(1) < 0.0){ 
+        vig_pupil(1) *= (1.0 - vly_);
+    }else{  
+        vig_pupil(1) *= (1.0 - vuy_);
     }
 
     return vig_pupil;

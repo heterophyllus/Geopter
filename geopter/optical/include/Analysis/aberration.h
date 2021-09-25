@@ -25,9 +25,17 @@ public:
 
     void plot_chromatic_focus_shift(double lower_wvl, double higher_wvl);
 
-    void plot_spot_diagram(int nrd, double scale, double dot_size);
+    void plot_spot_diagram(int pattern, int nrd, double scale, double dot_size);
 
 private:
+    std::vector<Eigen::Vector2d> create_grid_circle(int nrd);
+    std::vector<Eigen::Vector2d> create_hexapolar(int nrd);
+
+    enum SpotRayPattern{
+        Grid,
+        Hexapolar
+    };
+
     OpticalSystem* opt_sys_;
     Renderer* renderer_;
     int num_fld_;

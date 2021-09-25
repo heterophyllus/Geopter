@@ -15,12 +15,12 @@ Spherical::~Spherical()
 
 }
 
-double Spherical::f(Eigen::Vector3d p) const
+double Spherical::f(const Eigen::Vector3d& p) const
 {
     return p(2) - 0.5*cv_*p.dot(p);
 }
 
-Eigen::Vector3d Spherical::df(Eigen::Vector3d p) const
+Eigen::Vector3d Spherical::df(const Eigen::Vector3d& p) const
 {
     Eigen::Vector3d df;
     df(0) = -cv_*p(0);
@@ -52,7 +52,7 @@ double Spherical::sag(double x, double y) const
 }
 
 
-void Spherical::intersect(Eigen::Vector3d &pt, double &s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps, int z_dir)
+void Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, int z_dir)
 {
     Eigen::Vector3d p = p0;
     double ax2 = cv_;

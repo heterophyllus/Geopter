@@ -13,7 +13,6 @@ PlotViewDock::PlotViewDock(QString label, OpticalSystem* sys, QWidget *parent):
 {
     this->setFeature(CDockWidget::DockWidgetDeleteOnClose, true);
     this->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
-    //this->resize(300,200);
     this->setMinimumSize(300,200);
 
     // QCustomPlot

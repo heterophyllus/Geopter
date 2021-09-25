@@ -154,7 +154,7 @@ bool Interface::point_inside(double x, double y) const
     return true;
 }
 
-bool Interface::point_inside(Eigen::Vector2d pt) const
+bool Interface::point_inside(const Eigen::Vector2d& pt) const
 {
     if(clear_aperture_) {
         return clear_aperture_->point_inside(pt(0), pt(1));

@@ -45,11 +45,11 @@ void ParaxialTraceDialog::updateParentDockContent()
     oss << std::endl;
 
     oss << "Axial Ray..." << std::endl;
-    m_opticalSystem->axial_ray(wi).print(oss);
+    m_opticalSystem->axial_ray(wi)->print(oss);
     oss << std::endl;
 
     oss << "Principle Ray..." << std::endl;
-    m_opticalSystem->principle_ray(wi).print(oss);
+    m_opticalSystem->principle_ray(wi)->print(oss);
     oss << std::endl;
 
     m_parentDock->setStringStreamToText(oss);

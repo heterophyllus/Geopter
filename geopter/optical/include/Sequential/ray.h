@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <sstream>
+#include <memory>
 
 #include "Eigen/Core"
 
@@ -19,6 +20,7 @@ struct RayAtSurface
         after_dir    = Eigen::Vector3d::Zero(3);
         distance_from_before = 0.0;
         optical_path_length  = 0.0;
+        before = nullptr;
     }
 
     /** ray intersect point on the surface */
@@ -35,6 +37,8 @@ struct RayAtSurface
 
     /** optical path length from the previous to the current */
     double optical_path_length;
+
+    RayAtSurface* before;
 
     // aliases
     double x() const { return intersect_pt(0); }
@@ -66,14 +70,14 @@ public:
     void clear();
 
     /** Add data at the beginning */
-    void prepend(RayAtSurface ray_at_srf);
+    void prepend(std::shared_ptr<RayAtSurface> ray_at_srf);
 
     /** Add data at the last */
-    void append(RayAtSurface ray_at_srf);
+    void append(std::shared_ptr<RayAtSurface> ray_at_srf);
 
-    RayAtSurface at(int i) const;
-    RayAtSurface front() const;
-    RayAtSurface back() const;
+    RayAtSurface* at(int i) const;
+    RayAtSurface* front() const;
+    RayAtSurface* back() const;
 
     void set_wvl(double wvl);
 
@@ -109,7 +113,7 @@ public:
     void print();
 
 private:
-    std::vector<RayAtSurface> ray_at_srfs_;
+    std::vector< std::shared_ptr<RayAtSurface> > ray_at_srfs_;
     double wvl_;
     int status_;
 };

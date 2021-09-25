@@ -1,6 +1,8 @@
 #ifndef SEQUENTIALTRACE_H
 #define SEQUENTIALTRACE_H
 
+#include <memory>
+
 #include "Eigen/Core"
 
 #include "Sequential/ray.h"
@@ -16,16 +18,16 @@ public:
     SequentialTrace(OpticalSystem* sys);
     ~SequentialTrace();
 
-    Ray trace_pupil_ray(Eigen::Vector2d pupil_crd, int fi, int wi);
+    //std::shared_ptr<Ray> trace_pupil_ray(Eigen::Vector2d pupil_crd, int fi, int wi);
 
-    Ray trace_pupil_ray(Eigen::Vector2d pupil_crd, const Field* fld, double wvl);
+    std::shared_ptr<Ray> trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
 
     /** Trace a ray throughout the given sequantial path */
-    Ray trace_ray_throughout_path(const SequentialPath& seq_path, Eigen::Vector3d pt0, Eigen::Vector3d dir0);
+    std::shared_ptr<Ray> trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
 
     Eigen::Vector2d trace_coddington(const Field* fld, double wvl);
 
-    Eigen::Vector2d aim_chief_ray(int fi, int wi);
+    //Eigen::Vector2d aim_chief_ray(int fi, int wi);
 
     Eigen::Vector2d aim_chief_ray(const Field* fld, double wvl);
 
@@ -38,8 +40,8 @@ public:
      * @param wi wavelength index
      * @return Eigen::Vector2d aim point on paraxial entrance pupil plane
      */
-    Eigen::Vector2d search_aim_point(int srf_idx, Eigen::Vector2d xy_target, const Field* fld, double wvl);
-    Eigen::Vector2d search_aim_point(int srf_idx, Eigen::Vector2d xy_target, int fi, int wi);
+    Eigen::Vector2d search_aim_point(int srf_idx, const Eigen::Vector2d& xy_target, const Field* fld, double wvl);
+    //Eigen::Vector2d search_aim_point(int srf_idx, Eigen::Vector2d xy_target, int fi, int wi);
 
     /** @brief Refract incoming direction, d_in, about normal
      *  @param d_in incident direction
@@ -49,7 +51,7 @@ public:
     Eigen::Vector3d bend(Eigen::Vector3d d_in, Eigen::Vector3d normal, double n_in, double n_out);
 
     /** Get object coordinate for the given field */
-    Eigen::Vector3d object_coord(int fi);
+    //Eigen::Vector3d object_coord(int fi);
 
     Eigen::Vector3d object_coord(const Field* fld);
 
@@ -79,6 +81,11 @@ private:
     int num_flds_;
     double ref_wvl_val_;
     int ref_wvl_idx_;
+
+    int num_srfs_;
+    int num_gaps_;
+    int image_index_;
+    double object_distance_;
 
     bool do_aperture_check_;
 

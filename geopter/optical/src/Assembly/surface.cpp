@@ -29,7 +29,7 @@ void Surface::update()
 }
 
 
-void Surface::intersect(Eigen::Vector3d &pt, double &s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps, double z_dir)
+void Surface::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
 {
     profile_->intersect(pt,s,p0,d,eps,z_dir);
 }

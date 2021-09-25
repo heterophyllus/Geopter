@@ -42,10 +42,10 @@ public:
     ParaxialRay();
     ~ParaxialRay();
 
-    void prepend(ParaxialRayAtSurface par_ray_at_srf);
+    void prepend(std::shared_ptr<ParaxialRayAtSurface> par_ray_at_srf);
     void prepend(double ht, double slp, double aoi= 0, double n = 1.0);
     
-    void append(ParaxialRayAtSurface par_ray_at_srf);
+    void append(std::shared_ptr<ParaxialRayAtSurface> par_ray_at_srf);
     void append(double ht, double slp, double aoi= 0, double n = 1.0);
 
     void clear();
@@ -57,16 +57,16 @@ public:
     int size() const;
 
     /** Access to data at the given index */
-    ParaxialRayAtSurface at(int i) const;
+    std::shared_ptr<ParaxialRayAtSurface> at(int i) const;
 
     /** Returns the data at the beginning */
-    ParaxialRayAtSurface front() const;
+    std::shared_ptr<ParaxialRayAtSurface> front() const;
 
     /** Return the data at the last surface */
-    ParaxialRayAtSurface back() const;
+    std::shared_ptr<ParaxialRayAtSurface> back() const;
 
     /** Access to the data at the surface just before the image */
-    ParaxialRayAtSurface at_before_image() const;
+    std::shared_ptr<ParaxialRayAtSurface> at_before_image() const;
 
     /** Write ray data to standard output */
     void print() const;
@@ -75,7 +75,7 @@ public:
     void print(std::ostringstream& oss) const;
 
 private:
-    std::vector<ParaxialRayAtSurface> par_ray_at_srfs_;
+    std::vector< std::shared_ptr<ParaxialRayAtSurface> > par_ray_at_srfs_;
     std::string name_;
 };
 

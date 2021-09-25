@@ -24,7 +24,7 @@ public:
      * @param eps precision
      * @param z_dir
      */
-    void intersect(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps=1.0e-12, double z_dir=1.0);
+    void intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps=1.0e-12, double z_dir=1.0);
 
     Eigen::Vector3d normal(Eigen::Vector3d p);
 

@@ -27,7 +27,7 @@ public:
     void draw_fan_rays(int nrd= 10);
 
     /** Draw a single ray */
-    void draw_single_ray(const Ray& ray, const Rgb& color);
+    void draw_single_ray(const std::shared_ptr<Ray>& ray, const Rgb& color);
 
     void update();
 

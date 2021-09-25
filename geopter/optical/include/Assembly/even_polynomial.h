@@ -30,8 +30,8 @@ public:
     int coef_count() const;
 
     double sag(double x, double y) const override;
-    double f(Eigen::Vector3d p) const override;
-    Eigen::Vector3d df(Eigen::Vector3d p) const override;
+    double f(const Eigen::Vector3d& p) const override;
+    Eigen::Vector3d df(const Eigen::Vector3d& p) const override;
 
     double deriv_1st(double h) const override;
     double deriv_2nd(double h) const override;

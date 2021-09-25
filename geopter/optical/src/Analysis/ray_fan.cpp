@@ -51,13 +51,14 @@ void RayFan::plot(double scale, int nrd)
         // trace chief ray
         Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
 
-        Ray chief_ray = opt_sys_->reference_ray(1,fi,ref_wvl_idx);
-        double x0 = chief_ray.back().x();
-        double y0 = chief_ray.back().y();
+        std::shared_ptr<Ray> chief_ray = opt_sys_->reference_ray(1,fi,ref_wvl_idx);
+        double x0 = chief_ray->back()->x();
+        double y0 = chief_ray->back()->y();
 
         // trace zonal rays for all wavelengths
         for(int wi = 0; wi < num_wvls; wi++)
         {
+            double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
             Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
 
             std::vector<double> px, py;
@@ -67,8 +68,8 @@ void RayFan::plot(double scale, int nrd)
             dx.reserve(nrd);
             dy.reserve(nrd);
 
-            Ray tangential_ray;
-            Ray sagittal_ray;
+            std::shared_ptr<Ray> tangential_ray;
+            std::shared_ptr<Ray> sagittal_ray;
 
             for(int ri = 0; ri < nrd; ri++)
             {
@@ -76,10 +77,10 @@ void RayFan::plot(double scale, int nrd)
                 pupil(0) = 0.0;
                 pupil(1) = -1.0 + (double)ri*step;
 
-                tangential_ray = tracer->trace_pupil_ray(pupil, fi, wi);
+                tangential_ray = tracer->trace_pupil_ray(pupil, fld, wvl);
 
-                if(tangential_ray.status() == RayStatus::PassThrough){
-                    double y = tangential_ray.back().y();
+                if(tangential_ray->status() == RayStatus::PassThrough){
+                    double y = tangential_ray->back()->y();
                     vig_pupil = fld->apply_vignetting(pupil);
                     py.push_back(vig_pupil(1));
                     dy.push_back(y - y0);
@@ -89,9 +90,9 @@ void RayFan::plot(double scale, int nrd)
                 pupil(0) = -1.0 + (double)ri*step;
                 pupil(1) = 0.0;
 
-                sagittal_ray = tracer->trace_pupil_ray(pupil, fi, wi);
-                if(sagittal_ray.status() == RayStatus::PassThrough){
-                    double x = sagittal_ray.back().x();
+                sagittal_ray = tracer->trace_pupil_ray(pupil, fld, wvl);
+                if(sagittal_ray->status() == RayStatus::PassThrough){
+                    double x = sagittal_ray->back()->x();
                     vig_pupil = fld->apply_vignetting(pupil);
                     px.push_back(vig_pupil(0));
                     dx.push_back(x - x0);

@@ -91,15 +91,17 @@ void SingleRayTraceDialog::doPupilRayTrace()
     double px = ui->pupilXEdit->text().toDouble();
     double py = ui->pupilYEdit->text().toDouble();
     int fi = ui->fieldCombo->currentIndex();
+    Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
     int wi = ui->wvlForPupilCombo->currentIndex();
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
 
     //Field *fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
     Eigen::Vector2d pupil_crd({px, py});
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+
 
     // trace
     SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
-    Ray ray_trace_result = tracer->trace_pupil_ray(pupil_crd, fi, wi);
+    std::shared_ptr<Ray> ray_trace_result = tracer->trace_pupil_ray(pupil_crd, fld, wvl);
     delete tracer;
 
     // construct output text
@@ -109,7 +111,7 @@ void SingleRayTraceDialog::doPupilRayTrace()
     oss << "Field: " << fi << std::endl;
     oss << "Wavelength: " << wi << " " << wvl << std::endl;
 
-    ray_trace_result.print(oss);
+    ray_trace_result->print(oss);
     oss << std::endl;
 
     // write to textview dock
@@ -136,7 +138,7 @@ void SingleRayTraceDialog::doObjectRayTrace()
     double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
 
     SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
-    Ray ray_trace_result = tracer->trace_ray_throughout_path(tracer->overall_sequential_path(wi), p0, dir0);
+    auto ray_trace_result = tracer->trace_ray_throughout_path(tracer->overall_sequential_path(wi), p0, dir0);
     delete tracer;
 
     std::ostringstream oss;
@@ -145,7 +147,7 @@ void SingleRayTraceDialog::doObjectRayTrace()
     oss << "Object Space Direction : " << "(" << L << ", " << M << ", " << N << ")" << std::endl;
     oss << "Wavelength: " << wi << " " << wvl << std::endl;
 
-    ray_trace_result.print(oss);
+    ray_trace_result->print(oss);
     oss << std::endl;
 
     m_parentDock->setStringStreamToText(oss);

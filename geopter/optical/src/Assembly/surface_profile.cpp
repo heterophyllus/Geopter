@@ -55,17 +55,17 @@ double SurfaceProfile::radius() const
     return r;
 }
 
-double SurfaceProfile::f(Eigen::Vector3d p) const
+double SurfaceProfile::f(const Eigen::Vector3d& p) const
 {
     return 0.0;
 }
 
-Eigen::Vector3d SurfaceProfile::df(Eigen::Vector3d p) const
+Eigen::Vector3d SurfaceProfile::df(const Eigen::Vector3d& p) const
 {
     return Eigen::Vector3d::Zero(3);
 }
 
-Eigen::Vector3d SurfaceProfile::normal(Eigen::Vector3d p) const
+Eigen::Vector3d SurfaceProfile::normal(const Eigen::Vector3d& p) const
 {
     return df(p).normalized();
 }
@@ -85,13 +85,13 @@ double SurfaceProfile::deriv_2nd(double h) const
     return 0.0;
 }
 
-void SurfaceProfile::intersect(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps, int z_dir)
+void SurfaceProfile::intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, int z_dir)
 {
     intersect_spencer(pt, s, p0, d, eps, z_dir);
 }
 
 
-void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps, int z_dir)
+void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, int z_dir)
 {
     Eigen::Vector3d p = p0;
     double s1 = -f(p)/d.dot(df(p));

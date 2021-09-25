@@ -34,9 +34,9 @@ void FieldCurvatureSettingDialog::updateParentDockContent()
 
     m_opticalSystem->update_model();
 
-    Longitudinal *lon = new Longitudinal(m_opticalSystem, m_renderer);
-    lon->plot_ast(scale);
-    delete lon;
+    Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
+    abr->plot_astigmatism(scale);
+    delete abr;
 
     m_renderer->update();
 }

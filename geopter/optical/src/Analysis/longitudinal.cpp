@@ -60,7 +60,7 @@ void Longitudinal::plot_lsa(double scale)
 
 
     PupilCrd pupil;
-    Ray ray;
+    std::shared_ptr<Ray> ray;
     Field* fld0 = opt_sys_->optical_spec()->field_of_view()->field(0);
 
     int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
@@ -94,10 +94,10 @@ void Longitudinal::plot_lsa(double scale)
             //if(ray.status() == RayStatus::PassThrough){
                 py.push_back(pupil(1));
 
-                int at_image = ray.size()-1;
-                double y = ray.y(at_image);
-                double M = ray.M(at_image);
-                double N = ray.N(at_image);
+                int at_image = ray->size()-1;
+                double y = ray->y(at_image);
+                double M = ray->M(at_image);
+                double N = ray->N(at_image);
                 lsa.push_back(-y*N/M);
 
                 y_list.push_back(y);

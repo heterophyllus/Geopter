@@ -47,11 +47,11 @@ public:
 
     void add_surface_and_gap(double r, double t, std::string mat_name);
 
-    ParaxialRay axial_ray(int wi) const;
-    ParaxialRay principle_ray(int wi) const;
+    std::shared_ptr<ParaxialRay> axial_ray(int wi) const;
+    std::shared_ptr<ParaxialRay> principle_ray(int wi) const;
     FirstOrderData first_order_data() const;
 
-    Ray reference_ray(int ri, int fi, int wi) const;
+    std::shared_ptr<Ray> reference_ray(int ri, int fi, int wi) const;
 
     void update_vignetting_factors();
 
@@ -71,18 +71,22 @@ private:
     std::unique_ptr<OpticalSpec> opt_spec_;
     std::unique_ptr<MaterialLibrary> material_lib_;
 
+    // fundamental data
+    int num_wvl_;
+    int num_fld_;
+
     // -----> Paraxial Data
     /** parallel to axis at s1 */
-    ParaxialRay p_ray_;
+    std::shared_ptr<ParaxialRay> p_ray_;
 
     /** with slope at s1 */
-    ParaxialRay q_ray_;
+    std::shared_ptr<ParaxialRay> q_ray_;
 
     /** paraxial axial rays computed with all wavelengths */
-    std::vector<ParaxialRay> ax_rays_;
+    std::vector<std::shared_ptr<ParaxialRay>> ax_rays_;
 
     /** paraxial principle rays computed with all wavelengths */
-    std::vector<ParaxialRay> pr_rays_;
+    std::vector<std::shared_ptr<ParaxialRay>> pr_rays_;
 
     /** first order data computed with all wavelengths */
     FirstOrderData fod_;
@@ -92,19 +96,19 @@ private:
 
     // -----> Sequential Data
     /** reference rays */
-    std::vector<Ray> ref_rays1_; // chief ray
-    std::vector<Ray> ref_rays2_; // upper meridional marginal
-    std::vector<Ray> ref_rays3_; // lower meridional marginal
-    std::vector<Ray> ref_rays4_; // upper sagittal marginal
-    std::vector<Ray> ref_rays5_; // lower sagittal marginal
+    std::vector< std::shared_ptr<Ray> > ref_rays1_; // chief ray
+    std::vector< std::shared_ptr<Ray> > ref_rays2_; // upper meridional marginal
+    std::vector< std::shared_ptr<Ray> > ref_rays3_; // lower meridional marginal
+    std::vector< std::shared_ptr<Ray> > ref_rays4_; // upper sagittal marginal
+    std::vector< std::shared_ptr<Ray> > ref_rays5_; // lower sagittal marginal
 
     /** focus shifts */
     std::vector<double> x_focus_shifts_;
     std::vector<double> y_focus_shifts_;
 
     int to_ray_index(int fi, int wi) const {
-        int num_wvl = opt_spec_->spectral_region()->wvl_count();
-        return num_wvl * (fi) + wi;
+        //int num_wvl = opt_spec_->spectral_region()->wvl_count();
+        return num_wvl_ * (fi) + wi;
     }
 
     // <----- Sequential Data End

@@ -38,43 +38,36 @@ Aberration::~Aberration()
 
 void Aberration::plot_transverse_aberration(double scale, double nrd)
 {
-    constexpr int num_interpolation = 50;
-    const int num_flds = opt_sys_->optical_spec()->field_of_view()->field_count();
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
-
-    renderer_->set_grid_layout(num_flds, 2);
+    renderer_->set_grid_layout(num_fld_, 2);
 
     Eigen::Vector2d pupil;
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
-    tracer->set_aperture_check(true);
-    tracer->set_apply_vig(false);
+    tracer->set_aperture_check(false);
+    tracer->set_apply_vig(true);
 
-    for(int fi = 0; fi < num_flds; fi++)
+    for(int fi = 0; fi < num_fld_; fi++)
     {
         // trace chief ray
-        //Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
+        Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
 
-        Ray chief_ray = opt_sys_->reference_ray(1,fi,ref_wvl_idx_);
-        double x0 = chief_ray.back().x();
-        double y0 = chief_ray.back().y();
+        std::shared_ptr<Ray> chief_ray = opt_sys_->reference_ray(1,fi,ref_wvl_idx_);
+        double x0 = chief_ray->back()->x();
+        double y0 = chief_ray->back()->y();
 
         // trace zonal rays for all wavelengths
-        for(int wi = 0; wi < num_wvls; wi++)
+        for(int wi = 0; wi < num_wvl_; wi++)
         {
+            double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
             Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
 
             std::vector<double> px, py;
             std::vector<double> dx, dy;
-            /*
+
             px.reserve(nrd);
             py.reserve(nrd);
             dx.reserve(nrd);
             dy.reserve(nrd);
-            */
-
-            Ray tangential_ray;
-            Ray sagittal_ray;
 
             for(int ri = 0; ri < nrd; ri++)
             {
@@ -82,11 +75,11 @@ void Aberration::plot_transverse_aberration(double scale, double nrd)
                 pupil(0) = 0.0;
                 pupil(1) = -1.0 + (double)ri*2.0/(double)(nrd-1);
 
-                tangential_ray = tracer->trace_pupil_ray(pupil, fi, wi);
-
-                if(tangential_ray.status() == RayStatus::PassThrough){
-                    double y = tangential_ray.back().y();
-                    py.push_back(pupil(1));
+                auto tangential_ray = tracer->trace_pupil_ray(pupil, fld, wvl);
+                if(tangential_ray->status() == RayStatus::PassThrough){
+                    double y = tangential_ray->back()->y();
+                    Eigen::Vector2d vig_pupil = fld->apply_vignetting(pupil);
+                    py.push_back(vig_pupil(1));
                     dy.push_back(y - y0);
                 }
 
@@ -94,48 +87,32 @@ void Aberration::plot_transverse_aberration(double scale, double nrd)
                 pupil(0) = -1.0 + (double)ri*2.0/(double)(nrd-1);
                 pupil(1) = 0.0;
 
-                sagittal_ray = tracer->trace_pupil_ray(pupil, fi, wi);
-                if(sagittal_ray.status() == RayStatus::PassThrough){
-                    double x = sagittal_ray.back().x();
-                    px.push_back(pupil(0));
+                auto sagittal_ray = tracer->trace_pupil_ray(pupil, fld, wvl);
+                if(sagittal_ray->status() == RayStatus::PassThrough){
+                    double x = sagittal_ray->back()->x();
+                    Eigen::Vector2d vig_pupil = fld->apply_vignetting(pupil);
+                    px.push_back(vig_pupil(0));
                     dx.push_back(x - x0);
                 }
             }
 
-            // interpolation
-            tk::spline spline_tangential;
-            spline_tangential.set_points(py,dy);
-
-            tk::spline spline_sagittal;
-            spline_sagittal.set_points(px,dx);
-
-            std::vector<double> spx(num_interpolation), spy(num_interpolation);
-            std::vector<double> sdx(num_interpolation), sdy(num_interpolation);
-            double px_min = *std::min_element(px.begin(), px.end());
-            double px_max = *std::max_element(px.begin(), px.end());
-            double py_min = *std::min_element(py.begin(), py.end());
-            double py_max = *std::max_element(py.begin(), py.end());
-            for(int k = 0; k < num_interpolation; k++){
-                spx[k] = px_min + (double)k*(px_max-px_min)/(double)(num_interpolation -1);
-                spy[k] = py_min + (double)k*(py_max-py_min)/(double)(num_interpolation -1);
-                sdx[k] = spline_sagittal(spx[k]);
-                sdy[k] = spline_tangential(spy[k]);
-            }
 
             // draw
-            renderer_->set_current_cell(num_flds - fi -1, 0);
+            renderer_->set_current_cell(num_fld_ - fi -1, 0);
             renderer_->set_y_axis_range(-scale, scale);
             renderer_->set_x_axis_range(-1.0, 1.0);
             renderer_->set_y_axis_label("dy");
-            renderer_->draw_polyline(spy, sdy, render_color);
+            //renderer_->draw_polyline(spy, sdy, render_color);
+            renderer_->draw_polyline(py, dy, render_color);
             renderer_->draw_x_axis();
             renderer_->draw_y_axis();
 
-            renderer_->set_current_cell(num_flds - fi -1, 1);
+            renderer_->set_current_cell(num_fld_ - fi -1, 1);
             renderer_->set_y_axis_range(-scale, scale);
             renderer_->set_x_axis_range(-1.0, 1.0);
             renderer_->set_y_axis_label("dx");
-            renderer_->draw_polyline(spx, sdx, render_color);
+            //renderer_->draw_polyline(spx, sdx, render_color);
+            renderer_->draw_polyline(px, dx, render_color);
             renderer_->draw_x_axis();
             renderer_->draw_y_axis();
         }
@@ -162,7 +139,7 @@ void Aberration::plot_longitudinal_spherical_aberration(double scale)
 
 
     PupilCrd pupil;
-    Ray ray;
+    std::shared_ptr<Ray> ray;
     Field* fld0 = opt_sys_->optical_spec()->field_of_view()->field(0);
 
     int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
@@ -177,9 +154,9 @@ void Aberration::plot_longitudinal_spherical_aberration(double scale)
         int last_surf = num_srf - 1 -1;
         int num_wvl = opt_sys_->optical_spec()->spectral_region()->wvl_count();
         for(int wi = 0; wi < num_wvl; wi++){
-            ParaxialRay ax_ray = opt_sys_->axial_ray(wi);
-            double y = ax_ray.at(last_surf).ht;
-            double u_prime = ax_ray.at(img_srf).slp;
+            std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->axial_ray(wi);
+            double y = ax_ray->at(last_surf)->ht;
+            double u_prime = ax_ray->at(img_srf)->slp;
             double l_prime = -y/u_prime;
             l_primes.push_back(l_prime);
         }
@@ -212,10 +189,10 @@ void Aberration::plot_longitudinal_spherical_aberration(double scale)
             //if(ray.status() == RayStatus::PassThrough){
                 py.push_back(pupil(1));
 
-                int at_image = ray.size()-1;
-                double y = ray.y(at_image);
-                double M = ray.M(at_image);
-                double N = ray.N(at_image);
+                int at_image = ray->size()-1;
+                double y = ray->y(at_image);
+                double M = ray->M(at_image);
+                double N = ray->N(at_image);
                 lsa.push_back(-y*N/M);
 
                 y_list.push_back(y);
@@ -267,9 +244,9 @@ void Aberration::plot_astigmatism(double scale)
         int last_surf = num_srf - 1 -1;
         int num_wvl = opt_sys_->optical_spec()->spectral_region()->wvl_count();
         for(int wi = 0; wi < num_wvl; wi++){
-            ParaxialRay ax_ray = opt_sys_->axial_ray(wi);
-            double y = ax_ray.at(last_surf).ht;
-            double u_prime = ax_ray.at(img_srf).slp;
+            std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->axial_ray(wi);
+            double y = ax_ray->at(last_surf)->ht;
+            double u_prime = ax_ray->at(img_srf)->slp;
             double l_prime = -y/u_prime;
             l_primes.push_back(l_prime);
         }
@@ -346,9 +323,9 @@ void Aberration::plot_chromatic_focus_shift(double lower_wvl, double higher_wvl)
     ParaxialTrace *tracer = new ParaxialTrace(opt_sys_);
     tracer->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
 
-    ParaxialRay ref_prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, ref_wvl);
-    double y = ref_prx_ray.at(last_surf).ht;
-    double u_prime = ref_prx_ray.at(img_srf).slp;
+    std::shared_ptr<ParaxialRay> ref_prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, ref_wvl);
+    double y = ref_prx_ray->at(last_surf)->ht;
+    double u_prime = ref_prx_ray->at(img_srf)->slp;
     double ref_l_prime = -y/u_prime;
 
 
@@ -356,10 +333,10 @@ void Aberration::plot_chromatic_focus_shift(double lower_wvl, double higher_wvl)
 
     for(int i = 0; i < num_data; i++) {
         double wvl = lower_wvl + i*wvl_step;
-        ParaxialRay prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
+        std::shared_ptr<ParaxialRay> prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
 
-        y = prx_ray.at(last_surf).ht;
-        u_prime = prx_ray.at(img_srf).slp;
+        y = prx_ray->at(last_surf)->ht;
+        u_prime = prx_ray->at(img_srf)->slp;
         double l_prime = -y/u_prime;
         ydata.push_back(l_prime - ref_l_prime);
         xdata.push_back(wvl);
@@ -382,7 +359,7 @@ void Aberration::plot_chromatic_focus_shift(double lower_wvl, double higher_wvl)
 }
 
 
-void Aberration::plot_spot_diagram(int nrd, double scale, double dot_size)
+void Aberration::plot_spot_diagram(int pattern, int nrd, double scale, double dot_size)
 {
     renderer_->set_grid_layout(num_fld_,1);
 
@@ -390,40 +367,52 @@ void Aberration::plot_spot_diagram(int nrd, double scale, double dot_size)
     tracer->set_aperture_check(true);
     tracer->set_apply_vig(false);
 
-    Eigen::Vector2d pupil;
+    std::vector<Eigen::Vector2d> pupils;
+
+    switch (pattern) {
+    case Aberration::SpotRayPattern::Grid :
+        pupils = create_grid_circle(nrd);
+        break;
+    case Aberration::SpotRayPattern::Hexapolar :
+        pupils = create_hexapolar(nrd);
+        break;
+    default:
+        throw "Undefined spot pattern";
+    }
+
     std::vector<double> ray_dx, ray_dy;
+    std::shared_ptr<Ray> ray;
+
+    const WvlSpec* wvl_spec = opt_sys_->optical_spec()->spectral_region();
 
     for(int fi = 0; fi < num_fld_; fi++){
         renderer_->set_current_cell(num_fld_ - fi -1, 0);
 
+        Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
+
         // trace chief ray
         //pupil << 0.0, 0.0;
         //Ray chief_ray = tracer->trace_pupil_ray(pupil, fi, ref_wvl_idx_);
-        Ray chief_ray = opt_sys_->reference_ray(1, fi, ref_wvl_idx_);
-        double chief_ray_x = chief_ray.back().x();
-        double chief_ray_y = chief_ray.back().y();
+        std::shared_ptr<Ray> chief_ray = opt_sys_->reference_ray(1, fi, ref_wvl_idx_);
+        double chief_ray_x = chief_ray->back()->x();
+        double chief_ray_y = chief_ray->back()->y();
 
         for(int wi = 0; wi < num_wvl_; wi++){
+            double wvl = wvl_spec->wvl(wi)->value();
             ray_dx.clear();
             ray_dy.clear();
 
-            for(int pi = 0; pi < nrd; pi++) {
-                for(int pj = 0; pj < nrd; pj++) {
-                    pupil(0) = -1.0 + (double)pi*2.0/(double)(nrd-1);
-                    pupil(1) = -1.0 + (double)pj*2.0/(double)(nrd-1);
+            for(auto& pupil : pupils){
+                ray = tracer->trace_pupil_ray(pupil, fld, wvl);
 
-                    Ray ray = tracer->trace_pupil_ray(pupil,fi,wi);
-
-                    if(ray.status() == RayStatus::PassThrough){
-                        ray_dx.push_back(ray.back().x() - chief_ray_x);
-                        ray_dy.push_back(ray.back().y() - chief_ray_y);
-
-                    }
+                if(ray->status() == RayStatus::PassThrough){
+                    ray_dx.push_back(ray->back()->x() - chief_ray_x);
+                    ray_dy.push_back(ray->back()->y() - chief_ray_y);
                 }
             }
-            Rgb color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
-            renderer_->draw_dots(ray_dx, ray_dy, color, dot_size);
 
+            Rgb color = wvl_spec->wvl(wi)->render_color();
+            renderer_->draw_dots(ray_dx, ray_dy, color, dot_size);
         }
 
         renderer_->set_y_axis_range(-scale, scale);
@@ -439,4 +428,55 @@ void Aberration::plot_spot_diagram(int nrd, double scale, double dot_size)
 
     renderer_->update();
 
+}
+
+
+
+std::vector<Eigen::Vector2d> Aberration::create_grid_circle(int nrd)
+{
+    std::vector<Eigen::Vector2d> pupils;
+    Eigen::Vector2d pupil;
+
+    for(int pi = 0; pi < nrd; pi++) {
+        pupil(0) = -1.0 + (double)pi*2.0/(double)(nrd-1);
+
+        for(int pj = 0; pj < nrd; pj++) {
+            pupil(1) = -1.0 + (double)pj*2.0/(double)(nrd-1);
+
+            //double r = sqrt( pow(pupil(0),2) + pow(pupil(1),2) );
+            double r2 = pow(pupil(0),2) + pow(pupil(1),2);
+            if(r2 <= 1.0){
+                pupils.push_back(pupil);
+            }
+        }
+    }
+
+    return pupils;
+}
+
+std::vector<Eigen::Vector2d> Aberration::create_hexapolar(int nrd)
+{
+    std::vector<Eigen::Vector2d> pupils;
+    Eigen::Vector2d pupil;
+
+    int half_num_rings = nrd/2;
+    for (int r = 0; r < nrd/2; r++){
+        int num_rays_in_ring = 6*r;
+        if(num_rays_in_ring == 0){
+            pupil(0) = 0.0;
+            pupil(1) = 0.0;
+            pupils.push_back(pupil);
+            continue;
+        }
+
+        double ang_step = 2*M_PI/(double)num_rays_in_ring;
+
+        for(int ai = 0; ai < num_rays_in_ring; ai++){
+            pupil(0) = (double)r * 1.0/(half_num_rings) * cos((double)ai*ang_step);
+            pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
+            pupils.push_back(pupil);
+        }
+    }
+
+    return pupils;
 }

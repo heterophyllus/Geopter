@@ -57,7 +57,7 @@ public:
 
     /** Returns true if the given point(x,y) is inside of aperture */
     bool point_inside(double x, double y) const;
-    bool point_inside(Eigen::Vector2d pt) const;
+    bool point_inside(const Eigen::Vector2d& pt) const;
 
     void set_local_transform(Transformation tfrm);
     void set_global_transform(Transformation tfrm);

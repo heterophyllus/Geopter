@@ -35,13 +35,13 @@ public:
     virtual double radius() const;
 
     /** Returns the value of the profile function at point @param{p} */
-    virtual double f(Eigen::Vector3d p) const;
+    virtual double f(const Eigen::Vector3d& p) const;
 
     /** Returns the gradient of the profile function at point *p* */
-    virtual Eigen::Vector3d df(Eigen::Vector3d p) const;
+    virtual Eigen::Vector3d df(const Eigen::Vector3d& p) const;
 
     /** Returns the unit normal of the profile at point *p* */
-    virtual Eigen::Vector3d normal(Eigen::Vector3d p) const;
+    virtual Eigen::Vector3d normal(const Eigen::Vector3d& p) const;
 
     /** Returns the sagitta (z coordinate) of the surface at x, y */
     virtual double sag(double x, double y) const;
@@ -57,7 +57,7 @@ public:
      * @param eps numeric tolerance for convergence of any iterative procedure
      * @param z_dir +1 if propagation positive direction, -1 if otherwise
      */
-    virtual void intersect(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps=1.0e-12, int z_dir=1);
+    virtual void intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps=1.0e-12, int z_dir=1);
 
     /**
      * @brief Intersect a profile, starting from an arbitrary point
@@ -69,7 +69,7 @@ public:
      * @param eps numeric tolerance for convergence of any iterative procedure
      * @param z_dir +1 if propagation positive direction, -1 if otherwise
      */
-    virtual void intersect_spencer(Eigen::Vector3d& pt, double& s, Eigen::Vector3d p0, Eigen::Vector3d d, double eps=1.0e-12, int z_dir=1.0);
+    virtual void intersect_spencer(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps=1.0e-12, int z_dir=1.0);
 
 
 protected:

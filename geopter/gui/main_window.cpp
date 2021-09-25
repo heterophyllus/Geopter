@@ -249,7 +249,7 @@ void MainWindow::showSpotDiagram()
     PlotViewDock *dock = new PlotViewDock("Spot Diagram", opt_sys_.get());
     dock->createSettingDialog<SpotDiagramSettingDialog>();
     m_dockManager->addDockWidgetFloating(dock);
-    dock->resize(300,200);
+    //dock->resize(300,200);
     dock->updatePlot();
 }
 

@@ -34,9 +34,9 @@ void LongitudinalSettingDialog::updateParentDockContent()
 
     m_opticalSystem->update_model();
 
-    Longitudinal *lon = new Longitudinal(m_opticalSystem, m_renderer);
-    lon->plot_lsa(scale);
-    delete lon;
+    Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
+    abr->plot_longitudinal_spherical_aberration(scale);
+    delete abr;
 
     m_renderer->update();
 }

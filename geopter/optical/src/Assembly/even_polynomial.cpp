@@ -99,12 +99,12 @@ double EvenPolynomial::sag(double x, double y) const
     return (z + z_asp);
 }
 
-double EvenPolynomial::f(Eigen::Vector3d p) const
+double EvenPolynomial::f(const Eigen::Vector3d& p) const
 {
     return ( p(2) - this->sag(p(0), p(1)) );
 }
 
-Eigen::Vector3d EvenPolynomial::df(Eigen::Vector3d p) const
+Eigen::Vector3d EvenPolynomial::df(const Eigen::Vector3d& p) const
 {
     //sphere + conic contribution
     double r2 = p(0)*p(0) + p(1)*p(1);
@@ -185,7 +185,7 @@ double EvenPolynomial::deriv_2nd(double h) const
     double z5 = 0.0;
     for(int i = 0; i < num_coefs_; i++) {
         double numeric_coef = ( 2*(i+1) + 1 ) * ( 2*(i+1) + 2 );
-        double z5_comp = numeric_coef * coefs_[i] * pow(h, 2*(i+1));
+        //double z5_comp = numeric_coef * coefs_[i] * pow(h, 2*(i+1));
         z5 += numeric_coef * coefs_[i] * pow(h, 2*(i+1));
     }
 

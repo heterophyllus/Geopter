@@ -21,15 +21,15 @@ public:
      * @param y0 paraxial ray height at starting point
      * @param u0 slope of outgoing ray at starting point
      */
-    ParaxialRay trace_paraxial_ray_from_object(double y0, double u0, double wvl);
+    std::shared_ptr<ParaxialRay> trace_paraxial_ray_from_object(double y0, double u0, double wvl);
 
-    ParaxialRay trace_paraxial_ray_aiming_at_surface(int target_srf, double y_target, double u_prime_target ,double wvl);
+    std::shared_ptr<ParaxialRay> trace_paraxial_ray_aiming_at_surface(int target_srf, double y_target, double u_prime_target ,double wvl);
 
     /** trace [y1,u1] = [1.0, 0.0] */
-    ParaxialRay trace_paraxial_ray_parallel_to_axis_at_s1();
+    std::shared_ptr<ParaxialRay> trace_paraxial_ray_parallel_to_axis_at_s1();
 
     /** trace [y1,u1] = [0.0, uq0] */
-    ParaxialRay trace_paraxial_ray_with_slope_at_s1();
+    std::shared_ptr<ParaxialRay> trace_paraxial_ray_with_slope_at_s1();
     /**
      * @brief Generate the paraxial path 
      * 

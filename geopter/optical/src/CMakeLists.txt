@@ -6,8 +6,8 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 set(OPTICAL_SRCS 
     Analysis/aberration.cpp
-    Analysis/ray_fan.cpp
-    Analysis/longitudinal.cpp
+    #Analysis/ray_fan.cpp
+    #Analysis/longitudinal.cpp
     Analysis/layout.cpp
 
     Assembly/optical_assembly.cpp

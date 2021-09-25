@@ -84,8 +84,8 @@ int main()
     auto pr_ray = sys->principle_ray(ref_wi);
     auto fod = sys->first_order_data();
 
-    ax_ray.print(oss);
-    pr_ray.print(oss);
+    ax_ray->print(oss);
+    pr_ray->print(oss);
     fod.print(oss);
 
 
@@ -94,16 +94,16 @@ int main()
     
     */
     oss << "Upper marginal ray at F0" << std::endl;
-    Ray ray = sys->reference_ray(2, 0, ref_wi);
-    ray.print(oss);
+    auto ray = sys->reference_ray(2, 0, ref_wi);
+    ray->print(oss);
 
     oss << "Upper marginal ray at F2" << std::endl;
     ray = sys->reference_ray(2, 2, ref_wi);
-    ray.print(oss);
+    ray->print(oss);
 
     oss << "Lower marginal ray at F2" << std::endl;
     ray = sys->reference_ray(3, 2, ref_wi);
-    ray.print(oss);
+    ray->print(oss);
 
     // output to text
     std::ofstream fout;

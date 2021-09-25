@@ -37,9 +37,9 @@ void TransverseRayFanDialog::updateParentDockContent()
 
     m_opticalSystem->update_model();
 
-    RayFan *ray_fan = new RayFan(m_opticalSystem, m_renderer);
-    ray_fan->plot(scale, nrd);
-    delete ray_fan;
+    Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
+    abr->plot_transverse_aberration(scale, nrd);
+    delete abr;
 
     m_renderer->update();
 }
