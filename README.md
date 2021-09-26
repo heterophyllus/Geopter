@@ -5,13 +5,13 @@
 ## Introduction
 Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-There has been several proprietary software as an optical design tool which have advanced features to be a definitive choice for professional work. However, there seem few private users due to their unaffordable cost for an annual license.
+As for optical design tools, there are several proprietary software with advanced features to be a definitive choice for professional work. However, there seem to be few private users due to their unaffordable cost for an annual license.
 
-Open source project may well be another option to touch optical design. The fact is that more and more optical simulation library are being developed recently. One of the disadvantage of such library is to require matured programming skills to master how to use.
+Open source projects may well be another option to get exposure to optical design. It is a fact that more and more optical simulation library are being developed recently. One of the disadvantage of such library is to require matured programming skills to master how to use.
 
-Geopter aims to be the mid-ground. This software features to put a higher priority to reasonable graphical interface allowing to focus on optical design process. Also, as is common with open source projects, the software is freely available and discloses whole internal aspects.
+Geopter aims to be somewhere in between. This software features to emphasize reasonable graphical interface, allowing users to focus on optical design process. Also, as is common with open source projects, the software is freely available and its whole internal aspects are open to the public.
 
-The primary user of this software may be a fresh optical engineer or a student having interests in optics.  This software could be a starting platform offerring an introductory experience of optical design.
+The primary user of this software may be a fresh optical engineer or a student having interests in optics.  Geopter hopes to be a starting platform to gain an introductory experience in optical design.
 
 
 ## Getting Started
