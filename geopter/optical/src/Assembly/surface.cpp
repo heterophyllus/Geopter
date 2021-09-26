@@ -23,11 +23,6 @@ Surface::~Surface()
     profile_.reset();
 }
 
-void Surface::update()
-{
-    profile_->update();
-}
-
 
 void Surface::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
 {

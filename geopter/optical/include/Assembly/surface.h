@@ -13,7 +13,6 @@ public:
     Surface(double r);
     ~Surface();
 
-    void update() override;
 
     /**
      * @brief Compute intersect point and distance from the previous interface

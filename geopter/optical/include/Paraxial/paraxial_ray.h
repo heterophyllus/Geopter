@@ -8,30 +8,75 @@
 namespace geopter {
 
 /** Paraxial ray parameter at each surface */
-struct ParaxialRayAtSurface
+class ParaxialRayAtSurface
 {
+public:
     ParaxialRayAtSurface(){
-        ht  = 0.0;
-        slp = 0.0;
-        aoi = 0.0;
-        n   = 1.0;
+        y_ = 0.0;
+        u_prime_ = 0.0;
+        i_ = 0.0;
+        n_prime_ = 0.0;
+        before_ = nullptr;
     }
 
-    ParaxialRayAtSurface(double y, double u, double i, double ind){
-        ht  = y;
-        slp = u;
-        aoi = i;
-        n   = ind;
+    ParaxialRayAtSurface(double y, double u_prime, double i, double n_prime){
+        y_ = y;
+        u_prime_ = u_prime;
+        i_ = i;
+        n_prime_ = n_prime;
+        before_ = nullptr;
     }
 
+    void set_before(ParaxialRayAtSurface* before){
+        before_ = before;
+    }
+
+    double y(){
+        return y_;
+    }
+
+    /** Returns incoming slope */
+    double u(){
+        if(before_){
+            return before_->u_prime();
+        }else{ // assume at object
+            return u_prime_;
+        }
+    }
+
+    /** Returns outgoing slope */
+    double u_prime(){
+        return u_prime_;
+    };
+
+    double i(){
+        return i_;
+    }
+
+    double n(){
+        if(before_){
+            return before_->n_prime();
+        }else{
+            return n_prime_;
+        }
+    }
+
+    double n_prime(){
+        return n_prime_;
+    }
+
+    /** Returns paraxial conjugate point distance */
     double l_prime() {
-        return (- ht/slp);
+        return (- y_/u_prime_);
     }
 
-    double ht;
-    double slp; // outgoing
-    double aoi; // incident
-    double n; // incident
+private:
+    double y_;
+    double u_prime_; // outgoing
+    double i_;       // incident
+    double n_prime_; // outgoing
+
+    ParaxialRayAtSurface *before_;
 };
 
 
@@ -43,10 +88,10 @@ public:
     ~ParaxialRay();
 
     void prepend(std::shared_ptr<ParaxialRayAtSurface> par_ray_at_srf);
-    void prepend(double ht, double slp, double aoi= 0, double n = 1.0);
+    void prepend(double y, double u_prime, double i= 0, double n_prime = 1.0);
     
     void append(std::shared_ptr<ParaxialRayAtSurface> par_ray_at_srf);
-    void append(double ht, double slp, double aoi= 0, double n = 1.0);
+    void append(double y, double u_prime, double i= 0, double n_prime = 1.0);
 
     void clear();
 

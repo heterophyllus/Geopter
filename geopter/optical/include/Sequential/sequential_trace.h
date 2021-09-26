@@ -18,16 +18,22 @@ public:
     SequentialTrace(OpticalSystem* sys);
     ~SequentialTrace();
 
-    //std::shared_ptr<Ray> trace_pupil_ray(Eigen::Vector2d pupil_crd, int fi, int wi);
-
     std::shared_ptr<Ray> trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
+
+    /**
+     * @brief Trace patterned rays (grid, hexapolar, etc)
+     * @param rays Traced Ray vector
+     * @param pupils pupil coordinated list
+     * @param fld Field pointer
+     * @param wvl wavelength value
+     * @return number of valid rays
+     */
+    int trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> >& rays, const std::vector< Eigen::Vector2d >& pupils, const Field* fld, double wvl);
 
     /** Trace a ray throughout the given sequantial path */
     std::shared_ptr<Ray> trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
 
     Eigen::Vector2d trace_coddington(const Field* fld, double wvl);
-
-    //Eigen::Vector2d aim_chief_ray(int fi, int wi);
 
     Eigen::Vector2d aim_chief_ray(const Field* fld, double wvl);
 
@@ -41,18 +47,15 @@ public:
      * @return Eigen::Vector2d aim point on paraxial entrance pupil plane
      */
     Eigen::Vector2d search_aim_point(int srf_idx, const Eigen::Vector2d& xy_target, const Field* fld, double wvl);
-    //Eigen::Vector2d search_aim_point(int srf_idx, Eigen::Vector2d xy_target, int fi, int wi);
 
     /** @brief Refract incoming direction, d_in, about normal
      *  @param d_in incident direction
      *  @param normal normal of the surface
      *  @return direction of refracted ray
      */
-    Eigen::Vector3d bend(Eigen::Vector3d d_in, Eigen::Vector3d normal, double n_in, double n_out);
+    Eigen::Vector3d bend(const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out);
 
     /** Get object coordinate for the given field */
-    //Eigen::Vector3d object_coord(int fi);
-
     Eigen::Vector3d object_coord(const Field* fld);
 
     /** Get sequential path between start and end */
@@ -71,9 +74,9 @@ public:
     bool apply_vig_status() const;
 
 private:
-    double y_stop_coordinate(double y1, int ifcx, Eigen::Vector3d pt0, double dist, double wvl, double y_target);
+    double y_stop_coordinate(double y1, int ifcx, const Eigen::Vector3d& pt0, double dist, double wvl, double y_target);
 
-    double compute_vignetting_factor_for_pupil(Eigen::Vector2d full_pupil, const Field& fld);
+    double compute_vignetting_factor_for_pupil(const Eigen::Vector2d& full_pupil, const Field& fld);
     
     OpticalSystem *opt_sys_;
 

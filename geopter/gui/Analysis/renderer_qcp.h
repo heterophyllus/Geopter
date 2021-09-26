@@ -19,10 +19,10 @@ public:
     void set_grid_layout(int rows, int cols) override;
     void set_current_cell(int row, int col) override;
 
-    void draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color, int line_style=0) override;
-    void draw_polyline(std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0) override;
-    void draw_polyline(std::vector<double>& x, std::vector<double>& y, const Rgb& color, int line_style=0) override;
-    void draw_dots(std::vector<double>& x, std::vector<double>& y, const Rgb& color, double dot_size) override;
+    void draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0) override;
+    void draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0) override;
+    void draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style=0) override;
+    void draw_dots(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, double dot_size) override;
 
     void set_x_axis_range(double xmin, double xmax) override;
     void set_y_axis_range(double ymin, double ymax) override;

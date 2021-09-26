@@ -66,6 +66,7 @@ private:
     void update_reference_rays();
     void update_semi_diameters();
     void update_paraxial_data();
+    void update_object_coords();
 
     std::unique_ptr<OpticalAssembly> opt_assembly_;
     std::unique_ptr<OpticalSpec> opt_spec_;

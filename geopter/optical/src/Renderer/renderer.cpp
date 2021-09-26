@@ -22,22 +22,22 @@ void Renderer::draw_text(std::string str, const Rgb& color)
 
 }
 
-void Renderer::draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color, int line_style)
+void Renderer::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style)
 {
 
 }
 
-void Renderer::draw_polyline(std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style)
+void Renderer::draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style)
 {
 
 }
 
-void Renderer::draw_polyline(std::vector<double>& x, std::vector<double>& y, const Rgb& color, int line_style)
+void Renderer::draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style)
 {
 
 }
 
-void Renderer::draw_dots(std::vector<double> &x, std::vector<double> &y, const Rgb &color, double dot_size)
+void Renderer::draw_dots(const std::vector<double> &x, const std::vector<double> &y, const Rgb &color, double dot_size)
 {
 
 }

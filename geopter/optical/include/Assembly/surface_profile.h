@@ -20,8 +20,6 @@ public:
     SurfaceProfile();
     virtual ~SurfaceProfile();
 
-    virtual void update();
-
     virtual std::string name() const;
 
     virtual void set_cv(double c);

@@ -25,6 +25,8 @@ public:
     double vuy() const;
     double weight() const;
     Rgb render_color() const;
+    Eigen::Vector2d aim_pt() const;
+    Eigen::Vector3d object_coord() const;
 
     void set_x(double x);
     void set_y(double y);
@@ -34,26 +36,26 @@ public:
     void set_vuy(double vuy);
     void set_weight(double wt);
     void set_render_color(const Rgb& color);
-
-    Eigen::Vector2d aim_pt() const;
     void set_aim_pt(PupilCrd aim_pt);
+    void set_object_coord(Eigen::Vector3d obj_crd);
 
     PupilCrd apply_vignetting(PupilCrd pupil) const;
 
-    void update();
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
     double x_;
     double y_;
+    double wt_;
     double vux_;
     double vuy_;
     double vlx_;
     double vly_;
-    double wt_;
-
     Eigen::Vector2d aim_pt_;
-
+    Eigen::Vector3d object_coord_;
     Rgb render_color_;
+
+
 };
 
 } //namespace geopter

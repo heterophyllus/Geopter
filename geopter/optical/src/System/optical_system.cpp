@@ -152,6 +152,50 @@ void OpticalSystem::update_aim_pt()
     }
 }
 
+void OpticalSystem::update_object_coords()
+{
+    Eigen::Vector3d obj_pt;
+
+    Eigen::Vector3d ang_dg;
+    Eigen::Vector3d img_pt;
+    Eigen::Vector3d dir_tan;
+
+    const int field_type = opt_spec_->field_of_view()->field_type();
+
+    for(int fi = 0; fi < num_fld_; fi++){
+        Field* fld = opt_spec_->field_of_view()->field(fi);
+        double fld_x = fld->x();
+        double fld_y = fld->y();
+
+        switch (field_type)
+        {
+        case FieldType::OBJ_ANG:
+            ang_dg = Eigen::Vector3d({fld_x, fld_y, 0.0});
+            dir_tan(0) = tan(ang_dg(0) * M_PI/180.0);
+            dir_tan(1) = tan(ang_dg(1) * M_PI/180.0);
+            dir_tan(2) = tan(ang_dg(2) * M_PI/180.0);
+            obj_pt = -dir_tan*(fod_.obj_dist + fod_.enp_dist);
+            break;
+
+        case FieldType::OBJ_HT:
+            obj_pt(0) = fld_x;
+            obj_pt(1) = fld_y;
+            obj_pt(2) = 0.0;
+            break;
+
+        case FieldType::IMG_HT:
+            img_pt = Eigen::Vector3d({fld_x, fld_y, 0.0});
+            obj_pt = fod_.red*img_pt;
+            break;
+
+        default:
+            obj_pt = Eigen::Vector3d::Zero(3);
+        }
+
+        fld->set_object_coord(obj_pt);
+    }
+}
+
 
 void OpticalSystem::update_semi_diameters()
 {
@@ -251,21 +295,21 @@ void OpticalSystem::update_paraxial_data()
     std::shared_ptr<ParaxialRay> p_ray = p_ray_;
     std::shared_ptr<ParaxialRay> q_ray = q_ray_;
 
-    double ak1 = p_ray->at(img)->ht;
-    double bk1 = q_ray->at(img)->ht;
-    double ck1 = n_k*p_ray->at(img)->slp;
-    double dk1 = n_k*q_ray->at(img)->slp;
+    double ak1 = p_ray->at(img)->y();
+    double bk1 = q_ray->at(img)->y();
+    double ck1 = n_k*p_ray->at(img)->u_prime();
+    double dk1 = n_k*q_ray->at(img)->u_prime();
 
     // fill in the content of first order data
-    fod_.opt_inv = n_0 * ( ax_ray->at(1)->ht*pr_ray->at(0)->slp - pr_ray->at(1)->ht*ax_ray->at(0)->slp );
+    fod_.opt_inv = n_0 * ( ax_ray->at(1)->y()*pr_ray->at(0)->u_prime() - pr_ray->at(1)->y()*ax_ray->at(0)->u_prime() );
     fod_.obj_dist = opt_assembly_->gap(0)->thi();
     fod_.img_dist = opt_assembly_->image_space_gap()->thi();
     fod_.efl = -1.0/ck1;
     fod_.pp1 = (dk1 - 1.0)*(n_0/ck1);
-    fod_.ppk = (p_ray->at(img-1)->ht - 1.0)*(n_k/ck1);
+    fod_.ppk = (p_ray->at(img-1)->y() - 1.0)*(n_k/ck1);
     fod_.ffl = fod_.pp1 - fod_.efl;
     fod_.bfl = fod_.efl - fod_.ppk;
-    fod_.fno = -1.0/(2.0*n_k*ax_ray->at(img)->slp);
+    fod_.fno = -1.0/(2.0*n_k*ax_ray->at(img)->u_prime());
 
     fod_.m = ak1 + ck1*fod_.img_dist/n_k;
     fod_.red = dk1 + ck1*fod_.obj_dist;
@@ -273,18 +317,18 @@ void OpticalSystem::update_paraxial_data()
     fod_.n_obj = n_0;
     fod_.n_img = n_k;
 
-    fod_.img_ht = -fod_.opt_inv/(n_k*ax_ray->at(img)->slp);
-    fod_.obj_ang = atan(pr_ray->at(0)->slp) * 180.0/M_PI;
+    fod_.img_ht = -fod_.opt_inv/(n_k*ax_ray->at(img)->u_prime());
+    fod_.obj_ang = atan(pr_ray->at(0)->u_prime()) * 180.0/M_PI;
 
-    double nu_pr0 = n_0*pr_ray->at(0)->slp;
-    fod_.enp_dist = -pr_ray->at(1)->ht/nu_pr0;
+    double nu_pr0 = n_0*pr_ray->at(0)->u_prime();
+    fod_.enp_dist = -pr_ray->at(1)->y()/nu_pr0;
     fod_.enp_radius = abs(fod_.opt_inv/nu_pr0);
 
-    fod_.exp_dist = -(pr_ray->at(img)->ht/pr_ray->at(img)->slp - fod_.img_dist);
-    fod_.exp_radius = abs( fod_.opt_inv/(n_k*pr_ray->at(img)->slp) );
+    fod_.exp_dist = -(pr_ray->at(img)->y()/pr_ray->at(img)->u_prime() - fod_.img_dist);
+    fod_.exp_radius = abs( fod_.opt_inv/(n_k*pr_ray->at(img)->u_prime()) );
 
-    fod_.obj_na = n_0*sin( atan(ax_ray->at(0)->slp) );
-    fod_.img_na = n_k*sin( atan(ax_ray->at(img)->slp) );
+    fod_.obj_na = n_0*sin( atan(ax_ray->at(0)->u_prime()) );
+    fod_.img_na = n_k*sin( atan(ax_ray->at(img)->u_prime()) );
 }
 
 void OpticalSystem::update_reference_rays()
@@ -357,6 +401,7 @@ void OpticalSystem::update_model()
     num_fld_ = opt_spec_->field_of_view()->field_count();
 
     update_paraxial_data();
+    update_object_coords();
     update_aim_pt();
     update_reference_rays();
     update_semi_diameters();

@@ -40,6 +40,8 @@ public:
 
     void print(std::ostringstream& oss);
 
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 private:
     int pupil_type_;
     double value_;

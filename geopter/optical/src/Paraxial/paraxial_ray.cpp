@@ -33,21 +33,29 @@ void ParaxialRay::prepend(std::shared_ptr<ParaxialRayAtSurface> par_ray_at_srf)
     par_ray_at_srfs_.insert(itr, par_ray_at_srf);
 }
 
-void ParaxialRay::prepend(double ht, double slp, double aoi, double n)
+void ParaxialRay::prepend(double y, double u_prime, double i, double n_prime)
 {
-    auto prx_ray_at_srf = std::make_shared<ParaxialRayAtSurface>(ht,slp,aoi,n);
+    auto prx_ray_at_srf = std::make_shared<ParaxialRayAtSurface>(y, u_prime, i, n_prime);
     auto itr = par_ray_at_srfs_.begin();
     par_ray_at_srfs_.insert( itr, prx_ray_at_srf);
 }
 
 void ParaxialRay::append(std::shared_ptr<ParaxialRayAtSurface> par_ray_at_srf)
 {
+    ParaxialRayAtSurface *before = par_ray_at_srfs_.back().get();
+    par_ray_at_srf->set_before(before);
     par_ray_at_srfs_.push_back(par_ray_at_srf);
 }
 
-void ParaxialRay::append(double ht, double slp, double aoi, double n)
+void ParaxialRay::append(double y, double u_prime, double i, double n_prime)
 {
-    auto prx_ray_at_srf = std::make_shared<ParaxialRayAtSurface>(ht, slp, aoi, n);
+    auto prx_ray_at_srf = std::make_shared<ParaxialRayAtSurface>(y, u_prime, i, n_prime);
+
+    if(par_ray_at_srfs_.size() > 0){
+        ParaxialRayAtSurface *before = par_ray_at_srfs_.back().get();
+        prx_ray_at_srf->set_before(before);
+    }
+
     par_ray_at_srfs_.push_back(prx_ray_at_srf);
 }
 
@@ -110,15 +118,11 @@ void ParaxialRay::print(std::ostringstream& oss) const
     for(int i = 0; i < num_srf; i++)
     {
         oss << std::setw(idx_w) << std::right << i;
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->ht;
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->slp;
-        if( i == num_srf-1){
-            oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->slp;
-        }else{
-            oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i+1]->n*par_ray_at_srfs_[i]->slp;
-        }
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->aoi;
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->n * par_ray_at_srfs_[i]->aoi;
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->y();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->u_prime();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->n_prime()*par_ray_at_srfs_[i]->u_prime();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->i();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << par_ray_at_srfs_[i]->n() * par_ray_at_srfs_[i]->i();
         oss << std::endl;
     }
     oss << std::endl;

@@ -13,6 +13,7 @@ Field::Field(double x, double y, double wt, Rgb color, double vuy, double vly, d
     render_color_(color)
 {
     aim_pt_ = Eigen::Vector2d::Zero(2);
+    object_coord_ = Eigen::Vector3d::Zero(3);
 }
 
 Field::~Field()
@@ -110,6 +111,16 @@ void Field::set_aim_pt(PupilCrd aim_pt)
     aim_pt_ = aim_pt;
 }
 
+Eigen::Vector3d Field::object_coord() const
+{
+    return object_coord_;
+}
+
+void Field::set_object_coord(Eigen::Vector3d obj_crd)
+{
+    object_coord_ = obj_crd;
+}
+
 PupilCrd Field::apply_vignetting(PupilCrd pupil) const
 {
     PupilCrd vig_pupil = pupil;
@@ -129,7 +140,4 @@ PupilCrd Field::apply_vignetting(PupilCrd pupil) const
     return vig_pupil;
 }
 
-void Field::update()
-{
-    //_chief_ray = nullptr;
-}
+

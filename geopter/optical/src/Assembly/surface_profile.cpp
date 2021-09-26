@@ -13,11 +13,6 @@ SurfaceProfile::~SurfaceProfile()
 
 }
 
-void SurfaceProfile::update()
-{
-
-}
-
 std::string SurfaceProfile::name() const
 {
     return name_;
@@ -100,7 +95,7 @@ void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eig
 
     int iter = 0;
 
-    while(delta > eps && iter < 50)
+    while(delta > eps && iter < 30)
     {
         p = p0 + s1*d;
         s2 = s1 - f(p)/d.dot(df(p));

@@ -50,7 +50,7 @@ void RendererQCP::set_current_cell(int row, int col)
 }
 
 
-void RendererQCP::draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& color, int line_style)
+void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
 
@@ -84,7 +84,7 @@ void RendererQCP::draw_line(Eigen::Vector2d p1, Eigen::Vector2d p2, const Rgb& c
     line->setVisible(true);
 }
 
-void RendererQCP::draw_polyline(std::vector<Eigen::Vector2d> &pts, const Rgb& color, int line_style)
+void RendererQCP::draw_polyline(const std::vector<Eigen::Vector2d> &pts, const Rgb& color, int line_style)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
     //QCPCurve* polyline = new QCPCurve(_customPlot->xAxis, _customPlot->yAxis);
@@ -116,7 +116,7 @@ void RendererQCP::draw_polyline(std::vector<Eigen::Vector2d> &pts, const Rgb& co
 
 }
 
-void RendererQCP::draw_polyline(std::vector<double> &x, std::vector<double> &y, const Rgb& color, int line_style)
+void RendererQCP::draw_polyline(const std::vector<double> &x, const std::vector<double> &y, const Rgb& color, int line_style)
 {
     int pointCount = x.size();
     QVector<QCPCurveData> curveData(pointCount);
@@ -148,7 +148,7 @@ void RendererQCP::draw_polyline(std::vector<double> &x, std::vector<double> &y, 
     polyline->setVisible(true);
 }
 
-void RendererQCP::draw_dots(std::vector<double> &x, std::vector<double> &y, const Rgb &color, double dot_size)
+void RendererQCP::draw_dots(const std::vector<double> &x, const std::vector<double> &y, const Rgb &color, double dot_size)
 {
     int pointCount = x.size();
     QVector<QCPCurveData> dotsData(pointCount);
@@ -197,9 +197,11 @@ void RendererQCP::set_y_axis_label(std::string label)
 
 void RendererQCP::set_aspect_ratio(double h_per_v)
 {
-    //_customPlot->yAxis->setScaleRatio(_customPlot->xAxis, h_per_v);
+    customPlot_->yAxis->setScaleRatio(customPlot_->xAxis, h_per_v);
     QCPAxis *xAxis = customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atBottom);
-    customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atLeft)->setScaleRatio(xAxis, h_per_v);
+    QCPAxis *yAxis = customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atLeft);
+
+    xAxis->setScaleRatio(yAxis, h_per_v);
 }
 
 void RendererQCP::set_mouse_interaction(bool state)

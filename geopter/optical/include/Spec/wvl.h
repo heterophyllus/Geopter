@@ -2,7 +2,6 @@
 #define WVL_H
 
 #include "spectral_line.h"
-
 #include "Renderer/rgb.h"
 
 namespace geopter{
@@ -30,6 +29,7 @@ public:
 
     void set_render_color(Rgb color);
 
+    /** Returns render color */
     Rgb render_color() const;
 
 private:

@@ -47,6 +47,9 @@ struct RayAtSurface
 
     /** Ray height from the axis */
     double height() const { return sqrt( pow(intersect_pt(0),2) + pow(intersect_pt(1),2) ); }
+
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 

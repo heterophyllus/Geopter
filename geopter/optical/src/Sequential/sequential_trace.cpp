@@ -36,15 +36,6 @@ SequentialTrace::~SequentialTrace()
     opt_sys_ = nullptr;
 }
 
-/*
-std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(Eigen::Vector2d pupil_crd, int fi, int wi)
-{
-    Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
-    double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
-
-    return trace_pupil_ray(pupil_crd, fld, wvl);
-}
-*/
 
 std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field *fld, double wvl)
 {
@@ -65,13 +56,9 @@ std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pup
     pt1(1) = eprad*vig_pupil(1) + aim_pt(1);
     pt1(2) = fod.obj_dist + fod.enp_dist;
 
-    Eigen::Vector3d dir0;
-    dir0 = pt1 - pt0;
-    //double length = dir0.norm();
-    //dir0 = dir0/length;
+    Eigen::Vector3d dir0 = pt1 - pt0;
     dir0.normalize();
 
-    //int img = opt_sys_->optical_assembly()->image_index();
     SequentialPath path = sequential_path(0, image_index_, wvl);
 
     std::shared_ptr<Ray> ray = trace_ray_throughout_path(path, pt0, dir0);
@@ -80,11 +67,55 @@ std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pup
     return ray;
 }
 
+int SequentialTrace::trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> >& rays, const std::vector<Eigen::Vector2d>& pupils, const Field* fld, double wvl)
+{
+
+
+    auto fod = opt_sys_->first_order_data();
+    double eprad = fod.enp_radius;
+    PupilCrd aim_pt = fld->aim_pt();
+
+    //Eigen::Vector3d pt0 = this->object_coord(fld);
+    Eigen::Vector3d pt0 = fld->object_coord();
+
+    SequentialPath path = sequential_path(0, image_index_, wvl);
+
+    rays.clear();
+    rays.reserve(pupils.size());
+
+    int valid_count = 0;
+
+    for(auto& pupil : pupils)
+    {
+        Eigen::Vector2d vig_pupil = pupil;
+
+        if(do_apply_vig_){
+            vig_pupil = fld->apply_vignetting(pupil);
+        }
+
+        Eigen::Vector3d pt1;
+        pt1(0) = eprad*vig_pupil(0) + aim_pt(0);
+        pt1(1) = eprad*vig_pupil(1) + aim_pt(1);
+        pt1(2) = fod.obj_dist + fod.enp_dist;
+
+        Eigen::Vector3d dir0 = pt1 - pt0;
+        dir0.normalize();
+
+        auto ray = trace_ray_throughout_path(path, pt0, dir0);
+        ray->set_wvl(wvl);
+
+        if(ray->status() == PassThrough){
+            valid_count++;
+        }
+
+        rays.push_back(ray);
+    }
+    return valid_count;
+}
 
 std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0)
 {
     std::shared_ptr<Ray> ray = std::make_shared<Ray>();
-    ray->set_status(RayStatus::PassThrough);
 
     if(seq_path.size() == 0) {
         return ray; // empty ray
@@ -194,12 +225,12 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
 
         ParaxialTrace *parax_tracer = new ParaxialTrace(opt_sys_);
 
-        double y0 = opt_sys_->axial_ray(ref_wvl_idx_)->at(0)->ht;
-        double u0 = opt_sys_->axial_ray(ref_wvl_idx_)->at(0)->slp;
+        double y0 = opt_sys_->axial_ray(ref_wvl_idx_)->at(0)->y();
+        double u0 = opt_sys_->axial_ray(ref_wvl_idx_)->at(0)->u();
         auto ax_ray = parax_tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
 
-        double y = ax_ray->at(last_surf)->ht;
-        double u_prime = ax_ray->at(img_srf)->slp;
+        double y = ax_ray->at(last_surf)->y();
+        double u_prime = ax_ray->at(img_srf)->u_prime();
         double l_prime = -y/u_prime;
 
         delete parax_tracer;
@@ -302,9 +333,6 @@ SequentialPath SequentialTrace::overall_sequential_path(double wvl)
 
 SequentialPath SequentialTrace::sequential_path(int start, int end, double wvl)
 {
-    //int num_srfs = opt_sys_->optical_assembly()->surface_count();
-    //int num_gaps = opt_sys_->optical_assembly()->gap_count();
-
     assert(end <= num_srfs_);
 
     SequentialPath path;
@@ -332,19 +360,9 @@ SequentialPath SequentialTrace::sequential_path(int start, int end, double wvl)
     return path;
 }
 
-/*
-Eigen::Vector2d SequentialTrace::aim_chief_ray(int fi, int wi)
-{
-    Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
-    double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi);
-
-    return aim_chief_ray(fld, wvl);
-}
-*/
 
 Eigen::Vector2d SequentialTrace::aim_chief_ray(const Field *fld, double wvl)
 {
-    //double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi);
     int stop = opt_sys_->optical_assembly()->stop_index();
     Eigen::Vector2d xy_target({0.0, 0.0}); 
     Eigen::Vector2d aim_pt = search_aim_point(stop, xy_target, fld, wvl);
@@ -352,15 +370,6 @@ Eigen::Vector2d SequentialTrace::aim_chief_ray(const Field *fld, double wvl)
     return aim_pt;
 }
 
-/*
-Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, Eigen::Vector2d xy_target, int fi, int wi)
-{
-    Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
-    double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi);
-
-    return search_aim_point(srf_idx, xy_target, fld, wvl);
-}
-*/
 
 Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vector2d& xy_target, const Field *fld, double wvl)
 {
@@ -416,7 +425,7 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vect
 
 }
 
-double SequentialTrace::y_stop_coordinate(double y1, int ifcx, Eigen::Vector3d pt0, double dist, double wvl, double y_target)
+double SequentialTrace::y_stop_coordinate(double y1, int ifcx, const Eigen::Vector3d& pt0, double dist, double wvl, double y_target)
 {
     Eigen::Vector3d pt1({0.0, y1, dist});
     Eigen::Vector3d dir0 = pt1 - pt0;
@@ -453,7 +462,7 @@ double SequentialTrace::y_stop_coordinate(double y1, int ifcx, Eigen::Vector3d p
 
 }
 
-Eigen::Vector3d SequentialTrace::bend(Eigen::Vector3d d_in, Eigen::Vector3d normal, double n_in, double n_out)
+Eigen::Vector3d SequentialTrace::bend(const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out)
 {
     try {
         double normal_len = normal.norm();
@@ -468,13 +477,6 @@ Eigen::Vector3d SequentialTrace::bend(Eigen::Vector3d d_in, Eigen::Vector3d norm
     }
 }
 
-/*
-Eigen::Vector3d SequentialTrace::object_coord(int fi)
-{
-    Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
-    return object_coord(fld);
-}
-*/
 
 Eigen::Vector3d SequentialTrace::object_coord(const Field* fld)
 {
@@ -532,7 +534,7 @@ std::vector<double> SequentialTrace::compute_vignetting_factors(const Field& fld
 }
 
 
-double SequentialTrace::compute_vignetting_factor_for_pupil(Eigen::Vector2d full_pupil, const Field &fld)
+double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2d& full_pupil, const Field &fld)
 {
     bool orig_vig_state = do_apply_vig_;
     do_apply_vig_ = false;

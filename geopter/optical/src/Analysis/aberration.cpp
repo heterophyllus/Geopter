@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include <vector>
 #include <sstream>
 #include <iomanip>
@@ -144,20 +147,16 @@ void Aberration::plot_longitudinal_spherical_aberration(double scale)
 
     int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
     int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
-    double img_dst = opt_sys_->first_order_data().img_dist;
 
     // collect l_prime
     std::vector<double> l_primes;
     {
         int num_srf = opt_sys_->optical_assembly()->surface_count();
-        int img_srf = num_srf-1;
         int last_surf = num_srf - 1 -1;
         int num_wvl = opt_sys_->optical_spec()->spectral_region()->wvl_count();
         for(int wi = 0; wi < num_wvl; wi++){
             std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->axial_ray(wi);
-            double y = ax_ray->at(last_surf)->ht;
-            double u_prime = ax_ray->at(img_srf)->slp;
-            double l_prime = -y/u_prime;
+            double l_prime = ax_ray->at(last_surf)->l_prime();
             l_primes.push_back(l_prime);
         }
     }
@@ -240,14 +239,12 @@ void Aberration::plot_astigmatism(double scale)
     std::vector<double> l_primes;
     {
         int num_srf = opt_sys_->optical_assembly()->surface_count();
-        int img_srf = num_srf-1;
+        //int img_srf = num_srf-1;
         int last_surf = num_srf - 1 -1;
         int num_wvl = opt_sys_->optical_spec()->spectral_region()->wvl_count();
         for(int wi = 0; wi < num_wvl; wi++){
             std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->axial_ray(wi);
-            double y = ax_ray->at(last_surf)->ht;
-            double u_prime = ax_ray->at(img_srf)->slp;
-            double l_prime = -y/u_prime;
+            double l_prime = ax_ray->at(last_surf)->l_prime();
             l_primes.push_back(l_prime);
         }
     }
@@ -324,8 +321,8 @@ void Aberration::plot_chromatic_focus_shift(double lower_wvl, double higher_wvl)
     tracer->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
 
     std::shared_ptr<ParaxialRay> ref_prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, ref_wvl);
-    double y = ref_prx_ray->at(last_surf)->ht;
-    double u_prime = ref_prx_ray->at(img_srf)->slp;
+    double y = ref_prx_ray->at(last_surf)->y();
+    double u_prime = ref_prx_ray->at(img_srf)->u_prime();
     double ref_l_prime = -y/u_prime;
 
 
@@ -335,8 +332,8 @@ void Aberration::plot_chromatic_focus_shift(double lower_wvl, double higher_wvl)
         double wvl = lower_wvl + i*wvl_step;
         std::shared_ptr<ParaxialRay> prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
 
-        y = prx_ray->at(last_surf)->ht;
-        u_prime = prx_ray->at(img_srf)->slp;
+        y = prx_ray->at(last_surf)->y();
+        u_prime = prx_ray->at(img_srf)->u_prime();
         double l_prime = -y/u_prime;
         ydata.push_back(l_prime - ref_l_prime);
         xdata.push_back(wvl);
@@ -381,7 +378,7 @@ void Aberration::plot_spot_diagram(int pattern, int nrd, double scale, double do
     }
 
     std::vector<double> ray_dx, ray_dy;
-    std::shared_ptr<Ray> ray;
+    std::vector< std::shared_ptr<Ray> > rays;
 
     const WvlSpec* wvl_spec = opt_sys_->optical_spec()->spectral_region();
 
@@ -399,12 +396,16 @@ void Aberration::plot_spot_diagram(int pattern, int nrd, double scale, double do
 
         for(int wi = 0; wi < num_wvl_; wi++){
             double wvl = wvl_spec->wvl(wi)->value();
+
+            int valid_ray_count = tracer->trace_pupil_pattern_rays(rays, pupils, fld, wvl);
+
             ray_dx.clear();
             ray_dy.clear();
 
-            for(auto& pupil : pupils){
-                ray = tracer->trace_pupil_ray(pupil, fld, wvl);
+            ray_dx.reserve(valid_ray_count);
+            ray_dy.reserve(valid_ray_count);
 
+            for(auto& ray : rays){
                 if(ray->status() == RayStatus::PassThrough){
                     ray_dx.push_back(ray->back()->x() - chief_ray_x);
                     ray_dy.push_back(ray->back()->y() - chief_ray_y);
