@@ -42,12 +42,15 @@ Some example lenses are stored in "example" folder in json format.  In Geopter G
 ## License
 This project is licensed under GPL license - see the [LICENSE](LICENSE.md) for details.
 
-## Authors
-- Hiiragi <heterophyllus.work@gmail.com>
 
 ## Contributing
 Contributions and feedbacks are greatly appreciated.
 Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+
+## Contact
+- Hiiragi <heterophyllus.work@gmail.com>
+
 
 ## Acknowledgement
 The author would like to express respect and gratitude to the following excellent projects for their reference implementation of optical calculation.
