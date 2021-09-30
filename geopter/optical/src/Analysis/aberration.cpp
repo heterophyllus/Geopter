@@ -145,62 +145,53 @@ void Aberration::plot_longitudinal_spherical_aberration(double scale)
     std::shared_ptr<Ray> ray;
     Field* fld0 = opt_sys_->optical_spec()->field_of_view()->field(0);
 
-    int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
     int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
 
-    // collect l_prime
+    // collect l_prime for on-axial data
     std::vector<double> l_primes;
-    {
-        int num_srf = opt_sys_->optical_assembly()->surface_count();
-        int last_surf = num_srf - 1 -1;
-        int num_wvl = opt_sys_->optical_spec()->spectral_region()->wvl_count();
-        for(int wi = 0; wi < num_wvl; wi++){
-            std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->axial_ray(wi);
-            double l_prime = ax_ray->at(last_surf)->l_prime();
-            l_primes.push_back(l_prime);
-        }
+    for(int wi = 0; wi < num_wvls; wi++){
+        std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->axial_ray(wi);
+        double l_prime = ax_ray->back()->l_prime();
+        l_primes.push_back(l_prime);
     }
 
 
+    // collect zonal data
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
 
     for(int wi = 0; wi < num_wvls; wi++){
         double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
         Rgb color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
 
-        double dfoc = l_primes[wi] - l_primes[ref_wvl_idx];
-
-        /* collect data */
         std::vector<double> py;
         std::vector<double> lsa;
 
         py.push_back(0.0);
-        lsa.push_back(dfoc);
+        lsa.push_back(l_primes[wi]);
 
         std::vector<double> y_list;
         std::vector<double> N_list;
         std::vector<double> M_list;
+
         for(int ri = 1; ri < num_data; ri++) {
             pupil(0) = 0.0;
             pupil(1) = (double)ri/(double)(num_data-1);
             ray = tracer->trace_pupil_ray(pupil, fld0, wvl);
 
-            //if(ray.status() == RayStatus::PassThrough){
-                py.push_back(pupil(1));
+            py.push_back(pupil(1));
 
-                int at_image = ray->size()-1;
-                double y = ray->y(at_image);
-                double M = ray->M(at_image);
-                double N = ray->N(at_image);
-                lsa.push_back(-y*N/M);
+            double y = ray->back()->y();
+            double M = ray->back()->M();
+            double N = ray->back()->N();
+            lsa.push_back(-y*N/M);
 
-                y_list.push_back(y);
-                M_list.push_back(M);
-                N_list.push_back(N);
-            //}
+            y_list.push_back(y);
+            M_list.push_back(M);
+            N_list.push_back(N);
+
         }
 
-        /* interpolation */
+        // interpolation
         std::vector<double> spy(30);
         std::vector<double> slsa(30);
 
@@ -220,7 +211,7 @@ void Aberration::plot_longitudinal_spherical_aberration(double scale)
 
 }
 
-void Aberration::plot_astigmatism(double scale)
+void Aberration::plot_astigmatism(int ray_aiming_type, double scale)
 {
     constexpr int num_data = 10;
 
@@ -233,22 +224,8 @@ void Aberration::plot_astigmatism(double scale)
     renderer_->set_x_axis_label("Astigmatism");
     renderer_->set_y_axis_label("Field");
 
-    int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
-    int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
 
-    std::vector<double> l_primes;
-    {
-        int num_srf = opt_sys_->optical_assembly()->surface_count();
-        //int img_srf = num_srf-1;
-        int last_surf = num_srf - 1 -1;
-        int num_wvl = opt_sys_->optical_spec()->spectral_region()->wvl_count();
-        for(int wi = 0; wi < num_wvl; wi++){
-            std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->axial_ray(wi);
-            double l_prime = ax_ray->at(last_surf)->l_prime();
-            l_primes.push_back(l_prime);
-        }
-    }
-    double l_prime_ref = l_primes[ref_wvl_idx];
+    int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
 
     Field *tmp_fld = new Field();
 
@@ -264,20 +241,28 @@ void Aberration::plot_astigmatism(double scale)
         std::vector<double> xfo;
         std::vector<double> yfo;
 
-        double dfoc = l_primes[wi] - l_prime_ref;
-        fy.push_back(0.0);
-        xfo.push_back(dfoc);
-        yfo.push_back(dfoc);
-        for(int fi = 1; fi < num_data; fi++) {
+        for(int fi = 0; fi < num_data; fi++) {
             double y = maxfld*(double)fi/(double)(num_data-1);
             tmp_fld->set_y(y);
-            PupilCrd aim_pt = tracer->aim_chief_ray(tmp_fld, wvl);
+
+            PupilCrd aim_pt = Eigen::Vector2d::Zero(2);
+
+            if(ray_aiming_type == 0){ // stop
+                aim_pt = tracer->aim_chief_ray(tmp_fld, wvl);
+            }else{ // center of upper/lower ray
+                double vuy = tracer->compute_vignetting_factor_for_pupil(PupilCrd({0.0, 1.0}), *tmp_fld);
+                double vly = tracer->compute_vignetting_factor_for_pupil(PupilCrd({0.0, -1.0}), *tmp_fld);
+
+                aim_pt = {0.0, (vuy-vly)/2.0};
+            }
+
             tmp_fld->set_aim_pt(aim_pt);
             fy.push_back(y);
 
             Eigen::Vector2d s_t = tracer->trace_coddington(tmp_fld, wvl);
-            xfo.push_back(s_t(0) + dfoc);
-            yfo.push_back(s_t(1) + dfoc);
+
+            xfo.push_back(s_t(0));
+            yfo.push_back(s_t(1));
         }
 
         // spline interpolation

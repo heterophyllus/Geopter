@@ -254,9 +254,9 @@ void Layout::draw_single_ray(const std::shared_ptr<Ray>& ray, const Rgb& color)
 {
     for(int i = 1; i < ray->size(); i++)
     {
-        Eigen::Vector3d pt_to = ray->at(i)->intersect_pt;
+        Eigen::Vector3d pt_to = ray->at(i)->intersect_pt();
 
-        Eigen::Vector3d pt_from = ray->at(i-1)->intersect_pt;
+        Eigen::Vector3d pt_from = ray->at(i-1)->intersect_pt();
 
         Surface* cur_srf = opt_sys_->optical_assembly()->surface(i);
         Surface* prev_srf = opt_sys_->optical_assembly()->surface(i-1);

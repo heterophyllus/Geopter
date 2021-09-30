@@ -1,0 +1,344 @@
+{
+    "Assembly": {
+        "0": {
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Material": "AIR",
+            "Thickness": 10000000000.0,
+            "Type": "SPH"
+        },
+        "1": {
+            "Aperture": {
+                "Radius": 20.0,
+                "Type": "Circular"
+            },
+            "Coefs": [
+                -1.44652e-06,
+                -1.02693e-09,
+                1.91678e-12,
+                -3.07794e-15,
+                2.00476e-18,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": 0.012482836100362002,
+            "Label": "L1",
+            "Material": "S-LAH65V_OHARA",
+            "Thickness": 9.67,
+            "Type": "ASP"
+        },
+        "10": {
+            "Curvature": 0.0019377854600205794,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 2.44,
+            "Type": "SPH"
+        },
+        "11": {
+            "Curvature": 0.0,
+            "Label": "Stop",
+            "Material": "AIR",
+            "Thickness": 2.58,
+            "Type": "SPH"
+        },
+        "12": {
+            "Curvature": -0.0007151888956911299,
+            "Label": "L7",
+            "Material": "S-FPL51_OHARA",
+            "Thickness": 10.02,
+            "Type": "SPH"
+        },
+        "13": {
+            "Curvature": -0.04765308553728854,
+            "Label": "L8",
+            "Material": "S-NBH53_OHARA",
+            "Thickness": 1.29,
+            "Type": "SPH"
+        },
+        "14": {
+            "Curvature": 0.003981795232198389,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.44,
+            "Type": "SPH"
+        },
+        "15": {
+            "Curvature": 0.011419957517758034,
+            "Label": "L9",
+            "Material": "S-LAH96_OHARA",
+            "Thickness": 7.29,
+            "Type": "SPH"
+        },
+        "16": {
+            "Curvature": -0.023016548898658135,
+            "Label": "L10",
+            "Material": "1.665650:35.640000",
+            "Thickness": 1.28,
+            "Type": "SPH"
+        },
+        "17": {
+            "Curvature": 0.009461454036256292,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 1.79,
+            "Type": "SPH"
+        },
+        "18": {
+            "Coefs": [
+                -2.17027e-06,
+                4.00496e-09,
+                -1.90948e-11,
+                4.86536e-14,
+                -4.89586e-17,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": 0.006184483131822258,
+            "Label": "L11",
+            "Material": "S-LAH58_OHARA",
+            "Thickness": 7.96,
+            "Type": "ASP"
+        },
+        "19": {
+            "Aperture": {
+                "Radius": 17.5,
+                "Type": "Circular"
+            },
+            "Curvature": -0.02357211889776772,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 1.95,
+            "Type": "SPH"
+        },
+        "2": {
+            "Curvature": -0.014653517576894334,
+            "Label": "L2",
+            "Material": "S-TIM28_OHARA",
+            "Thickness": 1.64,
+            "Type": "SPH"
+        },
+        "20": {
+            "Curvature": 0.0183573815031024,
+            "Label": "L12",
+            "Material": "S-LAH58_OHARA",
+            "Thickness": 8.77,
+            "Type": "SPH"
+        },
+        "21": {
+            "Curvature": -0.016520460590441263,
+            "Label": "L13",
+            "Material": "S-TIM8_OHARA",
+            "Thickness": 1.54,
+            "Type": "SPH"
+        },
+        "22": {
+            "Curvature": 0.024654832347140037,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 7.14,
+            "Type": "SPH"
+        },
+        "23": {
+            "Curvature": -0.017190991920233798,
+            "Label": "L14",
+            "Material": "S-NBH52_OHARA",
+            "Thickness": 1.21,
+            "Type": "SPH"
+        },
+        "24": {
+            "Curvature": 0.00943529744775204,
+            "Label": "L15",
+            "Material": "S-LAH65V_OHARA",
+            "Thickness": 5.08,
+            "Type": "SPH"
+        },
+        "25": {
+            "Aperture": {
+                "Radius": 18.0,
+                "Type": "Circular"
+            },
+            "Coefs": [
+                3.50064e-06,
+                -5.9867e-10,
+                1.34319e-11,
+                -2.56798e-14,
+                2.5993e-17,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Conic": 0.0,
+            "Curvature": -0.004625539453538769,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 14.6,
+            "Type": "ASP"
+        },
+        "26": {
+            "Curvature": 0.0,
+            "Label": "Img",
+            "Material": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "3": {
+            "Curvature": 0.01891718058340585,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.2,
+            "Type": "SPH"
+        },
+        "4": {
+            "Curvature": 0.023705670396358812,
+            "Label": "L3",
+            "Material": "S-LAH99_OHARA",
+            "Thickness": 7.47,
+            "Type": "SPH"
+        },
+        "5": {
+            "Curvature": 0.0003983149683578589,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.7,
+            "Type": "SPH"
+        },
+        "6": {
+            "Curvature": 0.01000210044109263,
+            "Label": "L4",
+            "Material": "S-NBH5_OHARA",
+            "Thickness": 1.6,
+            "Type": "SPH"
+        },
+        "7": {
+            "Curvature": 0.04080300310102824,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 7.45,
+            "Type": "SPH"
+        },
+        "8": {
+            "Curvature": -0.009811713223245911,
+            "Label": "L5",
+            "Material": "1.665650:35.640000",
+            "Thickness": 1.34,
+            "Type": "SPH"
+        },
+        "9": {
+            "Curvature": 0.0287364579441938,
+            "Label": "L6",
+            "Material": "S-LAH98_OHARA",
+            "Thickness": 5.56,
+            "Type": "SPH"
+        },
+        "Stop": 11
+    },
+    "Note": "JPA 2019-074631 ex2\nCanon\nS. Katayori",
+    "Spec": {
+        "Field": {
+            "Color": [
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "Type": 0,
+            "VLX": [
+                0.021522522,
+                0.1406707764,
+                0.3224716187
+            ],
+            "VLY": [
+                0.021522522,
+                0.4894638062,
+                0.7274780273
+            ],
+            "VUX": [
+                0.021522522,
+                0.1406707764,
+                0.3224716187
+            ],
+            "VUY": [
+                0.021522522,
+                0.3116531372,
+                0.5308151245
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "X": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Y": [
+                0.0,
+                15.4,
+                22.0
+            ]
+        },
+        "Pupil": {
+            "Type": 1,
+            "Value": 1.25
+        },
+        "Wvl": {
+            "Color": [
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "RefIndex": 1,
+            "Value": [
+                656.273,
+                587.562,
+                486.133
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        }
+    },
+    "Title": "Canon 50mm F1.2 "
+}

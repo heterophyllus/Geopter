@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include <limits>
+
 #include "Sequential/sequential_trace.h"
 
 #include "Sequential/sequential_path.h"
@@ -69,8 +71,6 @@ std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pup
 
 int SequentialTrace::trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> >& rays, const std::vector<Eigen::Vector2d>& pupils, const Field* fld, double wvl)
 {
-
-
     auto fod = opt_sys_->first_order_data();
     double eprad = fod.enp_radius;
     PupilCrd aim_pt = fld->aim_pt();
@@ -135,14 +135,18 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
 
 
     // first surface
+    /*
     auto ray_at_srf = std::make_shared<RayAtSurface>();
     ray_at_srf->intersect_pt         = pt0;
     ray_at_srf->distance_from_before = 0.0;
     ray_at_srf->after_dir            = dir0;
     ray_at_srf->normal               = seq_path.at(0).srf->normal(pt0);
     ray_at_srf->optical_path_length  = 0.0;
+    */
+    auto ray_at_srf = std::make_shared<RayAtSurface>(pt0, seq_path.at(0).srf->normal(pt0), dir0, 0.0, 0.0, nullptr);
 
     ray->append(ray_at_srf);
+    RayAtSurface* ray_at_srf_before = ray_at_srf.get();
 
     // trace ray till the image
     int path_size = seq_path.size();
@@ -173,13 +177,15 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             n_out = seq_path.at(i).rind;
             after_dir = bend(before_dir, srf_normal, n_in, n_out);
 
+            /*
             ray_at_srf = std::make_shared<RayAtSurface>();
             ray_at_srf->intersect_pt         = intersect_pt;
             ray_at_srf->after_dir            = after_dir.normalized();
             ray_at_srf->distance_from_before = distance_from_before;
             ray_at_srf->optical_path_length  = n_in*distance_from_before;
             ray_at_srf->normal               = srf_normal;
-
+            */
+            ray_at_srf = std::make_shared<RayAtSurface>(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before,n_in*distance_from_before, ray_at_srf_before);
             ray->append(ray_at_srf);
 
             if(do_aperture_check_) {
@@ -194,6 +200,7 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             before_dir = after_dir;
             n_in       = n_out;
             transformation_from_before = cur_srf->local_transform();
+            ray_at_srf_before = ray_at_srf.get();
         }
 
     } catch (TraceMissedSurfaceError& ray_miss) {
@@ -210,116 +217,214 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
 
 Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
 {
-    /*
-         * R. Kingslake, "Lens Design Fundamentals", p292
-         */
+    /* R. Kingslake, "Lens Design Fundamentals", p292 */
 
-        Eigen::Vector2d s_t;
+    Eigen::Vector2d s_t;
 
-        SequentialPath path = overall_sequential_path(wvl);
+    // off axis
+    std::shared_ptr<Ray> ray = trace_pupil_ray(PupilCrd({0.0, 0.0}), fld, wvl);
 
-        // on axis
-        int num_srf = opt_sys_->optical_assembly()->surface_count();
-        int img_srf = num_srf-1;
-        int last_surf = num_srf - 1 -1;
+    double s_before, t_before;
+    double s_after = 0.0;
+    double t_after = 0.0;;
+    double n_before, n_after;
+    double obl_pwr_s, obl_pwr_t;
 
-        ParaxialTrace *parax_tracer = new ParaxialTrace(opt_sys_);
+    double cosU = 1.0;
+    double cosU_prime = 1.0;
 
-        double y0 = opt_sys_->axial_ray(ref_wvl_idx_)->at(0)->y();
-        double u0 = opt_sys_->axial_ray(ref_wvl_idx_)->at(0)->u();
-        auto ax_ray = parax_tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
+    SequentialPath path = overall_sequential_path(wvl);
 
-        double y = ax_ray->at(last_surf)->y();
-        double u_prime = ax_ray->at(img_srf)->u_prime();
-        double l_prime = -y/u_prime;
+    // Opening Equation
+    if(std::isinf(path.at(0).d)){
+        s_before = std::numeric_limits<double>::infinity();
+        t_before = std::numeric_limits<double>::infinity();
+    }else{
+        auto dir0 = ray->at(0)->after_dir();
+        double cosUpr = dir0(2);
+        //double B = opt_sys_->optical_assembly()->gap(0)->thi();
+        double B = object_distance_;
+        double Zpr = ray->at(1)->z();
 
-        delete parax_tracer;
+        s_before = (B - Zpr)/cosUpr;
+        t_before = s_before;
+    }
 
+    n_before = path.at(0).rind;
 
-        // Here, we have l_prime
+    int num_srf = ray->size();
+    for(int i = 1; i < num_srf-1; i++) {
+        n_after = path.at(i).rind;
+        double cosI = cos(ray->at(i)->aoi());
+        double cosI_prime = cos(ray->at(i)->aor());
+        //sinI = sqrt(1.0 - cosI*cosI);
+        double sinI = sin(ray->at(i)->aoi());
+        //sinI_prime = sinI * n_before/n_after;
+        //cosI_prime = sqrt(1.0 - sinI_prime*sinI_prime);
 
-        // off axis
-        std::shared_ptr<Ray> ray = trace_pupil_ray(PupilCrd({0.0, 0.0}), fld, wvl);
+        cosU = ray->at(i-1)->N();
+        cosU_prime = ray->at(i)->N();
+        double sinU = sqrt(1.0 - cosU*cosU);
 
-        double s_before, t_before, s_after, t_after;
-        double n_before, n_after;
-        double obl_pwr_s, obl_pwr_t;
-        double sinI, sinI_prime, cosI, cosI_prime, sinU, sinU_prime, cosU, cosU_prime;
+        Surface* surf = path.at(i).srf;
+        if(surf->profile()->name() == "SPH") {
+            double c = surf->profile()->cv();
+            obl_pwr_s = c*(n_after*cosI_prime - n_before*cosI);
+            obl_pwr_t = obl_pwr_s;
 
+        }else{ // aspherical
 
-        // Opening Equation
-        if(std::isinf(path.at(0).d)){
-            s_before = std::numeric_limits<double>::infinity();
-            t_before = std::numeric_limits<double>::infinity();
-        }else{
-            auto dir0 = ray->at(0)->after_dir;
-            double cosUpr = dir0(2);
-            //double B = opt_sys_->optical_assembly()->gap(0)->thi();
-            double B = object_distance_;
-            double Zpr = ray->z(1);
+            double y = ray->at(i)->y();
 
-            s_before = (B - Zpr)/cosUpr;
-            t_before = s_before;
-        }
-
-
-        for(int i = 1; i < ray->size()-1; i++) {
-            Surface* surf = path.at(i).srf;
-
-            n_before = path.at(i-1).rind;
-            n_after = path.at(i).rind;
-            cosI = cos(ray->aoi(i));
-            cosI_prime = cos(ray->aor(i));
-            //sinI = sqrt(1.0 - cosI*cosI);
-            sinI = sin(ray->aoi(i));
-            sinI_prime = sinI * n_before/n_after;
-            //cosI_prime = sqrt(1.0 - sinI_prime*sinI_prime);
-
-            cosU = ray->at(i-1)->after_dir(2);//ray.at(i-1).after_dir.norm();
-            sinU = sqrt(1.0 - cosU*cosU);
-            cosU_prime = ray->at(i)->after_dir(2);//ray.at(i).after_dir.norm();
-
-            if(surf->profile()->name() == "SPH") {
-                double c = surf->profile()->cv();
-                obl_pwr_s = c*(n_after*cosI_prime - n_before*cosI);
-                obl_pwr_t = obl_pwr_s;
-            }else{ // aspherical
+            if(abs(y) < std::numeric_limits<double>::epsilon()){
+                double cs = surf->profile()->cv();
+                obl_pwr_s = cs*(n_after*cosI_prime - n_before*cosI);
+            }else{
                 double sinI_U = sinI*cosU - cosI*sinU;
-                double y = ray->y(i);
                 double cs = sinI_U/y;
                 obl_pwr_s = cs*(n_after*cosI_prime - n_before*cosI);
-
-                double d2z_dy2 = surf->profile()->deriv_2nd(y);
-                double cosI_U = cosI*cosU + sinI*sinU;
-                double ct = d2z_dy2 * pow( cosI_U, 3);
-                obl_pwr_t = ct*(n_after*cosI_prime - n_before*cosI);
             }
 
-
-            double z1 = ray->z(i);
-            double z2 = ray->z(i+1);
-            double d = path.at(i).d;
-
-            double D = (d + z2 - z1)/cosU_prime;
-
-            s_after = n_after/(n_before/s_before + obl_pwr_s);
-            t_after = n_after*cosI_prime*cosI_prime / ( (n_before*cosI*cosI/t_before) + obl_pwr_t );
+            double d2z_dy2 = surf->profile()->deriv_2nd(y);
+            double cosI_U = cosI*cosU + sinI*sinU;
+            double ct = d2z_dy2 * pow( cosI_U, 3);
+            obl_pwr_t = ct*(n_after*cosI_prime - n_before*cosI);
+        }
 
 
-            s_before = s_after - D;
-            t_before = t_after - D;
+        double z1 = ray->at(i)->z();
+        double z2 = ray->at(i+1)->z();
+        double d = path.at(i).d;
+
+        double D = (d + z2 - z1)/cosU_prime;
+        //double D = ray->at(i+1)->distance_from_before();
+
+        s_after = n_after/(n_before/s_before + obl_pwr_s);
+        t_after = n_after*cosI_prime*cosI_prime / ( (n_before*cosI*cosI/t_before) + obl_pwr_t );
+
+        s_before = s_after - D;
+        t_before = t_after - D;
+
+        n_before = n_after;
+
+    }
+
+
+    // Closing Equation
+    double img_dist = opt_sys_->optical_assembly()->image_space_gap()->thi();
+
+    double z = ray->at(ray->size()-1-1)->z();
+
+    double zs = s_after*cosU_prime + z - img_dist;
+    double zt = t_after*cosU_prime + z - img_dist;
+
+    s_t(0) = zs;
+    s_t(1) = zt;
+
+    return s_t;
+}
+
+
+Eigen::Vector2d SequentialTrace::trace_matsui(const Field *fld, double wvl)
+{
+    /* 松居吉哉「レンズ設計法」, 共立出版, p46 */
+    // currently, this function does not work
+
+    std::shared_ptr<Ray> ray = trace_pupil_ray(PupilCrd({0.0, 0.0}), fld, wvl);
+    SequentialPath path = overall_sequential_path(wvl);
+
+    constexpr double eps = 1.0e-5;
+    constexpr double z_dir = 1.0;
+
+    double s = -ray->at(1)->distance_from_before();
+    double s_prime = 0.0;
+    double t = s;
+    double t_prime = 0.0;
+
+    double n_before = path.at(0).rind;
+    double n_after;
+
+    for(int i = 1; i < num_srfs_-1; i++){
+        n_after = path.at(i).rind;
+
+        double ks = cos(ray->at(i)->aoi());
+        double ks_prime = cos(ray->at(i)->aor());
+        double G = ks_prime - abs(n_before/n_after)*ks;
+        double y = ray->at(i)->y();
+
+        // tangential/sagittal curvature
+        Surface* cur_surf = path.at(i).srf;
+        double cv_t;
+        double cv_s;
+        if(abs(y) < std::numeric_limits<double>::epsilon()){
+            cv_t = cur_surf->profile()->cv();
+            cv_s = cur_surf->profile()->cv();
+        }else{
+
+            if(cur_surf->profile()->name() == "SPH"){
+                cv_t = cur_surf->profile()->cv();
+                cv_s = cur_surf->profile()->cv();
+            }else{
+                double H = ray->at(i)->height();
+                double r = cur_surf->profile()->radius();
+
+                // search intersect point with reference sphere
+                Eigen::Vector3d before_pt = ray->at(i-1)->intersect_pt();
+                Eigen::Vector3d before_dir = ray->at(i-1)->after_dir();
+                Eigen::Matrix3d rt = cur_surf->local_transform().rotation;
+                Eigen::Vector3d t  = cur_surf->local_transform().transfer;
+
+                Eigen::Vector3d rel_before_pt = rt*(before_pt - t); // relative source point looked from current surface
+                Eigen::Vector3d rel_before_dir = rt*before_dir;     // relative ray direction looked from current surface
+
+                double dist_from_before_to_perpendicular = -rel_before_pt.dot(rel_before_dir); // distance from previous point to foot of perpendicular
+                Eigen::Vector3d foot_of_perpendicular_pt = rel_before_pt + dist_from_before_to_perpendicular*rel_before_dir; // foot of perpendicular from the current surface apex to the incident ray line
+
+                Surface* tmp_surf = new Surface(); // sphere
+                tmp_surf->profile()->set_cv( cur_surf->profile()->cv() );
+                Eigen::Vector3d intersect_to_ref_sphere;
+                double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
+                tmp_surf->intersect(intersect_to_ref_sphere, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
+                delete tmp_surf;
+
+                double yy = intersect_to_ref_sphere(1);
+                double xx = intersect_to_ref_sphere(0);
+
+                double l = ray->at(i)->srn();
+                double m = ray->at(i)->srm();
+                double n = ray->at(i)->srl();
+
+                double d2z_dy2 = cur_surf->profile()->deriv_2nd(y);
+                cv_t = d2z_dy2/pow( 1 + pow(m/l, 2), 1.5);
+
+
+
+                //cv_s = v/sqrt(l*l + m*m + n*n);
+                cv_s = -m/H *y/abs(y);
+            }
 
         }
 
-        // Closing Equation
-        double z = ray->z(ray->size()-1-1);
-        double zs = s_after*cosU_prime + z - l_prime;
-        double zt = t_after*cosU_prime + z - l_prime;
+        t_prime = pow(ks_prime,2)/( abs(n_before/n_after)*ks*ks/t + G*cv_t );
 
-        s_t(0) = zs;
-        s_t(1) = zt;
+        s_prime = 1.0/( abs(n_before/n_after)/s + G*cv_s );
 
-        return s_t;
+        double tau = ray->at(i+1)->distance_from_before();
+        t = t_prime - tau ;
+        s = s_prime - tau ;
+
+        n_before = n_after;
+    }
+
+    double z_sag = ray->at(num_srfs_ -1 -1)->z();
+    double img_dist = opt_sys_->optical_assembly()->image_space_gap()->thi();
+    double cosU_prime = ray->at(num_srfs_ -1 -1)->N();
+
+    Eigen::Vector2d s_t;
+    s_t(0) = s_prime*cosU_prime + z_sag - img_dist;
+    s_t(1) = t_prime*cosU_prime + z_sag - img_dist;
+
+    return s_t;
 }
 
 
@@ -454,8 +559,7 @@ double SequentialTrace::y_stop_coordinate(double y1, int ifcx, const Eigen::Vect
     }
 
 
-    double y_ray = ray_trace_result->at(ifcx)->intersect_pt(1);
-    //double y_ray = ray_at_srfs[ifcx].intersect_pt(1);
+    double y_ray = ray_trace_result->at(ifcx)->y();
 
     return (y_ray - y_target);
 
@@ -554,7 +658,7 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     std::shared_ptr<Ray> ray_full_marginal = trace_pupil_ray(vig_pupil, &fld, ref_wvl_val_);
 
     if(ray_full_marginal->status() == RayStatus::PassThrough){ // no vignetting
-        return a; // 0.0
+        return 0.0;
     }
 
     constexpr double eps = 1.0e-5;

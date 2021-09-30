@@ -19,7 +19,7 @@ FieldCurvatureSettingDialog::FieldCurvatureSettingDialog(OpticalSystem* sys, Plo
     ui->scaleEdit->setValidator(new QDoubleValidator(0.0, 100.0, 4, this));
     ui->scaleEdit->setText(QString::number(0.3));
 
-    ui->rayAimingCombo->addItems(QStringList({"Stop", "Entrance Pupil"}));
+    ui->rayAimingCombo->addItems(QStringList({"Chief Ray", "Intermediate Ray"}));
     ui->rayAimingCombo->setCurrentIndex(0);
 }
 

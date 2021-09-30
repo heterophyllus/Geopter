@@ -21,7 +21,7 @@ public:
 
     void plot_longitudinal_spherical_aberration(double scale);
 
-    void plot_astigmatism(double scale);
+    void plot_astigmatism(int ray_aiming_type, double scale);
 
     void plot_chromatic_focus_shift(double lower_wvl, double higher_wvl);
 

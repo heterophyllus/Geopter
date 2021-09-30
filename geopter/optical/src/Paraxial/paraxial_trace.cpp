@@ -95,9 +95,9 @@ std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_ray_parallel_to_axis_
     double y0 = y1 - t0*u1;
     double u0_prime = u1;
     double u0 = u0_prime;
-    double c0 = par_path.at(0).c;
-    double i0 = u0 + y0*c0;
-    double n0 = par_path.at(0).n;
+    //double c0 = par_path.at(0).c;
+    //double i0 = u0 + y0*c0;
+    //double n0 = par_path.at(0).n;
 
     par_ray = trace_paraxial_ray_from_object(y0, u0, ref_wvl);
 
@@ -126,8 +126,8 @@ std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_ray_with_slope_at_s1(
     double ubar0 = ubar0_prime;
     double t0 = par_path.at(0).t;
     double ybar0 = ybar1 - t0*ubar0_prime;
-    double c0 = par_path.at(0).c;
-    double i0 = ubar0 + ybar0*c0;
+    //double c0 = par_path.at(0).c;
+    //double i0 = ubar0 + ybar0*c0;
     
     p_ray_bar = trace_paraxial_ray_from_object(ybar0, ubar0, ref_wvl);
     
@@ -205,18 +205,18 @@ void ParaxialTrace::compute_starting_data()
     auto p_ray = trace_paraxial_ray_parallel_to_axis_at_s1();
     auto q_ray = trace_paraxial_ray_with_slope_at_s1();
 
-    double ak1 = p_ray->back()->y();
-    double bk1 = q_ray->back()->y();
+    //double ak1 = p_ray->back()->y();
+    //double bk1 = q_ray->back()->y();
     double ck1 = n_k*p_ray->back()->u_prime();
     double dk1 = n_k*q_ray->back()->u_prime();
 
     int stop = opt_sys_->optical_assembly()->stop_index();
 
-    double n_s = opt_sys_->optical_assembly()->gap(stop)->material()->rindex(ref_wvl);
+    //double n_s = opt_sys_->optical_assembly()->gap(stop)->material()->rindex(ref_wvl);
     double as1 = p_ray->at(stop)->y();
     double bs1 = q_ray->at(stop)->y();
-    double cs1 = n_s*p_ray->at(stop)->u_prime();
-    double ds1 = n_s*q_ray->at(stop)->u_prime();
+    //double cs1 = n_s*p_ray->at(stop)->u_prime();
+    //double ds1 = n_s*q_ray->at(stop)->u_prime();
 
     double ybar1 = -bs1;
     double ubar1 = as1;

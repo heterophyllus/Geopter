@@ -33,7 +33,15 @@ public:
     /** Trace a ray throughout the given sequantial path */
     std::shared_ptr<Ray> trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
 
+    /**
+     * @brief trace chief ray according to Coddington equation
+     * @param fld Field
+     * @param wvl wavelength
+     * @return {x_focus_shift, y_focus_shift} (from image plane)
+     */
     Eigen::Vector2d trace_coddington(const Field* fld, double wvl);
+
+    Eigen::Vector2d trace_matsui(const Field* fld, double wvl);
 
     Eigen::Vector2d aim_chief_ray(const Field* fld, double wvl);
 
@@ -64,6 +72,9 @@ public:
     /** Get sequential path object from object to image */
     SequentialPath overall_sequential_path(double wvl);
 
+
+    double compute_vignetting_factor_for_pupil(const Eigen::Vector2d& full_pupil, const Field& fld);
+
     std::vector<double> compute_vignetting_factors(const Field& fld);
 
 
@@ -76,7 +87,7 @@ public:
 private:
     double y_stop_coordinate(double y1, int ifcx, const Eigen::Vector3d& pt0, double dist, double wvl, double y_target);
 
-    double compute_vignetting_factor_for_pupil(const Eigen::Vector2d& full_pupil, const Field& fld);
+
     
     OpticalSystem *opt_sys_;
 
