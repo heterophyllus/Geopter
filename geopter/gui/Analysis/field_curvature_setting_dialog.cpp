@@ -18,6 +18,9 @@ FieldCurvatureSettingDialog::FieldCurvatureSettingDialog(OpticalSystem* sys, Plo
 
     ui->scaleEdit->setValidator(new QDoubleValidator(0.0, 100.0, 4, this));
     ui->scaleEdit->setText(QString::number(0.3));
+
+    ui->rayAimingCombo->addItems(QStringList({"Stop", "Entrance Pupil"}));
+    ui->rayAimingCombo->setCurrentIndex(0);
 }
 
 FieldCurvatureSettingDialog::~FieldCurvatureSettingDialog()
@@ -30,12 +33,13 @@ void FieldCurvatureSettingDialog::updateParentDockContent()
 {
     m_renderer->clear();
 
+    int rayAimingType = ui->rayAimingCombo->currentIndex();
     double scale = ui->scaleEdit->text().toDouble();
 
     m_opticalSystem->update_model();
 
     Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
-    abr->plot_astigmatism(scale);
+    abr->plot_astigmatism(rayAimingType, scale);
     delete abr;
 
     m_renderer->update();

@@ -741,13 +741,13 @@ void SystemEditorWidget::validateMaterialInput(int row)
     // search from material library
     // If not found, set AIR
 
-    QRegExp reg_alphanumeric_("[_a-zA-Z0-9¥.¥-]*$");
+    QRegExp reg_alphanumeric_colon("[:_a-zA-Z0-9¥.¥-]*$");
 
     int col = AssemblyTableColumn::Material;
     QTableWidgetItem *item = ui->assemblyTable->item(row, col);
     QString text = item->text();
 
-    if(reg_alphanumeric_.exactMatch(text)){
+    if(reg_alphanumeric_colon.exactMatch(text)){
         auto mat = opt_sys_->material_lib()->find(text.toStdString());
         if(mat){ // found in material library
             setValueToCell(ui->assemblyTable, row,col, QString().fromStdString(mat->name()));
