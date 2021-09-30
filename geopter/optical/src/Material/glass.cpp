@@ -10,7 +10,7 @@
 
 #include "Spec/spectral_line.h"
 
-
+#include "Utility/utility.h"
 
 using namespace geopter;
 
@@ -83,7 +83,11 @@ void Glass::set_dispersion_formula(int i)
         formula_func_ptr_ = &(DispersionFormula::Extended2);
         break;
     case 13: // Unknown
-        formula_func_ptr_ = &(DispersionFormula::Unknown);
+        if(Utility::contains(supplier_name_, "HIKARI")){
+            formula_func_ptr_ = &(DispersionFormula::Nikon_Hikari);
+        }else{
+            formula_func_ptr_ = &(DispersionFormula::Unknown);
+        }
         break;
     default:
         formula_func_ptr_ = nullptr;
@@ -147,9 +151,9 @@ void Glass::print()
 
 void Glass::print(std::ostringstream &oss)
 {
-    const int idx_w = 4;
-    const int val_w = 10;
-    const int prec  = 4;
+    //const int idx_w = 4;
+    constexpr int val_w = 10;
+    constexpr int prec  = 4;
 
     oss << "Glass: " << name_ << " (" << supplier_name_ << ")" << std::endl;
     oss << "nd: " << std::setw(val_w) << std::scientific << std::setprecision(prec) << n_ << std::endl;

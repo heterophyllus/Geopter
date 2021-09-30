@@ -96,8 +96,9 @@ bool GlassCatalog::load_agf(std::string agf_path)
             std::string glassname = line_parts[1];
             std::transform(glassname.begin(), glassname.end(), glassname.begin(), ::toupper);
             glasses_.back()->set_product_name(glassname);
-            glasses_.back()->set_dispersion_formula(atoi(line_parts[2].c_str()));
             glasses_.back()->set_supplier(supplier);
+            glasses_.back()->set_dispersion_formula(atoi(line_parts[2].c_str()));
+
         }
         else if(Utility::starts_with(line_str, "CD"))
         {
