@@ -170,12 +170,22 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             Surface* cur_srf = seq_path.at(i).srf;
             double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
             cur_srf->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
+
+            if(std::isnan(dist_from_perpendicular_to_intersect_pt)){
+                ray->set_status(RayStatus::MissedSurface);
+                return ray;
+            }
             Eigen::Vector3d srf_normal = cur_srf->normal(intersect_pt); // surface normal at the intersect point
 
             distance_from_before = dist_from_before_to_perpendicular + dist_from_perpendicular_to_intersect_pt; // distance between before and current intersect point
 
             n_out = seq_path.at(i).rind;
             after_dir = bend(before_dir, srf_normal, n_in, n_out);
+            if(std::isnan(after_dir.norm())){
+                ray->set_status(RayStatus::TotalReflection);
+                return ray;
+
+            }
 
             /*
             ray_at_srf = std::make_shared<RayAtSurface>();
@@ -325,109 +335,6 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
 }
 
 
-Eigen::Vector2d SequentialTrace::trace_matsui(const Field *fld, double wvl)
-{
-    /* 松居吉哉「レンズ設計法」, 共立出版, p46 */
-    // currently, this function does not work
-
-    std::shared_ptr<Ray> ray = trace_pupil_ray(PupilCrd({0.0, 0.0}), fld, wvl);
-    SequentialPath path = overall_sequential_path(wvl);
-
-    constexpr double eps = 1.0e-5;
-    constexpr double z_dir = 1.0;
-
-    double s = -ray->at(1)->distance_from_before();
-    double s_prime = 0.0;
-    double t = s;
-    double t_prime = 0.0;
-
-    double n_before = path.at(0).rind;
-    double n_after;
-
-    for(int i = 1; i < num_srfs_-1; i++){
-        n_after = path.at(i).rind;
-
-        double ks = cos(ray->at(i)->aoi());
-        double ks_prime = cos(ray->at(i)->aor());
-        double G = ks_prime - abs(n_before/n_after)*ks;
-        double y = ray->at(i)->y();
-
-        // tangential/sagittal curvature
-        Surface* cur_surf = path.at(i).srf;
-        double cv_t;
-        double cv_s;
-        if(abs(y) < std::numeric_limits<double>::epsilon()){
-            cv_t = cur_surf->profile()->cv();
-            cv_s = cur_surf->profile()->cv();
-        }else{
-
-            if(cur_surf->profile()->name() == "SPH"){
-                cv_t = cur_surf->profile()->cv();
-                cv_s = cur_surf->profile()->cv();
-            }else{
-                double H = ray->at(i)->height();
-                double r = cur_surf->profile()->radius();
-
-                // search intersect point with reference sphere
-                Eigen::Vector3d before_pt = ray->at(i-1)->intersect_pt();
-                Eigen::Vector3d before_dir = ray->at(i-1)->after_dir();
-                Eigen::Matrix3d rt = cur_surf->local_transform().rotation;
-                Eigen::Vector3d t  = cur_surf->local_transform().transfer;
-
-                Eigen::Vector3d rel_before_pt = rt*(before_pt - t); // relative source point looked from current surface
-                Eigen::Vector3d rel_before_dir = rt*before_dir;     // relative ray direction looked from current surface
-
-                double dist_from_before_to_perpendicular = -rel_before_pt.dot(rel_before_dir); // distance from previous point to foot of perpendicular
-                Eigen::Vector3d foot_of_perpendicular_pt = rel_before_pt + dist_from_before_to_perpendicular*rel_before_dir; // foot of perpendicular from the current surface apex to the incident ray line
-
-                Surface* tmp_surf = new Surface(); // sphere
-                tmp_surf->profile()->set_cv( cur_surf->profile()->cv() );
-                Eigen::Vector3d intersect_to_ref_sphere;
-                double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
-                tmp_surf->intersect(intersect_to_ref_sphere, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
-                delete tmp_surf;
-
-                double yy = intersect_to_ref_sphere(1);
-                double xx = intersect_to_ref_sphere(0);
-
-                double l = ray->at(i)->srn();
-                double m = ray->at(i)->srm();
-                double n = ray->at(i)->srl();
-
-                double d2z_dy2 = cur_surf->profile()->deriv_2nd(y);
-                cv_t = d2z_dy2/pow( 1 + pow(m/l, 2), 1.5);
-
-
-
-                //cv_s = v/sqrt(l*l + m*m + n*n);
-                cv_s = -m/H *y/abs(y);
-            }
-
-        }
-
-        t_prime = pow(ks_prime,2)/( abs(n_before/n_after)*ks*ks/t + G*cv_t );
-
-        s_prime = 1.0/( abs(n_before/n_after)/s + G*cv_s );
-
-        double tau = ray->at(i+1)->distance_from_before();
-        t = t_prime - tau ;
-        s = s_prime - tau ;
-
-        n_before = n_after;
-    }
-
-    double z_sag = ray->at(num_srfs_ -1 -1)->z();
-    double img_dist = opt_sys_->optical_assembly()->image_space_gap()->thi();
-    double cosU_prime = ray->at(num_srfs_ -1 -1)->N();
-
-    Eigen::Vector2d s_t;
-    s_t(0) = s_prime*cosU_prime + z_sag - img_dist;
-    s_t(1) = t_prime*cosU_prime + z_sag - img_dist;
-
-    return s_t;
-}
-
-
 SequentialPath SequentialTrace::overall_sequential_path(double wvl)
 {
     int start = 0;
@@ -510,6 +417,10 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vect
 
         y1 = y_stop_coordinate(x1,srf_idx,pt0, obj2enp_dist, wvl, y_target);
         y2 = y_stop_coordinate(x2,srf_idx,pt0, obj2enp_dist, wvl, y_target);
+
+        if(std::isnan(y1) || std::isnan(y2)){
+            continue;
+        }
 
         diff_x = (y2 - y1) / (x2 - x1);
         next_x = x1 - y1/diff_x;
@@ -646,6 +557,9 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     bool orig_aperture_check = do_aperture_check_;
     do_aperture_check_ = true;
 
+    int stop_index = opt_sys_->optical_assembly()->stop_index();
+    double stop_radius = opt_sys_->optical_assembly()->surface(stop_index)->max_aperture();
+
     Eigen::Vector2d vig_pupil = full_pupil;
 
     double vig = 0.0;
@@ -657,12 +571,22 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     vig_pupil(1) = full_pupil(1)*(1.0 - a);
     std::shared_ptr<Ray> ray_full_marginal = trace_pupil_ray(vig_pupil, &fld, ref_wvl_val_);
 
-    if(ray_full_marginal->status() == RayStatus::PassThrough){ // no vignetting
-        return 0.0;
+    constexpr double eps = 1.0e-5;
+    constexpr int max_loop_cnt = 50;
+
+    double ray_height_at_stop;
+    if(ray_full_marginal->status() == RayStatus::PassThrough){
+        ray_height_at_stop = ray_full_marginal->at(stop_index)->height();
+        if( abs(ray_height_at_stop - stop_radius) < eps){
+            do_apply_vig_ = orig_vig_state;
+            do_aperture_check_ = orig_aperture_check;
+
+            return 0.0;
+        }else{
+            a = -1.0;
+        }
     }
 
-    constexpr double eps = 1.0e-5;
-    constexpr int max_loop_cnt = 30;
 
     double m;
     int loop_cnt = 0;
@@ -677,8 +601,11 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
 
         if(ray_m->status() == RayStatus::PassThrough){
             b = m;
-        }else{
+        }else if(ray_m->status()== RayStatus::Blocked){
             a = m;
+        }else{
+            a = a + 0.1;
+            continue;
         }
 
         if(abs(a-b) < eps  || loop_cnt > max_loop_cnt){

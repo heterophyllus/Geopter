@@ -41,7 +41,6 @@ public:
      */
     Eigen::Vector2d trace_coddington(const Field* fld, double wvl);
 
-    Eigen::Vector2d trace_matsui(const Field* fld, double wvl);
 
     Eigen::Vector2d aim_chief_ray(const Field* fld, double wvl);
 

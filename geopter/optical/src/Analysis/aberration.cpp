@@ -43,6 +43,9 @@ void Aberration::plot_transverse_aberration(double scale, double nrd)
 {
     renderer_->set_grid_layout(num_fld_, 2);
 
+    const int stop_index = opt_sys_->optical_assembly()->stop_index();
+    const double stop_radius = opt_sys_->optical_assembly()->surface(stop_index)->max_aperture();
+
     Eigen::Vector2d pupil;
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
@@ -82,7 +85,9 @@ void Aberration::plot_transverse_aberration(double scale, double nrd)
                 if(tangential_ray->status() == RayStatus::PassThrough){
                     double y = tangential_ray->back()->y();
                     Eigen::Vector2d vig_pupil = fld->apply_vignetting(pupil);
-                    py.push_back(vig_pupil(1));
+                    //py.push_back(vig_pupil(1));
+                    double y_at_stop = tangential_ray->at(stop_index)->y();
+                    py.push_back(y_at_stop);
                     dy.push_back(y - y0);
                 }
 
@@ -94,16 +99,19 @@ void Aberration::plot_transverse_aberration(double scale, double nrd)
                 if(sagittal_ray->status() == RayStatus::PassThrough){
                     double x = sagittal_ray->back()->x();
                     Eigen::Vector2d vig_pupil = fld->apply_vignetting(pupil);
-                    px.push_back(vig_pupil(0));
+                    //px.push_back(vig_pupil(0));
+                    double x_at_stop = sagittal_ray->at(stop_index)->x();
+                    px.push_back(x_at_stop);
                     dx.push_back(x - x0);
                 }
             }
 
 
             // draw
+            double h_scale = stop_radius;
             renderer_->set_current_cell(num_fld_ - fi -1, 0);
             renderer_->set_y_axis_range(-scale, scale);
-            renderer_->set_x_axis_range(-1.0, 1.0);
+            renderer_->set_x_axis_range(-h_scale, h_scale);
             renderer_->set_y_axis_label("dy");
             //renderer_->draw_polyline(spy, sdy, render_color);
             renderer_->draw_polyline(py, dy, render_color);
@@ -112,7 +120,7 @@ void Aberration::plot_transverse_aberration(double scale, double nrd)
 
             renderer_->set_current_cell(num_fld_ - fi -1, 1);
             renderer_->set_y_axis_range(-scale, scale);
-            renderer_->set_x_axis_range(-1.0, 1.0);
+            renderer_->set_x_axis_range(-h_scale, h_scale);
             renderer_->set_y_axis_label("dx");
             //renderer_->draw_polyline(spx, sdx, render_color);
             renderer_->draw_polyline(px, dx, render_color);

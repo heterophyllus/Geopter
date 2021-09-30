@@ -61,7 +61,7 @@ void Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d&
 
     double s1;
     try {
-        s1 = cx2/(z_dir*sqrt(b*b - ax2*cx2) -b );
+        s1 = cx2/((double)z_dir*sqrt(b*b - ax2*cx2) -b );
     }  catch (...) {
         // raise TraceMissedSurfaceError
         TraceMissedSurfaceError e;
