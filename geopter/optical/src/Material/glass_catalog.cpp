@@ -114,7 +114,20 @@ bool GlassCatalog::load_agf(std::string agf_path)
                 }
                 glasses_.back()->set_dispersion_coefs(i-1,val);
             }
-            glasses_.back()->compute_refractive_index();
+        }
+        else if(Utility::starts_with(line_str, "TD"))
+        {
+            std::vector<std::string> line_parts = Utility::split(line_str,' ');
+            if(line_parts.size() == 8){
+                double D0 = std::stod(line_parts[1]);
+                double D1 = std::stod(line_parts[2]);
+                double D2 = std::stod(line_parts[3]);
+                double E0 = std::stod(line_parts[4]);
+                double E1 = std::stod(line_parts[5]);
+                double Ltk = std::stod(line_parts[6]);
+                double Tref = std::stod(line_parts[7]);
+                glasses_.back()->set_thermal_data(D0, D1, D2, E0, E1, Ltk, Tref);
+            }
         }
     }
 

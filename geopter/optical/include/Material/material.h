@@ -19,6 +19,9 @@ public:
     /** Return refractive index at specified wavelength */
     virtual double rindex(double wv_nm) const;
 
+    /** Returns Abbe number in d-lne */
+    virtual double abbe_d() const;
+
 protected:
     std::string name_;
     double n_;

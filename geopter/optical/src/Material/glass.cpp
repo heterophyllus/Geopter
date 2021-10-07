@@ -7,6 +7,9 @@
 #include "Material/glass.h"
 #include "Material/glass_catalog.h"
 #include "Material/dispersion_formula.h"
+#include "Material/air.h"
+
+#include "Environment/environment.h"
 
 #include "Spec/spectral_line.h"
 
@@ -31,7 +34,7 @@ Glass::~Glass()
 double Glass::rindex(double wv_nm) const
 {
     if(formula_func_ptr_){
-        return formula_func_ptr_(wv_nm/1000.0, coefs_);
+        return refractive_index_rel(wv_nm/1000.0);
     }else{
         return 1.0;
     }
@@ -104,12 +107,6 @@ void Glass::set_dispersion_coefs(int i, double val)
     }
 }
 
-void Glass::compute_refractive_index()
-{
-    if(formula_func_ptr_){
-        n_ = formula_func_ptr_(SpectralLine::d, coefs_);
-    }
-}
 
 std::string Glass::product_name() const
 {
@@ -140,6 +137,66 @@ double Glass::abbe_d() const
     double nC = rindex(SpectralLine::C);
 
     return (nd - 1.0)/(nF - nC);
+}
+
+double Glass::refractive_index_rel_Tref(double wvl_micron) const
+{
+    if(formula_func_ptr_){
+        return formula_func_ptr_(wvl_micron, coefs_);
+    }else{
+        return 1.0;
+    }
+}
+
+
+double Glass::refractive_index_abs_Tref(double wvl_micron) const
+{
+    constexpr double P = 101325.0;
+    double n_air_T0 = Air::refractive_index_abs(wvl_micron, Tref_, P);
+    double n_rel_T0 = refractive_index_rel_Tref(wvl_micron);
+    double n_abs_T0 = n_rel_T0*n_air_T0;
+
+    return n_abs_T0;
+}
+
+double Glass::refractive_index_abs(double wvl_micron) const
+{
+    double T = Environment::temperature();
+    double dn_dt = dn_dt_abs(wvl_micron, T);
+    double dn = (T-Tref_)*dn_dt;
+    double n_abs_T0 = refractive_index_abs_Tref(wvl_micron);
+    double n_abs = n_abs_T0 + dn;
+
+    return n_abs;
+}
+
+double Glass::refractive_index_rel(double wvl_micron) const
+{
+    double T = Environment::temperature();
+    double n_abs = refractive_index_abs(wvl_micron);
+    double n_air = Air::refractive_index_abs(wvl_micron, T);
+    double n_rel = n_abs/n_air;
+
+    return n_rel;
+}
+
+void Glass::set_thermal_data(double D0, double D1, double D2, double E0, double E1, double Ltk, double Tref)
+{
+    D0_ = D0;
+    D1_ = D1;
+    D2_ = D2;
+    E0_ = E0;
+    E1_ = E1;
+    Ltk_  = Ltk;
+    Tref_ = Tref;
+}
+
+double Glass::dn_dt_abs(double wvl_micron, double t) const
+{
+    double dT = t - Tref_;
+    double n  = refractive_index_abs_Tref(wvl_micron);
+
+    return (n*n-1)/(2*n) * ( D0_ + 2*D1_*dT + 3*D2_*dT*dT + (E0_ + 2*E1_*dT)/(wvl_micron*wvl_micron - Ltk_*Ltk_) );
 }
 
 void Glass::print()

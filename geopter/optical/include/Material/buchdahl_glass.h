@@ -19,7 +19,8 @@ public:
     double rindex(double wv_nm) const override;
 
     std::string glass_code() const;
-    double abbe_d() const;
+
+    double abbe_d() const override;
 
 private:
     void compute_coefs();
