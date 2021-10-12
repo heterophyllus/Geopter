@@ -1,9 +1,9 @@
 #ifndef LAYOUT_DIALOG_H
 #define LAYOUT_DIALOG_H
 
-#include "Analysis/analysis_setting_dialog.h"
+#include "analysisdialogs/analysis_setting_dialog.h"
 #include "plot_view_dock.h"
-#include "Analysis/renderer_qcp.h"
+#include "renderer_qcp.h"
 
 #include "optical.h"
 using namespace geopter;

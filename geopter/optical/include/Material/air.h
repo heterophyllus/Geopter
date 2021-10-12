@@ -13,6 +13,7 @@ public:
     ~Air();
 
     double rindex(double wv_nm) const override;
+    double abbe_d() const override;
 
     static double refractive_index_abs(double wvl_micron, double T, double P= 101325.0);
 

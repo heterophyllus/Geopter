@@ -11,18 +11,18 @@
 #include "general_configuration_dialog.h"
 
 
-#include "Analysis/renderer_qcp.h"
+#include "renderer_qcp.h"
 
-#include "Analysis/analysis_setting_dialog.h"
-#include "Analysis/layout_dialog.h"
-#include "Analysis/transverse_ray_fan_dialog.h"
-#include "Analysis/single_ray_trace_dialog.h"
-#include "Analysis/longitudinal_setting_dialog.h"
-#include "Analysis/paraxial_trace_dialog.h"
-#include "Analysis/prescription_setting_dialog.h"
-#include "Analysis/field_curvature_setting_dialog.h"
-#include "Analysis/chromatic_focusshift_setting_dialog.h"
-#include "Analysis/spot_diagram_setting_dialog.h"
+#include "analysisdialogs/analysis_setting_dialog.h"
+#include "analysisdialogs/layout_dialog.h"
+#include "analysisdialogs/transverse_ray_fan_dialog.h"
+#include "analysisdialogs/single_ray_trace_dialog.h"
+#include "analysisdialogs/longitudinal_setting_dialog.h"
+#include "analysisdialogs/paraxial_trace_dialog.h"
+#include "analysisdialogs/prescription_setting_dialog.h"
+#include "analysisdialogs/field_curvature_setting_dialog.h"
+#include "analysisdialogs/chromatic_focusshift_setting_dialog.h"
+#include "analysisdialogs/spot_diagram_setting_dialog.h"
 
 #include "qdebugstream.h"
 

@@ -14,63 +14,63 @@ set(PROJECT_SOURCES
     plot_view_dock.h
     plot_view_dock.cpp
 
+    renderer_qcp.h
+    renderer_qcp.cpp
+
     qdebugstream.h
 
     general_configuration_dialog.cpp
     general_configuration_dialog.h
     general_configuration_dialog.ui
 
-    SystemEditor/system_editor_dock.cpp
-    SystemEditor/system_editor_dock.h
-    SystemEditor/system_editor_widget.h
-    SystemEditor/system_editor_widget.cpp
-    SystemEditor/system_editor_widget.ui
-    SystemEditor/surface_property_dialog.cpp
-    SystemEditor/surface_property_dialog.h
-    SystemEditor/surface_property_dialog.ui
-    SystemEditor/float_delegate.h
+    systemeditor/system_editor_dock.cpp
+    systemeditor/system_editor_dock.h
+    systemeditor/system_editor_widget.h
+    systemeditor/system_editor_widget.cpp
+    systemeditor/system_editor_widget.ui
+    systemeditor/surface_property_dialog.cpp
+    systemeditor/surface_property_dialog.h
+    systemeditor/surface_property_dialog.ui
+    systemeditor/float_delegate.h
 
-    Analysis/renderer_qcp.h
-    Analysis/renderer_qcp.cpp
+    analysisdialogs/analysis_setting_dialog.cpp
+    analysisdialogs/analysis_setting_dialog.h
 
-    Analysis/analysis_setting_dialog.cpp
-    Analysis/analysis_setting_dialog.h
+    analysisdialogs/prescription_setting_dialog.cpp
+    analysisdialogs/prescription_setting_dialog.h
+    analysisdialogs/prescription_setting_dialog.ui
 
-    Analysis/prescription_setting_dialog.cpp
-    Analysis/prescription_setting_dialog.h
-    Analysis/prescription_setting_dialog.ui
+    analysisdialogs/layout_dialog.cpp
+    analysisdialogs/layout_dialog.h
+    analysisdialogs/layout_dialog.ui
 
-    Analysis/layout_dialog.cpp
-    Analysis/layout_dialog.h
-    Analysis/layout_dialog.ui
+    analysisdialogs/single_ray_trace_dialog.h
+    analysisdialogs/single_ray_trace_dialog.cpp
+    analysisdialogs/single_ray_trace_dialog.ui
 
-    Analysis/single_ray_trace_dialog.h
-    Analysis/single_ray_trace_dialog.cpp
-    Analysis/single_ray_trace_dialog.ui
+    analysisdialogs/paraxial_trace_dialog.h
+    analysisdialogs/paraxial_trace_dialog.cpp
+    analysisdialogs/paraxial_trace_dialog.ui
 
-    Analysis/paraxial_trace_dialog.h
-    Analysis/paraxial_trace_dialog.cpp
-    Analysis/paraxial_trace_dialog.ui
+    analysisdialogs/transverse_ray_fan_dialog.cpp
+    analysisdialogs/transverse_ray_fan_dialog.h
+    analysisdialogs/transverse_ray_fan_dialog.ui
 
-    Analysis/transverse_ray_fan_dialog.cpp
-    Analysis/transverse_ray_fan_dialog.h
-    Analysis/transverse_ray_fan_dialog.ui
+    analysisdialogs/field_curvature_setting_dialog.cpp
+    analysisdialogs/field_curvature_setting_dialog.h
+    analysisdialogs/field_curvature_setting_dialog.ui
 
-    Analysis/field_curvature_setting_dialog.cpp
-    Analysis/field_curvature_setting_dialog.h
-    Analysis/field_curvature_setting_dialog.ui
+    analysisdialogs/longitudinal_setting_dialog.cpp
+    analysisdialogs/longitudinal_setting_dialog.h
+    analysisdialogs/longitudinal_setting_dialog.ui
 
-    Analysis/longitudinal_setting_dialog.cpp
-    Analysis/longitudinal_setting_dialog.h
-    Analysis/longitudinal_setting_dialog.ui
+    analysisdialogs/chromatic_focusshift_setting_dialog.cpp
+    analysisdialogs/chromatic_focusshift_setting_dialog.h
+    analysisdialogs/chromatic_focusshift_setting_dialog.ui
 
-    Analysis/chromatic_focusshift_setting_dialog.cpp
-    Analysis/chromatic_focusshift_setting_dialog.h
-    Analysis/chromatic_focusshift_setting_dialog.ui
-
-    Analysis/spot_diagram_setting_dialog.cpp
-    Analysis/spot_diagram_setting_dialog.h
-    Analysis/spot_diagram_setting_dialog.ui
+    analysisdialogs/spot_diagram_setting_dialog.cpp
+    analysisdialogs/spot_diagram_setting_dialog.h
+    analysisdialogs/spot_diagram_setting_dialog.ui
 )
 
 add_executable( Geopter ${PROJECT_SOURCES} )

@@ -1,6 +1,8 @@
 #include <math.h>
 
 #include "Material/air.h"
+#include "Spec/spectral_line.h"
+#include "Environment/environment.h"
 
 using namespace geopter;
 
@@ -18,6 +20,18 @@ Air::~Air()
 double Air::rindex(double wv_nm) const
 {
     return 1.0;
+}
+
+double Air::abbe_d() const
+{
+    double T = Environment::temperature();
+    double P = Environment::air_pressure();
+
+    double nd = refractive_index_abs(SpectralLine::d/1000.0, T, P);
+    double nF = refractive_index_abs(SpectralLine::F/1000.0, T, P);
+    double nC = refractive_index_abs(SpectralLine::C/1000.0, T, P);
+
+    return (nd - 1.0)/(nF - nC);
 }
 
 double Air::refractive_index_abs(double wvl_micron, double T, double P)

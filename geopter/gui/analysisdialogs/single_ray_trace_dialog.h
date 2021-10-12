@@ -1,7 +1,7 @@
 #ifndef REAL_RAY_TRACE_DIALOG_H
 #define REAL_RAY_TRACE_DIALOG_H
 
-#include "Analysis/analysis_setting_dialog.h"
+#include "analysisdialogs/analysis_setting_dialog.h"
 #include "text_view_dock.h"
 
 #include "optical.h"

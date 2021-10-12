@@ -7,7 +7,7 @@
 #include "qcustomplot.h"
 
 #include "DockWidget.h"
-#include "Analysis/analysis_setting_dialog.h"
+#include "analysisdialogs/analysis_setting_dialog.h"
 
 #include "optical.h"
 using namespace geopter;

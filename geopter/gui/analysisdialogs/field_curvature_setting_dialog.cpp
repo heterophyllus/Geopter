@@ -38,9 +38,10 @@ void FieldCurvatureSettingDialog::updateParentDockContent()
 
     int rayAimingType = ui->rayAimingCombo->currentIndex();
     double scale = ui->scaleEdit->text().toDouble();
+    int numRays = ui->numRaysEdit->text().toInt();
 
     Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
-    auto plotData = abr->plot_astigmatism(rayAimingType);
+    auto plotData = abr->plot_astigmatism(rayAimingType, numRays);
 
     m_renderer->clear();
     m_renderer->draw_plot(plotData);

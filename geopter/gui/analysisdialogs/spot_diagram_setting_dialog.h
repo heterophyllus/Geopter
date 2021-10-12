@@ -1,9 +1,9 @@
 #ifndef SPOT_DIAGRAM_SETTING_DIALOG_H
 #define SPOT_DIAGRAM_SETTING_DIALOG_H
 
-#include "Analysis/analysis_setting_dialog.h"
+#include "analysisdialogs/analysis_setting_dialog.h"
 #include "plot_view_dock.h"
-#include "Analysis/renderer_qcp.h"
+#include "renderer_qcp.h"
 
 #include "optical.h"
 using namespace geopter;

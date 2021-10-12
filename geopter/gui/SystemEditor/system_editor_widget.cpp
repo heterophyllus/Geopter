@@ -44,6 +44,11 @@ SystemEditorWidget::SystemEditorWidget(std::shared_ptr<OpticalSystem> opt_sys, Q
     ui->fieldTable->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(ui->fieldTable->verticalHeader(), SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnFieldTableHeader()));
 
+    ui->temperatureEdit->setValidator(new QDoubleValidator(-40.0, 40.0, 4, this));
+    ui->temperatureEdit->setText(QString::number(25));
+
+    ui->pressureEdit->setValidator(new QDoubleValidator(0.0, 1000000.0, 4, this));
+    ui->pressureEdit->setText(QString::number(101325.0));
 
     syncUiWithSystem();
 
@@ -219,6 +224,10 @@ void SystemEditorWidget::syncUiWithSystem()
     }
     setFieldTableEditable(false);
 
+    // environment
+    ui->temperatureEdit->setText(QString::number(Environment::temperature()));
+    ui->pressureEdit->setText(QString::number(Environment::air_pressure()));
+
     setAssemblyTableEditable(false);
     setConnectionValidateCellInput(true);
 }
@@ -296,6 +305,10 @@ void SystemEditorWidget::syncSystemWithUi()
 
         opt_sys_->optical_spec()->field_of_view()->add(x,y,wt,QColorToRgb(color),vuy,vly,vux,vlx);
     }
+
+    //environment
+    Environment::set_temperature(ui->temperatureEdit->text().toDouble());
+    Environment::set_air_pressure(ui->pressureEdit->text().toDouble());
 
     opt_sys_->update_model();
 
