@@ -293,6 +293,7 @@ void OpticalAssembly::print(std::ostringstream& oss) const
     oss << std::setw(val_w) << std::right << "Thickness";
     oss << std::setw(val_w) << std::right << "Material";
     oss << std::setw(val_w) << std::right << "Index";
+    oss << std::setw(val_w) << std::right << "Abbe-d";
     oss << std::setw(val_w) << std::right << "Aperture";
     oss << std::setw(val_w) << std::right << "SemiDiam";
     oss << std::setw(val_w) << std::right << "LclTfrm(X)";
@@ -305,7 +306,7 @@ void OpticalAssembly::print(std::ostringstream& oss) const
 
     int num_srf = interfaces_.size();
 
-    double r, thi, nd, sd;
+    double r, thi, nd, vd, sd;
     std::string mat_name, label, aperture_type;
 
     for(int i = 0; i < num_srf; i++) {
@@ -323,6 +324,7 @@ void OpticalAssembly::print(std::ostringstream& oss) const
             thi      = gaps_[i]->thi();
             mat_name = gaps_[i]->material()->name();
             nd       = gaps_[i]->material()->rindex(SpectralLine::d);
+            vd       = gaps_[i]->material()->abbe_d();
         }else{
             thi = 0.0;
             mat_name = "";
@@ -335,6 +337,7 @@ void OpticalAssembly::print(std::ostringstream& oss) const
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << thi;
         oss << std::setw(val_w) << std::right << std::fixed << mat_name;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << nd;
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << vd;
         oss << std::setw(val_w) << std::right << std::fixed << aperture_type;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << sd;
 

@@ -35,6 +35,9 @@ public:
     /** Returns current index of the stop */
     int stop_index() const;
 
+    /** Returns surface at the stop index */
+    inline Surface* stop_surface() const;
+
     /** Returns the index of the image surface */
     int image_index() const;
 
@@ -87,6 +90,13 @@ private:
 
     int stop_surface_;
 };
+
+
+Surface* OpticalAssembly::stop_surface() const
+{
+    return interfaces_[stop_surface_].get();
+}
+
 
 }
 

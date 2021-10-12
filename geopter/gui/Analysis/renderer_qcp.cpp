@@ -50,6 +50,22 @@ void RendererQCP::set_current_cell(int row, int col)
 }
 
 
+void RendererQCP::draw_plot(std::shared_ptr<PlotData> plotdata)
+{
+    const int npointset = plotdata->data_count();
+
+    for (int i = 0; i < npointset; i++) {
+        int ls = plotdata->point_set(i)->line_style();
+        //double lw = plotdata->point_set(i)->line_width();
+        Rgb color = plotdata->point_set(i)->render_color();
+
+        std::vector<double> x = plotdata->point_set(i)->x_data();
+        std::vector<double> y = plotdata->point_set(i)->y_data();
+
+        draw_polyline(x, y, color, ls);
+    }
+}
+
 void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);

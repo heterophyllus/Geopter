@@ -39,7 +39,7 @@ public:
      * @param wvl wavelength
      * @return {x_focus_shift, y_focus_shift} (from image plane)
      */
-    Eigen::Vector2d trace_coddington(const Field* fld, double wvl);
+    Eigen::Vector2d trace_coddington(const Field* fld, double wvl, double offset=0.0);
 
 
     Eigen::Vector2d aim_chief_ray(const Field* fld, double wvl);

@@ -225,25 +225,28 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
 }
 
 
-Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
+Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl, double offset)
 {
     /* R. Kingslake, "Lens Design Fundamentals", p292 */
 
     Eigen::Vector2d s_t;
 
     // off axis
-    std::shared_ptr<Ray> ray = trace_pupil_ray(PupilCrd({0.0, 0.0}), fld, wvl);
+    std::shared_ptr<Ray> ray = trace_pupil_ray(PupilCrd({0.0, offset}), fld, wvl);
+
+    SequentialPath path = overall_sequential_path(wvl);
 
     double s_before, t_before;
     double s_after = 0.0;
     double t_after = 0.0;;
-    double n_before, n_after;
+    double n_before;
+    double n_after;
     double obl_pwr_s, obl_pwr_t;
 
     double cosU = 1.0;
     double cosU_prime = 1.0;
 
-    SequentialPath path = overall_sequential_path(wvl);
+
 
     // Opening Equation
     if(std::isinf(path.at(0).d)){
@@ -286,7 +289,7 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
 
             double y = ray->at(i)->y();
 
-            if(abs(y) < std::numeric_limits<double>::epsilon()){
+            if(fabs(y) < std::numeric_limits<double>::epsilon()){
                 double cs = surf->profile()->cv();
                 obl_pwr_s = cs*(n_after*cosI_prime - n_before*cosI);
             }else{
@@ -557,8 +560,8 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     bool orig_aperture_check = do_aperture_check_;
     do_aperture_check_ = true;
 
-    int stop_index = opt_sys_->optical_assembly()->stop_index();
-    double stop_radius = opt_sys_->optical_assembly()->surface(stop_index)->max_aperture();
+    const int stop_index = opt_sys_->optical_assembly()->stop_index();
+    const double stop_radius = opt_sys_->optical_assembly()->surface(stop_index)->max_aperture();
 
     Eigen::Vector2d vig_pupil = full_pupil;
 
@@ -571,13 +574,14 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     vig_pupil(1) = full_pupil(1)*(1.0 - a);
     std::shared_ptr<Ray> ray_full_marginal = trace_pupil_ray(vig_pupil, &fld, ref_wvl_val_);
 
+
     constexpr double eps = 1.0e-5;
     constexpr int max_loop_cnt = 50;
 
     double ray_height_at_stop;
     if(ray_full_marginal->status() == RayStatus::PassThrough){
         ray_height_at_stop = ray_full_marginal->at(stop_index)->height();
-        if( abs(ray_height_at_stop - stop_radius) < eps){
+        if( fabs(ray_height_at_stop - stop_radius) < eps){
             do_apply_vig_ = orig_vig_state;
             do_aperture_check_ = orig_aperture_check;
 

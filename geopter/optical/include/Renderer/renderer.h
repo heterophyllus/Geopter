@@ -1,10 +1,13 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <memory>
 #include <vector>
-#include "Eigen/Core"
-#include "rgb.h"
 
+#include "Eigen/Core"
+#include "Renderer/rgb.h"
+
+#include "Data/plot_data.h"
 
 namespace geopter {
 
@@ -23,6 +26,8 @@ public:
 
     virtual void set_grid_layout(int rows, int cols);
     virtual void set_current_cell(int row, int col);
+
+    virtual void draw_plot(std::shared_ptr<PlotData> plotdata);
 
     virtual void draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0);
     virtual void draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0);

@@ -3,6 +3,7 @@
 
 #include "System/optical_system.h"
 #include "Renderer/renderer.h"
+#include "Data/plot_data.h"
 
 namespace geopter{
 
@@ -13,19 +14,21 @@ public:
     Aberration(OpticalSystem* opt_sys, Renderer* renderer);
     ~Aberration();
 
-    /** @brief Plot transverse ray fan 
-     *  @param scale plot scale
+    /** @brief Plot transverse ray fan for 1 field
      *  @param nrd number of rays per pupil diameter
+     *  @param fld
+     *  @param pupil_dir X orY
+     *  @param abr_dir DX or DY
     */
-    void plot_transverse_aberration(double scale, double nrd);
+    std::shared_ptr<PlotData> plot_transverse_aberration(double nrd, const Field* fld, int pupil_dir= 1, int abr_dir= 1);
 
-    void plot_longitudinal_spherical_aberration(double scale);
+    std::shared_ptr<PlotData> plot_longitudinal_spherical_aberration(int num_rays= 10);
 
-    void plot_astigmatism(int ray_aiming_type, double scale);
+    std::shared_ptr<PlotData> plot_astigmatism(int ray_aiming_type, int num_rays= 10);
 
-    void plot_chromatic_focus_shift(double lower_wvl, double higher_wvl);
+    std::shared_ptr<PlotData> plot_chromatic_focus_shift(double lower_wvl, double higher_wvl);
 
-    void plot_spot_diagram(int pattern, int nrd, double scale, double dot_size);
+    std::shared_ptr<PlotData> plot_spot_diagram(const Field* fld, int pattern, int nrd, double dot_size);
 
 private:
     std::vector<Eigen::Vector2d> create_grid_circle(int nrd);

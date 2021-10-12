@@ -29,15 +29,27 @@ ChromaticFocusShiftSettingDialog::~ChromaticFocusShiftSettingDialog()
 
 void ChromaticFocusShiftSettingDialog::updateParentDockContent()
 {
-    m_renderer->clear();
     m_opticalSystem->update_model();
 
     double lower = ui->minWvlEdit->text().toDouble();
     double higher = ui->maxWvlEdit->text().toDouble();
 
     Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
-    abr->plot_chromatic_focus_shift(lower, higher);
-    delete abr;
+    auto plotData = abr->plot_chromatic_focus_shift(lower, higher);
 
+
+    double higher_y = plotData->point_set(0)->higher_y();
+    double lower_y  = plotData->point_set(0)->lower_y();
+
+    m_renderer->clear();
+    m_renderer->draw_plot(plotData);
+    m_renderer->set_x_axis_range(lower, higher);
+    m_renderer->set_y_axis_range(lower_y, higher_y);
+    m_renderer->set_x_axis_label(plotData->x_axis_label());
+    m_renderer->set_y_axis_label(plotData->y_axis_label());
+    m_renderer->draw_x_axis();
+    m_renderer->draw_y_axis();
     m_renderer->update();
+
+    delete abr;
 }

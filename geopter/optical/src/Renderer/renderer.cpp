@@ -17,6 +17,11 @@ void Renderer::update()
 
 }
 
+void Renderer::draw_plot(std::shared_ptr<PlotData> plotdata)
+{
+
+}
+
 void Renderer::draw_text(std::string str, const Rgb& color)
 {
 

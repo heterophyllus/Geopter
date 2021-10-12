@@ -11,8 +11,6 @@ set(OPTICAL_SRCS
     Analysis/layout.cpp
 
     Assembly/optical_assembly.cpp
-    
-    #Assembly/transformation.cpp
     Assembly/interface.cpp
     Assembly/surface.cpp
     Assembly/surface_profile.cpp
@@ -30,6 +28,8 @@ set(OPTICAL_SRCS
     Element/dummy_interface.cpp
     Element/stop.cpp
     Element/air_gap.cpp
+
+    Environment/environment.cpp
 
     Spec/spectral_line.cpp
     Spec/optical_spec.cpp
@@ -50,23 +50,20 @@ set(OPTICAL_SRCS
 
     System/optical_system.cpp
 
-    #Paraxial/paraxial_data.cpp
     Paraxial/paraxial_ray.cpp
     Paraxial/paraxial_path.cpp
     Paraxial/first_order.cpp
     Paraxial/paraxial_trace.cpp
 
-    #Sequential/sequential_data.cpp
     Sequential/sequential_path.cpp
-
     Sequential/ray.cpp
-    #Sequential/trace.cpp
     Sequential/trace_error.cpp
     Sequential/sequential_trace.cpp
 
     Renderer/renderer.cpp
     #Renderer/renderer_svg.cpp
     Renderer/rgb.cpp
+
 
     Utility/utility.cpp
 )
