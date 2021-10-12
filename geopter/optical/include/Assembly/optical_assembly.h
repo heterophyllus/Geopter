@@ -27,22 +27,22 @@ public:
     Gap* gap(int i) const;
 
     /** Returns number of surfaces */
-    int surface_count() const;
+    inline int surface_count() const;
 
     /** Returns number of gaps */
-    int gap_count() const;
+    inline int gap_count() const;
 
     /** Returns current index of the stop */
-    int stop_index() const;
+    inline int stop_index() const;
 
     /** Returns surface at the stop index */
     inline Surface* stop_surface() const;
 
     /** Returns the index of the image surface */
-    int image_index() const;
+    inline int image_index() const;
 
     /** Returns image surface pointer */
-    Surface* image_surface() const;
+    inline Surface* image_surface() const;
 
     /** Returns the last gap */
     Gap* image_space_gap() const;
@@ -56,9 +56,6 @@ public:
 
     void create_minimun_assembly();
 
-
-    /** add surface and gap just before the image */
-    //void add_surface_and_gap(double r, double t, std::string mat_name);
 
     void add_surface_and_gap(std::shared_ptr<Surface> s, std::shared_ptr<Gap> g);
 
@@ -88,13 +85,37 @@ private:
     std::vector< std::shared_ptr<Surface> > interfaces_;
     std::vector< std::shared_ptr<Gap> > gaps_;
 
-    int stop_surface_;
+    int stop_index_;
 };
 
+int OpticalAssembly::surface_count() const
+{
+    return interfaces_.size();
+}
+
+int OpticalAssembly::gap_count() const
+{
+    return gaps_.size() - 1;
+}
+
+int OpticalAssembly::stop_index() const
+{
+    return stop_index_;
+}
+
+int OpticalAssembly::image_index() const
+{
+    return interfaces_.size() - 1;
+}
+
+Surface* OpticalAssembly::image_surface() const
+{
+    return interfaces_.back().get();
+}
 
 Surface* OpticalAssembly::stop_surface() const
 {
-    return interfaces_[stop_surface_].get();
+    return interfaces_[stop_index_].get();
 }
 
 

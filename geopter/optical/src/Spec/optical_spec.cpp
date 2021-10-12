@@ -17,27 +17,6 @@ OpticalSpec::~OpticalSpec()
     field_of_view_.reset();
 }
 
-PupilSpec* OpticalSpec::pupil_spec()
-{
-    return pupil_.get();
-}
-
-WvlSpec* OpticalSpec::spectral_region()
-{
-    return spectral_region_.get();
-}
-
-FieldSpec* OpticalSpec::field_of_view()
-{
-    return field_of_view_.get();
-}
-
-
-void OpticalSpec::update_model()
-{
-    pupil_->update_model();
-}
-
 
 void OpticalSpec::create_minimum_spec()
 {
@@ -56,7 +35,6 @@ void OpticalSpec::clear()
     spectral_region_->clear();
     field_of_view_->clear();
 }
-
 
 
 void OpticalSpec::print(std::ostringstream &oss)

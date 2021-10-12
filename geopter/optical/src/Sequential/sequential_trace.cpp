@@ -49,7 +49,7 @@ std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pup
 
     auto fod = opt_sys_->first_order_data();
     double eprad = fod.enp_radius;
-    PupilCrd aim_pt = fld->aim_pt();
+    Eigen::Vector2d aim_pt = fld->aim_pt();
 
     Eigen::Vector3d pt0 = this->object_coord(fld);
 
@@ -73,7 +73,7 @@ int SequentialTrace::trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> 
 {
     auto fod = opt_sys_->first_order_data();
     double eprad = fod.enp_radius;
-    PupilCrd aim_pt = fld->aim_pt();
+    Eigen::Vector2d aim_pt = fld->aim_pt();
 
     //Eigen::Vector3d pt0 = this->object_coord(fld);
     Eigen::Vector3d pt0 = fld->object_coord();
@@ -232,7 +232,7 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl, 
     Eigen::Vector2d s_t;
 
     // off axis
-    std::shared_ptr<Ray> ray = trace_pupil_ray(PupilCrd({0.0, offset}), fld, wvl);
+    std::shared_ptr<Ray> ray = trace_pupil_ray(Eigen::Vector2d({0.0, offset}), fld, wvl);
 
     SequentialPath path = overall_sequential_path(wvl);
 

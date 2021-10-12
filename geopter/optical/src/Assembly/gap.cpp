@@ -25,25 +25,7 @@ Gap::Gap(double t, std::shared_ptr<Material> m)
 
 Gap::~Gap()
 {
-    material_ = nullptr;
+    material_.reset();
 }
 
-double Gap::thi() const
-{
-    return thi_;
-}
 
-void Gap::set_thi(double t)
-{
-    thi_ = t;
-}
-
-void Gap::set_material(std::shared_ptr<Material> m)
-{
-    material_ = m;
-}
-
-Material* Gap::material() const
-{
-    return material_.get();
-}

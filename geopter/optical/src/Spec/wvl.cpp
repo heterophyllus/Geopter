@@ -15,32 +15,3 @@ Wvl::~Wvl()
 
 }
 
-void Wvl::set_value(double val_nm)
-{
-    value_ = val_nm;
-}
-
-double Wvl::value() const
-{
-    return value_;
-}
-
-void Wvl::set_weight(double wt)
-{
-    weight_ = wt;
-}
-
-double Wvl::weight() const
-{
-    return weight_;
-}
-
-void Wvl::set_render_color(Rgb color)
-{
-    render_color_ = color;
-}
-
-Rgb Wvl::render_color() const
-{
-    return render_color_;
-}

@@ -72,7 +72,7 @@ void OpticalAssembly::create_minimun_assembly()
     auto g_stop = std::make_shared<Gap>(0.0, air);
     gaps_.push_back(g_stop);
 
-    stop_surface_ = 1;
+    stop_index_ = 1;
 
 
     // add image interface and dummy gap
@@ -104,30 +104,7 @@ Gap* OpticalAssembly::gap(int i) const
     }
 }
 
-int OpticalAssembly::surface_count() const
-{
-    return interfaces_.size();
-}
 
-int OpticalAssembly::gap_count() const
-{
-    return gaps_.size() - 1;
-}
-
-int OpticalAssembly::stop_index() const
-{
-    return stop_surface_;
-}
-
-int OpticalAssembly::image_index() const
-{
-    return interfaces_.size() - 1;
-}
-
-Surface* OpticalAssembly::image_surface() const
-{
-    return interfaces_.back().get();
-}
 
 Gap* OpticalAssembly::image_space_gap() const
 {
@@ -140,7 +117,7 @@ Gap* OpticalAssembly::image_space_gap() const
 
 void OpticalAssembly::set_stop(int i)
 {
-    stop_surface_ = i;
+    stop_index_ = i;
 }
 
 void OpticalAssembly::set_object_distance(double t0)
@@ -153,8 +130,8 @@ void OpticalAssembly::set_object_distance(double t0)
 void OpticalAssembly::insert_dummy(int i)
 {
     // update stop index
-    if( i <= stop_surface_){
-        stop_surface_ += 1;
+    if( i <= stop_index_){
+        stop_index_ += 1;
     }
 
     // create a new standard surface
@@ -186,8 +163,8 @@ void OpticalAssembly::remove(int i)
         gaps_.erase(gap_itr + i);
 
         // update stop surface
-        if ( i < stop_surface_ ) {
-            stop_surface_ -= 1;
+        if ( i < stop_index_ ) {
+            stop_index_ -= 1;
         }
     }
 }
@@ -307,6 +284,7 @@ void OpticalAssembly::print(std::ostringstream& oss) const
     int num_srf = interfaces_.size();
 
     double r, thi, nd, vd, sd;
+    vd = 0.0;
     std::string mat_name, label, aperture_type;
 
     for(int i = 0; i < num_srf; i++) {

@@ -13,6 +13,7 @@ WvlSpec::WvlSpec()
     reference_index_ = 0;
 }
 
+
 WvlSpec::~WvlSpec()
 {
     if(!wvls_.empty()){
@@ -23,30 +24,6 @@ WvlSpec::~WvlSpec()
     }
 }
 
-Wvl* WvlSpec::wvl(int i) const
-{
-    return wvls_[i].get();
-}
-
-int WvlSpec::wvl_count() const
-{
-    return (int)wvls_.size();
-}
-
-void WvlSpec::set_reference_index(int i)
-{
-    reference_index_ = i;
-}
-
-int WvlSpec::reference_index() const
-{
-    return reference_index_;
-}
-
-double WvlSpec::reference_wvl() const
-{
-    return wvls_[reference_index_]->value();
-}
 
 double WvlSpec::lower_wavelength() const
 {
@@ -76,10 +53,6 @@ double WvlSpec::higher_wavelength() const
     return higher;
 }
 
-double WvlSpec::wavelength(int i) const
-{
-    return wvls_[i]->value();
-}
 
 void WvlSpec::add(double wl, double wt, Rgb render_color)
 {

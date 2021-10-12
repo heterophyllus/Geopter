@@ -30,30 +30,6 @@ void FieldSpec::set_field_type(int i)
     }
 }
 
-int FieldSpec::field_type() const
-{
-    return field_type_;
-}
-
-Field* FieldSpec::field(int i)
-{
-    if(i >= 0 && i < (int)fields_.size()){
-        return fields_[i].get();
-    }
-    else if(i >= (int)fields_.size()){
-        throw "Out of field range";
-        return nullptr;
-    }
-    else{
-        return fields_[fields_.size()+i].get();
-    }
-}
-
-int FieldSpec::field_count()
-{
-    return (int)fields_.size();
-}
-
 void FieldSpec::add(double x, double y, double wt, Rgb color, double vuy, double vly, double vux, double vlx)
 {
     auto fld = std::make_unique<Field>(x, y, wt, color, vuy, vly, vux, vlx);

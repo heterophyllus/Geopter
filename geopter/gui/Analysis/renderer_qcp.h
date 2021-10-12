@@ -22,11 +22,11 @@ public:
     void set_grid_layout(int rows, int cols) override;
     void set_current_cell(int row, int col) override;
 
-    void draw_plot(std::shared_ptr<PlotData> plotdata) override;
+    void draw_plot(const std::shared_ptr<PlotData> plotdata) override;
 
-    void draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0) override;
-    void draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0) override;
-    void draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style=0) override;
+    void draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0, double line_width= 1.0) override;
+    void draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0, double line_width= 1.0) override;
+    void draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style=0, double line_width= 1.0) override;
     void draw_dots(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, double dot_size) override;
 
     void set_x_axis_range(double xmin, double xmax) override;
@@ -42,11 +42,11 @@ public:
 private:
     QCustomPlot* customPlot_;
 
-    inline QColor rgb_to_QColor(Rgb rgb);
+    inline QColor rgb_to_QColor(const Rgb& rgb);
 };
 
 
-QColor RendererQCP::rgb_to_QColor(Rgb rgb)
+QColor RendererQCP::rgb_to_QColor(const Rgb& rgb)
 {
     return QColor(rgb.r*255.0, rgb.g*255.0, rgb.b*255.0);
 }

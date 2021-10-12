@@ -250,8 +250,8 @@ std::shared_ptr<PlotData> Aberration::plot_astigmatism(int ray_aiming_type, int 
             Eigen::Vector2d aim_pt = tracer->aim_chief_ray(tmp_fld, ref_wvl_val_);
             tmp_fld->set_aim_pt(aim_pt);
 
-            double vuy = tracer->compute_vignetting_factor_for_pupil(PupilCrd({0.0, 1.0}), *tmp_fld);
-            double vly = tracer->compute_vignetting_factor_for_pupil(PupilCrd({0.0, -1.0}), *tmp_fld);
+            double vuy = tracer->compute_vignetting_factor_for_pupil(Eigen::Vector2d({0.0, 1.0}), *tmp_fld);
+            double vly = tracer->compute_vignetting_factor_for_pupil(Eigen::Vector2d({0.0, -1.0}), *tmp_fld);
             tmp_fld->set_vuy(vuy);
             tmp_fld->set_vly(vly);
 

@@ -28,17 +28,37 @@ public:
     Gap(double t, std::shared_ptr<Material> m);
     ~Gap();
 
-    double thi() const;
-    void set_thi(double t);
+    inline double thi() const;
+    inline void set_thi(double t);
 
-    Material* material() const;
-    void set_material(const std::string& material_name);
-    void set_material(std::shared_ptr<Material> m);
+    inline Material* material() const;
+    inline void set_material(std::shared_ptr<Material> m);
 
 private:
     double thi_;
     std::shared_ptr<Material> material_;
 };
+
+
+double Gap::thi() const
+{
+    return thi_;
+}
+
+void Gap::set_thi(double t)
+{
+    thi_ = t;
+}
+
+void Gap::set_material(std::shared_ptr<Material> m)
+{
+    material_ = m;
+}
+
+Material* Gap::material() const
+{
+    return material_.get();
+}
 
 } //namespace geopter
 

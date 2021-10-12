@@ -16,11 +16,9 @@ public:
     OpticalSpec();
     ~OpticalSpec();
 
-    PupilSpec* pupil_spec();
-    WvlSpec* spectral_region();
-    FieldSpec* field_of_view();
-
-    void update_model();
+    inline PupilSpec* pupil_spec();
+    inline WvlSpec* spectral_region();
+    inline FieldSpec* field_of_view();
 
     void clear();
 
@@ -35,6 +33,24 @@ private:
 
     int stop_;
 };
+
+
+
+PupilSpec* OpticalSpec::pupil_spec()
+{
+    return pupil_.get();
+}
+
+WvlSpec* OpticalSpec::spectral_region()
+{
+    return spectral_region_.get();
+}
+
+FieldSpec* OpticalSpec::field_of_view()
+{
+    return field_of_view_.get();
+}
+
 
 } //namespace geopter
 

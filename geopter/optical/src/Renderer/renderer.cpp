@@ -17,27 +17,27 @@ void Renderer::update()
 
 }
 
-void Renderer::draw_plot(std::shared_ptr<PlotData> plotdata)
+void Renderer::draw_plot(const std::shared_ptr<PlotData> plotdata)
 {
 
 }
 
-void Renderer::draw_text(std::string str, const Rgb& color)
+void Renderer::draw_text(std::string str, const Rgb& color, double line_width)
 {
 
 }
 
-void Renderer::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style)
+void Renderer::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style, double line_width)
 {
 
 }
 
-void Renderer::draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style)
+void Renderer::draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style, double line_width)
 {
 
 }
 
-void Renderer::draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style)
+void Renderer::draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style, double line_width)
 {
 
 }

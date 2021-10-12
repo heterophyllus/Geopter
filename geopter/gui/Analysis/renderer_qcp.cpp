@@ -7,7 +7,7 @@ RendererQCP::RendererQCP(QCustomPlot* customPlot)
 {
     customPlot_ = customPlot;
     current_cell_index_ = 0;
-    line_width_ = 2;
+    current_line_width_ = 2;
 }
 
 RendererQCP::~RendererQCP()
@@ -56,24 +56,24 @@ void RendererQCP::draw_plot(std::shared_ptr<PlotData> plotdata)
 
     for (int i = 0; i < npointset; i++) {
         int ls = plotdata->point_set(i)->line_style();
-        //double lw = plotdata->point_set(i)->line_width();
+        double lw = plotdata->point_set(i)->line_width();
         Rgb color = plotdata->point_set(i)->render_color();
 
         std::vector<double> x = plotdata->point_set(i)->x_data();
         std::vector<double> y = plotdata->point_set(i)->y_data();
 
-        draw_polyline(x, y, color, ls);
+        draw_polyline(x, y, color, ls, lw);
     }
 }
 
-void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style)
+void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style, double line_width)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
 
     //QCPCurve* line = new QCPCurve(_customPlot->xAxis, _customPlot->yAxis);
     QCPCurve* line = new QCPCurve(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
 
-    line->setPen( QPen(rgb_to_QColor(color),line_width_) );
+    line->setPen( QPen(rgb_to_QColor(color), line_width) );
 
     switch (line_style) {
     case Renderer::LineStyle::Solid:
@@ -100,13 +100,13 @@ void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2
     line->setVisible(true);
 }
 
-void RendererQCP::draw_polyline(const std::vector<Eigen::Vector2d> &pts, const Rgb& color, int line_style)
+void RendererQCP::draw_polyline(const std::vector<Eigen::Vector2d> &pts, const Rgb& color, int line_style, double line_width)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
     //QCPCurve* polyline = new QCPCurve(_customPlot->xAxis, _customPlot->yAxis);
     QCPCurve* polyline = new QCPCurve(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
 
-    polyline->setPen(QPen(rgb_to_QColor(color), line_width_));
+    polyline->setPen(QPen(rgb_to_QColor(color), line_width));
 
     switch (line_style) {
     case Renderer::LineStyle::Solid:
@@ -132,7 +132,7 @@ void RendererQCP::draw_polyline(const std::vector<Eigen::Vector2d> &pts, const R
 
 }
 
-void RendererQCP::draw_polyline(const std::vector<double> &x, const std::vector<double> &y, const Rgb& color, int line_style)
+void RendererQCP::draw_polyline(const std::vector<double> &x, const std::vector<double> &y, const Rgb& color, int line_style, double line_width)
 {
     int pointCount = x.size();
     QVector<QCPCurveData> curveData(pointCount);
@@ -145,7 +145,7 @@ void RendererQCP::draw_polyline(const std::vector<double> &x, const std::vector<
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
     QCPCurve* polyline = new QCPCurve(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
 
-    polyline->setPen(QPen(rgb_to_QColor(color), line_width_));
+    polyline->setPen(QPen(rgb_to_QColor(color), line_width));
 
     switch (line_style) {
     case Renderer::LineStyle::Solid:
@@ -155,7 +155,7 @@ void RendererQCP::draw_polyline(const std::vector<double> &x, const std::vector<
 
     case Renderer::LineStyle::Dots:
         polyline->setLineStyle(QCPCurve::lsNone);
-        polyline->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, line_width_));
+        polyline->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, line_width));
         break;
     }
 

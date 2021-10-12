@@ -17,20 +17,20 @@ public:
      * @brief Set wavelength value
      * @param val_nm value in nm
      */
-    void set_value(double val_nm);
+    inline void set_value(double val_nm);
 
     /** Returns wavelength value in nm */
-    double value() const;
+    inline double value() const;
 
-    void set_weight(double wt);
+    inline void set_weight(double wt);
 
     /** Returns the weight */
-    double weight() const;
+    inline double weight() const;
 
-    void set_render_color(Rgb color);
+    inline void set_render_color(const Rgb& color);
 
     /** Returns render color */
-    Rgb render_color() const;
+    inline Rgb render_color() const;
 
 private:
     /** wavelength in nm */
@@ -42,6 +42,38 @@ private:
     /** Render color used to draw ray line, plot ray fans, etc */
     Rgb render_color_;
 };
+
+
+void Wvl::set_value(double val_nm)
+{
+    value_ = val_nm;
+}
+
+double Wvl::value() const
+{
+    return value_;
+}
+
+void Wvl::set_weight(double wt)
+{
+    weight_ = wt;
+}
+
+double Wvl::weight() const
+{
+    return weight_;
+}
+
+void Wvl::set_render_color(const Rgb& color)
+{
+    render_color_ = color;
+}
+
+Rgb Wvl::render_color() const
+{
+    return render_color_;
+}
+
 
 } //namespace geopter
 

@@ -1,11 +1,10 @@
 #ifndef PUPILSPEC_H
 #define PUPILSPEC_H
 
-
+#include <cassert>
 #include <vector>
 
 #include "Eigen/Core"
-using PupilCrd = Eigen::Vector2d;
 
 namespace geopter {
 
@@ -22,21 +21,17 @@ class PupilSpec
 {
 
 public:
-    PupilSpec(int pupil_type=PupilType::EPD, double value=1.0);
+    PupilSpec();
+    PupilSpec(int pupil_type, double value);
     ~PupilSpec();
 
-    void update_model();
+    inline int pupil_type() const;
 
-    void set_pupil_type(int i);
+    inline double value() const;
 
-    int pupil_type() const;
+    inline void set_pupil_type(int i);
 
-    void set_value(double val);
-
-    /** Returns pupil value */
-    double value() const;
-
-    std::vector<PupilCrd> pupil_rays() const;
+    inline void set_value(double val);
 
     void print(std::ostringstream& oss);
 
@@ -45,14 +40,31 @@ public:
 private:
     int pupil_type_;
     double value_;
-
-    /** list of relative pupil coordinates for pupil limiting rays*/
-    std::vector<PupilCrd> pupil_rays_;
-
-    std::vector<PupilCrd> default_pupil_rays_;
-
-    void create_default_pupil_rays();
 };
+
+
+
+int PupilSpec::pupil_type() const
+{
+    return pupil_type_;
+}
+
+double PupilSpec::value() const
+{
+    return value_;
+}
+
+void PupilSpec::set_pupil_type(int i)
+{
+    assert( 0 <= i && i < 4);
+    pupil_type_ = i;
+}
+
+void PupilSpec::set_value(double val)
+{
+    value_ = val;
+}
+
 
 } //namespace geopter
 
