@@ -29,8 +29,8 @@ void Layout::update()
 {
     int img_idx = opt_sys_->optical_assembly()->image_index();
     double sum_d = opt_sys_->optical_assembly()->overall_length(1, img_idx); // s1..sI
-    renderer_->set_x_axis_range(0, sum_d);
-    //renderer_->set_y_axis_range(-20, 20);
+    renderer_->set_x_axis_range(0.0, sum_d);
+    renderer_->set_y_axis_range(-1, 1); // set view to the center
     renderer_->set_aspect_ratio(1.0);
 
     renderer_->update();
@@ -70,13 +70,13 @@ void Layout::draw_reference_rays()
     {
         color = opt_sys_->optical_spec()->field_of_view()->field(fi)->render_color();
 
-        ray = opt_sys_->reference_ray(1,fi,ref_wvl_idx);
+        ray = opt_sys_->reference_ray(ReferenceRay::ChiefRay,fi,ref_wvl_idx);
         draw_single_ray(ray, color);
 
-        ray = opt_sys_->reference_ray(2,fi,ref_wvl_idx);
+        ray = opt_sys_->reference_ray(ReferenceRay::MeridionalUpperRay,fi,ref_wvl_idx);
         draw_single_ray(ray, color);
 
-        ray = opt_sys_->reference_ray(3,fi,ref_wvl_idx);
+        ray = opt_sys_->reference_ray(ReferenceRay::MeridionalLowerRay,fi,ref_wvl_idx);
         draw_single_ray(ray, color);
     }
 }

@@ -116,6 +116,8 @@ void FieldSpec::print(std::ostringstream &oss)
     oss << std::setw(val_w) << std::right << "VLY";
     oss << std::setw(val_w) << std::right << "VUX";
     oss << std::setw(val_w) << std::right << "VLX";
+    oss << std::setw(val_w) << std::right << "AimPtX";
+    oss << std::setw(val_w) << std::right << "AimPtY";
     oss << std::endl;
 
     int num_flds = fields_.size();
@@ -129,6 +131,8 @@ void FieldSpec::print(std::ostringstream &oss)
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->vly();
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->vux();
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->vlx();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->aim_pt()(0);
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->aim_pt()(1);
         oss << std::endl;
     }
 

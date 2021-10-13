@@ -112,20 +112,20 @@ std::shared_ptr<Ray> OpticalSystem::reference_ray(int ri, int fi, int wi) const
 {
     switch (ri)
     {
-    case 1:
-        return ref_rays1_[to_ray_index(fi, wi)];
+    case ReferenceRay::ChiefRay:
+        return chief_rays_[to_ray_index(fi, wi)];
         break;
-    case 2:
-        return ref_rays2_[to_ray_index(fi, wi)];
+    case ReferenceRay::MeridionalUpperRay:
+        return meridional_upper_rays_[to_ray_index(fi, wi)];
         break;
-    case 3:
-        return ref_rays3_[to_ray_index(fi, wi)];
+    case ReferenceRay::MeridionalLowerRay:
+        return meridional_lower_rays_[to_ray_index(fi, wi)];
         break;
-    case 4:
-        return ref_rays4_[to_ray_index(fi, wi)];
+    case ReferenceRay::SagittalUpperRay:
+        return sagittal_upper_rays_[to_ray_index(fi, wi)];
         break;
-    case 5:
-        return ref_rays5_[to_ray_index(fi, wi)];
+    case ReferenceRay::SagittalLowerRay:
+        return sagittal_lower_rays_[to_ray_index(fi, wi)];
         break;
     default:
         throw "Out of range error";
@@ -137,14 +137,13 @@ void OpticalSystem::update_aim_pt()
 {
     if(opt_assembly_->surface_count() > 2)
     {
-        int field_count = opt_spec_->field_of_view()->field_count();
-        double ref_wvl = opt_spec_->spectral_region()->reference_wvl();
-
         SequentialTrace *tracer = new SequentialTrace(this);
+        tracer->set_apply_vig(true);
+        tracer->set_aperture_check(false);
 
-        for(int fi = 0; fi < field_count; fi++){
+        for(int fi = 0; fi < num_fld_; fi++){
             Field* fld = opt_spec_->field_of_view()->field(fi);
-            auto aim_pt = tracer->aim_chief_ray(fld, ref_wvl);
+            auto aim_pt = tracer->aim_chief_ray(fld, ref_wvl_val_);
             opt_spec_->field_of_view()->field(fi)->set_aim_pt(aim_pt);
         }
 
@@ -200,8 +199,6 @@ void OpticalSystem::update_object_coords()
 void OpticalSystem::update_semi_diameters()
 {
     const int num_srf = opt_assembly_->surface_count();
-    const int num_fld = opt_spec_->field_of_view()->field_count();
-    const int ref_wvl_idx = opt_spec_->spectral_region()->reference_index();
 
     // initialize all surface
     for(int si = 0; si < num_srf; si++) {
@@ -211,23 +208,40 @@ void OpticalSystem::update_semi_diameters()
     // update semi diameter
     std::shared_ptr<Ray> chief_ray, mer_upper_ray, mer_lower_ray, sag_upper_ray, sag_lower_ray;
 
-    for(int fi = 0; fi < num_fld; fi++) {
+    for(int fi = 0; fi < num_fld_; fi++) {
 
-        chief_ray     = reference_ray(1,fi,ref_wvl_idx);
-        mer_upper_ray = reference_ray(2,fi,ref_wvl_idx);
-        mer_lower_ray = reference_ray(3,fi,ref_wvl_idx);
-        sag_upper_ray = reference_ray(4,fi,ref_wvl_idx);
-        sag_lower_ray = reference_ray(5,fi,ref_wvl_idx);
+        chief_ray     = reference_ray(ReferenceRay::ChiefRay,           fi, ref_wvl_idx_);
+        mer_upper_ray = reference_ray(ReferenceRay::MeridionalUpperRay, fi, ref_wvl_idx_);
+        mer_lower_ray = reference_ray(ReferenceRay::MeridionalLowerRay, fi, ref_wvl_idx_);
+        sag_upper_ray = reference_ray(ReferenceRay::SagittalUpperRay,   fi, ref_wvl_idx_);
+        sag_lower_ray = reference_ray(ReferenceRay::SagittalLowerRay,   fi, ref_wvl_idx_);
 
         for(int si = 0; si < num_srf; si++) {
 
-            double chief_ray_ht     = chief_ray->at(si)->height();
-            double mer_upper_ray_ht = mer_upper_ray->at(si)->height();
-            double mer_lower_ray_ht = mer_lower_ray->at(si)->height();
-            double sag_upper_ray_ht = sag_upper_ray->at(si)->height();
-            double sag_lower_ray_ht = sag_lower_ray->at(si)->height();
+            double chief_ray_ht = 0.0;
+            double mer_upper_ray_ht = 0.0;
+            double mer_lower_ray_ht = 0.0;
+            double sag_upper_ray_ht = 0.0;
+            double sag_lower_ray_ht = 0.0;
+            double ray_ht_for_cur_fld = 0.0;
 
-            double ray_ht_for_cur_fld = std::max({chief_ray_ht, mer_upper_ray_ht, mer_lower_ray_ht, sag_upper_ray_ht, sag_lower_ray_ht});
+            if(chief_ray->size() > si){
+                chief_ray_ht     = chief_ray->at(si)->height();
+            }
+            if(mer_upper_ray->size() > si){
+                mer_upper_ray_ht = mer_upper_ray->at(si)->height();
+            }
+            if(mer_lower_ray->size() > si){
+                mer_lower_ray_ht = mer_lower_ray->at(si)->height();
+            }
+            if(sag_upper_ray->size() > si){
+                sag_upper_ray_ht = sag_upper_ray->at(si)->height();
+            }
+            if(sag_lower_ray->size() > si){
+                sag_lower_ray_ht = sag_lower_ray->at(si)->height();
+            }
+
+            ray_ht_for_cur_fld = std::max({chief_ray_ht, mer_upper_ray_ht, mer_lower_ray_ht, sag_upper_ray_ht, sag_lower_ray_ht});
 
             double current_sd = opt_assembly_->surface(si)->semi_diameter();
 
@@ -263,12 +277,11 @@ void OpticalSystem::update_paraxial_data()
     tracer->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
 
     int img = opt_assembly_->image_index();
-    int num_wvls = opt_spec_->spectral_region()->wvl_count();
 
     ax_rays_.clear();
     pr_rays_.clear();
 
-    for(int wi = 0; wi < num_wvls; wi++)
+    for(int wi = 0; wi < num_wvl_; wi++)
     {
         double wvl = opt_spec_->spectral_region()->wvl(wi)->value();
         auto ax_ray_for_wvl = tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
@@ -283,14 +296,11 @@ void OpticalSystem::update_paraxial_data()
 
     delete tracer;
 
-    int ref_wi = opt_spec_->spectral_region()->reference_index();
-    double ref_wvl = opt_spec_->spectral_region()->reference_wvl();
+    double n_0 = opt_assembly_->gap(0)->material()->rindex(ref_wvl_val_);
+    double n_k = opt_assembly_->image_space_gap()->material()->rindex(ref_wvl_val_);
 
-    double n_0 = opt_assembly_->gap(0)->material()->rindex(ref_wvl);
-    double n_k = opt_assembly_->image_space_gap()->material()->rindex(ref_wvl);
-
-    auto ax_ray = ax_rays_[ref_wi];
-    auto pr_ray = pr_rays_[ref_wi];
+    auto ax_ray = ax_rays_[ref_wvl_idx_];
+    auto pr_ray = pr_rays_[ref_wvl_idx_];
 
     std::shared_ptr<ParaxialRay> p_ray = p_ray_;
     std::shared_ptr<ParaxialRay> q_ray = q_ray_;
@@ -333,15 +343,13 @@ void OpticalSystem::update_paraxial_data()
 
 void OpticalSystem::update_reference_rays()
 {
-    int num_fld = opt_spec_->field_of_view()->field_count();
-    int num_wvl = opt_spec_->spectral_region()->wvl_count();
-    int num_rays = num_fld*num_wvl;
+    int num_rays = num_fld_*num_wvl_;
 
-    ref_rays1_.clear(); ref_rays1_.reserve(num_rays);
-    ref_rays2_.clear(); ref_rays2_.reserve(num_rays);
-    ref_rays3_.clear(); ref_rays3_.reserve(num_rays);
-    ref_rays4_.clear(); ref_rays4_.reserve(num_rays);
-    ref_rays5_.clear(); ref_rays5_.reserve(num_rays);
+    chief_rays_.clear(); chief_rays_.reserve(num_rays);
+    meridional_upper_rays_.clear(); meridional_upper_rays_.reserve(num_rays);
+    meridional_lower_rays_.clear(); meridional_lower_rays_.reserve(num_rays);
+    sagittal_upper_rays_.clear(); sagittal_upper_rays_.reserve(num_rays);
+    sagittal_lower_rays_.clear(); sagittal_lower_rays_.reserve(num_rays);
 
     Eigen::Vector2d pupil_chief({0.0,0.0});
     Eigen::Vector2d pupil_upper_mer({0.0,1.0});
@@ -353,15 +361,15 @@ void OpticalSystem::update_reference_rays()
     tracer->set_aperture_check(false);
     tracer->set_apply_vig(true);
 
-    for(int fi = 0; fi < num_fld; fi++) {
+    for(int fi = 0; fi < num_fld_; fi++) {
         Field* fld = opt_spec_->field_of_view()->field(fi);
-        for(int wi = 0; wi < num_wvl; wi++) {
+        for(int wi = 0; wi < num_wvl_; wi++) {
             double wvl = opt_spec_->spectral_region()->wvl(wi)->value();
-            ref_rays1_.push_back( tracer->trace_pupil_ray(pupil_chief, fld, wvl) );
-            ref_rays2_.push_back( tracer->trace_pupil_ray(pupil_upper_mer, fld, wvl) );
-            ref_rays3_.push_back( tracer->trace_pupil_ray(pupil_lower_mer, fld, wvl) );
-            ref_rays4_.push_back( tracer->trace_pupil_ray(pupil_upper_sag, fld, wvl) );
-            ref_rays5_.push_back( tracer->trace_pupil_ray(pupil_lower_sag, fld, wvl) );
+            chief_rays_.push_back( tracer->trace_pupil_ray(pupil_chief, fld, wvl) );
+            meridional_upper_rays_.push_back( tracer->trace_pupil_ray(pupil_upper_mer, fld, wvl) );
+            meridional_lower_rays_.push_back( tracer->trace_pupil_ray(pupil_lower_mer, fld, wvl) );
+            sagittal_upper_rays_.push_back( tracer->trace_pupil_ray(pupil_upper_sag, fld, wvl) );
+            sagittal_lower_rays_.push_back( tracer->trace_pupil_ray(pupil_lower_sag, fld, wvl) );
 
             // set name
 
@@ -375,8 +383,7 @@ void OpticalSystem::update_vignetting_factors()
 {
     SequentialTrace *tracer = new SequentialTrace(this);
 
-    int num_fld = opt_spec_->field_of_view()->field_count();
-    for(int fi = 0; fi < num_fld; fi++){
+    for(int fi = 0; fi < num_fld_; fi++){
         Field* fld = opt_spec_->field_of_view()->field(fi);
         std::vector<double> vig_factors = tracer->compute_vignetting_factors(*fld);
         double vuy = vig_factors[0];
@@ -397,8 +404,10 @@ void OpticalSystem::update_model()
 {
     opt_assembly_->update_model();
 
-    num_wvl_ = opt_spec_->spectral_region()->wvl_count();
     num_fld_ = opt_spec_->field_of_view()->field_count();
+    num_wvl_ = opt_spec_->spectral_region()->wvl_count();
+    ref_wvl_idx_ = opt_spec_->spectral_region()->reference_index();
+    ref_wvl_val_ = opt_spec_->spectral_region()->reference_wvl();
 
     update_paraxial_data();
     update_object_coords();

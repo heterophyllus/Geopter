@@ -171,21 +171,19 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
             cur_srf->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
 
+            /*
             if(std::isnan(dist_from_perpendicular_to_intersect_pt)){
                 ray->set_status(RayStatus::MissedSurface);
                 return ray;
             }
+            */
+
             Eigen::Vector3d srf_normal = cur_srf->normal(intersect_pt); // surface normal at the intersect point
 
             distance_from_before = dist_from_before_to_perpendicular + dist_from_perpendicular_to_intersect_pt; // distance between before and current intersect point
 
             n_out = seq_path.at(i).rind;
             after_dir = bend(before_dir, srf_normal, n_in, n_out);
-            if(std::isnan(after_dir.norm())){
-                ray->set_status(RayStatus::TotalReflection);
-                return ray;
-
-            }
 
             /*
             ray_at_srf = std::make_shared<RayAtSurface>();
@@ -197,6 +195,13 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             */
             ray_at_srf = std::make_shared<RayAtSurface>(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before,n_in*distance_from_before, ray_at_srf_before);
             ray->append(ray_at_srf);
+
+
+            if(std::isnan(after_dir.norm())){
+                ray->set_status(RayStatus::TotalReflection);
+                return ray;
+            }
+
 
             if(do_aperture_check_) {
                 if( !cur_srf->point_inside(intersect_pt(0),intersect_pt(1)) ){
@@ -400,11 +405,9 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vect
     double start_y;
     double y_target = xy_target(1);
 
-    SequentialPath path = sequential_path(0, srf_idx, wvl);
-    Ray ray;
-    
 
     // newton
+    int cnt = 0;
     double x1,x2,y1,y2;
     double diff_x;
     double next_x;
@@ -412,7 +415,6 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vect
     constexpr double error = 1.0e-5;
 
     x1 = 0.0;
-    int cnt = 0;
 
     while(true) {
         cnt++;
@@ -421,19 +423,17 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vect
         y1 = y_stop_coordinate(x1,srf_idx,pt0, obj2enp_dist, wvl, y_target);
         y2 = y_stop_coordinate(x2,srf_idx,pt0, obj2enp_dist, wvl, y_target);
 
-        if(std::isnan(y1) || std::isnan(y2)){
-            continue;
-        }
-
         diff_x = (y2 - y1) / (x2 - x1);
         next_x = x1 - y1/diff_x;
 
-        if(fabs(y1 - y_target) < error || cnt > 30) {
+        if(fabs(y1 - y_target) < error || cnt > 50) {
             break;
         }
 
         x1 = next_x;
     }
+
+
 
     start_y = x1;
 
@@ -473,6 +473,7 @@ double SequentialTrace::y_stop_coordinate(double y1, int ifcx, const Eigen::Vect
     }
 
 
+
     double y_ray = ray_trace_result->at(ifcx)->y();
 
     return (y_ray - y_target);
@@ -486,7 +487,9 @@ Eigen::Vector3d SequentialTrace::bend(const Eigen::Vector3d& d_in, const Eigen::
         double normal_len = normal.norm();
         double cosI = d_in.dot(normal)/normal_len;
         double sinI_sqr = 1.0 - cosI*cosI;
-        double n_cosIp = sqrt(n_out*n_out - n_in*n_in*sinI_sqr) * cosI/abs(cosI);
+        //double n_cosIp = sqrt(n_out*n_out - n_in*n_in*sinI_sqr) * cosI/fabs(cosI);
+        double cosI_sgn = (cosI > 0.0) - (cosI < 0.0);
+        double n_cosIp = sqrt(n_out*n_out - n_in*n_in*sinI_sqr) * cosI_sgn;
         double alpha = n_cosIp - n_in*cosI;
         Eigen::Vector3d d_out = (n_in*d_in + alpha*normal)/n_out;
         return d_out;

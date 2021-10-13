@@ -62,10 +62,11 @@ private:
 
 RayAtSurface* Ray::at(int i) const
 {
-    assert(i >= 0);
-    assert(i < (int)ray_at_srfs_.size());
-
-    return ray_at_srfs_[i].get();
+    if(i < (int)ray_at_srfs_.size()){
+        return ray_at_srfs_[i].get();
+    }else{
+        return nullptr;
+    }
 }
 
 RayAtSurface* Ray::front() const

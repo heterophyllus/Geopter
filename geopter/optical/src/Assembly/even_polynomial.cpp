@@ -106,6 +106,7 @@ double EvenPolynomial::f(const Eigen::Vector3d& p) const
 
 Eigen::Vector3d EvenPolynomial::df(const Eigen::Vector3d& p) const
 {
+    /*
     //sphere + conic contribution
     double r2 = p(0)*p(0) + p(1)*p(1);
     double ec = conic_ + 1.0;
@@ -126,6 +127,27 @@ Eigen::Vector3d EvenPolynomial::df(const Eigen::Vector3d& p) const
     }
 
     double e_tot = e + e_asp;
+
+    Eigen::Vector3d df({-e_tot*p(0), -e_tot*p(1), 1.0});
+    return df;
+    */
+
+    double r2 = p(0)*p(0) + p(1)*p(1);
+    double t = sqrt( 1.0 - cv_*cv_*r2*(conic_ + 1.0) ); // common sqrt
+
+    double conic_contrib_1 = 2*cv_/(t + 1.0);
+    double conic_contrib_2 = pow(cv_,3)*r2*(conic_+1.0)/( t*pow((t+1.0), 2) );
+
+    double pol_contrib = 0.0;
+    double r_pol = r2;
+    double num = 4.0;
+    for(int i = 0; i < num_coefs_; i++){
+        pol_contrib += num*coefs_[i]*r_pol;
+        num += 2.0;
+        r_pol *= r2;
+    }
+
+    double e_tot = conic_contrib_1 + conic_contrib_2 + pol_contrib;
 
     Eigen::Vector3d df({-e_tot*p(0), -e_tot*p(1), 1.0});
     return df;

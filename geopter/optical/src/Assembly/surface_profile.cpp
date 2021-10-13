@@ -91,7 +91,7 @@ void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eig
     Eigen::Vector3d p = p0;
     double s1 = -f(p)/d.dot(df(p));
     double s2;
-    double delta = abs(s1);
+    double delta = fabs(s1);
 
     int iter = 0;
 
@@ -99,7 +99,7 @@ void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eig
     {
         p = p0 + s1*d;
         s2 = s1 - f(p)/d.dot(df(p));
-        delta = abs(s2-s1);
+        delta = fabs(s2-s1);
         s1 = s2;
         iter++;
     }

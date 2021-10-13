@@ -106,10 +106,10 @@ void SingleRayTraceDialog::doPupilRayTrace()
 
     // construct output text
     std::ostringstream oss;
-    oss << "Real Ray Trace..." <<  std::endl;
+    oss << "Single Ray Trace..." <<  std::endl;
     oss << "Pupil Coordinate: " << "(" << pupil_crd(0) << ", " << pupil_crd(1) << ")" << std::endl;
-    oss << "Field: " << fi << std::endl;
-    oss << "Wavelength: " << wi << " " << wvl << std::endl;
+    oss << "Field: " << (fi+1) << std::endl;
+    oss << "Wavelength(nm): " << wvl << std::endl;
 
     ray_trace_result->print(oss);
     oss << std::endl;

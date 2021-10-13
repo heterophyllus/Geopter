@@ -24,6 +24,7 @@ void RendererQCP::clear()
 
 void RendererQCP::update()
 {
+    customPlot_->update();
     customPlot_->replot();
 }
 

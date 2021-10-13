@@ -68,6 +68,27 @@ void Ray::print(std::ostringstream& oss)
 
     int num_srfs = ray_at_srfs_.size();
 
+    //status
+    oss << "Status";
+    switch (status_) {
+    case RayStatus::PassThrough:
+        oss << "Pass Through";
+        break;
+    case RayStatus::Blocked:
+        oss << "Blocked";
+        break;
+    case RayStatus::MissedSurface:
+        oss << "Missed Surface";
+        break;
+    case RayStatus::TotalReflection:
+        oss << "Total Reflection";
+        break;
+    default:
+        oss << "Unknown Status";
+    }
+    oss << std::endl;
+    oss << std::endl;
+
     // intercept
     // headder label, S   X   Y   Z
     oss << std::setw(idx_w) << std::right << "S";

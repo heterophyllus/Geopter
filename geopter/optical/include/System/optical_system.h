@@ -15,6 +15,14 @@
 
 namespace geopter {
 
+enum ReferenceRay{
+    ChiefRay,
+    MeridionalUpperRay,
+    MeridionalLowerRay,
+    SagittalUpperRay,
+    SagittalLowerRay
+};
+
 class OpticalSystem
 {
 public:
@@ -75,6 +83,8 @@ private:
     // fundamental data
     int num_wvl_;
     int num_fld_;
+    int ref_wvl_idx_;
+    double ref_wvl_val_;
 
     // -----> Paraxial Data
     /** parallel to axis at s1 */
@@ -97,11 +107,11 @@ private:
 
     // -----> Sequential Data
     /** reference rays */
-    std::vector< std::shared_ptr<Ray> > ref_rays1_; // chief ray
-    std::vector< std::shared_ptr<Ray> > ref_rays2_; // upper meridional marginal
-    std::vector< std::shared_ptr<Ray> > ref_rays3_; // lower meridional marginal
-    std::vector< std::shared_ptr<Ray> > ref_rays4_; // upper sagittal marginal
-    std::vector< std::shared_ptr<Ray> > ref_rays5_; // lower sagittal marginal
+    std::vector< std::shared_ptr<Ray> > chief_rays_;
+    std::vector< std::shared_ptr<Ray> > meridional_upper_rays_;
+    std::vector< std::shared_ptr<Ray> > meridional_lower_rays_;
+    std::vector< std::shared_ptr<Ray> > sagittal_upper_rays_;
+    std::vector< std::shared_ptr<Ray> > sagittal_lower_rays_;
 
     /** focus shifts */
     std::vector<double> x_focus_shifts_;
