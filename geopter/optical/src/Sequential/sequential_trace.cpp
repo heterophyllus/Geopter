@@ -4,13 +4,7 @@
 #include <limits>
 
 #include "Sequential/sequential_trace.h"
-
-#include "Sequential/sequential_path.h"
 #include "Sequential/trace_error.h"
-#include "Spec/optical_spec.h"
-#include "Assembly/optical_assembly.h"
-#include "Paraxial/first_order.h"
-#include "Paraxial/paraxial_ray.h"
 #include "Paraxial/paraxial_trace.h"
 
 using namespace geopter;
@@ -130,7 +124,7 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
     double n_in  = n_out;
     Transformation transformation_from_before = seq_path.at(0).srf->local_transform();
 
-    constexpr double eps = 1.0e-5;
+    constexpr double eps = 1.0e-7;
     constexpr double z_dir = 1.0; // used for reflection, not yet implemented
 
 
@@ -143,10 +137,10 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
     ray_at_srf->normal               = seq_path.at(0).srf->normal(pt0);
     ray_at_srf->optical_path_length  = 0.0;
     */
-    auto ray_at_srf = std::make_shared<RayAtSurface>(pt0, seq_path.at(0).srf->normal(pt0), dir0, 0.0, 0.0, nullptr);
+    //auto ray_at_srf = std::make_unique<RayAtSurface>(pt0, seq_path.at(0).srf->normal(pt0), dir0, 0.0, 0.0, nullptr);
 
-    ray->append(ray_at_srf);
-    RayAtSurface* ray_at_srf_before = ray_at_srf.get();
+    ray->append(pt0, seq_path.at(0).srf->normal(pt0), dir0, 0.0, 0.0);
+    //RayAtSurface* ray_at_srf_before = ray_at_srf.get();
 
     // trace ray till the image
     int path_size = seq_path.size();
@@ -171,12 +165,12 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
             cur_srf->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
 
-            /*
+
             if(std::isnan(dist_from_perpendicular_to_intersect_pt)){
                 ray->set_status(RayStatus::MissedSurface);
                 return ray;
             }
-            */
+
 
             Eigen::Vector3d srf_normal = cur_srf->normal(intersect_pt); // surface normal at the intersect point
 
@@ -193,8 +187,8 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             ray_at_srf->optical_path_length  = n_in*distance_from_before;
             ray_at_srf->normal               = srf_normal;
             */
-            ray_at_srf = std::make_shared<RayAtSurface>(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before,n_in*distance_from_before, ray_at_srf_before);
-            ray->append(ray_at_srf);
+            //ray_at_srf = std::make_shared<RayAtSurface>(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before,n_in*distance_from_before, ray_at_srf_before);
+            ray->append(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before,n_in*distance_from_before);
 
 
             if(std::isnan(after_dir.norm())){
@@ -215,7 +209,7 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             before_dir = after_dir;
             n_in       = n_out;
             transformation_from_before = cur_srf->local_transform();
-            ray_at_srf_before = ray_at_srf.get();
+            //ray_at_srf_before = ray_at_srf.get();
         }
 
     } catch (TraceMissedSurfaceError& ray_miss) {
@@ -408,6 +402,7 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vect
 
     // newton
     int cnt = 0;
+    constexpr int max_loop_cnt = 30;
     double x1,x2,y1,y2;
     double diff_x;
     double next_x;
@@ -420,20 +415,26 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vect
         cnt++;
         x2 = x1 + delta;
 
+        if(cnt > max_loop_cnt){
+            x1 = 0.0;
+            break;
+        }
+
         y1 = y_stop_coordinate(x1,srf_idx,pt0, obj2enp_dist, wvl, y_target);
         y2 = y_stop_coordinate(x2,srf_idx,pt0, obj2enp_dist, wvl, y_target);
+
+        if(std::isnan(y1+y2)){
+            continue;
+        }
+        else if(fabs(y1 - y_target) < error) {
+            break;
+        }
 
         diff_x = (y2 - y1) / (x2 - x1);
         next_x = x1 - y1/diff_x;
 
-        if(fabs(y1 - y_target) < error || cnt > 50) {
-            break;
-        }
-
         x1 = next_x;
     }
-
-
 
     start_y = x1;
 
@@ -448,8 +449,7 @@ double SequentialTrace::y_stop_coordinate(double y1, int ifcx, const Eigen::Vect
 {
     Eigen::Vector3d pt1({0.0, y1, dist});
     Eigen::Vector3d dir0 = pt1 - pt0;
-    double length = dir0.norm();
-    dir0 = dir0/length;
+    dir0.normalize();
 
     //std::vector<RayAtSurface> ray;
     std::vector<RayAtSurface> ray_at_srfs;
@@ -473,10 +473,15 @@ double SequentialTrace::y_stop_coordinate(double y1, int ifcx, const Eigen::Vect
     }
 
 
+    if(ifcx < ray_trace_result->size()){
+        double y_ray = ray_trace_result->at(ifcx)->y();
 
-    double y_ray = ray_trace_result->at(ifcx)->y();
+        return (y_ray - y_target);
+    }else{
+        return NAN;
+    }
 
-    return (y_ray - y_target);
+
 
 
 }

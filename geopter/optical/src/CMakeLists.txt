@@ -1,8 +1,4 @@
 
-#project(GeopterOptical LANGUAGES CXX)
-
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 set(OPTICAL_SRCS 
     Analysis/aberration.cpp
@@ -13,13 +9,15 @@ set(OPTICAL_SRCS
     Assembly/optical_assembly.cpp
     Assembly/interface.cpp
     Assembly/surface.cpp
-    Assembly/surface_profile.cpp
-    Assembly/spherical.cpp
-    Assembly/even_polynomial.cpp
     Assembly/aperture.cpp
     Assembly/circular.cpp
     Assembly/gap.cpp
     Assembly/decenter_data.cpp
+
+    Profile/surface_profile.cpp
+    Profile/spherical.cpp
+    Profile/even_polynomial.cpp
+    Profile/odd_polynomial.cpp
 
     Element/element_model.cpp
     Element/element.cpp
@@ -72,7 +70,11 @@ set(OPTICAL_SRCS
 
 add_library(geopteroptical STATIC ${OPTICAL_SRCS})
 
-target_include_directories(geopteroptical PUBLIC ${CMAKE_SOURCE_DIR}../include)
+target_include_directories(geopteroptical PUBLIC
+    ${CMAKE_SOURCE_DIR}/geopter/optical/include
+    ${CMAKE_SOURCE_DIR}/3rdparty #Eigen, nlohman
+    ${CMAKE_SOURCE_DIR}/3rdparty/spline/src
+)
 
 install(TARGETS geopteroptical LIBRARY DESTINATION lib)
 install(FILES ${HEADERS} DESTINATION include/optical)

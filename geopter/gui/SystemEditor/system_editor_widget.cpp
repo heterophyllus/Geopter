@@ -7,6 +7,8 @@
 #include <QColorDialog>
 #include <QInputDialog>
 #include <QTableWidget>
+#include <QClipboard>
+#include <QShortcut>
 
 #include "float_delegate.h"
 #include "surface_property_dialog.h"
@@ -33,6 +35,12 @@ SystemEditorWidget::SystemEditorWidget(std::shared_ptr<OpticalSystem> opt_sys, Q
     FloatDelegate *delegate = new FloatDelegate(4, ui->assemblyTable);
     ui->assemblyTable->setItemDelegate(delegate);
     m_maxInputDigit = 10;
+
+    // enable copy and paste
+    QShortcut *scCtrlC = new QShortcut(QKeySequence("Ctrl+C"), ui->assemblyTable);
+    QObject::connect(scCtrlC, SIGNAL(activated()), this, SLOT(copyCell()));
+    QShortcut *scCtrlV = new QShortcut(QKeySequence("Ctrl+V"), ui->assemblyTable);
+    QObject::connect(scCtrlV, SIGNAL(activated()), this, SLOT(pasteCell()));
 
 
     //======================
@@ -138,6 +146,8 @@ void SystemEditorWidget::syncUiWithSystem()
             setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::SurfaceType, "Standard");
         }else if(surfaceType == "ASP"){
             setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::SurfaceType, "Even Asphere");
+        }else if(surfaceType == "ODD"){
+            setValueToCell(ui->assemblyTable, row, AssemblyTableColumn::SurfaceType, "Odd Asphere");
         }
 
 
@@ -759,8 +769,9 @@ void SystemEditorWidget::validateMaterialInput(int row)
     int col = AssemblyTableColumn::Material;
     QTableWidgetItem *item = ui->assemblyTable->item(row, col);
     QString text = item->text();
+    bool is_alphanumeric_colon = reg_alphanumeric_colon.exactMatch(text);
 
-    if(reg_alphanumeric_colon.exactMatch(text)){
+    if(is_alphanumeric_colon){
         auto mat = opt_sys_->material_lib()->find(text.toStdString());
         if(mat){ // found in material library
             setValueToCell(ui->assemblyTable, row,col, QString().fromStdString(mat->name()));
@@ -804,6 +815,71 @@ void SystemEditorWidget::showSurfacePropertyDlg(int si)
 
 }
 
+void SystemEditorWidget::copyCell()
+{
+    // https://qiita.com/MOKYN/items/4b7c090af655efda0c42
+
+    QAbstractItemModel* model = ui->assemblyTable->model();
+    QItemSelectionModel* selection = ui->assemblyTable->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+
+    if (indexes.count() == 0) {
+            return;
+    }
+
+    //qSort(indexes); //deprecated
+    std::sort(indexes.begin(), indexes.end());
+
+    QString clip;
+    QModelIndex previous = indexes.first();
+    indexes.removeFirst();
+    clip.append(model->data(previous).toString());
+
+    foreach(auto current, indexes.toVector())
+    {
+        if (current.row() != previous.row())
+        {
+            clip.append("\n");
+        }
+        else
+        {
+            clip.append("\t");
+        }
+
+        clip.append(model->data(current).toString());
+        previous = current;
+    }
+
+    QApplication::clipboard()->setText(clip);
+}
+
+
+void SystemEditorWidget::pasteCell()
+{
+    // https://qiita.com/MOKYN/items/4b7c090af655efda0c42
+
+    if (ui->assemblyTable->selectedItems().size() != 1) {
+        return;
+    }
+
+    QString clip = QApplication::clipboard()->text();
+    QStringList rowList = clip.split("\n");
+
+    QTableWidgetItem *currentItem = ui->assemblyTable->selectedItems().first();
+    int pasteRow = currentItem->row();
+    int pasteCol = currentItem->column();
+    foreach(auto row, rowList.toVector())
+    {
+        QStringList colList = row.split("\t");
+        foreach(auto cell, colList.toVector())
+        {
+            ui->assemblyTable->item(pasteRow, pasteCol)->setText(cell);
+            pasteCol++;
+        }
+        pasteCol = currentItem->column();
+        pasteRow++;
+    }
+}
 
 
 // ******************************************************************************************************************************************

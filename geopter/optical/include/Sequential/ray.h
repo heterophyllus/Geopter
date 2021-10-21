@@ -27,38 +27,54 @@ public:
     Ray();
     ~Ray();
 
-    int size() const;
-
-    void clear();
-
     /** Add data at the beginning */
-    void prepend(std::shared_ptr<RayAtSurface> ray_at_srf);
+    void prepend(std::unique_ptr<RayAtSurface> ray_at_srf);
 
     /** Add data at the last */
-    void append(std::shared_ptr<RayAtSurface> ray_at_srf);
+    void append(std::unique_ptr<RayAtSurface> ray_at_srf);
 
-    void set_status(int s);
+    void append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
 
-    void set_wvl(double wvl);
+    inline void set_status(int s);
+
+    inline void set_wvl(double wvl);
+
+    inline int size() const;
 
     inline RayAtSurface* at(int i) const;
     inline RayAtSurface* front() const;
     inline RayAtSurface* back() const;
 
-    int status() const;
+    inline int status() const;
 
-    double wavelength() const;
+    inline double wavelength() const;
+
+    void clear();
 
     void print(std::ostringstream& oss);
     void print();
 
 private:
-    std::vector< std::shared_ptr<RayAtSurface> > ray_at_srfs_;
-    double wvl_;
+    std::vector< std::unique_ptr<RayAtSurface> > ray_at_srfs_;
     int status_;
+    double wvl_;
 };
 
 
+int Ray::size() const
+{
+    return (int)ray_at_srfs_.size();
+}
+
+int Ray::status() const
+{
+    return status_;
+}
+
+double Ray::wavelength() const
+{
+    return wvl_;
+}
 
 RayAtSurface* Ray::at(int i) const
 {
@@ -77,6 +93,16 @@ RayAtSurface* Ray::front() const
 RayAtSurface* Ray::back() const
 {
     return ray_at_srfs_.back().get();
+}
+
+void Ray::set_wvl(double wvl)
+{
+    wvl_ = wvl;
+}
+
+void Ray::set_status(int s)
+{
+    status_ = s;
 }
 
 } //namespace geopter

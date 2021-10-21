@@ -21,10 +21,11 @@
 #include "Assembly/circular.h"
 #include "Assembly/interface.h"
 #include "Assembly/surface.h"
-#include "Assembly/surface_profile.h"
-#include "Assembly/spherical.h"
-#include "Assembly/even_polynomial.h"
 #include "Assembly/gap.h"
+
+#include "Profile/surface_profile.h"
+#include "Profile/spherical.h"
+#include "Profile/even_polynomial.h"
 
 #include "Material/material_library.h"
 #include "Material/material.h"

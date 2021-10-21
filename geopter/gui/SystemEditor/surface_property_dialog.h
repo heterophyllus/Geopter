@@ -38,6 +38,7 @@ private slots:
 
 private:
     void initializeEvenAsphereDataTable();
+    void initializeOddAsphereDataTable();
     void setValueToCell(QTableWidget* table, int row, int col, double val);
 
     Ui::SurfacePropertyDialog *ui;

@@ -14,10 +14,7 @@
 #include "Renderer/rgb.h"
 
 #include "System/optical_system.h"
-#include "Spec/optical_spec.h"
-#include "Assembly/optical_assembly.h"
-#include "Assembly/surface_profile.h"
-#include "Sequential/ray.h"
+
 #include "Sequential/sequential_trace.h"
 #include "Paraxial/paraxial_trace.h"
 #include "Paraxial/paraxial_ray.h"

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 
-set(PROJECT_SOURCES
+set(GEOPTER_GUI_SOURCES
     main.cpp
 
     main_window.h
@@ -71,16 +71,54 @@ set(PROJECT_SOURCES
     analysisdialogs/spot_diagram_setting_dialog.cpp
     analysisdialogs/spot_diagram_setting_dialog.h
     analysisdialogs/spot_diagram_setting_dialog.ui
+
+    ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.h
+    ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.cpp
 )
 
-add_executable( Geopter ${PROJECT_SOURCES} )
+add_executable(Geopter ${GEOPTER_GUI_SOURCES})
 
-target_include_directories(Geopter PRIVATE 3rdparty/Qt-Advanced-Docking)
-target_link_libraries(Geopter PRIVATE Qt5::Widgets Qt5::PrintSupport QCustomPlot)
-target_link_libraries(Geopter PRIVATE qtadvanceddocking)
+target_include_directories(Geopter PRIVATE
+    ${CMAKE_SOURCE_DIR}/3rdparty/Qt-Advanced-Docking
+    ${CMAKE_SOURCE_DIR}/3rdparty/QCustomPlot
+    ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src
+    ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/extensions/PythonQt_QtAll
+    ${CMAKE_SOURCE_DIR}/3rdparty #Eigen
+    ${CMAKE_SOURCE_DIR}/3rdparty/spline/src
+    ${CMAKE_SOURCE_DIR}/geopter/optical/include
+    ${Python_INCLUDE_DIRS}
+)
 
-target_include_directories(Geopter PRIVATE ${CMAKE_SOURCE_DIR}../optical/include)
-target_link_libraries(Geopter PRIVATE geopteroptical)
+target_compile_definitions(Geopter PRIVATE
+    PYTHONQT_QTALL_EXPORTS
+    PYTHONQT_WITH_CORE
+    PYTHONQT_WITH_GUI
+    PYTHONQT_WITH_SVG
+    PYTHONQT_WITH_OPENGL
+    PYTHONQT_WITH_MULTIMEDIA
+    PYTHONQT_WITH_UITOOLS
+)
+
+target_link_libraries(Geopter PRIVATE
+    Qt5::Core
+    Qt5::Gui
+    Qt5::Widgets
+    Qt5::PrintSupport
+    Qt5::Multimedia
+    Qt5::MultimediaWidgets
+    Qt5::OpenGL
+    #Qt5::Sql
+    Qt5::Svg
+    #Qt5::Xml
+    #Qt5::XmlPatterns
+    Qt5::UiTools
+    qtadvanceddocking
+    QCustomPlot
+    geopteroptical
+    PythonQt
+    PythonQt_QtAll
+    ${Python_LIBRARIES}
+)
 
 
 # surpress console window
@@ -88,32 +126,3 @@ if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 endif()
 
-
-
-# Collect all Qt dependencies
-
-if(WIN32)
-    # Retrieve the absolute path to qmake and then use that path to find
-    # the binaries
-    get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
-    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-    #find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
-    add_custom_command(TARGET Geopter POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E
-            env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-                "$<TARGET_FILE:Geopter>"
-        COMMENT "Running windeployqt..."
-    )
-elseif(APPLE)
-    get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
-    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-    #find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-    find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
-    add_custom_command(TARGET Geopter POST_BUILD
-        COMMAND "${MACDEPLOYQT_EXECUTABLE}"
-            "$<TARGET_FILE:Geopter>"
-            -always-overwrite
-        COMMENT "Running macdeployqt..."
-    )
-endif()

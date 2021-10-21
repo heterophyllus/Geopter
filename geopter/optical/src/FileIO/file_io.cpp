@@ -9,18 +9,8 @@
 
 #include "FileIO/file_io.h"
 
-#include "System/optical_system.h"
-#include "Spec/optical_spec.h"
-#include "Assembly/optical_assembly.h"
-#include "Assembly/surface_profile.h"
-#include "Assembly/spherical.h"
-#include "Assembly/even_polynomial.h"
 #include "Assembly/circular.h"
-#include "Material/material_library.h"
 #include "Material/air.h"
-
-#include "Renderer/rgb.h"
-
 
 using namespace geopter;
 
@@ -109,6 +99,14 @@ bool FileIO::save_to_json(const OpticalSystem& opt_sys, std::string json_path)
             // do nothing
         }else if(surface_type == "ASP"){
             EvenPolynomial *prf = dynamic_cast<EvenPolynomial*>(s->profile());
+            if(prf){
+                json_data["Assembly"][cur_idx]["Conic"] = prf->conic();
+                for(int ci = 0; ci < prf->coef_count(); ci++){
+                    json_data["Assembly"][cur_idx]["Coefs"].push_back( prf->coef(ci) );
+                }
+            }
+        }else if(surface_type == "ODD"){
+            OddPolynomial *prf = dynamic_cast<OddPolynomial*>(s->profile());
             if(prf){
                 json_data["Assembly"][cur_idx]["Conic"] = prf->conic();
                 for(int ci = 0; ci < prf->coef_count(); ci++){
@@ -208,7 +206,7 @@ bool FileIO::load_from_json(OpticalSystem& opt_sys, std::string json_path)
 
         std::vector< RgbAsVector > wvl_color = json_data["Spec"]["Wvl"]["Color"].get< std::vector<RgbAsVector> >();
 
-        for(int wi = 0; wi < wvl_val.size(); wi++){
+        for(int wi = 0; wi < (int)wvl_val.size(); wi++){
             Rgb color(wvl_color[wi][0], wvl_color[wi][1], wvl_color[wi][2], 0.0);
             opt_sys.optical_spec()->spectral_region()->add(wvl_val[wi], wvl_wt[wi],color);
         }
@@ -234,7 +232,7 @@ bool FileIO::load_from_json(OpticalSystem& opt_sys, std::string json_path)
 
         std::vector< RgbAsVector > fld_color = json_data["Spec"]["Field"]["Color"].get< std::vector<RgbAsVector> >();
         
-        for(int fi = 0; fi < fld_x.size(); fi++){
+        for(int fi = 0; fi < (int)fld_x.size(); fi++){
             
             Rgb color(fld_color[fi][0], fld_color[fi][1], fld_color[fi][2], 0.0);
 
@@ -288,15 +286,19 @@ bool FileIO::load_from_json(OpticalSystem& opt_sys, std::string json_path)
         
 
         if( surf_type == "SPH" ) {
-            auto sph = std::make_unique<Spherical>(cv);
-            srf->set_profile( std::move(sph) );
+            srf->set_profile<SurfaceType::Sphere>(cv);
         }
         else if( surf_type == "ASP" ) {
             double conic = json_data["Assembly"][cur_idx]["Conic"].get<double>();
             std::vector<double> coefs = json_data["Assembly"][cur_idx]["Coefs"].get< std::vector<double> >();
             
-            auto asp = std::make_unique<EvenPolynomial>(cv, conic, coefs);
-            srf->set_profile( std::move(asp) );
+            srf->set_profile<SurfaceType::EvenAsphere>(cv, conic, coefs);
+        }
+        else if(surf_type == "ODD") {
+            double conic = json_data["Assembly"][cur_idx]["Conic"].get<double>();
+            std::vector<double> coefs = json_data["Assembly"][cur_idx]["Coefs"].get< std::vector<double> >();
+
+            srf->set_profile<SurfaceType::OddAsphere>(cv, conic, coefs);
         }
 
         

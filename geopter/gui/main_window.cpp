@@ -3,13 +3,19 @@
 #include <sstream>
 #include <fstream>
 
+
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QComboBox>
+#include <QTextEdit>
+#include <QDebug>
+
 #include "main_window.h"
 #include "./ui_main_window.h"
 
 #include "text_view_dock.h"
 #include "plot_view_dock.h"
 #include "general_configuration_dialog.h"
-
 
 #include "renderer_qcp.h"
 
@@ -26,11 +32,7 @@
 
 #include "qdebugstream.h"
 
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QComboBox>
-#include <QTextEdit>
-#include <QDebug>
+#include "gui/PythonQtScriptingConsole.h"
 
 using namespace ads;
 
@@ -71,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
 
 
+
     // create optical system
     opt_sys_ = std::make_shared<OpticalSystem>();
 
@@ -87,6 +90,14 @@ MainWindow::MainWindow(QWidget *parent)
     CentralDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
     m_systemEditorDock->syncUiWithSystem();
+
+
+    // create python console
+    PythonQtScriptingConsole* console = new PythonQtScriptingConsole(NULL, PythonQt::self()->getMainModule());
+    CDockWidget* ConsoleDock = new CDockWidget("Console");
+    ConsoleDock->setWidget(console);
+    ConsoleDock->setFeature(CDockWidget::DockWidgetClosable, false);
+    m_dockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, ConsoleDock);
 
 }
 
@@ -136,9 +147,6 @@ void MainWindow::loadAgfsFromDir(QString agfDir)
  * ********************************************************************************************************************************/
 void MainWindow::newFile()
 {
-    opt_sys_.reset();
-    opt_sys_ = std::make_shared<OpticalSystem>();
-
     opt_sys_->create_minimum_system();
     //opt_sys_->update_model();
 

@@ -106,6 +106,9 @@ private slots:
     void validateCellDoubleClickOnWavelengthTable(int row, int col);
     void validateCellDoubleClickOnFieldTable(int row, int col);
 
+    void copyCell();
+    void pasteCell();
+
 private:
     /** Set up all tables */
     void initialize();
@@ -134,6 +137,8 @@ private:
     void setValueToCell(QTableWidget *table, int row, int col, double value);
     void setValueToCell(QTableWidget *table, int row, int col, QString str);
     void setColorToCell(QTableWidget *table, int row, int col, QColor color);
+
+
 
     /** Convert geopter::Rgb to QColor */
     QColor rgbToQColor(geopter::Rgb rgbColor);

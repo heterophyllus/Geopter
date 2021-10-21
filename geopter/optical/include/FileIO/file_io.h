@@ -9,8 +9,6 @@
 
 namespace geopter {
 
-
-
 class FileIO
 {
 public:

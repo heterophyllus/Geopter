@@ -8,7 +8,9 @@
 #include "Assembly/aperture.h"
 #include "Assembly/decenter_data.h"
 
-#include "Assembly/surface_profile.h"
+#include "Profile/spherical.h"
+#include "Profile/even_polynomial.h"
+#include "Profile/odd_polynomial.h"
 
 namespace geopter {
 
@@ -18,27 +20,12 @@ public:
     Interface();
     virtual ~Interface();
 
-    std::string interact_mode() const;
-
-    std::string label() const;
-    void set_label(std::string lbl);
-
-    DecenterData* decenter() const;
-
-    void set_profile(std::unique_ptr<SurfaceProfile> prf);
-    SurfaceProfile* profile() const;
-
-    //void set_delta_n(double dn);
-    //virtual void set_optical_power(double pwr, double n_before, double n_after);
-
-    void set_clear_aperture(std::unique_ptr<Aperture> ca);
-    void set_edge_aperture(std::unique_ptr<Aperture> ea);
-
-    /** Remove all clear apertures from the surface */
-    void remove_clear_aperture();
-
-    Aperture* clear_aperture() const;
-    Aperture* edge_aperture() const;
+    inline std::string interact_mode() const;
+    inline std::string label() const;
+    inline DecenterData* decenter() const;
+    inline SurfaceProfile* profile() const;
+    inline Aperture* clear_aperture() const;
+    inline Aperture* edge_aperture() const;
 
     /** Return aperture shape name. If no aperture is set, returns "None" */
     std::string aperture_shape() const;
@@ -47,22 +34,35 @@ public:
       * If an aperture is set, this function returns the aperture max dimension.
       * Otherwise, it returns valid semi-diameter.
       */
-    virtual double max_aperture() const;
-
+    double max_aperture() const;
 
     /** Maximum valid semi-diameter where the reference rays pass */
-    virtual double semi_diameter() const;
-
-    virtual void set_semi_diameter(double sd);
+    inline double semi_diameter() const;
 
     /** Returns true if the given point(x,y) is inside of aperture */
     bool point_inside(double x, double y) const;
     bool point_inside(const Eigen::Vector2d& pt) const;
 
-    void set_local_transform(Transformation tfrm);
-    void set_global_transform(Transformation tfrm);
-    Transformation local_transform() const;
-    Transformation global_transform() const;
+    inline Transformation local_transform() const;
+    inline Transformation global_transform() const;
+
+
+
+    template<SurfaceType type>
+    void set_profile(double cv, double k= 0.0, const std::vector<double>& coefs=std::vector<double>(10, 0.0));
+
+    void set_label(std::string lbl);
+
+    void set_clear_aperture(std::unique_ptr<Aperture> ca);
+    void set_edge_aperture(std::unique_ptr<Aperture> ea);
+
+    /** Remove all clear apertures from the surface */
+    void remove_clear_aperture();
+
+    void set_semi_diameter(double sd);
+
+    void set_local_transform(const Transformation& tfrm);
+    void set_global_transform(const Transformation& tfrm);
 
     virtual void update();
 
@@ -86,6 +86,73 @@ protected:
     /** global transform against the reference interface */
     Transformation gbl_tfrm_;
 };
+
+
+template<SurfaceType type>
+void Interface::set_profile(double cv, double k, const std::vector<double>& coefs)
+{
+    profile_.reset();
+
+    switch (type) {
+    case SurfaceType::Sphere:
+        profile_ = std::make_unique<Spherical>(cv);
+        break;
+    case SurfaceType::EvenAsphere:
+        profile_ = std::make_unique<EvenPolynomial>(cv,k,coefs);
+        break;
+    case SurfaceType::OddAsphere:
+        profile_ = std::make_unique<OddPolynomial>(cv,k,coefs);
+        break;
+    default:
+        profile_ = std::make_unique<Spherical>(cv);
+    }
+}
+
+
+std::string Interface::interact_mode() const
+{
+    return interact_mode_;
+}
+
+std::string Interface::label() const
+{
+    return label_;
+}
+
+DecenterData* Interface::decenter() const
+{
+    return decenter_.get();
+}
+
+SurfaceProfile* Interface::profile() const
+{
+    return profile_.get();
+}
+
+Aperture* Interface::clear_aperture() const
+{
+    return clear_aperture_.get();
+}
+
+Aperture* Interface::edge_aperture() const
+{
+    return edge_aperture_.get();
+}
+
+double Interface::semi_diameter() const
+{
+    return semi_diameter_;
+}
+
+Transformation Interface::local_transform() const
+{
+    return lcl_tfrm_;
+}
+
+Transformation Interface::global_transform() const
+{
+    return gbl_tfrm_;
+}
 
 } //namespace geopter
 

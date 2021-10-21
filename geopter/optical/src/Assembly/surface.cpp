@@ -2,8 +2,6 @@
 #include <sstream>
 
 #include "Assembly/surface.h"
-
-#include "Assembly/spherical.h"
 #include "Assembly/aperture.h"
 
 #include "Sequential/trace_error.h"

@@ -6,7 +6,6 @@
 #include <iomanip>
 
 #include "Assembly/optical_assembly.h"
-#include "Assembly/spherical.h"
 
 #include "Material/air.h"
 

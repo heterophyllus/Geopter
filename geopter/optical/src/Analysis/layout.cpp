@@ -2,12 +2,8 @@
 #include "Analysis/layout.h"
 
 #include "System/optical_system.h"
-#include "Spec/optical_spec.h"
 #include "Element/element_model.h"
-#include "Sequential/ray.h"
 #include "Sequential/sequential_trace.h"
-#include "Assembly/optical_assembly.h"
-#include "Assembly/surface_profile.h"
 
 
 using namespace geopter;

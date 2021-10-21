@@ -6,6 +6,8 @@
 //#include <QtWidgets/QStyleFactory>
 #include <QFile>
 
+#include "PythonQt.h"
+#include "PythonQt_QtAll.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,7 +30,13 @@ int main(int argc, char *argv[])
     a.setFont(fnt);
 #endif
 
-    MainWindow w;
+
+    PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
+    PythonQtObjectPtr mainModule = PythonQt::self()->getMainModule();
+
+    MainWindow w; // This line must be after PythonQt::init()
+    mainModule.addObject("mainwindow", &w);
+
     w.show();
 
     return a.exec();

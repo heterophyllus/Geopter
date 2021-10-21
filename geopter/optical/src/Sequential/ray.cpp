@@ -6,10 +6,11 @@
 
 using namespace geopter;
 
-Ray::Ray()
+Ray::Ray() :
+    status_(RayStatus::PassThrough),
+    wvl_(0.0)
 {
-    status_ = RayStatus::PassThrough;
-    ray_at_srfs_.clear();
+    //ray_at_srfs_.clear();
 }
 
 Ray::~Ray()
@@ -20,43 +21,37 @@ Ray::~Ray()
     ray_at_srfs_.clear();
 }
 
-int Ray::size() const
-{
-    return (int)ray_at_srfs_.size();
-}
 
-void Ray::prepend(std::shared_ptr<RayAtSurface> ray_at_srf)
+void Ray::prepend(std::unique_ptr<RayAtSurface> ray_at_srf)
 {
-    ray_at_srfs_.insert(ray_at_srfs_.begin(), ray_at_srf);
+    ray_at_srfs_.insert(ray_at_srfs_.begin(), std::move(ray_at_srf));
     ray_at_srfs_.front()->set_before( ray_at_srfs_[1].get() );
 }
 
-void Ray::append(std::shared_ptr<RayAtSurface> ray_at_srf)
+
+void Ray::append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl)
 {
+    auto ray_at_srf = std::make_unique<RayAtSurface>(inc_pt, normal, after_dir, dist, opl);
     if(ray_at_srfs_.empty()){
-        ray_at_srfs_.push_back(ray_at_srf);
+        ray_at_srfs_.push_back(std::move(ray_at_srf));
     }else{
         RayAtSurface *before = ray_at_srfs_.back().get();
-        ray_at_srfs_.push_back(ray_at_srf);
-        ray_at_srfs_.back()->set_before(before);
+        ray_at_srf->set_before(before);
+        ray_at_srfs_.push_back(std::move(ray_at_srf));
     }
 }
 
-
-void Ray::set_wvl(double wvl)
+void Ray::append(std::unique_ptr<RayAtSurface> ray_at_srf)
 {
-    wvl_ = wvl;
-}
 
+    if(ray_at_srfs_.empty()){
+        ray_at_srfs_.push_back(std::move(ray_at_srf));
+    }else{
+        RayAtSurface *before = ray_at_srfs_.back().get();
+        ray_at_srf->set_before(before);
+        ray_at_srfs_.push_back(std::move(ray_at_srf));
+    }
 
-void Ray::set_status(int s)
-{
-    status_ = s;
-}
-
-int Ray::status() const
-{
-    return status_;
 }
 
 

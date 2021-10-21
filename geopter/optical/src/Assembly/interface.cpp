@@ -1,7 +1,7 @@
 #include "Assembly/interface.h"
 
 #include "Assembly/circular.h"
-#include "Assembly/spherical.h"
+
 
 using namespace geopter;
 
@@ -34,51 +34,21 @@ Interface::~Interface()
     //decenter_.reset();
 }
 
-std::string Interface::label() const
-{
-    return label_;
-}
+
 
 void Interface::set_label(std::string lbl)
 {
     label_ = lbl;
 }
 
-void Interface::set_local_transform(Transformation tfrm)
+void Interface::set_local_transform(const Transformation& tfrm)
 {
     lcl_tfrm_ = tfrm;
 }
 
-void Interface::set_global_transform(Transformation tfrm)
+void Interface::set_global_transform(const Transformation& tfrm)
 {
     gbl_tfrm_ = tfrm;
-}
-
-Transformation Interface::local_transform() const
-{
-    return lcl_tfrm_;
-}
-
-Transformation Interface::global_transform() const
-{
-    return gbl_tfrm_;
-}
-
-std::string Interface::interact_mode() const
-{
-    return interact_mode_;
-}
-
-DecenterData* Interface::decenter() const
-{
-    return decenter_.get();
-}
-
-void Interface::update()
-{
-    if(decenter_){
-        decenter_->update();
-    }
 }
 
 
@@ -92,11 +62,6 @@ double Interface::max_aperture() const
 
 }
 
-
-double Interface::semi_diameter() const
-{
-    return semi_diameter_;
-}
 
 void Interface::set_semi_diameter(double sd)
 {
@@ -120,15 +85,7 @@ void Interface::set_clear_aperture(std::unique_ptr<Aperture> ca)
     clear_aperture_ = std::move(ca);
 }
 
-Aperture* Interface::clear_aperture() const
-{
-    return clear_aperture_.get();
-}
 
-Aperture* Interface::edge_aperture() const
-{
-    return edge_aperture_.get();
-}
 
 std::string Interface::aperture_shape() const
 {
@@ -162,13 +119,10 @@ bool Interface::point_inside(const Eigen::Vector2d& pt) const
     return true;
 }
 
-void Interface::set_profile(std::unique_ptr<SurfaceProfile> prf)
+void Interface::update()
 {
-    profile_.reset();
-    profile_ = std::move(prf);
+    if(decenter_){
+        decenter_->update();
+    }
 }
 
-SurfaceProfile* Interface::profile() const
-{
-    return profile_.get();
-}

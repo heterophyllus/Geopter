@@ -8,7 +8,6 @@
 
 #include "System/optical_system.h"
 
-#include "Assembly/surface_profile.h"
 #include "Paraxial/paraxial_trace.h"
 #include "Sequential/sequential_trace.h"
 
@@ -311,7 +310,12 @@ void OpticalSystem::update_paraxial_data()
     double dk1 = n_k*q_ray->at(img)->u_prime();
 
     // fill in the content of first order data
-    fod_.opt_inv = n_0 * ( ax_ray->at(1)->y()*pr_ray->at(0)->u_prime() - pr_ray->at(1)->y()*ax_ray->at(0)->u_prime() );
+    double y1 = ax_ray->at(1)->y();
+    double ubar0_prime = pr_ray->at(0)->u_prime();
+    double ybar1 = pr_ray->at(1)->y();
+    double u0_prime = ax_ray->at(0)->u_prime();
+    fod_.opt_inv = n_0 * ( y1*ubar0_prime - ybar1*u0_prime );
+    //fod_.opt_inv = n_0 * ( ax_ray->at(1)->y()*pr_ray->at(0)->u_prime() - pr_ray->at(1)->y()*ax_ray->at(0)->u_prime() );
     fod_.obj_dist = opt_assembly_->gap(0)->thi();
     fod_.img_dist = opt_assembly_->image_space_gap()->thi();
     fod_.efl = -1.0/ck1;
@@ -331,11 +335,34 @@ void OpticalSystem::update_paraxial_data()
     fod_.obj_ang = atan(pr_ray->at(0)->u_prime()) * 180.0/M_PI;
 
     double nu_pr0 = n_0*pr_ray->at(0)->u_prime();
-    fod_.enp_dist = -pr_ray->at(1)->y()/nu_pr0;
-    fod_.enp_radius = abs(fod_.opt_inv/nu_pr0);
+    try {
+        fod_.enp_dist = -ybar1/nu_pr0;
+        fod_.enp_radius = fabs(fod_.opt_inv/nu_pr0);
+        if(std::isnan(fod_.enp_dist)){
+            fod_.enp_dist = 0.0;
+        }
+        if(std::isnan(fod_.enp_radius)){
+            fod_.enp_radius = 0.0;
+        }
+    }  catch (...) {
+        fod_.enp_dist = 0.0;
+        fod_.enp_radius = 0.0;
+    }
 
-    fod_.exp_dist = -(pr_ray->at(img)->y()/pr_ray->at(img)->u_prime() - fod_.img_dist);
-    fod_.exp_radius = abs( fod_.opt_inv/(n_k*pr_ray->at(img)->u_prime()) );
+    try {
+        fod_.exp_dist = -(pr_ray->at(img)->y()/pr_ray->at(img)->u_prime() - fod_.img_dist);
+        fod_.exp_radius = fabs( fod_.opt_inv/(n_k*pr_ray->at(img)->u_prime()) );
+        if(std::isnan(fod_.exp_dist)){
+            fod_.exp_dist = 0.0;
+        }
+        if(std::isnan(fod_.exp_radius)){
+            fod_.exp_radius = 0.0;
+        }
+    }  catch (...) {
+        fod_.exp_dist = 0.0;
+        fod_.exp_radius = 0.0;
+    }
+
 
     fod_.obj_na = n_0*sin( atan(ax_ray->at(0)->u_prime()) );
     fod_.img_na = n_k*sin( atan(ax_ray->at(img)->u_prime()) );

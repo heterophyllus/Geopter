@@ -22,6 +22,7 @@ SurfacePropertyDialog::SurfacePropertyDialog(std::shared_ptr<OpticalSystem> opt_
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
 
     initializeEvenAsphereDataTable();
+    initializeOddAsphereDataTable();
 
     syncUiWithSystem();
 }
@@ -55,12 +56,13 @@ void SurfacePropertyDialog::syncSystemWithUi()
     //-----> surface profile
     int surface_type = ui->surfaceProfileTypeCombo->currentIndex();
 
-    if( surface_type == 0 ){ // Sphere
+    if( surface_type == SurfaceType::Sphere ){ // Sphere
         double r = ui->sphericalRadiusEdit->text().toDouble();
         double cv = 1.0/r;
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<Spherical>(cv));
+        //opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<Spherical>(cv));
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceType::Sphere>(cv);
     }
-    else if(surface_type == 1){ // Even Asphere
+    else if(surface_type == SurfaceType::EvenAsphere){ // Even Asphere
         double r = ui->evenAsphereDataTable->item(0,0)->text().toDouble();
         double cv = 1.0/r;
         double k = ui->evenAsphereDataTable->item(1,0)->text().toDouble();
@@ -70,7 +72,19 @@ void SurfacePropertyDialog::syncSystemWithUi()
             coefs[i] = ui->evenAsphereDataTable->item(i+2, 0)->text().toDouble();
         }
 
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<EvenPolynomial>(cv,k,coefs));
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceType::EvenAsphere>(cv,k,coefs);
+    }
+    else if(surface_type == SurfaceType::OddAsphere){
+        double r = ui->oddAsphereDataTable->item(0,0)->text().toDouble();
+        double cv = 1.0/r;
+        double k = ui->oddAsphereDataTable->item(1,0)->text().toDouble();
+
+        std::vector<double> coefs(10, 0.0);
+        for(int i = 0; i < 10; i++){
+            coefs[i] = ui->oddAsphereDataTable->item(i+2, 0)->text().toDouble();
+        }
+
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceType::OddAsphere>(cv,k,coefs);
     }
 
     //-----> aperture
@@ -120,6 +134,23 @@ void SurfacePropertyDialog::syncUiWithSystem()
             setValueToCell(ui->evenAsphereDataTable, i+2, 0, coef);
         }
         ui->sphericalRadiusEdit->setText(QString::number(r));
+
+    }else if(surface_type_name == "ODD"){
+        ui->surfaceProfileTypeCombo->setCurrentIndex(2);
+        ui->surfaceProfileStack->setCurrentIndex(2);
+        ui->surfaceProfileStack->show();
+        initializeOddAsphereDataTable();
+
+        double r = opt_sys_->optical_assembly()->surface(surface_index_)->profile()->radius();
+        double k = dynamic_cast<OddPolynomial*>(opt_sys_->optical_assembly()->surface(surface_index_)->profile())->conic();
+        setValueToCell(ui->oddAsphereDataTable, 0, 0, r);
+        setValueToCell(ui->oddAsphereDataTable, 1, 0, k);
+
+        for(int i = 0; i < 10; i++){
+            double coef = dynamic_cast<OddPolynomial*>(opt_sys_->optical_assembly()->surface(surface_index_)->profile())->coef(i);
+            setValueToCell(ui->oddAsphereDataTable, i+2, 0, coef);
+        }
+        ui->sphericalRadiusEdit->setText(QString::number(r));
     }
 
 
@@ -160,6 +191,29 @@ void SurfacePropertyDialog::initializeEvenAsphereDataTable()
 
 
 }
+
+void SurfacePropertyDialog::initializeOddAsphereDataTable()
+{
+    QStringList hLabels = {"Value"};
+    ui->oddAsphereDataTable->setColumnCount(hLabels.size());
+    ui->oddAsphereDataTable->setHorizontalHeaderLabels(hLabels);
+
+    QStringList vLabels;
+    vLabels << "R" << "k";
+    for(int i = 1; i <= 10; i++){
+        vLabels << ("A" + QString::number(i+2) ); // A3, A4, A5...
+    }
+    ui->oddAsphereDataTable->setRowCount(vLabels.size()); // R + k + coef10
+    ui->oddAsphereDataTable->setVerticalHeaderLabels(vLabels);
+
+
+    // set items
+    for(int i = 0; i < ui->oddAsphereDataTable->rowCount(); i++){
+        QTableWidgetItem *item = new QTableWidgetItem;
+        ui->oddAsphereDataTable->setItem(i,0,item);
+    }
+}
+
 
 void SurfacePropertyDialog::setValueToCell(QTableWidget* table, int row, int col, double val)
 {

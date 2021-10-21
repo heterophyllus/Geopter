@@ -5,11 +5,6 @@
 
 #include "Paraxial/paraxial_trace.h"
 
-#include "Spec/optical_spec.h"
-#include "Assembly/optical_assembly.h"
-#include "Assembly/surface_profile.h"
-#include "Material/material.h"
-
 using namespace geopter;
 
 ParaxialTrace::ParaxialTrace(OpticalSystem* sys)

@@ -8,12 +8,14 @@
 #include "DockAreaWidget.h"
 #include "DockWidget.h"
 
+#include "PythonQt.h"
+#include "PythonQt_QtAll.h"
+
 #include "systemeditor/system_editor_dock.h"
 
 #include "optical.h"
 using namespace geopter;
 
-class LensDataManagerDock;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -28,10 +30,20 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
+
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
+
+public slots:
+    // The following functions are used in python scripting
+    // The naming conventions imitates to Zemax ZPL
+
+
+
 private slots:
+
     // File menu
     void newFile();
     void saveAs();
@@ -79,6 +91,8 @@ private:
 
     std::shared_ptr<OpticalSystem> opt_sys_;
     std::string agf_dir_path_;
+
+    PythonQtObjectPtr* m_mainContext;
 
 };
 #endif // MAINWINDOW_H

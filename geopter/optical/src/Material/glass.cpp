@@ -194,9 +194,10 @@ void Glass::set_thermal_data(double D0, double D1, double D2, double E0, double 
 double Glass::dn_dt_abs(double wvl_micron, double t) const
 {
     double dT = t - Tref_;
+    double Stk = (Ltk_ > 0.0) - (Ltk_ < 0.0);
     double n  = refractive_index_abs_Tref(wvl_micron);
 
-    return (n*n-1)/(2*n) * ( D0_ + 2*D1_*dT + 3*D2_*dT*dT + (E0_ + 2*E1_*dT)/(wvl_micron*wvl_micron - Ltk_*Ltk_) );
+    return (n*n-1)/(2*n) * ( D0_ + 2*D1_*dT + 3*D2_*dT*dT + (E0_ + 2*E1_*dT)/(wvl_micron*wvl_micron - Stk*Ltk_*Ltk_) );
 }
 
 void Glass::print()
