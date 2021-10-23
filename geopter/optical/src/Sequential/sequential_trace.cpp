@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include <limits>
+#include <iostream>
 
 #include "Sequential/sequential_trace.h"
 #include "Sequential/trace_error.h"
@@ -59,8 +60,8 @@ std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pup
 
     std::shared_ptr<Ray> ray = trace_ray_throughout_path(path, pt0, dir0);
     ray->set_wvl(wvl);
-
     return ray;
+
 }
 
 int SequentialTrace::trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> >& rays, const std::vector<Eigen::Vector2d>& pupils, const Field* fld, double wvl)
@@ -95,15 +96,18 @@ int SequentialTrace::trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> 
         Eigen::Vector3d dir0 = pt1 - pt0;
         dir0.normalize();
 
-        auto ray = trace_ray_throughout_path(path, pt0, dir0);
-        ray->set_wvl(wvl);
-
-        if(ray->status() == PassThrough){
+        try{
+            auto ray = trace_ray_throughout_path(path, pt0, dir0);
+            ray->set_wvl(wvl);
             valid_count++;
+            rays.push_back(ray);
+        }catch(TraceError &e){
+            continue;
         }
 
-        rays.push_back(ray);
     }
+
+    assert(valid_count == (int)rays.size());
     return valid_count;
 }
 
@@ -129,28 +133,20 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
 
 
     // first surface
-    /*
-    auto ray_at_srf = std::make_shared<RayAtSurface>();
-    ray_at_srf->intersect_pt         = pt0;
-    ray_at_srf->distance_from_before = 0.0;
-    ray_at_srf->after_dir            = dir0;
-    ray_at_srf->normal               = seq_path.at(0).srf->normal(pt0);
-    ray_at_srf->optical_path_length  = 0.0;
-    */
-    //auto ray_at_srf = std::make_unique<RayAtSurface>(pt0, seq_path.at(0).srf->normal(pt0), dir0, 0.0, 0.0, nullptr);
+    Eigen::Vector3d srf_normal_1st = seq_path.at(0).srf->normal(pt0);
+    ray->append(pt0, srf_normal_1st, dir0, 0.0, 0.0);
 
-    ray->append(pt0, seq_path.at(0).srf->normal(pt0), dir0, 0.0, 0.0);
-    //RayAtSurface* ray_at_srf_before = ray_at_srf.get();
 
-    // trace ray till the image
+    // trace ray throughout the path till the image
     int path_size = seq_path.size();
 
     if (path_size == 1){
         return ray;
     }
 
+    int cur_srf_idx = 1;
     try {
-        for(int i = 1; i < path_size; i++) {
+        for(cur_srf_idx = 1; cur_srf_idx < path_size; cur_srf_idx++) {
 
             Eigen::Matrix3d rt = transformation_from_before.rotation;
             Eigen::Vector3d t  = transformation_from_before.transfer;
@@ -161,47 +157,21 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             double dist_from_before_to_perpendicular = -rel_before_pt.dot(rel_before_dir); // distance from previous point to foot of perpendicular
             Eigen::Vector3d foot_of_perpendicular_pt = rel_before_pt + dist_from_before_to_perpendicular*rel_before_dir; // foot of perpendicular from the current surface apex to the incident ray line
 
-            Surface* cur_srf = seq_path.at(i).srf;
+            Surface* cur_srf = seq_path.at(cur_srf_idx).srf;
             double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
             cur_srf->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
 
-
-            if(std::isnan(dist_from_perpendicular_to_intersect_pt)){
-                ray->set_status(RayStatus::MissedSurface);
-                return ray;
-            }
-
-
-            Eigen::Vector3d srf_normal = cur_srf->normal(intersect_pt); // surface normal at the intersect point
-
             distance_from_before = dist_from_before_to_perpendicular + dist_from_perpendicular_to_intersect_pt; // distance between before and current intersect point
 
-            n_out = seq_path.at(i).rind;
+            n_out = seq_path.at(cur_srf_idx).rind;
+            Eigen::Vector3d srf_normal = cur_srf->normal(intersect_pt); // surface normal at the intersect point
             after_dir = bend(before_dir, srf_normal, n_in, n_out);
 
-            /*
-            ray_at_srf = std::make_shared<RayAtSurface>();
-            ray_at_srf->intersect_pt         = intersect_pt;
-            ray_at_srf->after_dir            = after_dir.normalized();
-            ray_at_srf->distance_from_before = distance_from_before;
-            ray_at_srf->optical_path_length  = n_in*distance_from_before;
-            ray_at_srf->normal               = srf_normal;
-            */
-            //ray_at_srf = std::make_shared<RayAtSurface>(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before,n_in*distance_from_before, ray_at_srf_before);
             ray->append(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before,n_in*distance_from_before);
-
-
-            if(std::isnan(after_dir.norm())){
-                ray->set_status(RayStatus::TotalReflection);
-                return ray;
-            }
-
 
             if(do_aperture_check_) {
                 if( !cur_srf->point_inside(intersect_pt(0),intersect_pt(1)) ){
-                    ray->set_status(RayStatus::Blocked);
-                    return ray;
-                    break;
+                    throw TraceBlockedByApertureError();
                 }
             }
 
@@ -209,15 +179,27 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
             before_dir = after_dir;
             n_in       = n_out;
             transformation_from_before = cur_srf->local_transform();
-            //ray_at_srf_before = ray_at_srf.get();
+
         }
 
-    } catch (TraceMissedSurfaceError& ray_miss) {
+    } catch (TraceMissedSurfaceError &e) {
         ray->set_status(RayStatus::MissedSurface);
-        return ray;
-    } catch (TraceTIRError& ray_tir){
+        e.set_ray(ray);
+        e.set_surface_index(cur_srf_idx);
+        throw e;
+
+    } catch (TraceTIRError& e){
         ray->set_status(RayStatus::TotalReflection);
-        return ray;
+        e.set_ray(ray);
+        e.set_surface_index(cur_srf_idx);
+        throw e;
+
+    } catch (TraceBlockedByApertureError& e) {
+        ray->set_status(RayStatus::Blocked);
+        e.set_ray(ray);
+        e.set_surface_index(cur_srf_idx);
+        throw e;
+
     }
 
     return ray;
@@ -230,8 +212,14 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl, 
 
     Eigen::Vector2d s_t;
 
+    std::shared_ptr<Ray> ray;
+
     // off axis
-    std::shared_ptr<Ray> ray = trace_pupil_ray(Eigen::Vector2d({0.0, offset}), fld, wvl);
+    try{
+        ray = trace_pupil_ray(Eigen::Vector2d({0.0, offset}), fld, wvl);
+    }catch(TraceError &e){
+        throw e;
+    }
 
     SequentialPath path = overall_sequential_path(wvl);
 
@@ -244,8 +232,6 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl, 
 
     double cosU = 1.0;
     double cosU_prime = 1.0;
-
-
 
     // Opening Equation
     if(std::isinf(path.at(0).d)){
@@ -352,6 +338,7 @@ SequentialPath SequentialTrace::sequential_path(int start, int end, double wvl)
     SequentialPath path;
     SequentialPathComponent path_comp;
 
+
     for(int i = start; i <= end; i++)
     {
         if ( i < num_srfs_ ) {
@@ -371,6 +358,7 @@ SequentialPath SequentialTrace::sequential_path(int start, int end, double wvl)
         path.append(path_comp);
     }
 
+
     return path;
 }
 
@@ -378,10 +366,15 @@ SequentialPath SequentialTrace::sequential_path(int start, int end, double wvl)
 Eigen::Vector2d SequentialTrace::aim_chief_ray(const Field *fld, double wvl)
 {
     int stop = opt_sys_->optical_assembly()->stop_index();
-    Eigen::Vector2d xy_target({0.0, 0.0}); 
-    Eigen::Vector2d aim_pt = search_aim_point(stop, xy_target, fld, wvl);
+    Eigen::Vector2d xy_target({0.0, 0.0});
 
-    return aim_pt;
+    try{
+        Eigen::Vector2d aim_pt = search_aim_point(stop, xy_target, fld, wvl);
+
+        return aim_pt;
+    }catch(TraceRayAimingFailedError &e){
+        throw e;
+    }
 }
 
 
@@ -441,6 +434,10 @@ Eigen::Vector2d SequentialTrace::search_aim_point(int srf_idx, const Eigen::Vect
     start_coords(0) = 0.0;
     start_coords(1) = start_y;
 
+    if(std::isnan(start_y)){
+        throw TraceRayAimingFailedError();
+    }
+
     return start_coords;
 
 }
@@ -451,56 +448,44 @@ double SequentialTrace::y_stop_coordinate(double y1, int ifcx, const Eigen::Vect
     Eigen::Vector3d dir0 = pt1 - pt0;
     dir0.normalize();
 
-    //std::vector<RayAtSurface> ray;
-    std::vector<RayAtSurface> ray_at_srfs;
-    std::shared_ptr<Ray> ray_trace_result;
-    try {
-        //RayTraceResult ray_tr_rslt = RayTrace::trace(seq_model, pt0, dir0, wvl);
-        ray_trace_result = trace_ray_throughout_path(overall_sequential_path(wvl), pt0, dir0);
-        //ray_at_srfs = ray_tr_rslt.rays;
-    }
-    catch (TraceMissedSurfaceError& ray_miss) {
-        ray_at_srfs = ray_miss.ray_;
-        if(ray_miss.surf_ <= ifcx){
-            throw ray_miss;
-        }
-    }
-    catch(TraceTIRError& ray_tir){
-        ray_at_srfs = ray_tir.ray_;
-        if(ray_tir.surf_ < ifcx){
-            throw ray_tir;
-        }
-    }
+    std::shared_ptr<Ray> ray;
 
-
-    if(ifcx < ray_trace_result->size()){
-        double y_ray = ray_trace_result->at(ifcx)->y();
-
+    try{
+        ray = trace_ray_throughout_path(overall_sequential_path(wvl), pt0, dir0);
+        double y_ray = ray->at(ifcx)->y();
         return (y_ray - y_target);
-    }else{
-        return NAN;
+
+    }catch(TraceError &e){
+        ray = e.ray();
+        if(ifcx < ray->size()){
+            double y_ray = ray->at(ifcx)->y();
+
+            return (y_ray - y_target);
+        }else{
+            throw e;
+        }
     }
-
-
-
 
 }
 
 Eigen::Vector3d SequentialTrace::bend(const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out)
 {
-    try {
-        double normal_len = normal.norm();
-        double cosI = d_in.dot(normal)/normal_len;
-        double sinI_sqr = 1.0 - cosI*cosI;
-        //double n_cosIp = sqrt(n_out*n_out - n_in*n_in*sinI_sqr) * cosI/fabs(cosI);
-        double cosI_sgn = (cosI > 0.0) - (cosI < 0.0);
-        double n_cosIp = sqrt(n_out*n_out - n_in*n_in*sinI_sqr) * cosI_sgn;
-        double alpha = n_cosIp - n_in*cosI;
-        Eigen::Vector3d d_out = (n_in*d_in + alpha*normal)/n_out;
-        return d_out;
-    }  catch (...) {
-        throw TraceTIRError(d_in, normal, n_in, n_out);
+    double normal_len = normal.norm();
+    double cosI = d_in.dot(normal)/normal_len;
+    double sinI_sqr = 1.0 - cosI*cosI;
+
+    double inside_sqrt = n_out*n_out - n_in*n_in*sinI_sqr;
+    if(inside_sqrt < 0.0){
+        throw TraceTIRError();
     }
+
+    double cosI_sgn = (cosI > 0.0) - (cosI < 0.0);
+    //double n_cosIp = sqrt(n_out*n_out - n_in*n_in*sinI_sqr) * cosI_sgn;
+    double n_cosIp = sqrt( inside_sqrt ) * cosI_sgn;
+    double alpha = n_cosIp - n_in*cosI;
+    Eigen::Vector3d d_out = (n_in*d_in + alpha*normal)/n_out;
+
+    return d_out;
 }
 
 
@@ -549,12 +534,31 @@ Eigen::Vector3d SequentialTrace::object_coord(const Field* fld)
 
 std::vector<double> SequentialTrace::compute_vignetting_factors(const Field& fld)
 {
-    double vuy = compute_vignetting_factor_for_pupil(Eigen::Vector2d({0.0, 1.0}), fld);
-    double vly = compute_vignetting_factor_for_pupil(Eigen::Vector2d({0.0, -1.0}), fld);
-    double vux = compute_vignetting_factor_for_pupil(Eigen::Vector2d({1.0, 0.0}), fld);
-    double vlx = compute_vignetting_factor_for_pupil(Eigen::Vector2d({-1.0, 0.0}), fld);
+    double vuy = fld.vuy();
+    double vly = fld.vly();
+    double vux = fld.vux();
+    double vlx = fld.vlx();
 
     std::vector<double> vig_factors = std::vector<double>( {vuy, vly, vux, vlx});
+
+    std::vector<Eigen::Vector2d> pupils({Eigen::Vector2d({0.0, 1.0}),
+                                         Eigen::Vector2d({0.0, -1.0}),
+                                         Eigen::Vector2d({1.0, 0.0}),
+                                         Eigen::Vector2d({-1.0, 0.0})});
+
+    for(int i = 0; i < (int)pupils.size(); i++)
+    {
+        double vig;
+        try{
+            vig = compute_vignetting_factor_for_pupil(pupils[i], fld);
+        }catch(TraceError &e){
+            std::cerr << "Could not compute vuy" << pupils[i] << std::endl;
+            // not update value
+            continue;
+        }
+
+        vig_factors[i] = vig;
+    }
 
     return vig_factors;
 }
@@ -568,6 +572,9 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     bool orig_aperture_check = do_aperture_check_;
     do_aperture_check_ = true;
 
+    constexpr double eps = 1.0e-5;
+    constexpr int max_loop_cnt = 30;
+
     const int stop_index = opt_sys_->optical_assembly()->stop_index();
     const double stop_radius = opt_sys_->optical_assembly()->surface(stop_index)->max_aperture();
 
@@ -580,19 +587,27 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
 
     vig_pupil(0) = full_pupil(0)*(1.0 - a);
     vig_pupil(1) = full_pupil(1)*(1.0 - a);
-    std::shared_ptr<Ray> ray_full_marginal = trace_pupil_ray(vig_pupil, &fld, ref_wvl_val_);
+    std::shared_ptr<Ray> ray_full_marginal;
+    try{
+        ray_full_marginal= trace_pupil_ray(vig_pupil, &fld, ref_wvl_val_);
+
+    }catch(TraceBlockedByApertureError &e){
+        ray_full_marginal = e.ray();
+
+    }catch(TraceError &e){ //TIR, MissedSurface
+        if(e.ray()->size() <= stop_index){
+            throw e;
+        }else{
+            ray_full_marginal = e.ray();
+        }
+    }
 
 
-    constexpr double eps = 1.0e-5;
-    constexpr int max_loop_cnt = 50;
-
-    double ray_height_at_stop;
     if(ray_full_marginal->status() == RayStatus::PassThrough){
-        ray_height_at_stop = ray_full_marginal->at(stop_index)->height();
+        double ray_height_at_stop = ray_full_marginal->at(stop_index)->height();
         if( fabs(ray_height_at_stop - stop_radius) < eps){
             do_apply_vig_ = orig_vig_state;
             do_aperture_check_ = orig_aperture_check;
-
             return 0.0;
         }else{
             a = -1.0;
@@ -600,31 +615,30 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     }
 
 
-    double m;
     int loop_cnt = 0;
 
-    while(true){
+    while(fabs(a-b) > eps  && loop_cnt < max_loop_cnt){
         loop_cnt++;
 
-        m = (a+b)/2.0;
+        double m = (a+b)/2.0;
         vig_pupil(0) = full_pupil(0)*(1.0 - m);
         vig_pupil(1) = full_pupil(1)*(1.0 - m);
-        std::shared_ptr<Ray> ray_m = trace_pupil_ray(vig_pupil, &fld, ref_wvl_val_);
 
-        if(ray_m->status() == RayStatus::PassThrough){
-            b = m;
-        }else if(ray_m->status()== RayStatus::Blocked){
+        std::shared_ptr<Ray> ray_m;
+        try{
+            ray_m = trace_pupil_ray(vig_pupil, &fld, ref_wvl_val_);
+        }catch(TraceBlockedByApertureError &e){
             a = m;
-        }else{
-            a = a + 0.1;
             continue;
+        }catch(TraceError &e){
+            do_apply_vig_ = orig_vig_state;
+            do_aperture_check_ = orig_aperture_check;
+            throw e;
         }
 
-        if(abs(a-b) < eps  || loop_cnt > max_loop_cnt){
-            break;
-        }
-
+        b = m;
     }
+
     vig = b;
 
     do_apply_vig_ = orig_vig_state;

@@ -11,6 +11,12 @@ namespace geopter{
 class Aperture
 {
 public:
+    enum Shape
+    {
+        Circular,
+        Rectangular
+    };
+
     Aperture();
     virtual ~Aperture();
 

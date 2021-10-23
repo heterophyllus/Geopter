@@ -61,7 +61,7 @@ public:
 
     std::shared_ptr<Ray> reference_ray(int ri, int fi, int wi) const;
 
-    void update_vignetting_factors();
+    void set_vignetting_factors();
 
     void update_model();
 

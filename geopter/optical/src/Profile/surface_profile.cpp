@@ -1,4 +1,6 @@
+#include <iostream>
 #include "Profile/surface_profile.h"
+#include "Sequential/trace_error.h"
 
 using namespace geopter;
 
@@ -95,7 +97,7 @@ void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eig
     double s1 = -f(p)/d.dot(df(p));
     double s2;
     double delta = fabs(s1);
-    constexpr int max_itr = 50;
+    constexpr int max_itr = 30;
     int iter = 0;
 
     while(delta > eps && iter < max_itr)

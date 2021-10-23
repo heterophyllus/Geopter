@@ -7,16 +7,17 @@
 
 namespace geopter {
 
-enum SurfaceType
-{
-    Sphere,
-    EvenAsphere,
-    OddAsphere
-};
-
 class SurfaceProfile
 {
 public:
+
+    enum Type
+    {
+        Sphere,
+        EvenAsphere,
+        OddAsphere
+    };
+
     SurfaceProfile();
     virtual ~SurfaceProfile();
 

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Profile/even_polynomial.h"
 
 #include "Sequential/trace_error.h"
@@ -79,10 +81,14 @@ double EvenPolynomial::sag(double x, double y) const
 
     // sphere + conic contribution
     double z = 0.0;
-    try {
-        z = cv_*r2 / ( 1.0 + sqrt(1.0 - (conic_+1.0)*cv_*cv_*r2) );
-    }  catch (...) {
+    double inside_sqrt = 1.0 - (conic_+1.0)*cv_*cv_*r2;
+    if(inside_sqrt < 0.0){
+        std::cout << "TraceMissedSurface EvenPolynomial::sag()" << std::endl;
         throw TraceMissedSurfaceError();
+    }
+    else{
+        //z = cv_*r2 / ( 1.0 + sqrt(1.0 - (conic_+1.0)*cv_*cv_*r2) );
+        z = cv_*r2 / ( 1.0 + sqrt( inside_sqrt ) );
     }
 
     // polynomial contribution
@@ -105,10 +111,10 @@ double EvenPolynomial::f(const Eigen::Vector3d& p) const
 
 Eigen::Vector3d EvenPolynomial::df(const Eigen::Vector3d& p) const
 {
-
     //sphere + conic contribution
     double r2 = p(0)*p(0) + p(1)*p(1);
     double ec = conic_ + 1.0;
+
     double e = cv_ / sqrt( 1.0 - ec*cv_*cv_*r2 );
 
     //polynomial asphere contribution
@@ -169,6 +175,7 @@ void EvenPolynomial::update_max_nonzero_index()
 double EvenPolynomial::deriv_1st(double h) const
 {
     double k = conic_;
+
     double z_sqrt = sqrt(1.0 - cv_*cv_*h*h*(k+1));
 
     double z1 = 2*cv_*h/ ( 1.0 + z_sqrt );

@@ -56,13 +56,13 @@ void SurfacePropertyDialog::syncSystemWithUi()
     //-----> surface profile
     int surface_type = ui->surfaceProfileTypeCombo->currentIndex();
 
-    if( surface_type == SurfaceType::Sphere ){ // Sphere
+    if( surface_type == SurfaceProfile::Type::Sphere ){ // Sphere
         double r = ui->sphericalRadiusEdit->text().toDouble();
         double cv = 1.0/r;
         //opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<Spherical>(cv));
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceType::Sphere>(cv);
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceProfile::Type::Sphere>(cv);
     }
-    else if(surface_type == SurfaceType::EvenAsphere){ // Even Asphere
+    else if(surface_type == SurfaceProfile::Type::EvenAsphere){ // Even Asphere
         double r = ui->evenAsphereDataTable->item(0,0)->text().toDouble();
         double cv = 1.0/r;
         double k = ui->evenAsphereDataTable->item(1,0)->text().toDouble();
@@ -72,9 +72,9 @@ void SurfacePropertyDialog::syncSystemWithUi()
             coefs[i] = ui->evenAsphereDataTable->item(i+2, 0)->text().toDouble();
         }
 
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceType::EvenAsphere>(cv,k,coefs);
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceProfile::Type::EvenAsphere>(cv,k,coefs);
     }
-    else if(surface_type == SurfaceType::OddAsphere){
+    else if(surface_type == SurfaceProfile::Type::OddAsphere){
         double r = ui->oddAsphereDataTable->item(0,0)->text().toDouble();
         double cv = 1.0/r;
         double k = ui->oddAsphereDataTable->item(1,0)->text().toDouble();
@@ -84,7 +84,7 @@ void SurfacePropertyDialog::syncSystemWithUi()
             coefs[i] = ui->oddAsphereDataTable->item(i+2, 0)->text().toDouble();
         }
 
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceType::OddAsphere>(cv,k,coefs);
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceProfile::Type::OddAsphere>(cv,k,coefs);
     }
 
     //-----> aperture
@@ -95,7 +95,7 @@ void SurfacePropertyDialog::syncSystemWithUi()
     }
     else if(aperture_type == 1){ // Circular
         double ap_radius = ui->circularRadiusEdit->text().toDouble();
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_clear_aperture(std::make_unique<Circular>(ap_radius));
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_clear_aperture<Aperture::Shape::Circular>(ap_radius);
     }
 
     // decenter

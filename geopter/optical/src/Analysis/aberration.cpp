@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <sstream>
+#include <iostream>
 #include <iomanip>
 #include <algorithm>
 #include <fstream>
@@ -16,6 +17,8 @@
 #include "System/optical_system.h"
 
 #include "Sequential/sequential_trace.h"
+#include "Sequential/trace_error.h"
+
 #include "Paraxial/paraxial_trace.h"
 #include "Paraxial/paraxial_ray.h"
 
@@ -65,7 +68,15 @@ std::shared_ptr<PlotData> Aberration::plot_transverse_aberration(double nrd, con
     }
 
     // trace chief ray
-    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
+    std::shared_ptr<Ray> chief_ray;
+    try{
+        chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
+    }catch(TraceError &e){
+        std::cerr << "Failed to trace chief ray: " << e.cause_str() << std::endl;
+        delete tracer;
+        return plot_data;
+    }
+
     double x0 = chief_ray->back()->x();
     double y0 = chief_ray->back()->y();
 
@@ -88,7 +99,13 @@ std::shared_ptr<PlotData> Aberration::plot_transverse_aberration(double nrd, con
                 pupil(1) = -1.0 + (double)ri*2.0/(double)(nrd-1);
             }
 
-            auto ray = tracer->trace_pupil_ray(pupil, fld, wvl);
+            std::shared_ptr<Ray> ray;
+            try{
+                ray = tracer->trace_pupil_ray(pupil, fld, wvl);
+            }catch(TraceError &e){
+                ray = e.ray();
+                break;
+            }
 
             if(ray->status() == RayStatus::PassThrough){
 
@@ -162,7 +179,14 @@ std::shared_ptr<PlotData> Aberration::plot_longitudinal_spherical_aberration(int
             pupil(0) = 0.0;
             pupil(1) = (double)ri/(double)(num_rays-1);
 
-            auto ray = tracer->trace_pupil_ray(pupil, fld0, wvl);
+            std::shared_ptr<Ray> ray;
+            try{
+                ray = tracer->trace_pupil_ray(pupil, fld0, wvl);
+            }catch(TraceError &e){
+                std::cerr << "Failed to trace ray: " << "pupil= (" << pupil(0) << "," << pupil(1) << ")" << std::endl;
+                std::cerr << e.cause_str() << std::endl;
+                continue;
+            }
 
             py.push_back(pupil(1));
 
@@ -244,8 +268,16 @@ std::shared_ptr<PlotData> Aberration::plot_astigmatism(int ray_aiming_type, int 
             ys.push_back(y);
             tmp_fld->set_y(y);
 
-            Eigen::Vector2d aim_pt = tracer->aim_chief_ray(tmp_fld, ref_wvl_val_);
-            tmp_fld->set_aim_pt(aim_pt);
+            try{
+                Eigen::Vector2d aim_pt = tracer->aim_chief_ray(tmp_fld, ref_wvl_val_);
+                tmp_fld->set_aim_pt(aim_pt);
+            }catch(TraceRayAimingFailedError &e){
+                std::cerr << e.cause_str() << std::endl;
+                continue;
+            }catch(...){
+                std::cerr << "Unknown error" << std::endl;
+                continue;
+            }
 
             double vuy = tracer->compute_vignetting_factor_for_pupil(Eigen::Vector2d({0.0, 1.0}), *tmp_fld);
             double vly = tracer->compute_vignetting_factor_for_pupil(Eigen::Vector2d({0.0, -1.0}), *tmp_fld);
@@ -284,10 +316,15 @@ std::shared_ptr<PlotData> Aberration::plot_astigmatism(int ray_aiming_type, int 
 
             fy.push_back(ys[fi]);
 
-            Eigen::Vector2d s_t = tracer->trace_coddington(tmp_fld, wvl, pupil_offset);
+            try{
+                Eigen::Vector2d s_t = tracer->trace_coddington(tmp_fld, wvl, pupil_offset);
 
-            xfo.push_back(s_t(0));
-            yfo.push_back(s_t(1));
+                xfo.push_back(s_t(0));
+                yfo.push_back(s_t(1));
+            }catch(TraceError &e){
+                std::cerr << "Failed to trace coddington: " << "Field " << fi << ": " << e.cause_str() << std::endl;
+                continue;
+            }
         }
 
         auto point_set_sag = std::make_shared<PointSet>(xfo, fy, color,Renderer::LineStyle::Solid);
@@ -380,7 +417,15 @@ std::shared_ptr<PlotData> Aberration::plot_spot_diagram(const Field* fld, int pa
 
 
     // trace chief ray
-    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
+    std::shared_ptr<Ray> chief_ray;
+    try{
+        chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
+    }catch(TraceError &e){
+        std::cerr << "Failed to trace chief ray" << std::endl;
+        delete tracer;
+        return plot_data;
+    }
+
     //auto chief_ray = opt_sys_->reference_ray(1, fi, ref_wvl_idx_);
     double chief_ray_x = chief_ray->back()->x();
     double chief_ray_y = chief_ray->back()->y();

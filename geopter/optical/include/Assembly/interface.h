@@ -6,6 +6,7 @@
 
 #include "Assembly/transformation.h"
 #include "Assembly/aperture.h"
+#include "Assembly/circular.h"
 #include "Assembly/decenter_data.h"
 
 #include "Profile/spherical.h"
@@ -47,14 +48,16 @@ public:
     inline Transformation global_transform() const;
 
 
-
-    template<SurfaceType type>
+    template<SurfaceProfile::Type type>
     void set_profile(double cv, double k= 0.0, const std::vector<double>& coefs=std::vector<double>(10, 0.0));
 
     void set_label(std::string lbl);
 
-    void set_clear_aperture(std::unique_ptr<Aperture> ca);
-    void set_edge_aperture(std::unique_ptr<Aperture> ea);
+    template<Aperture::Shape ap_shape>
+    void set_clear_aperture(double x_dimension, double y_dimension=0.0);
+
+    template<Aperture::Shape ap_shape>
+    void set_edge_aperture(double x_dimension, double y_dimension=0.0);
 
     /** Remove all clear apertures from the surface */
     void remove_clear_aperture();
@@ -88,19 +91,19 @@ protected:
 };
 
 
-template<SurfaceType type>
+template<SurfaceProfile::Type type>
 void Interface::set_profile(double cv, double k, const std::vector<double>& coefs)
 {
     profile_.reset();
 
     switch (type) {
-    case SurfaceType::Sphere:
+    case SurfaceProfile::Type::Sphere:
         profile_ = std::make_unique<Spherical>(cv);
         break;
-    case SurfaceType::EvenAsphere:
+    case SurfaceProfile::Type::EvenAsphere:
         profile_ = std::make_unique<EvenPolynomial>(cv,k,coefs);
         break;
-    case SurfaceType::OddAsphere:
+    case SurfaceProfile::Type::OddAsphere:
         profile_ = std::make_unique<OddPolynomial>(cv,k,coefs);
         break;
     default:
@@ -127,6 +130,40 @@ DecenterData* Interface::decenter() const
 SurfaceProfile* Interface::profile() const
 {
     return profile_.get();
+}
+
+template <Aperture::Shape ap_shape>
+void Interface::set_clear_aperture(double x_dimension, double y_dimension)
+{
+    clear_aperture_.reset();
+
+    switch (ap_shape) {
+    case Aperture::Shape::Circular:
+        clear_aperture_ = std::make_unique<Circular>(x_dimension);
+        break;
+    case Aperture::Shape::Rectangular:
+        // not implemented
+        //break;
+    default:
+        clear_aperture_ = std::make_unique<Circular>(x_dimension);
+    }
+}
+
+template <Aperture::Shape ap_shape>
+void Interface::set_edge_aperture(double x_dimension, double y_dimension)
+{
+    edge_aperture_.reset();
+
+    switch (ap_shape) {
+    case Aperture::Shape::Circular:
+        edge_aperture_ = std::make_unique<Circular>(x_dimension);
+        break;
+    case Aperture::Shape::Rectangular:
+        // not implemented
+        //break;
+    default:
+        edge_aperture_ = std::make_unique<Circular>(x_dimension);
+    }
 }
 
 Aperture* Interface::clear_aperture() const

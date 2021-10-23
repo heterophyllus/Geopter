@@ -20,13 +20,16 @@
 
 using namespace geopter;
 
+std::shared_ptr<Air> MaterialLibrary::air_;
+
 MaterialLibrary::MaterialLibrary()
 {
-
+    air_ = std::make_shared<Air>();
 }
 
 MaterialLibrary::~MaterialLibrary()
 {
+    air_.reset();
     clear();
 }
 
@@ -39,6 +42,18 @@ void MaterialLibrary::clear()
         }
         catalogs_.clear();
     }
+
+    if( !materials_.empty() ){
+        for(auto &m : materials_){
+            m.reset();
+        }
+        materials_.clear();
+    }
+}
+
+std::shared_ptr<Air> MaterialLibrary::air()
+{
+    return air_;
 }
 
 GlassCatalog* MaterialLibrary::glass_catalog(int i) const
@@ -86,6 +101,7 @@ std::shared_ptr<Material> MaterialLibrary::find(std::string material_name)
         double nd = std::stod(nd_and_vd[0]);
         double vd = std::stod(nd_and_vd[1]);
         auto buchdahl_glass = std::make_shared<BuchdahlGlass>(nd, vd);
+        materials_.push_back(buchdahl_glass);
         return buchdahl_glass;
     }else{
         // assume real glass name without catalog (ex. n-bk7)

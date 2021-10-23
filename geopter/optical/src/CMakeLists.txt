@@ -62,6 +62,11 @@ set(OPTICAL_SRCS
     #Renderer/renderer_svg.cpp
     Renderer/rgb.cpp
 
+    Data/plot_data.cpp
+    Data/point_set.cpp
+
+    Common/geopter_error.cpp
+
 
     Utility/utility.cpp
 )

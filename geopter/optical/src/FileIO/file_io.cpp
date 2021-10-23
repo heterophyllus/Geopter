@@ -266,9 +266,10 @@ bool FileIO::load_from_json(OpticalSystem& opt_sys, std::string json_path)
             break;
         }
 
+        opt_sys.optical_assembly()->add_surface_and_gap();
 
         // surface attributes
-        auto srf = std::make_shared<Surface>();
+        auto srf = opt_sys.optical_assembly()->current_surface();
 
         std::string surf_label = json_data["Assembly"][cur_idx]["Label"].get<std::string>();
         srf->set_label(surf_label);
@@ -286,19 +287,19 @@ bool FileIO::load_from_json(OpticalSystem& opt_sys, std::string json_path)
         
 
         if( surf_type == "SPH" ) {
-            srf->set_profile<SurfaceType::Sphere>(cv);
+            srf->set_profile<SurfaceProfile::Type::Sphere>(cv);
         }
         else if( surf_type == "ASP" ) {
             double conic = json_data["Assembly"][cur_idx]["Conic"].get<double>();
             std::vector<double> coefs = json_data["Assembly"][cur_idx]["Coefs"].get< std::vector<double> >();
             
-            srf->set_profile<SurfaceType::EvenAsphere>(cv, conic, coefs);
+            srf->set_profile<SurfaceProfile::Type::EvenAsphere>(cv, conic, coefs);
         }
         else if(surf_type == "ODD") {
             double conic = json_data["Assembly"][cur_idx]["Conic"].get<double>();
             std::vector<double> coefs = json_data["Assembly"][cur_idx]["Coefs"].get< std::vector<double> >();
 
-            srf->set_profile<SurfaceType::OddAsphere>(cv, conic, coefs);
+            srf->set_profile<SurfaceProfile::Type::OddAsphere>(cv, conic, coefs);
         }
 
         
@@ -307,7 +308,7 @@ bool FileIO::load_from_json(OpticalSystem& opt_sys, std::string json_path)
             std::string aperture_type = json_data["Assembly"][cur_idx]["Aperture"]["Type"].get<std::string>();
             if(aperture_type == "Circular"){
                 double cir_ap_r = json_data["Assembly"][cur_idx]["Aperture"]["Radius"].get<double>();
-                srf->set_clear_aperture(std::make_unique<Circular>(cir_ap_r));        
+                srf->set_clear_aperture<Aperture::Shape::Circular>(cir_ap_r);
             }
         }
 
@@ -316,9 +317,9 @@ bool FileIO::load_from_json(OpticalSystem& opt_sys, std::string json_path)
         std::string mat_name = json_data["Assembly"][cur_idx]["Material"].get<std::string>();
         auto mat = opt_sys.material_lib()->find(mat_name);
 
-        auto gap = std::make_shared<Gap>(thi, mat);
-
-        opt_sys.optical_assembly()->add_surface_and_gap(srf, gap);
+        auto gap = opt_sys.optical_assembly()->current_gap();
+        gap->set_thi(thi);
+        gap->set_material(mat.get());
 
         ci++;
     }

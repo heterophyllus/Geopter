@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "Material/material.h"
+#include "Material/air.h"
 #include "Material/glass_catalog.h"
 
 namespace geopter{
@@ -31,9 +32,12 @@ public:
 
     std::shared_ptr<Material> find(std::string material_name);
 
+    static std::shared_ptr<Air> air();
+
 private:
     std::vector< std::unique_ptr<GlassCatalog> > catalogs_;
-
+    std::vector< std::shared_ptr<Material> > materials_;
+    static std::shared_ptr<Air> air_;
 };
 
 

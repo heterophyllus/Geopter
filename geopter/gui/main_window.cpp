@@ -3,7 +3,6 @@
 #include <sstream>
 #include <fstream>
 
-
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QComboBox>
@@ -29,10 +28,6 @@
 #include "analysisdialogs/field_curvature_setting_dialog.h"
 #include "analysisdialogs/chromatic_focusshift_setting_dialog.h"
 #include "analysisdialogs/spot_diagram_setting_dialog.h"
-
-#include "qdebugstream.h"
-
-#include "gui/PythonQtScriptingConsole.h"
 
 using namespace ads;
 
@@ -72,38 +67,49 @@ MainWindow::MainWindow(QWidget *parent)
     CDockManager::setConfigFlag(CDockManager::XmlCompressionEnabled, false);
     CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
 
-
-
     // create optical system
     opt_sys_ = std::make_shared<OpticalSystem>();
-
-    agf_dir_path_ = QApplication::applicationDirPath().toStdString() + "/AGF";
-    loadAgfsFromDir(QString().fromStdString(agf_dir_path_));
-
     opt_sys_->create_minimum_system();
-
 
     // set system editor as central dock
     m_dockManager = new CDockManager(this);
+
     m_systemEditorDock = new SystemEditorDock(opt_sys_, "System Editor");
     auto* CentralDockArea = m_dockManager->setCentralWidget(m_systemEditorDock );
     CentralDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
-    m_systemEditorDock->syncUiWithSystem();
-
-
     // create python console
-    PythonQtScriptingConsole* console = new PythonQtScriptingConsole(NULL, PythonQt::self()->getMainModule());
+    QTabWidget *consoleTab = new QTabWidget;
+    m_pyConsole = new PythonQtScriptingConsole(NULL, PythonQt::self()->getMainModule());
+    m_stdoutText = new QTextEdit;
+    m_stdoutText->setReadOnly(true);
+    m_stderrText = new QTextEdit;
+    m_stderrText->setReadOnly(true);
+    consoleTab->addTab(m_pyConsole, tr("PyConsole"));
+    consoleTab->addTab(m_stdoutText, tr("Output"));
+    consoleTab->addTab(m_stderrText, tr("Error"));
+    m_qout = new QDebugStream(std::cout, m_stdoutText);
+    m_qerr = new QDebugStream(std::cerr, m_stderrText);
+
     CDockWidget* ConsoleDock = new CDockWidget("Console");
-    ConsoleDock->setWidget(console);
+
+    ConsoleDock->setWidget(consoleTab);
     ConsoleDock->setFeature(CDockWidget::DockWidgetClosable, false);
     m_dockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, ConsoleDock);
+    ui->menuView->addAction(ConsoleDock->toggleViewAction());
+
+    QString agfDir = QApplication::applicationDirPath() + "/AGF";
+    loadAgfsFromDir(agfDir);
+
+    m_systemEditorDock->syncUiWithSystem();
 
 }
 
 MainWindow::~MainWindow()
 {
     opt_sys_.reset();
+    delete m_qout;
+    delete m_qerr;
 
     delete ui;
 }
@@ -203,7 +209,7 @@ void MainWindow::showPreference()
  * ********************************************************************************************************************************/
 void MainWindow::setVignettingFactors()
 {
-    opt_sys_->update_vignetting_factors();
+    opt_sys_->set_vignetting_factors();
     opt_sys_->update_model();
     m_systemEditorDock->syncUiWithSystem();
 }
@@ -219,6 +225,7 @@ void MainWindow::showPrescription()
     TextViewDock *dock = new TextViewDock("Prescription", opt_sys_.get());
     dock->createSettingDialog<PrescriptionSettingDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     dock->resize(300,200);
     dock->updateText();
 }
@@ -229,6 +236,7 @@ void MainWindow::showLayout()
     PlotViewDock *dock = new PlotViewDock("2D layout", opt_sys_.get());
     dock->createSettingDialog<LayoutDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     dock->resize(300,200);
     dock->updatePlot();
 }
@@ -239,6 +247,7 @@ void MainWindow::showParaxialRayTrace()
     TextViewDock *dock = new TextViewDock("Paraxial Ray Trace", opt_sys_.get());
     dock->createSettingDialog<ParaxialTraceDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     dock->resize(300,200);
     dock->updateText();
 }
@@ -248,6 +257,7 @@ void MainWindow::showSingleRayTrace()
     TextViewDock *dock = new TextViewDock("Single Ray Trace", opt_sys_.get());
     dock->createSettingDialog<SingleRayTraceDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     dock->resize(300,200);
     dock->updateText();
 }
@@ -257,6 +267,7 @@ void MainWindow::showSpotDiagram()
     PlotViewDock *dock = new PlotViewDock("Spot Diagram", opt_sys_.get());
     dock->createSettingDialog<SpotDiagramSettingDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     //dock->resize(300,200);
     dock->updatePlot();
 }
@@ -266,6 +277,7 @@ void MainWindow::showTransverseRayFan()
     PlotViewDock *dock = new PlotViewDock("Transverse Aberration", opt_sys_.get());
     dock->createSettingDialog<TransverseRayFanDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     dock->resize(300,200);
     dock->updatePlot();
 }
@@ -275,6 +287,7 @@ void MainWindow::showLongitudinal()
     PlotViewDock *dock = new PlotViewDock("Longitudinal Aberration", opt_sys_.get());
     dock->createSettingDialog<LongitudinalSettingDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     dock->resize(300,200);
     dock->updatePlot();
 }
@@ -284,6 +297,7 @@ void MainWindow::showFieldCurvature()
     PlotViewDock *dock = new PlotViewDock("Field Curvature", opt_sys_.get());
     dock->createSettingDialog<FieldCurvatureSettingDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     dock->resize(300,200);
     dock->updatePlot();
 }
@@ -293,9 +307,11 @@ void MainWindow::showChromaticFocusShift()
     PlotViewDock *dock = new PlotViewDock("Chromatic Focus Shift", opt_sys_.get());
     dock->createSettingDialog<ChromaticFocusShiftSettingDialog>();
     m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
     dock->resize(300,200);
-    dock->updatePlot();
+    dock->updatePlot();   
 }
+
 
 
 /*********************************************************************************************************************************
@@ -322,3 +338,17 @@ void MainWindow::showAbout()
     QMessageBox::information(this,tr("About"), tr("Geopter v0.1.0"));
 }
 
+int MainWindow::nsur()
+{
+    return opt_sys_->optical_assembly()->surface_count();
+}
+
+int MainWindow::nwav()
+{
+    return opt_sys_->optical_spec()->spectral_region()->wvl_count();
+}
+
+void MainWindow::insertsurface(int i)
+{
+    m_systemEditorDock->systemEditorWidget()->insertLineOnAssemblyTable(i);
+}

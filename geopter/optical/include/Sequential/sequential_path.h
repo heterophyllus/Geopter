@@ -39,6 +39,12 @@ public:
     /** Returns number of path components */
     int size() const;
 
+    /** Access to path component at the given index */
+    SequentialPathComponent at(int i) const;
+
+    /** Returns wavelength used to calculate refractive index */
+    double wvl() const;
+
     /** Clear arrays */
     void clear();
 
@@ -48,11 +54,13 @@ public:
     /** Append a new path component */
     void append(Surface* s, double thi, double n);
 
-    /** Access to path component at the given index */
-    SequentialPathComponent at(int i) const;
+    /** Set wavelength value used to calculate refractive index */
+    void set_wvl(double wvl);
 
 private:
     std::vector<SequentialPathComponent> seq_path_comps_;
+    double wvl_;
+    int array_size_;
 };
 
 }

@@ -1,10 +1,11 @@
+#include <iostream>
 
 #include "Analysis/layout.h"
 
 #include "System/optical_system.h"
 #include "Element/element_model.h"
 #include "Sequential/sequential_trace.h"
-
+#include "Sequential/trace_error.h"
 
 using namespace geopter;
 
@@ -66,14 +67,19 @@ void Layout::draw_reference_rays()
     {
         color = opt_sys_->optical_spec()->field_of_view()->field(fi)->render_color();
 
-        ray = opt_sys_->reference_ray(ReferenceRay::ChiefRay,fi,ref_wvl_idx);
-        draw_single_ray(ray, color);
+        try{
+            ray = opt_sys_->reference_ray(ReferenceRay::ChiefRay,fi,ref_wvl_idx);
+            draw_single_ray(ray, color);
 
-        ray = opt_sys_->reference_ray(ReferenceRay::MeridionalUpperRay,fi,ref_wvl_idx);
-        draw_single_ray(ray, color);
+            ray = opt_sys_->reference_ray(ReferenceRay::MeridionalUpperRay,fi,ref_wvl_idx);
+            draw_single_ray(ray, color);
 
-        ray = opt_sys_->reference_ray(ReferenceRay::MeridionalLowerRay,fi,ref_wvl_idx);
-        draw_single_ray(ray, color);
+            ray = opt_sys_->reference_ray(ReferenceRay::MeridionalLowerRay,fi,ref_wvl_idx);
+            draw_single_ray(ray, color);
+        }catch(std::out_of_range &e){
+            std::cerr << "Ray out of range : Layout::draw_reference_rays()" << std::endl;
+            continue;
+        }
     }
 }
 
@@ -100,7 +106,13 @@ void Layout::draw_fan_rays(int nrd)
         for(int ri = 0; ri < nrd; ri++) {
             pupil(0) = 0.0;
             pupil(1) = -1.0 + (double)ri*step;
-            ray = tracer->trace_pupil_ray(pupil, fld, ref_wvl_val);
+
+            try{
+                ray = tracer->trace_pupil_ray(pupil, fld, ref_wvl_val);
+            }catch(TraceError &e){
+                ray = e.ray();
+            }
+
             draw_single_ray(ray, color);
         }
 
@@ -128,9 +140,15 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
         draw_surface(s1, mech_d, color);
         draw_surface(s2, mech_d, color);
 
-        edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+        try{
+            edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+            edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+        }catch(TraceMissedSurfaceError &e){
+            edge_pt1(0) = 0.0;
+            edge_pt2(0) = 0.0;
+        }
+
         edge_pt1(1) = mech_d;
-        edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
         edge_pt2(1) = mech_d;
 
     }else if(cv1 > 0.0 && cv2 > 0.0){
@@ -140,9 +158,16 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
             draw_surface(s1, mech_d,color);
             draw_surface(s2, mech_d,   color);
 
-            edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+            try{
+                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+            }
+            catch(TraceMissedSurfaceError &e){
+                edge_pt1(0) = 0.0;
+                edge_pt2(0) = 0.0;
+            }
+
             edge_pt1(1) = mech_d;
-            edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
             edge_pt2(1) = mech_d;
 
         }else{ //negative power
@@ -151,9 +176,16 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, od2,   color);
                 draw_flat(s2, od2, mech_d, color);
 
-                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                try{
+                    edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                    edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+                }
+                catch(TraceMissedSurfaceError &e){
+                    edge_pt1(0) = 0.0;
+                    edge_pt2(0) = 0.0;
+                }
+
                 edge_pt1(1) = mech_d;
-                edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
                 edge_pt2(1) = mech_d;
 
             }else{
@@ -161,9 +193,16 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, mech_d,   color);
                 draw_flat(s1, od1, mech_d, color);
 
-                edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+                try{
+                    edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+                    edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+                }
+                catch(TraceMissedSurfaceError &e){
+                    edge_pt1(0) = 0.0;
+                    edge_pt2(0) = 0.0;
+                }
+
                 edge_pt1(1) = mech_d;
-                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
                 edge_pt2(1) = mech_d;
 
             }
@@ -176,9 +215,16 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
             draw_surface(s1, mech_d,color);
             draw_surface(s2, mech_d,   color);
 
-            edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+            try{
+                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+            }
+            catch(TraceMissedSurfaceError &e){
+                edge_pt1(0) = 0.0;
+                edge_pt2(0) = 0.0;
+            }
+
             edge_pt1(1) = mech_d;
-            edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
             edge_pt2(1) = mech_d;
 
         }else{ // negative power
@@ -187,9 +233,16 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, od2,   color);
                 draw_flat(s2, od2, mech_d, color);
 
-                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                try{
+                    edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                    edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+                }
+                catch(TraceMissedSurfaceError &e){
+                    edge_pt1(0) = 0.0;
+                    edge_pt2(0) = 0.0;
+                }
+
                 edge_pt1(1) = mech_d;
-                edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
                 edge_pt2(1) = mech_d;
 
             }else{
@@ -197,9 +250,16 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, mech_d,   color);
                 draw_flat(s1, od1, mech_d, color);
 
-                edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+                try{
+                    edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+                    edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+                }
+                catch(TraceMissedSurfaceError &e){
+                    edge_pt1(0) = 0.0;
+                    edge_pt2(0) = 0.0;
+                }
+
                 edge_pt1(1) = mech_d;
-                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
                 edge_pt2(1) = mech_d;
             }
         }
@@ -211,9 +271,16 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
         draw_flat(s1, od1, mech_d, color);
         draw_flat(s2, od2, mech_d, color);
 
-        edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+        try{
+            edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+            edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+        }
+        catch(TraceMissedSurfaceError &e){
+            edge_pt1(0) = 0.0;
+            edge_pt2(0) = 0.0;
+        }
+
         edge_pt1(1) = mech_d;
-        edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
         edge_pt2(1) = mech_d;
     }
 
@@ -235,7 +302,12 @@ void Layout::draw_surface(Surface* srf, double max_y, const Rgb& color)
     double y = -max_y;
     double delta = 2*max_y/((double)pt_cnt-1);
     for(int i = 0; i < pt_cnt; i++){
-        pt(0) = srf->profile()->sag(0.0, y);
+        try{
+            pt(0) = srf->profile()->sag(0.0, y);
+        }catch(...){
+            break;
+        }
+
         pt(0) += srf->global_transform().transfer(2);
         pt(1) = y;
 
@@ -275,20 +347,30 @@ void Layout::draw_flat(Surface* srf, double min_y, double max_y, const Rgb& colo
     Eigen::Vector2d from_pt, to_pt;
 
     // upper
-    from_pt(0) = srf->profile()->sag(0.0, min_y) + srf->global_transform().transfer(2);
-    from_pt(1) = min_y;
-    to_pt(0) = from_pt(0);
-    to_pt(1) = max_y;
+    try{
+        from_pt(0) = srf->profile()->sag(0.0, min_y) + srf->global_transform().transfer(2);
+        from_pt(1) = min_y;
+        to_pt(0) = from_pt(0);
+        to_pt(1) = max_y;
 
-    renderer_->draw_line(from_pt, to_pt, color);
+        renderer_->draw_line(from_pt, to_pt, color);
+    }catch(...){
+        return;
+    }
+
+
 
     // lower
-    from_pt(0) = srf->profile()->sag(0.0, -min_y) + srf->global_transform().transfer(2);
-    from_pt(1) = -min_y;
-    to_pt(0) = from_pt(0);
-    to_pt(1) = -max_y;
+    try{
+        from_pt(0) = srf->profile()->sag(0.0, -min_y) + srf->global_transform().transfer(2);
+        from_pt(1) = -min_y;
+        to_pt(0) = from_pt(0);
+        to_pt(1) = -max_y;
 
-    renderer_->draw_line(from_pt, to_pt, color);
+        renderer_->draw_line(from_pt, to_pt, color);
+    }catch(...){
+        return;
+    }
 
 }
 

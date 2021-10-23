@@ -24,6 +24,11 @@ SystemEditorDock::~SystemEditorDock()
     m_opticalSystem.reset();
 }
 
+SystemEditorWidget* SystemEditorDock::systemEditorWidget()
+{
+    return m_systemEditorWidget;
+}
+
 void SystemEditorDock::setOpticalSystem(std::shared_ptr<OpticalSystem> sys)
 {
     m_opticalSystem = sys;

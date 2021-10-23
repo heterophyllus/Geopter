@@ -69,24 +69,6 @@ void Interface::set_semi_diameter(double sd)
 }
 
 
-void Interface::set_edge_aperture(std::unique_ptr<Aperture> ea)
-{
-    if(edge_aperture_){
-        edge_aperture_.reset();
-    }
-    edge_aperture_ = std::move(ea);
-}
-
-void Interface::set_clear_aperture(std::unique_ptr<Aperture> ca)
-{
-    if(clear_aperture_){
-        clear_aperture_ .reset();
-    }
-    clear_aperture_ = std::move(ca);
-}
-
-
-
 std::string Interface::aperture_shape() const
 {
     if(clear_aperture_){

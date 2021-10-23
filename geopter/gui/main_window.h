@@ -8,10 +8,16 @@
 #include "DockAreaWidget.h"
 #include "DockWidget.h"
 
+#include "plot_view_dock.h"
+#include "text_view_dock.h"
+
 #include "PythonQt.h"
 #include "PythonQt_QtAll.h"
+#include "gui/PythonQtScriptingConsole.h"
 
 #include "systemeditor/system_editor_dock.h"
+
+#include "qdebugstream.h"
 
 #include "optical.h"
 using namespace geopter;
@@ -31,18 +37,25 @@ public:
     ~MainWindow();
 
 
-
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
 
 public slots:
     // The following functions are used in python scripting
-    // The naming conventions imitates to Zemax ZPL
+    // The naming conventions imitates Zemax ZPL
+
+    int nsur();
+    int nwav();
+
+    void insertsurface(int i);
+    //void deletesurface(int i);
 
 
 
 private slots:
+
+
 
     // File menu
     void newFile();
@@ -86,13 +99,16 @@ private:
     Ui::MainWindow *ui;
 
     ads::CDockManager* m_dockManager;
-
     SystemEditorDock* m_systemEditorDock;
-
+    PythonQtScriptingConsole* m_pyConsole;
+    QTextEdit* m_stdoutText;
+    QTextEdit* m_stderrText;
+    QDebugStream *m_qout;
+    QDebugStream *m_qerr;
     std::shared_ptr<OpticalSystem> opt_sys_;
-    std::string agf_dir_path_;
-
-    PythonQtObjectPtr* m_mainContext;
 
 };
+
+
+
 #endif // MAINWINDOW_H

@@ -455,7 +455,7 @@ void SystemEditorWidget::insertLineOnAssemblyTable(int row)
     ui->assemblyTable->setVerticalHeaderItem(row,item);
 
     // add surface to optical system
-    opt_sys_->optical_assembly()->insert_dummy(row);
+    opt_sys_->optical_assembly()->insert_surface(row);
     opt_sys_->update_model();
 
     syncUiWithSystem();
@@ -764,29 +764,45 @@ void SystemEditorWidget::validateMaterialInput(int row)
     // search from material library
     // If not found, set AIR
 
-    QRegExp reg_alphanumeric_colon("[:_a-zA-Z0-9¥.¥-]*$");
-
-    int col = AssemblyTableColumn::Material;
+    constexpr int col = AssemblyTableColumn::Material;
     QTableWidgetItem *item = ui->assemblyTable->item(row, col);
     QString text = item->text();
+
+    QRegExp reg_alphanumeric_colon("[:_a-zA-Z0-9¥.¥-]*$");
     bool is_alphanumeric_colon = reg_alphanumeric_colon.exactMatch(text);
 
+    // empty input
+    if(text == ""){
+        setValueToCell(ui->assemblyTable, row, col, tr("AIR"));
+        opt_sys_->optical_assembly()->gap(row)->set_material(MaterialLibrary::air().get());
+        return;
+    }
+
+    // assume air
+    QString textUppercase = text.toUpper();
+    if(textUppercase == "AIR"){
+        setValueToCell(ui->assemblyTable, row, col, tr("AIR"));
+        opt_sys_->optical_assembly()->gap(row)->set_material(MaterialLibrary::air().get());
+        return;
+    }
+
+    // material name input
     if(is_alphanumeric_colon){
         auto mat = opt_sys_->material_lib()->find(text.toStdString());
         if(mat){ // found in material library
             setValueToCell(ui->assemblyTable, row,col, QString().fromStdString(mat->name()));
-            opt_sys_->optical_assembly()->gap(row)->set_material(mat);
+            opt_sys_->optical_assembly()->gap(row)->set_material(mat.get());
             return;
         }else{ // not found
             QMessageBox::warning(this, tr("Error"), "Material not found");
             setValueToCell(ui->assemblyTable, row, col, tr("AIR"));
-            opt_sys_->optical_assembly()->gap(row)->set_material(std::make_shared<Air>());
+            opt_sys_->optical_assembly()->gap(row)->set_material(MaterialLibrary::air().get());
             return;
         }
     }else{ // not alpha numeric input
         QMessageBox::warning(this, tr("Error"), "Invalid material input");
         setValueToCell(ui->assemblyTable, row, col, tr("AIR"));
-        opt_sys_->optical_assembly()->gap(row)->set_material(std::make_shared<Air>());
+        opt_sys_->optical_assembly()->gap(row)->set_material(MaterialLibrary::air().get());
     }
 
 }

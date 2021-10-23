@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 #include "Renderer/rgb.h"
 
@@ -14,9 +15,9 @@ namespace geopter {
 class PointSet
 {
 public:
-    inline PointSet();
-    inline PointSet(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style= 0, double line_width= 1.0);
-    inline ~PointSet();
+    PointSet();
+    PointSet(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style= 0, double line_width= 1.0);
+    ~PointSet();
 
     inline void set_name(const std::string& name);
     inline void set_data(const std::vector<double>& x, const std::vector<double>& y);
@@ -37,6 +38,8 @@ public:
     inline int line_style() const;
     inline double line_width() const;
 
+    void print() const;
+    void print(std::ostringstream& oss) const;
 
 private:
     std::string name_;
@@ -46,31 +49,6 @@ private:
     int line_style_;
     double line_width_;
 };
-
-PointSet::PointSet() :
-    render_color_(rgb_black),
-    line_style_(1),
-    line_width_(1.0)
-{
-    xdata_.clear();
-    ydata_.clear();
-}
-
-PointSet::PointSet(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style, double line_width) :
-    xdata_(x),
-    ydata_(y),
-    render_color_(color),
-    line_style_(line_style),
-    line_width_(line_width)
-{
-
-}
-
-PointSet::~PointSet()
-{
-    xdata_.clear();
-    ydata_.clear();
-}
 
 
 void PointSet::set_name(const std::string &name)

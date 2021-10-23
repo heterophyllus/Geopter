@@ -8,7 +8,8 @@ using namespace geopter;
 
 Ray::Ray() :
     status_(RayStatus::PassThrough),
-    wvl_(0.0)
+    wvl_(0.0),
+    array_size_(0)
 {
     //ray_at_srfs_.clear();
 }
@@ -26,6 +27,7 @@ void Ray::prepend(std::unique_ptr<RayAtSurface> ray_at_srf)
 {
     ray_at_srfs_.insert(ray_at_srfs_.begin(), std::move(ray_at_srf));
     ray_at_srfs_.front()->set_before( ray_at_srfs_[1].get() );
+    array_size_ += 1;
 }
 
 
@@ -39,11 +41,11 @@ void Ray::append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, c
         ray_at_srf->set_before(before);
         ray_at_srfs_.push_back(std::move(ray_at_srf));
     }
+    array_size_ += 1;
 }
 
 void Ray::append(std::unique_ptr<RayAtSurface> ray_at_srf)
 {
-
     if(ray_at_srfs_.empty()){
         ray_at_srfs_.push_back(std::move(ray_at_srf));
     }else{
@@ -52,8 +54,19 @@ void Ray::append(std::unique_ptr<RayAtSurface> ray_at_srf)
         ray_at_srfs_.push_back(std::move(ray_at_srf));
     }
 
+    array_size_ += 1;
 }
 
+void Ray::clear()
+{
+    if( !ray_at_srfs_.empty() ){
+        for(auto &r : ray_at_srfs_){
+            r.reset();
+        }
+        ray_at_srfs_.clear();
+        array_size_ = 0;
+    }
+}
 
 void Ray::print(std::ostringstream& oss)
 {

@@ -2,52 +2,56 @@
 #define TRACEERROR_H
 
 #include "ray.h"
-#include "Eigen/Core"
 
 namespace geopter {
 
 class Surface;
 
-class TraceError:public std::exception
+class TraceError : public std::exception
 {
 public:
     TraceError();
     virtual ~TraceError();
+
+    virtual std::string cause_str() const;
+    std::shared_ptr<Ray> ray() const;
+    int surface_index() const;
+
+    void set_ray(std::shared_ptr<Ray> ray);
+    void set_surface(Surface* s);
+    void set_surface_index(int i);
+
+protected:
+    std::string cause_str_;
+    std::shared_ptr<Ray> ray_;
+    Surface* caused_surface_;
+    int surface_index_;
 };
 
 
 class TraceTIRError : public TraceError
 {
 public:
-    TraceTIRError(Eigen::Vector3d inc_dir, Eigen::Vector3d normal, double prev_indx, double follow_indx);
-    ~TraceTIRError();
-
-    Eigen::Vector3d inc_dir_;
-    Eigen::Vector3d normal_;
-    double prev_indx_;
-    double follow_indx_;
-    std::vector<RayAtSurface> ray_;
-    int surf_;
+    TraceTIRError();
 };
 
 class TraceMissedSurfaceError : public TraceError
 {
 public:
-    TraceMissedSurfaceError(Surface* ifc=nullptr);
-    ~TraceMissedSurfaceError();
-
-    Surface* ifc_;
-    int surf_;
-    std::vector<RayAtSurface> ray_;
+    TraceMissedSurfaceError();
 };
 
 
 class TraceBlockedByApertureError : public TraceError
 {
 public:
-    TraceBlockedByApertureError(Surface* ifc=nullptr);
-    ~TraceBlockedByApertureError();
+    TraceBlockedByApertureError();
+};
 
+class TraceRayAimingFailedError : public TraceError
+{
+public:
+    TraceRayAimingFailedError();
 };
 
 } //namespace geopter

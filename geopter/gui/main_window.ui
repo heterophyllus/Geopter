@@ -87,7 +87,6 @@
     <property name="title">
      <string>Tool</string>
     </property>
-    <addaction name="actionDebugStream"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -95,10 +94,16 @@
     </property>
     <addaction name="actionSetVigFactors"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuAnalysis"/>
    <addaction name="menuTool"/>
+   <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

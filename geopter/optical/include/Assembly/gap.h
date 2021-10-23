@@ -5,6 +5,8 @@
 #include <string>
 
 #include "Material/material.h"
+#include "Material/material_library.h"
+
 
 namespace geopter {
 
@@ -25,18 +27,19 @@ class Gap
 {
 public:
     Gap();
-    Gap(double t, std::shared_ptr<Material> m);
+    Gap(double t, Material* m);
     ~Gap();
 
     inline double thi() const;
     inline void set_thi(double t);
 
     inline Material* material() const;
-    inline void set_material(std::shared_ptr<Material> m);
+
+    void set_material(Material* m);
 
 private:
     double thi_;
-    std::shared_ptr<Material> material_;
+    Material* material_;
 };
 
 
@@ -50,15 +53,12 @@ void Gap::set_thi(double t)
     thi_ = t;
 }
 
-void Gap::set_material(std::shared_ptr<Material> m)
-{
-    material_ = m;
-}
 
 Material* Gap::material() const
 {
-    return material_.get();
+    return material_;
 }
+
 
 } //namespace geopter
 

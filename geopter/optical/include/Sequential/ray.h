@@ -4,10 +4,10 @@
 #include <vector>
 #include <sstream>
 #include <memory>
-#include <cassert>
 
 #include "Eigen/Core"
 #include "ray_at_surface.h"
+#include "Common/geopter_error.h"
 
 namespace geopter {
 
@@ -58,12 +58,14 @@ private:
     std::vector< std::unique_ptr<RayAtSurface> > ray_at_srfs_;
     int status_;
     double wvl_;
+    int array_size_;
 };
 
 
 int Ray::size() const
 {
-    return (int)ray_at_srfs_.size();
+    assert(array_size_ == (int)ray_at_srfs_.size());
+    return array_size_;
 }
 
 int Ray::status() const
@@ -77,11 +79,13 @@ double Ray::wavelength() const
 }
 
 RayAtSurface* Ray::at(int i) const
-{
-    if(i < (int)ray_at_srfs_.size()){
+{    
+    assert(array_size_ == (int)ray_at_srfs_.size());
+
+    if(i < array_size_){
         return ray_at_srfs_[i].get();
     }else{
-        return nullptr;
+        throw RayOutOfRangeError();
     }
 }
 

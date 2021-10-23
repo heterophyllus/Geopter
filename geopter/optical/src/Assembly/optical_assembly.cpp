@@ -7,7 +7,7 @@
 
 #include "Assembly/optical_assembly.h"
 
-#include "Material/air.h"
+#include "Material/material_library.h"
 
 #include "Spec/spectral_line.h"
 #include "Spec/optical_spec.h"
@@ -57,61 +57,44 @@ void OpticalAssembly::create_minimun_assembly()
     clear();
 
     // add object interface and gap
-    auto s_obj = std::make_shared<Surface>("Obj");
-    interfaces_.push_back(s_obj);
+    auto s_obj = std::make_unique<Surface>("Obj");
+    interfaces_.push_back(std::move(s_obj));
 
-    auto air = std::make_shared<Air>();
-    auto g = std::make_shared<Gap>(0.0, air);
-    gaps_.push_back(g);
+    //auto air = std::make_shared<Air>();
+    auto air = MaterialLibrary::air();
+    auto g = std::make_unique<Gap>(0.0, air.get());
+    gaps_.push_back(std::move(g));
 
     // add stop interface and gap
-    auto s_stop = std::make_shared<Surface>("Stop");
-    interfaces_.push_back(s_stop);
+    auto s_stop = std::make_unique<Surface>("Stop");
+    interfaces_.push_back(std::move(s_stop));
 
-    auto g_stop = std::make_shared<Gap>(0.0, air);
-    gaps_.push_back(g_stop);
+    auto g_stop = std::make_unique<Gap>(0.0, air.get());
+    gaps_.push_back(std::move(g_stop));
 
     stop_index_ = 1;
 
 
     // add image interface and dummy gap
-    auto s_img = std::make_shared<Surface>("Img");
-    interfaces_.push_back(s_img);
+    auto s_img = std::make_unique<Surface>("Img");
+    interfaces_.push_back(std::move(s_img));
 
-    auto g_img = std::make_shared<Gap>(0.0, air);
-    gaps_.push_back(g_img);
+    auto g_img = std::make_unique<Gap>(0.0, air.get());
+    gaps_.push_back(std::move(g_img));
+
+    current_surface_index_ = 2;
 
 }
-
-Surface* OpticalAssembly::surface(int i) const
-{
-    if( i < (int)interfaces_.size() ) {
-        return interfaces_[i].get();
-    }else{
-        // throw error
-        return nullptr;
-    }
-}
-
-Gap* OpticalAssembly::gap(int i) const
-{
-    if( i < (int)gaps_.size() ) {
-        return gaps_[i].get();
-    }else{
-        // throw error
-        return nullptr;
-    }
-}
-
-
 
 Gap* OpticalAssembly::image_space_gap() const
 {
-    int num_gaps = gaps_.size();
-    if(num_gaps == 0){
+    if(gaps_.empty()){
         return nullptr;
+    }else{
+        int num_gaps = gaps_.size();
+        return gaps_[num_gaps-1-1].get();
     }
-    return gaps_[num_gaps-1-1].get();
+
 }
 
 void OpticalAssembly::set_stop(int i)
@@ -119,14 +102,8 @@ void OpticalAssembly::set_stop(int i)
     stop_index_ = i;
 }
 
-void OpticalAssembly::set_object_distance(double t0)
-{
-    if(!gaps_.empty()){
-        gaps_[0]->set_thi(t0);
-    }
-}
 
-void OpticalAssembly::insert_dummy(int i)
+void OpticalAssembly::insert_surface(int i)
 {
     // update stop index
     if( i <= stop_index_){
@@ -134,20 +111,22 @@ void OpticalAssembly::insert_dummy(int i)
     }
 
     // create a new standard surface
-    auto s = std::make_shared<Surface>();
+    auto s = std::make_unique<Surface>();
 
     // insert the surface
     auto ifcs_itr = interfaces_.begin();
     std::advance(ifcs_itr, i);
-    interfaces_.insert(ifcs_itr, s);
+    interfaces_.insert(ifcs_itr, std::move(s));
 
     // create a new 0 air gap
-    auto g = std::make_shared<Gap>(0.0, std::make_shared<Air>());
+    auto g = std::make_unique<Gap>();
 
     // insert the gap
     auto gap_itr = gaps_.begin();
     std::advance(gap_itr, i);
-    gaps_.insert(gap_itr, g);
+    gaps_.insert(gap_itr, std::move(g));
+
+    current_surface_index_ = i;
 }
 
 void OpticalAssembly::remove(int i)
@@ -165,16 +144,24 @@ void OpticalAssembly::remove(int i)
         if ( i < stop_index_ ) {
             stop_index_ -= 1;
         }
+
+        //update current
+        if (i < current_surface_index_){
+            current_surface_index_ -= 1;
+        }
     }
 }
 
 
-
-
-void OpticalAssembly::add_surface_and_gap(std::shared_ptr<Surface> s, std::shared_ptr<Gap> g)
+void OpticalAssembly::add_surface_and_gap()
 {
-    interfaces_.push_back(s);
-    gaps_.push_back(g);
+    auto s = std::make_unique<Surface>();
+    interfaces_.push_back(std::move(s));
+
+    auto g = std::make_unique<Gap>();
+    gaps_.push_back(std::move(g));
+
+    current_surface_index_ = interfaces_.size() -1;
 }
 
 

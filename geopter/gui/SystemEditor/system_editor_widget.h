@@ -58,6 +58,10 @@ public:
     /** Update Opticalsystem using current input data */
     void syncSystemWithUi();
 
+public slots:
+    /** Insert a line on assembly table */
+    void insertLineOnAssemblyTable(int row);
+
 private slots:
 
     //*******************************************************************************
@@ -113,8 +117,7 @@ private:
     /** Set up all tables */
     void initialize();
 
-    /** Insert a line on assembly table */
-    void insertLineOnAssemblyTable(int row);
+
 
     /** Update vertical header labels of assembly table */
     void updateVerticalHeaderOnAssemblyTable();

@@ -10,7 +10,7 @@
 
 #include "Paraxial/paraxial_trace.h"
 #include "Sequential/sequential_trace.h"
-
+#include "Sequential/trace_error.h"
 
 using namespace geopter;
 
@@ -78,18 +78,12 @@ void OpticalSystem::create_minimum_system()
 
 void OpticalSystem::add_surface_and_gap(double r, double t, std::string mat_name)
 {
-    auto s = std::make_shared<Surface>();
-    s->profile()->set_cv(1.0/r);
-
-    auto g = std::make_shared<Gap>();
-    g->set_thi(t);
-
     auto m = material_lib_->find(mat_name);
-    if(m) {
-        g->set_material(m);
-    }
 
-    opt_assembly_->add_surface_and_gap(s, g);
+    opt_assembly_->add_surface_and_gap();
+    opt_assembly_->current_surface()->profile()->set_cv(1.0/r);
+    opt_assembly_->current_gap()->set_thi(t);
+    opt_assembly_->current_gap()->set_material(m.get());
 }
 
 std::shared_ptr<ParaxialRay> OpticalSystem::axial_ray(int wi) const
@@ -127,7 +121,7 @@ std::shared_ptr<Ray> OpticalSystem::reference_ray(int ri, int fi, int wi) const
         return sagittal_lower_rays_[to_ray_index(fi, wi)];
         break;
     default:
-        throw "Out of range error";
+        throw std::out_of_range("Ray index out of range: OpticalSystem::reference_ray()");
         break;
     }
 }
@@ -142,8 +136,13 @@ void OpticalSystem::update_aim_pt()
 
         for(int fi = 0; fi < num_fld_; fi++){
             Field* fld = opt_spec_->field_of_view()->field(fi);
-            auto aim_pt = tracer->aim_chief_ray(fld, ref_wvl_val_);
-            opt_spec_->field_of_view()->field(fi)->set_aim_pt(aim_pt);
+            try{
+                auto aim_pt = tracer->aim_chief_ray(fld, ref_wvl_val_);
+                opt_spec_->field_of_view()->field(fi)->set_aim_pt(aim_pt);
+            }catch(TraceRayAimingFailedError &e){
+                std::cerr << "Ray aiming failed at field " << fi << std::endl;
+                continue;
+            }
         }
 
         delete tracer;
@@ -207,15 +206,25 @@ void OpticalSystem::update_semi_diameters()
     // update semi diameter
     std::shared_ptr<Ray> chief_ray, mer_upper_ray, mer_lower_ray, sag_upper_ray, sag_lower_ray;
 
+
     for(int fi = 0; fi < num_fld_; fi++) {
 
-        chief_ray     = reference_ray(ReferenceRay::ChiefRay,           fi, ref_wvl_idx_);
-        mer_upper_ray = reference_ray(ReferenceRay::MeridionalUpperRay, fi, ref_wvl_idx_);
-        mer_lower_ray = reference_ray(ReferenceRay::MeridionalLowerRay, fi, ref_wvl_idx_);
-        sag_upper_ray = reference_ray(ReferenceRay::SagittalUpperRay,   fi, ref_wvl_idx_);
-        sag_lower_ray = reference_ray(ReferenceRay::SagittalLowerRay,   fi, ref_wvl_idx_);
+        try{
+            chief_ray     = reference_ray(ReferenceRay::ChiefRay,           fi, ref_wvl_idx_);
+            mer_upper_ray = reference_ray(ReferenceRay::MeridionalUpperRay, fi, ref_wvl_idx_);
+            mer_lower_ray = reference_ray(ReferenceRay::MeridionalLowerRay, fi, ref_wvl_idx_);
+            sag_upper_ray = reference_ray(ReferenceRay::SagittalUpperRay,   fi, ref_wvl_idx_);
+            sag_lower_ray = reference_ray(ReferenceRay::SagittalLowerRay,   fi, ref_wvl_idx_);
+        }catch(std::out_of_range &e){
+            std::cout << e.what() << std::endl;
+            continue;
+        }catch(...){
+            std::cout << "undefined error in OpticalSystem::update_semidiameter" << std::endl;
+        }
 
-        for(int si = 0; si < num_srf; si++) {
+        int ray_size = std::min({chief_ray->size(), mer_upper_ray->size(), mer_lower_ray->size(), sag_upper_ray->size(), sag_lower_ray->size()});
+
+        for(int si = 0; si < ray_size; si++) {
 
             double chief_ray_ht = 0.0;
             double mer_upper_ray_ht = 0.0;
@@ -224,20 +233,21 @@ void OpticalSystem::update_semi_diameters()
             double sag_lower_ray_ht = 0.0;
             double ray_ht_for_cur_fld = 0.0;
 
-            if(chief_ray->size() > si){
+            try{
                 chief_ray_ht     = chief_ray->at(si)->height();
-            }
-            if(mer_upper_ray->size() > si){
                 mer_upper_ray_ht = mer_upper_ray->at(si)->height();
-            }
-            if(mer_lower_ray->size() > si){
                 mer_lower_ray_ht = mer_lower_ray->at(si)->height();
-            }
-            if(sag_upper_ray->size() > si){
                 sag_upper_ray_ht = sag_upper_ray->at(si)->height();
-            }
-            if(sag_lower_ray->size() > si){
                 sag_lower_ray_ht = sag_lower_ray->at(si)->height();
+            }
+            catch(std::out_of_range &e){
+                std::cout << e.what() << std::endl;
+                std::cout << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
+                break;
+            }
+            catch(...){
+                std::cout << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
+                break;
             }
 
             ray_ht_for_cur_fld = std::max({chief_ray_ht, mer_upper_ray_ht, mer_lower_ray_ht, sag_upper_ray_ht, sag_lower_ray_ht});
@@ -247,9 +257,12 @@ void OpticalSystem::update_semi_diameters()
             if(current_sd < ray_ht_for_cur_fld) {
                 opt_assembly_->surface(si)->set_semi_diameter(ray_ht_for_cur_fld);
             }
+
         }
 
     }
+
+
 }
 
 
@@ -391,12 +404,53 @@ void OpticalSystem::update_reference_rays()
     for(int fi = 0; fi < num_fld_; fi++) {
         Field* fld = opt_spec_->field_of_view()->field(fi);
         for(int wi = 0; wi < num_wvl_; wi++) {
+
             double wvl = opt_spec_->spectral_region()->wvl(wi)->value();
-            chief_rays_.push_back( tracer->trace_pupil_ray(pupil_chief, fld, wvl) );
-            meridional_upper_rays_.push_back( tracer->trace_pupil_ray(pupil_upper_mer, fld, wvl) );
-            meridional_lower_rays_.push_back( tracer->trace_pupil_ray(pupil_lower_mer, fld, wvl) );
-            sagittal_upper_rays_.push_back( tracer->trace_pupil_ray(pupil_upper_sag, fld, wvl) );
-            sagittal_lower_rays_.push_back( tracer->trace_pupil_ray(pupil_lower_sag, fld, wvl) );
+
+            try{
+                auto ray = tracer->trace_pupil_ray(pupil_chief, fld, wvl);
+                chief_rays_.push_back(ray);
+            }catch(TraceError &e){
+                std::cerr << "Failed to trace chief ray at field " << fi << ", wavelength " << wi << std::endl;
+                std::cerr << "    " << e.cause_str() << std::endl;
+                chief_rays_.push_back( e.ray() );
+            }
+
+            try{
+                auto ray = tracer->trace_pupil_ray(pupil_upper_mer, fld, wvl);
+                meridional_upper_rays_.push_back(ray);
+            }catch(TraceError &e){
+                std::cerr << "Failed to trace meridional upper ray at field " << fi << ", wavelength " << wi << std::endl;
+                std::cerr << "    " << e.cause_str() << std::endl;
+                meridional_upper_rays_.push_back(e.ray());
+            }
+
+            try{
+                auto ray = tracer->trace_pupil_ray(pupil_lower_mer, fld, wvl);
+                meridional_lower_rays_.push_back(ray);
+            }catch(TraceError &e){
+                std::cerr << "Failed to trace meridional lower ray at field " << fi << ", wavelength " << wi << std::endl;
+                std::cerr << "    " << e.cause_str() << std::endl;
+                meridional_lower_rays_.push_back(e.ray());
+            }
+
+            try{
+                auto ray = tracer->trace_pupil_ray(pupil_upper_sag, fld, wvl);
+                sagittal_upper_rays_.push_back(ray);
+            }catch(TraceError &e){
+                std::cerr << "Failed to trace sagittal upper ray at field " << fi << ", wavelength " << wi << std::endl;
+                std::cerr << "    " << e.cause_str() << std::endl;
+                sagittal_upper_rays_.push_back(e.ray());
+            }
+
+            try{
+                auto ray = tracer->trace_pupil_ray(pupil_lower_sag, fld, wvl);
+                sagittal_lower_rays_.push_back( ray );
+            }catch(TraceError &e){
+                std::cerr << "Failed to trace sagittal lower ray at field " << fi << ", wavelength " << wi << std::endl;
+                std::cerr << "    " << e.cause_str() << std::endl;
+                sagittal_lower_rays_.push_back(e.ray());
+            }
 
             // set name
 
@@ -406,7 +460,7 @@ void OpticalSystem::update_reference_rays()
     delete tracer;
 }
 
-void OpticalSystem::update_vignetting_factors()
+void OpticalSystem::set_vignetting_factors()
 {
     SequentialTrace *tracer = new SequentialTrace(this);
 

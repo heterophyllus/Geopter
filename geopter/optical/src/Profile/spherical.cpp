@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Profile/spherical.h"
 
 #include "Sequential/trace_error.h"
@@ -40,12 +42,14 @@ double Spherical::sag(double x, double y) const
     else
     {
         double r = 1/cv_;
-        double adj;
-        try {
-            adj = sqrt(r*r - x*x - y*y);
-        }  catch (...) {
-            throw "TraceMissedSurfaceError";
+        double adj2 = r*r - x*x - y*y;
+
+        if(adj2 < 0.0){
+            return NAN;
         }
+
+        double adj = sqrt(r*r - x*x - y*y);
+
         return r*(1-fabs(adj/r));
     }
 
@@ -59,25 +63,16 @@ void Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d&
     double cx2 = cv_*(p.dot(p)) - 2*p(2);
     double b = cv_*(d.dot(p)) - d(2);
 
-    double s1;
-    try {
-        s1 = cx2/((double)z_dir*sqrt(b*b - ax2*cx2) -b );
-    }  catch (...) {
-        // raise TraceMissedSurfaceError
-        TraceMissedSurfaceError e;
-        throw(e);
+    double inside_sqrt = b*b - ax2*cx2;
+
+    if(inside_sqrt < 0.0){
+        throw TraceMissedSurfaceError();
     }
+    else{
+        double s1 = cx2/(z_dir*sqrt(b*b - ax2*cx2) -b );
+        Eigen::Vector3d p1 = p + s1*d;
 
-    Eigen::Vector3d p1 = p + s1*d;
-
-    /*
-    IntersectPointAndDistance pd;
-    pd.intersect_point = p1;
-    pd.distance = s;
-
-    return pd;
-    */
-
-    pt = p1;
-    s = s1;
+        pt = p1;
+        s = s1;
+    }
 }

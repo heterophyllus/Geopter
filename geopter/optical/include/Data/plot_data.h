@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <sstream>
 
 #include "Data/point_set.h"
 
@@ -13,8 +14,8 @@ namespace geopter {
 class PlotData
 {
 public:
-    inline PlotData();
-    inline ~PlotData();
+    PlotData();
+    ~PlotData();
 
     inline void add_pointset(std::shared_ptr<PointSet> points);
     inline void add_optional_data(const std::string& dataname, double value);
@@ -30,34 +31,17 @@ public:
     inline std::string x_axis_label() const;
     inline std::string y_axis_label() const;
 
+    void print(std::ostringstream& oss);
+    void print();
+
 private:
     std::vector< std::shared_ptr<PointSet> > pointsets_;
     std::map<std::string, double> optional_data_;
     std::string title_;
     std::string x_axis_label_;
     std::string y_axis_label_;
+    bool xy_reverse_;
 };
-
-
-PlotData::PlotData() :
-    title_(""),
-    x_axis_label_("x"),
-    y_axis_label_("y")
-{
-    pointsets_.clear();
-    optional_data_.clear();
-}
-
-
-PlotData::~PlotData()
-{
-    for(auto &ps: pointsets_){
-        ps.reset();
-    }
-    pointsets_.clear();
-
-    optional_data_.clear();
-}
 
 
 void PlotData::add_pointset(std::shared_ptr<PointSet> points)

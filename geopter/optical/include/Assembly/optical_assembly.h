@@ -21,10 +21,14 @@ public:
     void clear();
 
     /** Get surface at the given index */
-    Surface* surface(int i) const;
+    inline Surface* surface(int i) const;
 
     /** Get gap at the given index */
-    Gap* gap(int i) const;
+    inline Gap* gap(int i) const;
+
+    inline Surface* current_surface() const;
+
+    inline Gap* current_gap() const;
 
     /** Returns number of surfaces */
     inline int surface_count() const;
@@ -51,16 +55,12 @@ public:
     /** Set the given surface as stop */
     void set_stop(int i);
 
-    /** Set object distance */
-    void set_object_distance(double t0);
-
     void create_minimun_assembly();
 
-
-    void add_surface_and_gap(std::shared_ptr<Surface> s, std::shared_ptr<Gap> g);
+    void add_surface_and_gap();
 
     /** insert a dummy surface */
-    void insert_dummy(int i);
+    void insert_surface(int i);
 
     /** Remove surface and gap from sequence model */
     void remove(int i);
@@ -80,13 +80,38 @@ public:
 
     /** List up model properties */
     void print(std::ostringstream& oss) const;
+    void print() const;
 
 private:
-    std::vector< std::shared_ptr<Surface> > interfaces_;
-    std::vector< std::shared_ptr<Gap> > gaps_;
+    std::vector< std::unique_ptr<Surface> > interfaces_;
+    std::vector< std::unique_ptr<Gap> > gaps_;
 
     int stop_index_;
+    int current_surface_index_;
 };
+
+
+
+
+Surface* OpticalAssembly::surface(int i) const
+{
+    return interfaces_[i].get();
+}
+
+Gap* OpticalAssembly::gap(int i) const
+{
+    return gaps_[i].get();
+}
+
+Surface* OpticalAssembly::current_surface() const
+{
+    return interfaces_[current_surface_index_].get();
+}
+
+Gap* OpticalAssembly::current_gap() const
+{
+    return gaps_[current_surface_index_].get();
+}
 
 int OpticalAssembly::surface_count() const
 {

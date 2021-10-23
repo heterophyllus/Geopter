@@ -2,48 +2,69 @@
 
 using namespace geopter;
 
-TraceError::TraceError()
+TraceError::TraceError() :
+    caused_surface_(nullptr),
+    surface_index_(0)
 {
-
+    cause_str_ = "Unnown trace error";
 }
 
 TraceError::~TraceError()
 {
+    caused_surface_ = nullptr;
+}
 
+std::string TraceError::cause_str() const
+{
+    return cause_str_;
+}
+
+std::shared_ptr<Ray> TraceError::ray() const
+{
+    return ray_;
+}
+
+int TraceError::surface_index() const
+{
+    return surface_index_;
+}
+
+void TraceError::set_ray(std::shared_ptr<Ray> ray)
+{
+    ray_ = ray;
+}
+
+void TraceError::set_surface(Surface *s)
+{
+    caused_surface_ = s;
+}
+
+void TraceError::set_surface_index(int i)
+{
+    surface_index_ = i;
 }
 
 
-TraceTIRError::TraceTIRError(Eigen::Vector3d inc_dir, Eigen::Vector3d normal, double prev_indx, double follow_indx) :
-    inc_dir_(inc_dir),
-    normal_(normal),
-    prev_indx_(prev_indx),
-    follow_indx_(follow_indx)
+//**********************************************************
+TraceTIRError::TraceTIRError()
 {
-
+    cause_str_ = "Total reflection";
 }
 
-TraceTIRError::~TraceTIRError()
+//**********************************************************
+TraceMissedSurfaceError::TraceMissedSurfaceError()
 {
-    ray_.clear();
+    cause_str_ = "Ray missed surface";
 }
 
-TraceMissedSurfaceError::TraceMissedSurfaceError(Surface* ifc)
+//**********************************************************
+TraceBlockedByApertureError::TraceBlockedByApertureError()
 {
-    ifc_ = ifc;
+    cause_str_ = "Ray blocked by aperture";
 }
 
-TraceMissedSurfaceError::~TraceMissedSurfaceError()
+//**********************************************************
+TraceRayAimingFailedError::TraceRayAimingFailedError()
 {
-    ray_.clear();
-}
-
-
-TraceBlockedByApertureError::TraceBlockedByApertureError(Surface* ifc)
-{
-
-}
-
-TraceBlockedByApertureError::~TraceBlockedByApertureError()
-{
-
+    cause_str_ = "Ray aiming failed";
 }

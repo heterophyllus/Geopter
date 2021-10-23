@@ -26,6 +26,8 @@ public:
     void syncUiWithSystem();
     void syncSystemWithUi();
 
+    SystemEditorWidget* systemEditorWidget();
+
 public slots:
     void updateOpticalSystem();
 
