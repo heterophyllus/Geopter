@@ -133,7 +133,7 @@ void MainWindow::loadAgfsFromDir(QString agfDir)
 
     QDir dir(agfDir);
     QStringList entry = dir.entryList(nameFilters, QDir::Files);
-    for (QString file : entry) {
+    for (QString &file : entry) {
         qDebug() << dir.filePath(file);
         agf_paths.push_back(dir.filePath(file).toStdString());
     }
@@ -221,97 +221,101 @@ void MainWindow::setVignettingFactors()
  *
  * ********************************************************************************************************************************/
 void MainWindow::showPrescription()
-{
-    TextViewDock *dock = new TextViewDock("Prescription", opt_sys_.get());
-    dock->createSettingDialog<PrescriptionDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    dock->resize(300,200);
-    dock->updateText();
+{    
+    showAnalysisText<PrescriptionDlg>("Prescription");
 }
-
 
 void MainWindow::showLayout()
-{
-    PlotViewDock *dock = new PlotViewDock("2D layout", opt_sys_.get());
-    dock->createSettingDialog<Layout2dDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    dock->resize(300,200);
-    dock->updatePlot();
+{    
+    showAnalysisPlot<Layout2dDlg>("2D Layout");
 }
-
 
 void MainWindow::showParaxialRayTrace()
 {
-    TextViewDock *dock = new TextViewDock("Paraxial Ray Trace", opt_sys_.get());
-    dock->createSettingDialog<ParaxialTraceDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    dock->resize(300,200);
-    dock->updateText();
+    showAnalysisText<ParaxialTraceDlg>("Paraxial Ray Trace");
 }
 
 void MainWindow::showSingleRayTrace()
 {
-    TextViewDock *dock = new TextViewDock("Single Ray Trace", opt_sys_.get());
-    dock->createSettingDialog<SingleRayTraceDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    dock->resize(300,200);
-    dock->updateText();
+    showAnalysisText<SingleRayTraceDlg>("Single Ray Trace");
 }
 
 void MainWindow::showSpotDiagram()
 {
-    PlotViewDock *dock = new PlotViewDock("Spot Diagram", opt_sys_.get());
-    dock->createSettingDialog<SpotDiagramDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    //dock->resize(300,200);
-    dock->updatePlot();
+    showAnalysisPlot<SpotDiagramDlg>("Spot Diagram");
 }
 
 void MainWindow::showTransverseRayFan()
 {
-    PlotViewDock *dock = new PlotViewDock("Transverse Aberration", opt_sys_.get());
-    dock->createSettingDialog<TransverseRayFanDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    dock->resize(300,200);
-    dock->updatePlot();
+    showAnalysisPlot<TransverseRayFanDlg>("Transverse Aberration");
 }
 
 void MainWindow::showLongitudinal()
-{
-    PlotViewDock *dock = new PlotViewDock("Longitudinal Aberration", opt_sys_.get());
-    dock->createSettingDialog<LongitudinalDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    dock->resize(300,200);
-    dock->updatePlot();
+{    
+    showAnalysisPlot<LongitudinalDlg>("Longitudinal Aberration");
 }
 
 void MainWindow::showFieldCurvature()
 {
-    PlotViewDock *dock = new PlotViewDock("Field Curvature", opt_sys_.get());
-    dock->createSettingDialog<FieldCurvatureDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    dock->resize(300,200);
-    dock->updatePlot();
+    showAnalysisPlot<FieldCurvatureDlg>("Field Curvature");
 }
 
 void MainWindow::showChromaticFocusShift()
 {
-    PlotViewDock *dock = new PlotViewDock("Chromatic Focus Shift", opt_sys_.get());
-    dock->createSettingDialog<ChromaticFocusShiftDlg>();
-    m_dockManager->addDockWidgetFloating(dock);
-    ui->menuView->addAction(dock->toggleViewAction());
-    dock->resize(300,200);
-    dock->updatePlot();   
+    showAnalysisPlot<ChromaticFocusShiftDlg>("Chromatic Focus Shift");
 }
 
+
+template<class T>
+void MainWindow::showAnalysisPlot(QString dockTitleBase)
+{
+    QString dockTitleWithNumber = createDockTitleWithNumber(dockTitleBase);
+    PlotViewDock *dock = new PlotViewDock(dockTitleWithNumber, opt_sys_.get());
+    dock->createSettingDialog<T>();
+    m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
+    //dock->resize(300,200);
+    dock->updateContent();
+}
+
+
+template<class T>
+void MainWindow::showAnalysisText(QString dockTitleBase)
+{
+    QString dockTitleWithNumber = createDockTitleWithNumber(dockTitleBase);
+    TextViewDock *dock = new TextViewDock(dockTitleWithNumber, opt_sys_.get());
+    dock->createSettingDialog<T>();
+    m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
+    //dock->resize(300,200);
+    dock->updateContent();
+}
+
+
+QString MainWindow::createDockTitleWithNumber(QString dockTitleBase)
+{
+    if(m_dockManager->dockWidgetsMap().contains(dockTitleBase))
+    {
+        QString dockTitleWithNumber;
+        int n = 1;
+        while(true)
+        {
+            dockTitleWithNumber = dockTitleBase + "_" + QString::number(n);
+
+            if(m_dockManager->dockWidgetsMap().contains(dockTitleWithNumber)){
+                n += 1;
+            }else{
+                break;
+            }
+        }
+
+        return dockTitleWithNumber;
+
+    }else{
+        return dockTitleBase;
+    }
+
+}
 
 
 /*********************************************************************************************************************************
@@ -319,10 +323,6 @@ void MainWindow::showChromaticFocusShift()
  * Tool menu
  *
  * ********************************************************************************************************************************/
-void MainWindow::showDebugStream()
-{
-
-}
 
 
 
@@ -338,17 +338,3 @@ void MainWindow::showAbout()
     QMessageBox::information(this,tr("About"), tr("Geopter v0.1.0"));
 }
 
-int MainWindow::nsur()
-{
-    return opt_sys_->optical_assembly()->surface_count();
-}
-
-int MainWindow::nwav()
-{
-    return opt_sys_->optical_spec()->spectral_region()->wvl_count();
-}
-
-void MainWindow::insertsurface(int i)
-{
-    m_systemEditorDock->systemEditorWidget()->insertLineOnAssemblyTable(i);
-}

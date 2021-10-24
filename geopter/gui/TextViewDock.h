@@ -29,7 +29,7 @@ public:
     }
 
 public slots:
-    virtual void updateText();
+    virtual void updateContent();
 
     void showSettingDlg();
 

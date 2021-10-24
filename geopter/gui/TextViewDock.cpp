@@ -61,7 +61,7 @@ void TextViewDock::showSettingDlg()
 {
     if(m_settingDlgPtr){
         if(m_settingDlgPtr->exec() == QDialog::Accepted){
-            updateText();
+            updateContent();
         }
     }
 }
@@ -83,7 +83,7 @@ void TextViewDock::saveToFile()
     textFile.close();
 }
 
-void TextViewDock::updateText()
+void TextViewDock::updateContent()
 {
     m_settingDlgPtr->updateParentDockContent();
 }

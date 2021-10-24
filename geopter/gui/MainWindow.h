@@ -8,9 +8,6 @@
 #include "DockAreaWidget.h"
 #include "DockWidget.h"
 
-#include "PlotViewDock.h"
-#include "TextViewDock.h"
-
 #include "PythonQt.h"
 #include "PythonQt_QtAll.h"
 #include "gui/PythonQtScriptingConsole.h"
@@ -41,22 +38,7 @@ protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
 
-public slots:
-    // The following functions are used in python scripting
-    // The naming conventions imitates Zemax ZPL
-
-    int nsur();
-    int nwav();
-
-    void insertsurface(int i);
-    //void deletesurface(int i);
-
-
-
 private slots:
-
-
-
     // File menu
     void newFile();
     void saveAs();
@@ -88,16 +70,23 @@ private slots:
     void showChromaticFocusShift();
 
     // Tool menu
-    void showDebugStream();
+
 
     // Help menu
     void showAbout();
 
-private:
+private:    
+    template<class T>
+    void showAnalysisPlot(QString dockTitleBase);
+
+    template<class T>
+    void showAnalysisText(QString dockTitleBase);
+
+    QString createDockTitleWithNumber(QString dockTitleBase);
+
     void loadAgfsFromDir(QString agfDir);
 
     Ui::MainWindow *ui;
-
     ads::CDockManager* m_dockManager;
     SystemEditorDock* m_systemEditorDock;
     PythonQtScriptingConsole* m_pyConsole;

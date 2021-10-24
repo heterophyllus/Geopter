@@ -9,6 +9,7 @@
 
 PlotViewDock::PlotViewDock(QString label, OpticalSystem* sys, QWidget *parent):
     ads::CDockWidget(label,parent),
+    m_settingDlgPtr(nullptr),
     m_opticalSystem(sys)
 {
     this->setFeature(CDockWidget::DockWidgetDeleteOnClose, true);
@@ -55,7 +56,7 @@ void PlotViewDock::showSettingDlg()
 {
     if(m_settingDlgPtr){
         if(m_settingDlgPtr->exec() == QDialog::Accepted){
-            updatePlot();
+            updateContent();
         }
     }
 }
@@ -71,7 +72,7 @@ void PlotViewDock::saveToFile()
     m_customPlot->savePng(filePath);
 }
 
-void PlotViewDock::updatePlot()
+void PlotViewDock::updateContent()
 {
     m_settingDlgPtr->updateParentDockContent();
 }

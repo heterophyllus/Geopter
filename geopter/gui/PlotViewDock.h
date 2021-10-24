@@ -34,7 +34,7 @@ public slots:
     /** Save to .png file */
     void saveToFile();
 
-    virtual void updatePlot();
+    virtual void updateContent();
 
 protected:
     QCustomPlot* m_customPlot;

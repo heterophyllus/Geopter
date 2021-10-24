@@ -11,3 +11,8 @@ void AnalysisSettingDlg::updateParentDockContent()
 {
 
 }
+
+int AnalysisSettingDlg::parentDockType() const
+{
+    return 0;
+}

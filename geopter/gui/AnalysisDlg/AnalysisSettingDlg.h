@@ -11,6 +11,7 @@ public:
     AnalysisSettingDlg(QWidget *parent);
 
     virtual void updateParentDockContent();
+    virtual int parentDockType() const;
 };
 
 #endif // AnalysisSettingDlg_H
