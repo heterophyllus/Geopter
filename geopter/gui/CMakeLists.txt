@@ -4,73 +4,73 @@ cmake_minimum_required(VERSION 3.5)
 set(GEOPTER_GUI_SOURCES
     main.cpp
 
-    main_window.h
-    main_window.cpp
-    main_window.ui
+    MainWindow.h
+    MainWindow.cpp
+    MainWindow.ui
 
-    text_view_dock.h
-    text_view_dock.cpp
+    TextViewDock.h
+    TextViewDock.cpp
 
-    plot_view_dock.h
-    plot_view_dock.cpp
+    PlotViewDock.h
+    PlotViewDock.cpp
 
     renderer_qcp.h
     renderer_qcp.cpp
 
     qdebugstream.h
 
-    general_configuration_dialog.cpp
-    general_configuration_dialog.h
-    general_configuration_dialog.ui
+    GeneralConfigDlg.cpp
+    GeneralConfigDlg.h
+    GeneralConfigDlg.ui
 
-    systemeditor/system_editor_dock.cpp
-    systemeditor/system_editor_dock.h
-    systemeditor/system_editor_widget.h
-    systemeditor/system_editor_widget.cpp
-    systemeditor/system_editor_widget.ui
-    systemeditor/surface_property_dialog.cpp
-    systemeditor/surface_property_dialog.h
-    systemeditor/surface_property_dialog.ui
-    systemeditor/float_delegate.h
+    SystemEditor/SystemEditorDock.cpp
+    SystemEditor/SystemEditorDock.h
+    SystemEditor/SystemEditorWidget.h
+    SystemEditor/SystemEditorWidget.cpp
+    SystemEditor/SystemEditorWidget.ui
+    SystemEditor/SurfacePropertyDlg.cpp
+    SystemEditor/SurfacePropertyDlg.h
+    SystemEditor/SurfacePropertyDlg.ui
+    SystemEditor/float_delegate.h
 
-    analysisdialogs/analysis_setting_dialog.cpp
-    analysisdialogs/analysis_setting_dialog.h
+    AnalysisDlg/AnalysisSettingDlg.cpp
+    AnalysisDlg/AnalysisSettingDlg.h
 
-    analysisdialogs/prescription_setting_dialog.cpp
-    analysisdialogs/prescription_setting_dialog.h
-    analysisdialogs/prescription_setting_dialog.ui
+    AnalysisDlg/PrescriptionDlg.cpp
+    AnalysisDlg/PrescriptionDlg.h
+    AnalysisDlg/PrescriptionDlg.ui
 
-    analysisdialogs/layout_dialog.cpp
-    analysisdialogs/layout_dialog.h
-    analysisdialogs/layout_dialog.ui
+    AnalysisDlg/Layout2dDlg.cpp
+    AnalysisDlg/Layout2dDlg.h
+    AnalysisDlg/Layout2dDlg.ui
 
-    analysisdialogs/single_ray_trace_dialog.h
-    analysisdialogs/single_ray_trace_dialog.cpp
-    analysisdialogs/single_ray_trace_dialog.ui
+    AnalysisDlg/SingleRayTraceDlg.h
+    AnalysisDlg/SingleRayTraceDlg.cpp
+    AnalysisDlg/SingleRayTraceDlg.ui
 
-    analysisdialogs/paraxial_trace_dialog.h
-    analysisdialogs/paraxial_trace_dialog.cpp
-    analysisdialogs/paraxial_trace_dialog.ui
+    AnalysisDlg/ParaxialTraceDlg.h
+    AnalysisDlg/ParaxialTraceDlg.cpp
+    AnalysisDlg/ParaxialTraceDlg.ui
 
-    analysisdialogs/transverse_ray_fan_dialog.cpp
-    analysisdialogs/transverse_ray_fan_dialog.h
-    analysisdialogs/transverse_ray_fan_dialog.ui
+    AnalysisDlg/TransverseRayFanDlg.cpp
+    AnalysisDlg/TransverseRayFanDlg.h
+    AnalysisDlg/TransverseRayFanDlg.ui
 
-    analysisdialogs/field_curvature_setting_dialog.cpp
-    analysisdialogs/field_curvature_setting_dialog.h
-    analysisdialogs/field_curvature_setting_dialog.ui
+    AnalysisDlg/FieldCurvatureDlg.cpp
+    AnalysisDlg/FieldCurvatureDlg.h
+    AnalysisDlg/FieldCurvatureDlg.ui
 
-    analysisdialogs/longitudinal_setting_dialog.cpp
-    analysisdialogs/longitudinal_setting_dialog.h
-    analysisdialogs/longitudinal_setting_dialog.ui
+    AnalysisDlg/LongitudinalDlg.cpp
+    AnalysisDlg/LongitudinalDlg.h
+    AnalysisDlg/LongitudinalDlg.ui
 
-    analysisdialogs/chromatic_focusshift_setting_dialog.cpp
-    analysisdialogs/chromatic_focusshift_setting_dialog.h
-    analysisdialogs/chromatic_focusshift_setting_dialog.ui
+    AnalysisDlg/ChromaticFocusShiftDlg.cpp
+    AnalysisDlg/ChromaticFocusShiftDlg.h
+    AnalysisDlg/ChromaticFocusShiftDlg.ui
 
-    analysisdialogs/spot_diagram_setting_dialog.cpp
-    analysisdialogs/spot_diagram_setting_dialog.h
-    analysisdialogs/spot_diagram_setting_dialog.ui
+    AnalysisDlg/SpotDiagramDlg.cpp
+    AnalysisDlg/SpotDiagramDlg.h
+    AnalysisDlg/SpotDiagramDlg.ui
 
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.h
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.cpp
