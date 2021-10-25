@@ -15,7 +15,6 @@ TextViewDock::TextViewDock(QString label, OpticalSystem* sys, QWidget *parent) :
 {
     this->setFeature(CDockWidget::DockWidgetDeleteOnClose, true);
     this->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
-    //this->resize(300,200);
     this->setMinimumSize(300,200);
 
     // Text Edit
@@ -34,7 +33,7 @@ TextViewDock::TextViewDock(QString label, OpticalSystem* sys, QWidget *parent) :
     //m_toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     this->setToolBar(m_toolbar);
 
-    QObject::connect(actionUpdate,  SIGNAL(triggered()), this, SLOT(updateText()));
+    QObject::connect(actionUpdate,  SIGNAL(triggered()), this, SLOT(updateContent()));
     QObject::connect(actionSetting, SIGNAL(triggered()), this, SLOT(showSettingDlg()));
     QObject::connect(actionSave,    SIGNAL(triggered()), this, SLOT(saveToFile()));
 }
@@ -42,7 +41,7 @@ TextViewDock::TextViewDock(QString label, OpticalSystem* sys, QWidget *parent) :
 TextViewDock::~TextViewDock()
 {
     delete m_toolbar;
-
+    delete m_textEdit;
     m_settingDlgPtr.reset();
 }
 
@@ -61,7 +60,7 @@ void TextViewDock::showSettingDlg()
 {
     if(m_settingDlgPtr){
         if(m_settingDlgPtr->exec() == QDialog::Accepted){
-            updateContent();
+            this->updateContent();
         }
     }
 }

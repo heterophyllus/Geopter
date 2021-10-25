@@ -29,7 +29,7 @@ PlotViewDock::PlotViewDock(QString label, OpticalSystem* sys, QWidget *parent):
     auto actionSave = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
     this->setToolBar(m_toolbar);
 
-    QObject::connect(actionUpdate,  SIGNAL(triggered()), this, SLOT(updatePlot()));
+    QObject::connect(actionUpdate,  SIGNAL(triggered()), this, SLOT(updateContent()));
     QObject::connect(actionSetting, SIGNAL(triggered()), this, SLOT(showSettingDlg()));
     QObject::connect(actionSave,    SIGNAL(triggered()), this, SLOT(saveToFile()));
 }
@@ -37,13 +37,7 @@ PlotViewDock::PlotViewDock(QString label, OpticalSystem* sys, QWidget *parent):
 PlotViewDock::~PlotViewDock()
 {
     m_settingDlgPtr.reset();
-
-    try {
-        delete m_customPlot;
-    }  catch (...) {
-        qDebug() << "delete error (QCustomPlot)";
-    }
-
+    delete m_customPlot;
     delete m_toolbar;
 }
 
@@ -56,7 +50,7 @@ void PlotViewDock::showSettingDlg()
 {
     if(m_settingDlgPtr){
         if(m_settingDlgPtr->exec() == QDialog::Accepted){
-            updateContent();
+            this->updateContent();
         }
     }
 }

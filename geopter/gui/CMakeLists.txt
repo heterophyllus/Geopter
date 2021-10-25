@@ -1,84 +1,86 @@
 cmake_minimum_required(VERSION 3.5)
 
+project(geopter-gui)
+
+set(GEOPTER_GUI_HEADERS
+    MainWindow.h
+    TextViewDock.h
+    PlotViewDock.h
+    renderer_qcp.h
+    qdebugstream.h
+    GeneralConfigDlg.h
+
+    SystemEditor/SystemEditorDock.h
+    SystemEditor/SystemEditorWidget.h
+    SystemEditor/SurfacePropertyDlg.h
+    SystemEditor/float_delegate.h
+
+    AnalysisDlg/AnalysisSettingDlg.h
+    AnalysisDlg/PrescriptionDlg.h
+    AnalysisDlg/Layout2dDlg.h
+    AnalysisDlg/SingleRayTraceDlg.h
+    AnalysisDlg/ParaxialTraceDlg.h
+    AnalysisDlg/TransverseRayFanDlg.h
+    AnalysisDlg/FieldCurvatureDlg.h
+    AnalysisDlg/LongitudinalDlg.h
+    AnalysisDlg/ChromaticFocusShiftDlg.h
+    AnalysisDlg/SpotDiagramDlg.h
+
+    ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.h
+)
+
 
 set(GEOPTER_GUI_SOURCES
     main.cpp
 
-    MainWindow.h
     MainWindow.cpp
-    MainWindow.ui
 
-    TextViewDock.h
     TextViewDock.cpp
-
-    PlotViewDock.h
     PlotViewDock.cpp
 
-    renderer_qcp.h
     renderer_qcp.cpp
 
-    qdebugstream.h
-
     GeneralConfigDlg.cpp
-    GeneralConfigDlg.h
-    GeneralConfigDlg.ui
 
     SystemEditor/SystemEditorDock.cpp
-    SystemEditor/SystemEditorDock.h
-    SystemEditor/SystemEditorWidget.h
     SystemEditor/SystemEditorWidget.cpp
-    SystemEditor/SystemEditorWidget.ui
     SystemEditor/SurfacePropertyDlg.cpp
-    SystemEditor/SurfacePropertyDlg.h
-    SystemEditor/SurfacePropertyDlg.ui
-    SystemEditor/float_delegate.h
 
     AnalysisDlg/AnalysisSettingDlg.cpp
-    AnalysisDlg/AnalysisSettingDlg.h
-
     AnalysisDlg/PrescriptionDlg.cpp
-    AnalysisDlg/PrescriptionDlg.h
-    AnalysisDlg/PrescriptionDlg.ui
-
     AnalysisDlg/Layout2dDlg.cpp
-    AnalysisDlg/Layout2dDlg.h
-    AnalysisDlg/Layout2dDlg.ui
-
-    AnalysisDlg/SingleRayTraceDlg.h
     AnalysisDlg/SingleRayTraceDlg.cpp
-    AnalysisDlg/SingleRayTraceDlg.ui
-
-    AnalysisDlg/ParaxialTraceDlg.h
     AnalysisDlg/ParaxialTraceDlg.cpp
-    AnalysisDlg/ParaxialTraceDlg.ui
-
     AnalysisDlg/TransverseRayFanDlg.cpp
-    AnalysisDlg/TransverseRayFanDlg.h
-    AnalysisDlg/TransverseRayFanDlg.ui
-
     AnalysisDlg/FieldCurvatureDlg.cpp
-    AnalysisDlg/FieldCurvatureDlg.h
-    AnalysisDlg/FieldCurvatureDlg.ui
-
     AnalysisDlg/LongitudinalDlg.cpp
-    AnalysisDlg/LongitudinalDlg.h
-    AnalysisDlg/LongitudinalDlg.ui
-
     AnalysisDlg/ChromaticFocusShiftDlg.cpp
-    AnalysisDlg/ChromaticFocusShiftDlg.h
-    AnalysisDlg/ChromaticFocusShiftDlg.ui
-
     AnalysisDlg/SpotDiagramDlg.cpp
-    AnalysisDlg/SpotDiagramDlg.h
-    AnalysisDlg/SpotDiagramDlg.ui
 
-    ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.h
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.cpp
 )
 
-add_executable(Geopter ${GEOPTER_GUI_SOURCES})
+set(GEOPTER_GUI_FORMS
+    MainWindow.ui
 
-target_include_directories(Geopter PRIVATE
+    GeneralConfigDlg.ui
+    SystemEditor/SystemEditorWidget.ui
+    SystemEditor/SurfacePropertyDlg.ui
+
+    AnalysisDlg/PrescriptionDlg.ui
+    AnalysisDlg/Layout2dDlg.ui
+    AnalysisDlg/SingleRayTraceDlg.ui
+    AnalysisDlg/SpotDiagramDlg.ui
+    AnalysisDlg/ChromaticFocusShiftDlg.ui
+    AnalysisDlg/LongitudinalDlg.ui
+    AnalysisDlg/ParaxialTraceDlg.ui
+    AnalysisDlg/TransverseRayFanDlg.ui
+    AnalysisDlg/FieldCurvatureDlg.ui
+)
+
+add_executable(${PROJECT_NAME} ${GEOPTER_GUI_SOURCES} ${GEOPTER_GUI_HEADERS} ${GEOPTER_GUI_FORMS})
+
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/Qt-Advanced-Docking
     ${CMAKE_SOURCE_DIR}/3rdparty/QCustomPlot
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src
@@ -89,7 +91,7 @@ target_include_directories(Geopter PRIVATE
     ${Python_INCLUDE_DIRS}
 )
 
-target_compile_definitions(Geopter PRIVATE
+target_compile_definitions(${PROJECT_NAME} PRIVATE
     PYTHONQT_QTALL_EXPORTS
     PYTHONQT_WITH_CORE
     PYTHONQT_WITH_GUI
@@ -99,7 +101,7 @@ target_compile_definitions(Geopter PRIVATE
     PYTHONQT_WITH_UITOOLS
 )
 
-target_link_libraries(Geopter PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Core
     Qt5::Gui
     Qt5::Widgets
@@ -114,15 +116,15 @@ target_link_libraries(Geopter PRIVATE
     Qt5::UiTools
     qtadvanceddocking
     QCustomPlot
-    geopteroptical
+    geopter-optical
     PythonQt
     PythonQt_QtAll
     ${Python_LIBRARIES}
 )
 
 
+
 # surpress console window
 if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 endif()
-

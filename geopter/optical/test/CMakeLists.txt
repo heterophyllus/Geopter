@@ -8,5 +8,5 @@ target_include_directories(triplet PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/spline/src
 )
 
-target_link_libraries(triplet PRIVATE geopteroptical)
+target_link_libraries(triplet PRIVATE geopter-optical)
 

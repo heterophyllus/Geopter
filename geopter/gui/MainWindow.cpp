@@ -333,8 +333,21 @@ QString MainWindow::createDockTitleWithNumber(QString dockTitleBase)
  * ********************************************************************************************************************************/
 void MainWindow::showAbout()
 {
-    // TODO: Dialog to show description and licence notice should be implemented
+    QString text =
+                "Geopter  -Optical Design Software-<br><br>"
+                "This program is distributed in the hope that it will be useful,\n"
+                "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+                "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+                "GNU General Public License for more details.<br><br>"
+                "Copyright(C) 2021 - present  Hiiragi<br><br>"
+                "Contact : heterophyllus.work@gmail.com<br><br>"
+                "Please see: "
+                "<a href=\"https://github.com/heterophyllus/Geopter\">"
+                "https://github.com/heterophyllus/Geopter</a></font>";
 
-    QMessageBox::information(this,tr("About"), tr("Geopter v0.1.0"));
+    QMessageBox msgBox(this);
+    msgBox.setText(text);
+    msgBox.setWindowTitle(tr("About Geopter"));
+    msgBox.exec();
 }
 

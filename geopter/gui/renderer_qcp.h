@@ -1,8 +1,8 @@
 #ifndef RENDERERQCP_H
 #define RENDERERQCP_H
 
-#include "Renderer/renderer.h"
-#include "Data/plot_data.h"
+#include "renderer/renderer.h"
+#include "data/plot_data.h"
 
 #include "qcustomplot.h"
 

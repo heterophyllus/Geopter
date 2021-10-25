@@ -1,13 +1,44 @@
-#include "Element/element_model.h"
+/*******************************************************************************
+** Geopter
+** Copyright (C) 2021 Hiiragi All Rights Reserved.
+** 
+** This file is part of Geopter.
+**
+** This library is free software; you can redistribute it and/or
+** modify it under the terms of the GNU Lesser General Public
+** License as published by the Free Software Foundation; either
+** version 2.1 of the License, or (at your option) any later version.
+** 
+** This library is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+** Lesser General Public License for more details.
+** 
+** You should have received a copy of the GNU Lesser General Public
+** License along with this library; If not, see <http://www.gnu.org/licenses/>.
+********************************************************************************
+**           Author: Hiiragi                                   
+**          Website: https://github.com/heterophyllus/Geopter
+**          Contact: heterophyllus.work@gmail.com                          
+**             Date: May 16th, 2021                                                                                          
+********************************************************************************/
 
-#include "Element/lens.h"
-//#include "Element/mirror.h"
-#include "Element/stop.h"
-#include "Element/dummy_interface.h"
-#include "Element/air_gap.h"
-#include "System/optical_system.h"
-#include "Assembly/optical_assembly.h"
-#include "Material/material.h"
+//============================================================================
+/// \file   element_model.cpp
+/// \author Hiiragi
+/// \date   September 12th, 2021
+/// \brief  
+//============================================================================
+
+#include "element/element_model.h"
+#include "element/lens.h"
+//#include "element/mirror.h"
+#include "element/stop.h"
+#include "element/dummy_interface.h"
+#include "element/air_gap.h"
+#include "system/optical_system.h"
+#include "assembly/optical_assembly.h"
+#include "material/material.h"
 
 
 using namespace geopter;

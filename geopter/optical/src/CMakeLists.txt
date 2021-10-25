@@ -1,85 +1,88 @@
 
+project(geopter-optical)
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 set(OPTICAL_SRCS 
-    Analysis/aberration.cpp
-    #Analysis/ray_fan.cpp
-    #Analysis/longitudinal.cpp
-    Analysis/layout.cpp
+    analysis/aberration.cpp
+    #analysis/ray_fan.cpp
+    #analysis/longitudinal.cpp
+    analysis/layout.cpp
 
-    Assembly/optical_assembly.cpp
-    Assembly/interface.cpp
-    Assembly/surface.cpp
-    Assembly/aperture.cpp
-    Assembly/circular.cpp
-    Assembly/gap.cpp
-    Assembly/decenter_data.cpp
+    assembly/optical_assembly.cpp
+    assembly/interface.cpp
+    assembly/surface.cpp
+    assembly/aperture.cpp
+    assembly/circular.cpp
+    assembly/gap.cpp
+    assembly/decenter_data.cpp
 
-    Profile/surface_profile.cpp
-    Profile/spherical.cpp
-    Profile/even_polynomial.cpp
-    Profile/odd_polynomial.cpp
+    profile/surface_profile.cpp
+    profile/spherical.cpp
+    profile/even_polynomial.cpp
+    profile/odd_polynomial.cpp
 
-    Element/element_model.cpp
-    Element/element.cpp
-    Element/lens.cpp
-    Element/mirror.cpp
-    Element/dummy_interface.cpp
-    Element/stop.cpp
-    Element/air_gap.cpp
+    element/element_model.cpp
+    element/element.cpp
+    element/lens.cpp
+    element/mirror.cpp
+    element/dummy_interface.cpp
+    element/stop.cpp
+    element/air_gap.cpp
 
-    Environment/environment.cpp
+    environment/environment.cpp
 
-    Spec/spectral_line.cpp
-    Spec/optical_spec.cpp
-    Spec/pupil_spec.cpp
-    Spec/field_spec.cpp
-    Spec/field.cpp
-    Spec/wvl_spec.cpp
-    Spec/wvl.cpp
+    spec/spectral_line.cpp
+    spec/optical_spec.cpp
+    spec/pupil_spec.cpp
+    spec/field_spec.cpp
+    spec/field.cpp
+    spec/wvl_spec.cpp
+    spec/wvl.cpp
 
-    FileIO/file_io.cpp
+    fileio/file_io.cpp
 
-    Material/material_library.cpp
-    Material/glass_catalog.cpp
-    Material/buchdahl_glass.cpp
-    Material/material.cpp
-    Material/air.cpp
-    Material/glass.cpp
+    material/material_library.cpp
+    material/glass_catalog.cpp
+    material/buchdahl_glass.cpp
+    material/material.cpp
+    material/air.cpp
+    material/glass.cpp
 
-    System/optical_system.cpp
+    system/optical_system.cpp
 
-    Paraxial/paraxial_ray.cpp
-    Paraxial/paraxial_path.cpp
-    Paraxial/first_order.cpp
-    Paraxial/paraxial_trace.cpp
+    paraxial/paraxial_ray.cpp
+    paraxial/paraxial_path.cpp
+    paraxial/first_order.cpp
+    paraxial/paraxial_trace.cpp
 
-    Sequential/sequential_path.cpp
-    Sequential/ray.cpp
-    Sequential/trace_error.cpp
-    Sequential/sequential_trace.cpp
+    sequential/sequential_path.cpp
+    sequential/ray.cpp
+    sequential/trace_error.cpp
+    sequential/sequential_trace.cpp
 
-    Renderer/renderer.cpp
-    #Renderer/renderer_svg.cpp
-    Renderer/rgb.cpp
+    renderer/renderer.cpp
+    #renderer/renderer_svg.cpp
+    renderer/rgb.cpp
 
-    Data/plot_data.cpp
-    Data/point_set.cpp
+    data/plot_data.cpp
+    data/point_set.cpp
 
-    Common/geopter_error.cpp
+    common/geopter_error.cpp
 
 
-    Utility/utility.cpp
+    utility/utility.cpp
 )
 
 
 
-add_library(geopteroptical STATIC ${OPTICAL_SRCS})
+add_library(${PROJECT_NAME} SHARED ${OPTICAL_SRCS})
 
-target_include_directories(geopteroptical PUBLIC
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/geopter/optical/include
     ${CMAKE_SOURCE_DIR}/3rdparty #Eigen, nlohman
     ${CMAKE_SOURCE_DIR}/3rdparty/spline/src
 )
 
-install(TARGETS geopteroptical LIBRARY DESTINATION lib)
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 install(FILES ${HEADERS} DESTINATION include/optical)
