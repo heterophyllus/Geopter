@@ -5,9 +5,6 @@
 #include "PlotViewDock.h"
 #include "renderer_qcp.h"
 
-#include "optical.h"
-using namespace geopter;
-
 namespace Ui {
 class SpotDiagramDlg;
 }
@@ -26,7 +23,6 @@ private:
     Ui::SpotDiagramDlg *ui;
     PlotViewDock* m_parentDock;
     RendererQCP *m_renderer;
-    OpticalSystem *m_opticalSystem;
 };
 
 #endif // SPOT_DIAGRAM_SETTING_DIALOG_H

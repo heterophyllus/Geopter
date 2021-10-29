@@ -6,10 +6,9 @@
 #include "renderer_qcp.h"
 
 TransverseRayFanDlg::TransverseRayFanDlg(OpticalSystem* sys, PlotViewDock *parent) :
-    AnalysisSettingDlg(parent),
+    AnalysisSettingDlg(sys, parent),
     ui(new Ui::TransverseRayFanDlg),
-    m_parentDock(parent),
-    m_opticalSystem(sys)
+    m_parentDock(parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("Transverse Ray Fan Setting");

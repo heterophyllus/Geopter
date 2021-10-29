@@ -44,7 +44,7 @@ Ray::Ray() :
     wvl_(0.0),
     array_size_(0)
 {
-    //ray_at_srfs_.clear();
+    pupil_crd_ = Eigen::Vector2d::Zero(2);
 }
 
 Ray::~Ray()
@@ -110,7 +110,7 @@ void Ray::print(std::ostringstream& oss)
     int num_srfs = ray_at_srfs_.size();
 
     //status
-    oss << "Status";
+    oss << "Status: ";
     switch (status_) {
     case RayStatus::PassThrough:
         oss << "Pass Through";

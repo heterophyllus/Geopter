@@ -7,7 +7,7 @@ Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ra
 
 As for optical design tools, there are several proprietary software with advanced features to be a definitive choice for professional work. However, there seem to be few private users due to their unaffordable cost for an annual license.
 
-Open source projects may well be another option to get exposure to optical design. It is a fact that more and more optical simulation library are being developed recently. One of the disadvantage of such library is to require matured programming skills to master how to use.
+Open source projects may well be another option to get exposure to optical design. It is a fact that more and more optical simulation library are being developed recently. One of the disadvantage of the present libraries is to require matured programming skills to master how to use.
 
 Geopter aims to be somewhere in between. This software features to emphasize reasonable graphical interface, allowing users to focus on optical design process. Also, as is common with open source projects, the software is freely available and its whole internal aspects are open to the public.
 
@@ -18,17 +18,19 @@ The primary user of this software may be a fresh optical engineer or a student h
 ### Prebuilt Binaries
 Prebuilt binaries can be downloaded in [Release page](https://github.com/heterophyllus/Geopter/releases/latest).
 
-### Build from Source
-Qt is supposed to be installed in your computer.
-All of the dependencies except Qt itself have been included in this repository, so QtCreator can build project by reading CMakeLists.txt.
-
-Another way is to create Visual Studio Solution using CMake.
-
-
 ### Examples
 Some example lenses are stored in "example" folder in json format.  In Geopter GUI, go File->Open and select a json file.
 
-## Dependencies
+### Python scripting
+Unlike other optical design software such as Zemax and CodeV, Geopter doesn't have its own "macro" language.  Instead, it utilizes python for scripting and has an embeded interpreter. The "geopter_gui" object allows access to the parent application.　A simple example script is in "scripts" folder. To run it, in the console dock;
+
+```
+import example
+example.run_demo(geopter_gui)
+```
+
+## Development
+### Dependencies
 
 |Library|Description|
 |---|---|
@@ -38,6 +40,13 @@ Some example lenses are stored in "example" folder in json format.  In Geopter G
 |[nlohman/json](https://github.com/nlohmann/json)|JSON utility|
 |[Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)|template library for linear algebra|
 |[ttk592/spline](https://github.com/ttk592/spline)|spline interpolation|
+|[PythonQt](https://mevislab.github.io/pythonqt/index.html)|dynamic Python binding for the Qt framework|
+
+
+### Building from Source
+All of the dependencies except Qt itself have been included in this repository.
+This application is built with Qt5 and Qt6 is currently not supported.
+
 
 ## License
 This project is licensed under GPL license - see the [LICENSE](LICENSE.md) for details.

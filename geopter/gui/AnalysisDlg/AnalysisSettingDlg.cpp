@@ -1,8 +1,9 @@
 #include "AnalysisSettingDlg.h"
 
 
-AnalysisSettingDlg::AnalysisSettingDlg(QWidget *parent) :
-    QDialog(parent)
+AnalysisSettingDlg::AnalysisSettingDlg(OpticalSystem* sys, QWidget *parent) :
+    QDialog(parent),
+    m_opticalSystem(sys)
 {
 
 }

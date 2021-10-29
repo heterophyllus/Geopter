@@ -43,6 +43,9 @@
 #include <memory>
 #include <vector>
 
+#include "system/optical_system.h"
+
+//#include "binding/qt_binding.h"
 
 #include "analysis/aberration.h"
 #include "analysis/layout.h"
@@ -77,7 +80,7 @@
 #include "spec/wvl.h"
 #include "spec/spectral_line.h"
 
-#include "system/optical_system.h"
+
 
 #include "paraxial/paraxial_path.h"
 #include "paraxial/paraxial_ray.h"
@@ -101,7 +104,7 @@
 
 #include "utility/utility.h"
 
-#include "fileio/file_io.h"
+//#include "fileio/file_io.h"
 
 #include "environment/environment.h"
 

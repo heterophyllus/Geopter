@@ -4,9 +4,6 @@
 #include "AnalysisDlg/AnalysisSettingDlg.h"
 #include "TextViewDock.h"
 
-#include "optical.h"
-using namespace geopter;
-
 namespace Ui {
 class SingleRayTraceDlg;
 }
@@ -32,7 +29,7 @@ private:
 
     Ui::SingleRayTraceDlg *ui;
     TextViewDock *m_parentDock;
-    OpticalSystem* m_opticalSystem;
+
 };
 
 #endif // REAL_RAY_TRACE_DIALOG_H

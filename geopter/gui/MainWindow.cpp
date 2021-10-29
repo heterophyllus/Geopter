@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+
     this->setWindowTitle("Geopter");
 
     // File menu
@@ -81,15 +82,15 @@ MainWindow::MainWindow(QWidget *parent)
     // create python console
     QTabWidget *consoleTab = new QTabWidget;
     m_pyConsole = new PythonQtScriptingConsole(NULL, PythonQt::self()->getMainModule());
-    m_stdoutText = new QTextEdit;
-    m_stdoutText->setReadOnly(true);
-    m_stderrText = new QTextEdit;
-    m_stderrText->setReadOnly(true);
+    QTextEdit* stdoutText = new QTextEdit;
+    stdoutText->setReadOnly(true);
+    QTextEdit* stderrText = new QTextEdit;
+    stderrText->setReadOnly(true);
     consoleTab->addTab(m_pyConsole, tr("PyConsole"));
-    consoleTab->addTab(m_stdoutText, tr("Output"));
-    consoleTab->addTab(m_stderrText, tr("Error"));
-    m_qout = new QDebugStream(std::cout, m_stdoutText);
-    m_qerr = new QDebugStream(std::cerr, m_stderrText);
+    consoleTab->addTab(stdoutText, tr("Output"));
+    consoleTab->addTab(stderrText, tr("Error"));
+    m_qout = new QDebugStream(std::cout, stdoutText);
+    m_qerr = new QDebugStream(std::cerr, stderrText);
 
     CDockWidget* ConsoleDock = new CDockWidget("Console");
 
@@ -98,11 +99,15 @@ MainWindow::MainWindow(QWidget *parent)
     m_dockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, ConsoleDock);
     ui->menuView->addAction(ConsoleDock->toggleViewAction());
 
+    QString scriptDirPath = QApplication::applicationDirPath() + "/scripts";
+    PythonQt::self()->getMainModule().evalScript("import sys");
+    PythonQt::self()->getMainModule().evalScript("sys.path.append(\"" + scriptDirPath +"\" )");
+
+    // load glass catalogs
     QString agfDir = QApplication::applicationDirPath() + "/AGF";
     loadAgfsFromDir(agfDir);
 
     m_systemEditorDock->syncUiWithSystem();
-
 }
 
 MainWindow::~MainWindow()
@@ -122,6 +127,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
     QMainWindow::closeEvent(event);
 }
 
+OpticalSystem* MainWindow::optical_system()
+{
+    return opt_sys_.get();
+}
 
 void MainWindow::loadAgfsFromDir(QString agfDir)
 {
@@ -145,6 +154,11 @@ void MainWindow::loadAgfsFromDir(QString agfDir)
 
 }
 
+
+void MainWindow::syncUiWithSystem()
+{
+    m_systemEditorDock->syncUiWithSystem();
+}
 
 /*********************************************************************************************************************************
  *
@@ -171,7 +185,8 @@ void MainWindow::saveAs()
     }
 
     std::string json_path = filePath.toStdString();
-    FileIO::save_to_json(*opt_sys_, json_path);
+    //FileIO::save_to_json(*opt_sys_, json_path);
+    opt_sys_->save_to_file(json_path);
 
     QMessageBox::information(this,tr("Info"), tr("Saved to JSON file"));
 }
@@ -185,7 +200,8 @@ void MainWindow::openFile()
     }
 
     std::string json_path = filePaths.first().toStdString();
-    FileIO::load_from_json(*opt_sys_,json_path);
+    //FileIO::load_from_json(*opt_sys_,json_path);
+    opt_sys_->load_file(json_path);
 
     opt_sys_->update_model();
 
@@ -349,5 +365,7 @@ void MainWindow::showAbout()
     msgBox.setText(text);
     msgBox.setWindowTitle(tr("About Geopter"));
     msgBox.exec();
+
 }
+
 

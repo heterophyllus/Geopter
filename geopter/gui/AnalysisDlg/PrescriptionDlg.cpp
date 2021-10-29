@@ -6,10 +6,9 @@
 #include "ui_prescriptiondlg.h"
 
 PrescriptionDlg::PrescriptionDlg(OpticalSystem* sys, TextViewDock *parent) :
-    AnalysisSettingDlg(parent),
+    AnalysisSettingDlg(sys, parent),
     ui(new Ui::PrescriptionDlg),
-    m_parentDock(parent),
-    m_opticalSystem(sys)
+    m_parentDock(parent)
 {
     ui->setupUi(this);
     setWindowTitle("Prescription Setting");

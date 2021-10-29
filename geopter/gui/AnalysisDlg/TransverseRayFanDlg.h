@@ -5,9 +5,6 @@
 #include "PlotViewDock.h"
 #include "renderer_qcp.h"
 
-#include "optical.h"
-using namespace geopter;
-
 namespace Ui {
 class TransverseRayFanDlg;
 }
@@ -26,7 +23,6 @@ private:
     Ui::TransverseRayFanDlg *ui;
     PlotViewDock* m_parentDock;
     RendererQCP *m_renderer;
-    OpticalSystem *m_opticalSystem;
 };
 
 #endif // TRANSVERSE_RAY_FAN_DIALOG_H

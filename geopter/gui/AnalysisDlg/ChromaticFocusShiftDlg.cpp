@@ -2,10 +2,9 @@
 #include "ui_chromaticfocusshiftdlg.h"
 
 ChromaticFocusShiftDlg::ChromaticFocusShiftDlg(OpticalSystem* sys, PlotViewDock *parent) :
-    AnalysisSettingDlg(parent),
+    AnalysisSettingDlg(sys, parent),
     ui(new Ui::ChromaticFocusShiftDlg),
-    m_parentDock(parent),
-    m_opticalSystem(sys)
+    m_parentDock(parent)
 {
     ui->setupUi(this);
 

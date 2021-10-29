@@ -4,10 +4,6 @@
 #include "AnalysisDlg/AnalysisSettingDlg.h"
 #include "TextViewDock.h"
 
-#include "optical.h"
-using namespace geopter;
-
-
 namespace Ui {
 class PrescriptionDlg;
 }
@@ -25,7 +21,6 @@ public:
 private:
     Ui::PrescriptionDlg *ui;
     TextViewDock* m_parentDock;
-    OpticalSystem* m_opticalSystem;
 };
 
 #endif // PRESCRIPTION_SETTING_DIALOG_H

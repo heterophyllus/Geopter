@@ -3,6 +3,7 @@ project(geopter-optical)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+
 set(OPTICAL_SRCS 
     analysis/aberration.cpp
     #analysis/ray_fan.cpp
@@ -40,7 +41,7 @@ set(OPTICAL_SRCS
     spec/wvl_spec.cpp
     spec/wvl.cpp
 
-    fileio/file_io.cpp
+    #fileio/file_io.cpp
 
     material/material_library.cpp
     material/glass_catalog.cpp
@@ -75,8 +76,9 @@ set(OPTICAL_SRCS
 )
 
 
-
-add_library(${PROJECT_NAME} SHARED ${OPTICAL_SRCS})
+add_library(${PROJECT_NAME} STATIC
+    ${OPTICAL_SRCS}
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/geopter/optical/include

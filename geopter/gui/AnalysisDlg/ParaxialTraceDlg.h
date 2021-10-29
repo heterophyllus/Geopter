@@ -4,10 +4,6 @@
 #include "AnalysisDlg/AnalysisSettingDlg.h"
 #include "TextViewDock.h"
 
-#include "optical.h"
-using namespace geopter;
-
-
 namespace Ui {
 class ParaxialTraceDlg;
 }
@@ -25,7 +21,6 @@ public:
 private:
     Ui::ParaxialTraceDlg *ui;
     TextViewDock* m_parentDock;
-    OpticalSystem* m_opticalSystem;
 };
 
 #endif // PARAXIAL_TRACE_DIALOG_H

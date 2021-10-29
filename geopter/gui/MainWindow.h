@@ -16,6 +16,8 @@
 
 #include "qdebugstream.h"
 
+#include "GeopterMacroFunc.h"
+
 #include "optical.h"
 using namespace geopter;
 
@@ -24,6 +26,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+Q_DECLARE_METATYPE(std::string)
 
 class MainWindow : public QMainWindow
 {
@@ -33,7 +36,18 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    DECRARE_GEOPTER_MACRO_FUNC
 
+    public Q_SLOTS:
+    OpticalSystem* optical_system();
+    std::vector<double> vec_text(){
+        std::vector<double> v({0.0, 1.0, 2.0});
+        return v;
+    }
+    std::string str_test(){
+        std::string s ="sss";
+        return s;
+    }
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
@@ -83,15 +97,13 @@ private:
     void showAnalysisText(QString dockTitleBase);
 
     QString createDockTitleWithNumber(QString dockTitleBase);
-
     void loadAgfsFromDir(QString agfDir);
+    void syncUiWithSystem();
 
     Ui::MainWindow *ui;
     ads::CDockManager* m_dockManager;
     SystemEditorDock* m_systemEditorDock;
     PythonQtScriptingConsole* m_pyConsole;
-    QTextEdit* m_stdoutText;
-    QTextEdit* m_stderrText;
     QDebugStream *m_qout;
     QDebugStream *m_qerr;
     std::shared_ptr<OpticalSystem> opt_sys_;

@@ -7,10 +7,9 @@
 
 
 ParaxialTraceDlg::ParaxialTraceDlg(OpticalSystem* sys, TextViewDock *parent) :
-    AnalysisSettingDlg(parent),
+    AnalysisSettingDlg(sys, parent),
     ui(new Ui::ParaxialTraceDlg),
-    m_parentDock(parent),
-    m_opticalSystem(sys)
+    m_parentDock(parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("Paraxial Ray Trace Setting");

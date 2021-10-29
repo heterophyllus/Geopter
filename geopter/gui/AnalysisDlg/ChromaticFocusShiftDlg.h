@@ -5,10 +5,6 @@
 #include "PlotViewDock.h"
 #include "renderer_qcp.h"
 
-#include "optical.h"
-using namespace geopter;
-
-
 namespace Ui {
 class ChromaticFocusShiftDlg;
 }
@@ -27,7 +23,7 @@ private:
     Ui::ChromaticFocusShiftDlg *ui;
     PlotViewDock* m_parentDock;
     RendererQCP *m_renderer;
-    OpticalSystem *m_opticalSystem;
+
 };
 
 #endif // CHROMATIC_FOCUSSHIFT_SETTING_DIALOG_H

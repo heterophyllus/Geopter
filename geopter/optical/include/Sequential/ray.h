@@ -65,33 +65,34 @@ public:
 
     /** Add data at the last */
     void append(std::unique_ptr<RayAtSurface> ray_at_srf);
-
     void append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
 
     inline void set_status(int s);
-
     inline void set_wvl(double wvl);
+    inline void set_pupil_coord(const Eigen::Vector2d& pupil);
 
     inline int size() const;
 
     inline RayAtSurface* at(int i) const;
     inline RayAtSurface* front() const;
     inline RayAtSurface* back() const;
-
     inline int status() const;
-
     inline double wavelength() const;
+    inline Eigen::Vector2d pupil_coord() const;
 
     void clear();
 
     void print(std::ostringstream& oss);
     void print();
 
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 private:
     std::vector< std::unique_ptr<RayAtSurface> > ray_at_srfs_;
     int status_;
     double wvl_;
     int array_size_;
+    Eigen::Vector2d pupil_crd_;
 };
 
 
@@ -140,6 +141,16 @@ void Ray::set_wvl(double wvl)
 void Ray::set_status(int s)
 {
     status_ = s;
+}
+
+void Ray::set_pupil_coord(const Eigen::Vector2d &pupil)
+{
+    pupil_crd_ = pupil;
+}
+
+Eigen::Vector2d Ray::pupil_coord() const
+{
+    return pupil_crd_;
 }
 
 } //namespace geopter

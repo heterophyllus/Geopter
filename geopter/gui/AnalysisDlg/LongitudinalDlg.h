@@ -5,8 +5,6 @@
 #include "PlotViewDock.h"
 #include "renderer_qcp.h"
 
-#include "optical.h"
-using namespace geopter;
 
 namespace Ui {
 class LongitudinalDlg;
@@ -24,10 +22,8 @@ public:
 
 private:
     Ui::LongitudinalDlg *ui;
-    PlotViewDock* m_parentDock;
     RendererQCP *m_renderer;
-    OpticalSystem *m_opticalSystem;
-
+    PlotViewDock* m_parentDock;
 };
 
 #endif // LONGITUDINAL_SETTING_DIALOG_H

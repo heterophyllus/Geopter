@@ -34,6 +34,7 @@
 #ifndef OPTICALSYSTEM_H
 #define OPTICALSYSTEM_H
 
+
 #include <string>
 #include <memory>
 #include <sstream>
@@ -47,6 +48,8 @@
 #include "material/material_library.h"
 
 namespace geopter {
+
+
 
 enum ReferenceRay{
     ChiefRay,
@@ -62,6 +65,7 @@ public:
     OpticalSystem();
     ~OpticalSystem();
 
+public:
     void set_title(std::string title);
 
     /** Returns the title of the system */
@@ -86,13 +90,15 @@ public:
 
     void create_minimum_system();
 
-    void add_surface_and_gap(double r, double t, std::string mat_name);
 
     std::shared_ptr<ParaxialRay> axial_ray(int wi) const;
     std::shared_ptr<ParaxialRay> principle_ray(int wi) const;
     FirstOrderData first_order_data() const;
 
     std::shared_ptr<Ray> reference_ray(int ri, int fi, int wi) const;
+
+    void load_file(const std::string& filepath);
+    void save_to_file(const std::string& filepath);
 
     void set_vignetting_factors();
 
@@ -102,7 +108,10 @@ public:
 
     void print(std::ostringstream& oss);
 
+    void add_surface_and_gap(double r, double t, std::string mat_name);
+
 private:
+
     void update_aim_pt();
     void update_reference_rays();
     void update_semi_diameters();

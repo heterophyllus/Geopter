@@ -5,9 +5,6 @@
 #include "PlotViewDock.h"
 #include "renderer_qcp.h"
 
-#include "optical.h"
-using namespace geopter;
-
 namespace Ui {
 class Layout2dDlg;
 }
@@ -27,9 +24,8 @@ private slots:
 
 private:
     Ui::Layout2dDlg *ui;
-    PlotViewDock* m_parentDock;
     RendererQCP *m_renderer;
-    OpticalSystem *m_opticalSystem;
+    PlotViewDock* m_parentDock;
 };
 
 #endif // LAYOUT_DIALOG_H

@@ -42,6 +42,7 @@ protected:
     std::unique_ptr<AnalysisSettingDlg> m_settingDlgPtr;
     OpticalSystem *m_opticalSystem;
 
+    QMap<QString, QVariant> m_defaultParams;
 };
 
 #endif // PLOTVIEWDOCK_H

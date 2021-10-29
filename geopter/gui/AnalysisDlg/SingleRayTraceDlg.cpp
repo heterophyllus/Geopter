@@ -7,10 +7,9 @@
 
 
 SingleRayTraceDlg::SingleRayTraceDlg(OpticalSystem *sys, TextViewDock *parent) :
-    AnalysisSettingDlg(parent),
+    AnalysisSettingDlg(sys, parent),
     ui(new Ui::SingleRayTraceDlg),
-    m_parentDock(parent),
-    m_opticalSystem(sys)
+    m_parentDock(parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("Single Ray Trace Setting");

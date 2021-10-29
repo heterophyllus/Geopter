@@ -115,7 +115,7 @@ int main()
     std::cout << oss.str() << std::endl;
 
     // save to json
-    FileIO::save_to_json(*sys, "triplet.json");
+    sys->save_to_file("triplet.json");
 
     sys.reset();
 

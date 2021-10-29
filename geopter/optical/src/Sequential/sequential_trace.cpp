@@ -92,6 +92,7 @@ std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pup
     SequentialPath path = sequential_path(0, image_index_, wvl);
 
     std::shared_ptr<Ray> ray = trace_ray_throughout_path(path, pt0, dir0);
+    ray->set_pupil_coord(pupil_crd);
     ray->set_wvl(wvl);
     return ray;
 

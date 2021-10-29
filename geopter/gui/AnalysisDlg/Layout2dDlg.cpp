@@ -6,10 +6,9 @@
 #include <QValidator>
 
 Layout2dDlg::Layout2dDlg(OpticalSystem* sys, PlotViewDock *parent) :
-    AnalysisSettingDlg(parent),
+    AnalysisSettingDlg(sys, parent),
     ui(new Ui::Layout2dDlg),
-    m_parentDock(parent),
-    m_opticalSystem(sys)
+    m_parentDock(parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("Layout Setting");
