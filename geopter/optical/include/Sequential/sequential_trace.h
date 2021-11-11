@@ -40,7 +40,7 @@
 
 #include "system/optical_system.h"
 #include "sequential/sequential_path.h"
-
+#include "data/grid_array.h"
 
 namespace geopter {
 
@@ -53,6 +53,14 @@ public:
     std::shared_ptr<Ray> trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
 
     /**
+     * @brief Trace reference rays (choe, meridional upper/lower, sagittal upper/lower)
+     * @param ref_rays
+     * @param fld
+     * @param wvl
+     */
+    void trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
+
+    /**
      * @brief Trace patterned rays (grid, hexapolar, etc)
      * @param rays Traced Ray vector
      * @param pupils pupil coordinated list
@@ -61,6 +69,8 @@ public:
      * @return number of valid rays
      */
     int trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> >& rays, const std::vector< Eigen::Vector2d >& pupils, const Field* fld, double wvl);
+
+    GridArray< std::shared_ptr<Ray> > trace_grid_rays(const Field* fld, double wvl, int nrd=21);
 
     /** Trace a ray throughout the given sequantial path */
     std::shared_ptr<Ray> trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
@@ -72,7 +82,6 @@ public:
      * @return {x_focus_shift, y_focus_shift} (from image plane)
      */
     Eigen::Vector2d trace_coddington(const Field* fld, double wvl, double offset=0.0);
-
 
     Eigen::Vector2d aim_chief_ray(const Field* fld, double wvl);
 

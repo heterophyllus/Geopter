@@ -75,7 +75,7 @@ void MainWindow::longitudinal()
 
 void MainWindow::new_lens()
 {
-    opt_sys_->create_minimum_system();
+    opt_sys_->initialize();
     //opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
@@ -100,8 +100,8 @@ int MainWindow::nwav()
 void MainWindow::paraxial_trace()
 {
     const int wi = opt_sys_->optical_spec()->spectral_region()->reference_index();
-    auto ax_ray = opt_sys_->axial_ray(wi);
-    auto pr_ray = opt_sys_->principle_ray(wi);
+    auto ax_ray = opt_sys_->paraxial_data()->axial_ray(wi);
+    auto pr_ray = opt_sys_->paraxial_data()->principle_ray(wi);
 
     std::ostringstream oss;
     ax_ray->print(oss);

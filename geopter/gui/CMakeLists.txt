@@ -56,6 +56,7 @@ set(GEOPTER_GUI_HEADERS
     AnalysisDlg/LongitudinalDlg.h
     AnalysisDlg/ChromaticFocusShiftDlg.h
     AnalysisDlg/SpotDiagramDlg.h
+    AnalysisDlg/OpdFanDlg.h
 
     #${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.h
 )
@@ -89,6 +90,7 @@ set(GEOPTER_GUI_SOURCES
     AnalysisDlg/LongitudinalDlg.cpp
     AnalysisDlg/ChromaticFocusShiftDlg.cpp
     AnalysisDlg/SpotDiagramDlg.cpp
+    AnalysisDlg/OpdFanDlg.cpp
 
     #${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src/gui/PythonQtScriptingConsole.cpp
 )
@@ -109,6 +111,7 @@ set(GEOPTER_GUI_FORMS
     AnalysisDlg/ParaxialTraceDlg.ui
     AnalysisDlg/TransverseRayFanDlg.ui
     AnalysisDlg/FieldCurvatureDlg.ui
+    AnalysisDlg/OpdFanDlg.ui
 )
 
 add_executable(${PROJECT_NAME} ${GEOPTER_GUI_SOURCES} ${GEOPTER_GUI_HEADERS} ${GEOPTER_GUI_FORMS})

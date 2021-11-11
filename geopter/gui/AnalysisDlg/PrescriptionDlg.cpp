@@ -16,6 +16,8 @@ PrescriptionDlg::PrescriptionDlg(OpticalSystem* sys, TextViewDock *parent) :
     //default
     ui->generalInfoCheck->setCheckState(Qt::Checked);
     ui->specCheck->setCheckState(Qt::Checked);
+    ui->firstOrderDataCheck->setCheckState(Qt::Checked);
+    ui->lensDataCheck->setCheckState(Qt::Checked);
     ui->surfaceDataCheck->setCheckState(Qt::Checked);
 }
 
@@ -28,41 +30,57 @@ void PrescriptionDlg::updateParentDockContent()
 {
     bool doGeneralInfo = ui->generalInfoCheck->checkState();
     bool doSpec = ui->specCheck->checkState();
-    bool doSurfaceData = ui->surfaceDataCheck->checkState();
+    bool doLensData = ui->lensDataCheck->checkState();
     bool doFirstOrderData = ui->firstOrderDataCheck->checkState();
+    bool doSurfaceData = ui->surfaceDataCheck->checkState();
 
     m_opticalSystem->update_model();
 
     std::ostringstream oss;
 
-    oss << "Prescription..." << std::endl;
+    oss << "PRESCRIPTION..." << std::endl;
     oss << std::endl;
 
     if(doGeneralInfo) {
-        oss << "Title: " << m_opticalSystem->title() << std::endl;
+        oss << "TITLE: " << m_opticalSystem->title() << std::endl;
         oss << std::endl;
-        oss << "Note: " << std::endl;
+        oss << "NOTE: " << std::endl;
         oss << m_opticalSystem->note() << std::endl;
+        oss << std::endl;
     }
 
     if(doSpec) {
-        //oss << "Optical Specs..." << std::endl;
-        //oss << std::endl;
         m_opticalSystem->optical_spec()->print(oss);
         oss << std::endl;
     }
 
-    if(doSurfaceData) {
-        oss << "Surface Data..." << std::endl;
+    if(doFirstOrderData) {
+        oss << "FIRST ORDER DATA..." << std::endl;
+        m_opticalSystem->paraxial_data()->print(oss);
+        oss << std::endl;
+    }
+
+    if(doLensData) {
+        oss << "LENS DATA..." << std::endl;
         m_opticalSystem->optical_assembly()->print(oss);
         oss << std::endl;
     }
 
-    if(doFirstOrderData) {
-        oss << "First Order Data..." << std::endl;
-        m_opticalSystem->first_order_data().print(oss);
-        oss << std::endl;
+    if(doSurfaceData){
+        oss << "SURFACE DATA..." << std::endl;
+        const int num_srf = m_opticalSystem->optical_assembly()->surface_count();
+        for(int si = 0; si < num_srf; si++){
+            Surface* srf = m_opticalSystem->optical_assembly()->surface(si);
+            if(srf->profile()->name() == "SPH"){
+                continue;
+            }else{
+                oss << "Surface " << si << std::endl;
+                srf->profile()->print(oss);
+                oss << std::endl;
+            }
+        }
     }
+
 
     m_parentDock->setStringStreamToText(oss);
 

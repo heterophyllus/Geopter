@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   optical.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  include all header files 
-//============================================================================
-
 
 #ifndef OPTICAL_H
 #define OPTICAL_H
@@ -45,53 +38,28 @@
 
 #include "system/optical_system.h"
 
-//#include "binding/qt_binding.h"
-
-#include "analysis/aberration.h"
+#include "analysis/wave_aberration.h"
 #include "analysis/layout.h"
-//#include "Analysis/ray_fan.h"
-//#include "Analysis/longitudinal.h"
+#include "analysis/astigmatism.h"
+#include "analysis/spherochromatism.h"
+#include "analysis/chromatic_focus_shift.h"
+#include "analysis/spot_diagram.h"
+#include "analysis/transverse_ray_fan.h"
 
 #include "assembly/optical_assembly.h"
-#include "assembly/aperture.h"
-#include "assembly/circular.h"
-#include "assembly/interface.h"
-#include "assembly/surface.h"
-#include "assembly/gap.h"
-
-#include "profile/surface_profile.h"
-#include "profile/spherical.h"
-#include "profile/even_polynomial.h"
 
 #include "material/material_library.h"
-#include "material/material.h"
-#include "material/glass.h"
-#include "material/glass_catalog.h"
-#include "material/dispersion_formula.h"
-#include "material/air.h"
 #include "material/buchdahl_glass.h"
 
 #include "spec/optical_spec.h"
-#include "spec/field_spec.h"
-#include "spec/field.h"
-#include "spec/pupil_spec.h"
-#include "spec/wvl_spec.h"
-#include "spec/field.h"
-#include "spec/wvl.h"
 #include "spec/spectral_line.h"
 
-
-
-#include "paraxial/paraxial_path.h"
-#include "paraxial/paraxial_ray.h"
 #include "paraxial/paraxial_trace.h"
 
-#include "sequential/sequential_path.h"
 #include "sequential/sequential_trace.h"
 #include "sequential/ray.h"
 #include "sequential/trace_error.h"
 
-#include "element/element.h"
 #include "element/lens.h"
 #include "element/mirror.h"
 #include "element/dummy_interface.h"
@@ -103,8 +71,6 @@
 #include "renderer/rgb.h"
 
 #include "utility/utility.h"
-
-//#include "fileio/file_io.h"
 
 #include "environment/environment.h"
 

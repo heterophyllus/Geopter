@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   layout.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 #include <iostream>
 
 #include "analysis/layout.h"
@@ -90,29 +83,34 @@ void Layout::draw_elements()
 void Layout::draw_reference_rays()
 {
     int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
+    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
     int num_flds = opt_sys_->optical_spec()->field_of_view()->field_count();
 
     Rgb color;
     std::shared_ptr<Ray> ray;
-    
+
+    SequentialTrace *tracer = new SequentialTrace(opt_sys_);
+
     for(int fi = 0; fi < num_flds; fi++)
     {
-        color = opt_sys_->optical_spec()->field_of_view()->field(fi)->render_color();
+        Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
+        color = fld->render_color();
 
         try{
-            ray = opt_sys_->reference_ray(ReferenceRay::ChiefRay,fi,ref_wvl_idx);
-            draw_single_ray(ray, color);
+            std::vector<std::shared_ptr<Ray>> ref_rays;
+            tracer->trace_reference_rays(ref_rays, fld, ref_wvl_val);
 
-            ray = opt_sys_->reference_ray(ReferenceRay::MeridionalUpperRay,fi,ref_wvl_idx);
-            draw_single_ray(ray, color);
+            draw_single_ray(ref_rays[ReferenceRay::ChiefRay], color);
+            draw_single_ray(ref_rays[ReferenceRay::MeridionalUpperRay], color);
+            draw_single_ray(ref_rays[ReferenceRay::MeridionalLowerRay], color);
 
-            ray = opt_sys_->reference_ray(ReferenceRay::MeridionalLowerRay,fi,ref_wvl_idx);
-            draw_single_ray(ray, color);
         }catch(std::out_of_range &e){
             std::cerr << "Ray out of range : Layout::draw_reference_rays()" << std::endl;
             continue;
         }
     }
+
+    delete tracer;
 }
 
 

@@ -33,9 +33,8 @@ void ChromaticFocusShiftDlg::updateParentDockContent()
     double lower = ui->minWvlEdit->text().toDouble();
     double higher = ui->maxWvlEdit->text().toDouble();
 
-    Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
-    auto plotData = abr->plot_chromatic_focus_shift(lower, higher);
-
+    ChromaticFocusShift *chrom = new ChromaticFocusShift(m_opticalSystem);
+    auto plotData = chrom->plot(lower, higher);
 
     double higher_y = plotData->point_set(0)->higher_y();
     double lower_y  = plotData->point_set(0)->lower_y();
@@ -50,5 +49,5 @@ void ChromaticFocusShiftDlg::updateParentDockContent()
     m_renderer->draw_y_axis();
     m_renderer->update();
 
-    delete abr;
+    delete chrom;
 }

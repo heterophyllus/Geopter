@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   surface_profile.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #include <iostream>
 #include "profile/surface_profile.h"
@@ -144,4 +137,9 @@ void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eig
 
     pt = p;
     s = s1;
+}
+
+void SurfaceProfile::print(std::ostringstream &oss)
+{
+
 }

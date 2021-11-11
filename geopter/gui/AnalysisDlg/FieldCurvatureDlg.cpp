@@ -39,9 +39,8 @@ void FieldCurvatureDlg::updateParentDockContent()
     double scale = ui->scaleEdit->text().toDouble();
     int numRays = ui->numRaysEdit->text().toInt();
 
-    Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
-    auto plotData = abr->plot_astigmatism(rayAimingType, numRays);
-
+    Astigmatism *ast = new Astigmatism(m_opticalSystem);
+    auto plotData = ast->plot(rayAimingType, numRays);
     plotData->print();
 
     m_renderer->clear();
@@ -54,5 +53,5 @@ void FieldCurvatureDlg::updateParentDockContent()
     m_renderer->draw_y_axis();
     m_renderer->update();
 
-    delete abr;
+    delete ast;
 }

@@ -37,8 +37,6 @@
 #include <filesystem>
 
 #include "material/glass_catalog.h"
-
-#include "fileio/file_io.h"
 #include "utility/utility.h"
 #include "spec/spectral_line.h"
 

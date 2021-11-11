@@ -34,9 +34,9 @@ void LongitudinalDlg::updateParentDockContent()
     double scale = ui->scaleEdit->text().toDouble();
     int numRays = ui->numRaysEdit->text().toInt();
 
-    Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
-    auto plotData = abr->plot_longitudinal_spherical_aberration(numRays);
-    delete abr;
+    Spherochromatism *sph = new Spherochromatism(m_opticalSystem);
+    auto plotData = sph->plot(numRays);
+    delete sph;
 
     m_renderer->clear();
     m_renderer->draw_plot(plotData);

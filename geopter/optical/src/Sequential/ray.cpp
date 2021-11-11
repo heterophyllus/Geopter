@@ -66,29 +66,17 @@ void Ray::prepend(std::unique_ptr<RayAtSurface> ray_at_srf)
 
 void Ray::append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl)
 {
-    auto ray_at_srf = std::make_unique<RayAtSurface>(inc_pt, normal, after_dir, dist, opl);
+    RayAtSurface *before;
     if(ray_at_srfs_.empty()){
-        ray_at_srfs_.push_back(std::move(ray_at_srf));
+        before = nullptr;
     }else{
-        RayAtSurface *before = ray_at_srfs_.back().get();
-        ray_at_srf->set_before(before);
-        ray_at_srfs_.push_back(std::move(ray_at_srf));
+        before = ray_at_srfs_.back().get();
     }
+    ray_at_srfs_.emplace_back(std::make_unique<RayAtSurface>(inc_pt, normal, after_dir, dist, opl, before));
     array_size_ += 1;
+    opl_ += opl;
 }
 
-void Ray::append(std::unique_ptr<RayAtSurface> ray_at_srf)
-{
-    if(ray_at_srfs_.empty()){
-        ray_at_srfs_.push_back(std::move(ray_at_srf));
-    }else{
-        RayAtSurface *before = ray_at_srfs_.back().get();
-        ray_at_srf->set_before(before);
-        ray_at_srfs_.push_back(std::move(ray_at_srf));
-    }
-
-    array_size_ += 1;
-}
 
 void Ray::clear()
 {
@@ -99,6 +87,17 @@ void Ray::clear()
         ray_at_srfs_.clear();
         array_size_ = 0;
     }
+}
+
+
+double Ray::optical_path_length() const
+{
+    double opl_tot = 0.0;
+    int last_surf_idx = ray_at_srfs_.size()-1-1;
+    for(int i = 2; i <= last_surf_idx; i++){
+        opl_tot += ray_at_srfs_[i]->optical_path_length();
+    }
+    return opl_tot;
 }
 
 void Ray::print(std::ostringstream& oss)

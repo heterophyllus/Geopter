@@ -30,9 +30,41 @@
 /// \brief  
 //============================================================================
 
-
-#include "Assembly/transformation.h"
+#include <iostream>
+#include "assembly/transformation.h"
+#include "assembly/surface.h"
 
 using namespace geopter;
 
+Transformation::Transformation()
+{
+    rotation = Eigen::Matrix3d::Identity(3,3);
+    transfer = Eigen::Vector3d::Zero(3);
+}
 
+Transformation::Transformation(const Eigen::Matrix3d& r, const Eigen::Vector3d& t)
+{
+    rotation = r;
+    transfer = t;
+}
+
+void Transformation::transform_after_surface(Eigen::Vector3d& before_pt, Eigen::Vector3d& before_dir, const Surface* srf, const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& after_dir)
+{
+    if(srf->decenter()){
+        // get transformation info after surf
+        // not implemented yet
+        std::cerr << "not implemented: WaveAberration::transform_after_surface()" << std::endl;
+
+        Transformation r_t = srf->decenter()->tform_after_surf();
+        Eigen::Matrix3d r = r_t.rotation;
+        Eigen::Vector3d t = r_t.transfer;
+
+        Eigen::Matrix3d rt = r_t.rotation.transpose();
+        before_pt = rt*(inc_pt - t);
+        before_dir = rt*(after_dir);
+
+    }else{
+        before_pt = inc_pt;
+        before_dir = after_dir;
+    }
+}

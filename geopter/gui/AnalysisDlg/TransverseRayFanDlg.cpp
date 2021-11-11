@@ -43,13 +43,14 @@ void TransverseRayFanDlg::updateParentDockContent()
     m_renderer->clear();
     m_renderer->set_grid_layout(fieldCount, 1);
 
-    Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
+    //Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
+    TransverseRayFan *ray_fan = new TransverseRayFan(m_opticalSystem);
 
     for(int fi = 0; fi < fieldCount; fi++){
         m_renderer->set_current_cell(fieldCount - fi - 1, 0);
 
         Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
-        auto plotData = abr->plot_transverse_aberration(nrd, fld, ray_direction, abr_direction);
+        auto plotData = ray_fan->plot(nrd, fld, ray_direction, abr_direction);
 
         m_renderer->draw_plot(plotData);
         m_renderer->set_x_axis_range(-stopRadius, stopRadius);
@@ -60,7 +61,7 @@ void TransverseRayFanDlg::updateParentDockContent()
         m_renderer->draw_y_axis();
     }
 
-    delete abr;
+    delete ray_fan;
 
     m_renderer->update();
 }

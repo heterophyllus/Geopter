@@ -42,35 +42,19 @@ namespace geopter {
 class RayAtSurface
 {
 public:
-    RayAtSurface(){
-        intersect_pt_ = Eigen::Vector3d::Zero(3);
-        normal_       = Eigen::Vector3d::Zero(3);
-        after_dir_    = Eigen::Vector3d::Zero(3);
-        distance_from_before_ = 0.0;
-        optical_path_length_  = 0.0;
-        before_ = nullptr;
-    }
+    RayAtSurface();
+    RayAtSurface(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl, RayAtSurface *before=nullptr);
 
-    RayAtSurface(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl, RayAtSurface *before=nullptr){
-        intersect_pt_ = inc_pt;
-        normal_ = normal;
-        after_dir_ = after_dir;
-        distance_from_before_ = dist;
-        optical_path_length_ = opl;
-        before_ = before;
-    }
+    ~RayAtSurface();
 
-    ~RayAtSurface(){
-        before_ = nullptr;
-    }
-
-    void set_before(RayAtSurface* before){
-        before_ = before;
-    }
+    inline void set_before(RayAtSurface* before);
 
     inline Eigen::Vector3d intersect_pt() const;
 
     inline double distance_from_before() const;
+
+    /** optical path length from the previous to the current */
+    inline double optical_path_length() const;
 
     /** Local coordinate at the intersection point */
     inline double x() const;
@@ -78,13 +62,11 @@ public:
     inline double z() const;
 
     inline Eigen::Vector3d after_dir() const;
-
     inline double L() const;
     inline double M() const;
     inline double N() const;
 
     inline Eigen::Vector3d surface_normal() const;
-
     inline double srl() const;
     inline double srm() const;
     inline double srn() const;
@@ -93,10 +75,10 @@ public:
     inline double height() const;
 
     /** Angle of incidence (signed) */
-    inline double aoi() const;
+    double aoi() const;
 
     /** Angle of refraction (signed) */
-    inline double aor() const;
+    double aor() const;
 
 
 private:
@@ -113,7 +95,7 @@ private:
     double distance_from_before_;
 
     /** optical path length from the previous to the current */
-    double optical_path_length_;
+    double opl_;
 
     RayAtSurface* before_;
 
@@ -122,7 +104,10 @@ public:
 };
 
 
-
+void RayAtSurface::set_before(RayAtSurface *before)
+{
+    before_ = before;
+}
 
 Eigen::Vector3d RayAtSurface::intersect_pt() const
 {
@@ -194,31 +179,11 @@ double RayAtSurface::srn() const
     return normal_(2);
 }
 
-double RayAtSurface::aoi() const
+double RayAtSurface::optical_path_length() const
 {
-    Eigen::Vector3d inc_dir;
-
-    if(before_) {
-        inc_dir = before_->after_dir();
-    }else{
-        inc_dir = after_dir_;
-    }
-
-    // We need signed value
-    double tanU1 = inc_dir(1)/inc_dir(2);
-    double tanU2 = normal_(1)/normal_(2);
-    double tanI = (tanU1 - tanU2)/(1.0 + tanU1*tanU2); // I = U1-U2
-    return atan(tanI);
+    return opl_;
 }
 
-double RayAtSurface::aor() const
-{
-    double tanU1 = after_dir_(1)/after_dir_(2);
-    double tanU2 = normal_(1)/normal_(2);
-    double tanI_prime = (tanU1 - tanU2)/(1.0 + tanU1*tanU2);
-    return atan(tanI_prime);
-}
+} //namespace geopter
 
-}
-
-#endif
+#endif //RAY_AT_SURFACE_H

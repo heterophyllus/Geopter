@@ -38,21 +38,19 @@
 
 namespace geopter{
 
+class Surface;
+
 struct Transformation
 {
-    Transformation() {
-        rotation = Eigen::Matrix3d::Identity(3,3);
-        transfer = Eigen::Vector3d::Zero(3);
-    }
-    Transformation(const Eigen::Matrix3d& r, const Eigen::Vector3d& t) {
-        rotation = r;
-        transfer = t;
-    }
+    Transformation();
+    Transformation(const Eigen::Matrix3d& r, const Eigen::Vector3d& t);
 
     Eigen::Matrix3d rotation;
     Eigen::Vector3d transfer;
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    static void transform_after_surface(Eigen::Vector3d& before_pt, Eigen::Vector3d& before_dir, const Surface* srf, const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& after_dir);
 };
 
 

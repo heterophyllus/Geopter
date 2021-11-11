@@ -64,7 +64,6 @@ public:
     void prepend(std::unique_ptr<RayAtSurface> ray_at_srf);
 
     /** Add data at the last */
-    void append(std::unique_ptr<RayAtSurface> ray_at_srf);
     void append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
 
     inline void set_status(int s);
@@ -76,9 +75,12 @@ public:
     inline RayAtSurface* at(int i) const;
     inline RayAtSurface* front() const;
     inline RayAtSurface* back() const;
+    inline RayAtSurface* at_lens_back() const;
     inline int status() const;
     inline double wavelength() const;
     inline Eigen::Vector2d pupil_coord() const;
+
+    double optical_path_length() const;
 
     void clear();
 
@@ -91,6 +93,7 @@ private:
     std::vector< std::unique_ptr<RayAtSurface> > ray_at_srfs_;
     int status_;
     double wvl_;
+    double opl_;
     int array_size_;
     Eigen::Vector2d pupil_crd_;
 };
@@ -131,6 +134,21 @@ RayAtSurface* Ray::front() const
 RayAtSurface* Ray::back() const
 {
     return ray_at_srfs_.back().get();
+}
+
+RayAtSurface* Ray::at_lens_back() const
+{
+    /*
+    auto itr = ray_at_srfs_.end();
+    itr--;
+    return itr->get();
+    */
+
+
+    int len = ray_at_srfs_.size();
+    int lens_back_index = len - 1 -1;
+    return ray_at_srfs_[lens_back_index].get();
+
 }
 
 void Ray::set_wvl(double wvl)

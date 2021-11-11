@@ -68,6 +68,8 @@ public:
     void set_coef(int i, double val);
     void set_coef(const std::vector<double>& coefs);
 
+    void print(std::ostringstream& oss) override;
+
 private:
     void update_max_nonzero_index();
 

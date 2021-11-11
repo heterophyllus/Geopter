@@ -23,14 +23,7 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   odd_polynomial.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
+#include <iomanip>
 #include "profile/odd_polynomial.h"
 #include "sequential/trace_error.h"
 
@@ -107,13 +100,15 @@ int OddPolynomial::coef_count() const
 
 void OddPolynomial::update_max_nonzero_index()
 {
-    int i = 0;
-    while(i < num_coefs_){
-        if(fabs(coefs_[i]) < std::numeric_limits<double>::epsilon()){
+    max_nonzero_index_ = num_coefs_-1;
+
+    int i = num_coefs_-1;
+    while(i > 0){
+        if(fabs(coefs_[i]) > std::numeric_limits<double>::epsilon()){
             max_nonzero_index_ = i;
             break;
         }
-        i++;
+        i--;
     }
 }
 
@@ -226,5 +221,30 @@ double OddPolynomial::deriv_2nd(double h) const
     }
 
     return (z_conic + z_pol);
+}
+
+void OddPolynomial::print(std::ostringstream &oss)
+{
+    update_max_nonzero_index();
+
+    constexpr int label_w = 6;
+    constexpr int val_w = 16;
+    constexpr int prec  = 6;
+
+    oss << std::setw(label_w) << std::left << "Type";
+    oss << std::setw(label_w) << std::right << std::fixed << "Even Polynomial" << std::endl;
+
+    oss << std::setw(label_w) << std::left << "R";
+    oss << std::setw(label_w) << std::right << std::fixed << std::setprecision(prec) << this->radius() << std::endl;
+
+    oss << std::setw(label_w) << std::left << "k";
+    oss << std::setw(label_w) << std::right << std::fixed << std::setprecision(prec) << conic_ << std::endl;
+
+    for(int i = 0; i <= max_nonzero_index_; i++){
+        int coef_index = 3 + i;
+        std::string coef_label = "A" + std::to_string(coef_index);
+        oss << std::setw(label_w) << std::left << coef_label;
+        oss << std::setw(label_w) << std::right << std::fixed << std::scientific << std::setprecision(prec) << coefs_[i] << std::endl;
+    }
 
 }

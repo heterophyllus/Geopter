@@ -23,20 +23,13 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   field.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef FIELD_H
 #define FIELD_H
 
-
-#include "renderer/rgb.h"
 #include "Eigen/Core"
+#include "renderer/rgb.h"
+#include "sequential/ray.h"
 
 namespace geopter {
 
@@ -45,7 +38,9 @@ namespace geopter {
 class Field
 {
 public:
-    Field(double x=0.0, double y=0.0, double wt=1.0, Rgb color= rgb_black, double vuy=0.0, double vly=0.0, double vux=0.0, double vlx=0.0);
+    Field();
+    Field(double x, double y, const Rgb& color);
+    Field(double x, double y, double wt, const Rgb& color, double vuy, double vly, double vux, double vlx);
     ~Field();
 
     inline double x() const;
@@ -82,8 +77,10 @@ private:
     double vuy_;
     double vlx_;
     double vly_;
+
     Eigen::Vector2d aim_pt_;
     Eigen::Vector3d object_coord_;
+
     Rgb render_color_;
 };
 
@@ -128,7 +125,6 @@ Rgb Field::render_color() const
 {
     return render_color_;
 }
-
 
 Eigen::Vector3d Field::object_coord() const
 {

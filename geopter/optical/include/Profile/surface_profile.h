@@ -34,7 +34,7 @@
 #ifndef SURFACEPROFILE_H
 #define SURFACEPROFILE_H
 
-
+#include <sstream>
 #include <vector>
 #include "Eigen/Core"
 
@@ -103,6 +103,11 @@ public:
      */
     virtual void intersect_spencer(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps=1.0e-12, double z_dir=1.0);
 
+    /**
+     * @brief Print coefficinet data
+     * @param oss
+     */
+    virtual void print(std::ostringstream& oss);
 
 protected:
     double cv_;

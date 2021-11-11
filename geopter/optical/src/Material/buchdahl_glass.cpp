@@ -48,7 +48,7 @@ BuchdahlGlass::BuchdahlGlass(double nd, double vd) : Material(),
 {
     n_ = nd;
     compute_coefs();
-    name_ = std::to_string(nd) + ":" + std::to_string(vd);
+    name_ = this->glass_code();
 }
 
 BuchdahlGlass::~BuchdahlGlass()

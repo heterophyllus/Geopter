@@ -5,10 +5,16 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 
 set(OPTICAL_SRCS 
-    analysis/aberration.cpp
-    #analysis/ray_fan.cpp
-    #analysis/longitudinal.cpp
+    analysis/ray_aberration.cpp
+    analysis/transverse_ray_fan.cpp
+    analysis/spherochromatism.cpp
+    analysis/astigmatism.cpp
+    analysis/chromatic_focus_shift.cpp
+    analysis/spot_diagram.cpp
     analysis/layout.cpp
+    analysis/wave_aberration.cpp
+    analysis/reference_sphere.cpp
+
 
     assembly/optical_assembly.cpp
     assembly/interface.cpp
@@ -17,6 +23,7 @@ set(OPTICAL_SRCS
     assembly/circular.cpp
     assembly/gap.cpp
     assembly/decenter_data.cpp
+    assembly/transformation.cpp
 
     profile/surface_profile.cpp
     profile/spherical.cpp
@@ -41,7 +48,6 @@ set(OPTICAL_SRCS
     spec/wvl_spec.cpp
     spec/wvl.cpp
 
-    #fileio/file_io.cpp
 
     material/material_library.cpp
     material/glass_catalog.cpp
@@ -51,23 +57,25 @@ set(OPTICAL_SRCS
     material/glass.cpp
 
     system/optical_system.cpp
+    system/paraxial_data.cpp
 
     paraxial/paraxial_ray.cpp
     paraxial/paraxial_path.cpp
-    paraxial/first_order.cpp
     paraxial/paraxial_trace.cpp
 
     sequential/sequential_path.cpp
     sequential/ray.cpp
+    sequential/ray_at_surface.cpp
     sequential/trace_error.cpp
     sequential/sequential_trace.cpp
 
     renderer/renderer.cpp
-    #renderer/renderer_svg.cpp
+    renderer/renderer_mpl.cpp
     renderer/rgb.cpp
 
     data/plot_data.cpp
     data/point_set.cpp
+    #data/grid_array.cpp
 
     common/geopter_error.cpp
 

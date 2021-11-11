@@ -40,14 +40,7 @@ public:
 
     public Q_SLOTS:
     OpticalSystem* optical_system();
-    std::vector<double> vec_text(){
-        std::vector<double> v({0.0, 1.0, 2.0});
-        return v;
-    }
-    std::string str_test(){
-        std::string s ="sss";
-        return s;
-    }
+
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
@@ -79,6 +72,7 @@ private slots:
 
     // Aberration
     void showTransverseRayFan();
+    void showOpdFan();
     void showLongitudinal();
     void showFieldCurvature();
     void showChromaticFocusShift();

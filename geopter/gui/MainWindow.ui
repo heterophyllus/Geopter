@@ -62,6 +62,7 @@
       <string>Aberration</string>
      </property>
      <addaction name="actionRayAberration"/>
+     <addaction name="actionOpdFan"/>
      <addaction name="separator"/>
      <addaction name="actionFieldCurvature"/>
      <addaction name="actionLongitudinalAberration"/>
@@ -185,6 +186,11 @@
   <action name="actionPrescription">
    <property name="text">
     <string>Prescription</string>
+   </property>
+  </action>
+  <action name="actionOpdFan">
+   <property name="text">
+    <string>OPD Fan</string>
    </property>
   </action>
  </widget>

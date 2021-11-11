@@ -23,19 +23,10 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   odd_polynomial.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef ODDPOLYNOMIAL_H
 #define ODDPOLYNOMIAL_H
 
 #include <vector>
-
 #include "surface_profile.h"
 
 namespace geopter {
@@ -63,6 +54,8 @@ public:
     void set_conic(double k);
     void set_coef(int i, double val);
     void set_coef(const std::vector<double>& coefs);
+
+    void print(std::ostringstream& oss) override;
 
 private:
     void update_max_nonzero_index();

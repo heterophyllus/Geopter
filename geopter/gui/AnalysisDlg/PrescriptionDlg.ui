@@ -29,16 +29,23 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="surfaceDataCheck">
+    <widget class="QCheckBox" name="firstOrderDataCheck">
      <property name="text">
-      <string>Surface Data</string>
+      <string>First Order Data</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="firstOrderDataCheck">
+    <widget class="QCheckBox" name="lensDataCheck">
      <property name="text">
-      <string>First Order Data</string>
+      <string>Lens Data</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="surfaceDataCheck">
+     <property name="text">
+      <string>Surface Data</string>
      </property>
     </widget>
    </item>

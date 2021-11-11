@@ -34,14 +34,31 @@
 
 using namespace geopter;
 
-Field::Field(double x, double y, double wt, Rgb color, double vuy, double vly, double vux, double vlx) :
-    x_(x),
-    y_(y),
+Field::Field():
+    x_(0.0), y_(0.0),
+    wt_(1.0),
+    vux_(0.0),vuy_(0.0),vlx_(0.0),vly_(0.0),
+    render_color_(rgb_black)
+{
+    aim_pt_ = Eigen::Vector2d::Zero(2);
+    object_coord_ = Eigen::Vector3d::Zero(3);
+}
+
+Field::Field(double x, double y, const Rgb& color) :
+    x_(x), y_(y),
+    wt_(1.0),
+    vux_(0.0),vuy_(0.0),vlx_(0.0),vly_(0.0),
+    render_color_(color)
+{
+    aim_pt_ = Eigen::Vector2d::Zero(2);
+    object_coord_ = Eigen::Vector3d::Zero(3);
+}
+
+
+Field::Field(double x, double y, double wt, const Rgb& color, double vuy, double vly, double vux, double vlx) :
+    x_(x), y_(y),
     wt_(wt),
-    vux_(vux),
-    vuy_(vuy),
-    vlx_(vlx),
-    vly_(vly),
+    vux_(vux),vuy_(vuy),vlx_(vlx),vly_(vly),
     render_color_(color)
 {
     aim_pt_ = Eigen::Vector2d::Zero(2);

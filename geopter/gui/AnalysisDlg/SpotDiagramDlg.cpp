@@ -43,13 +43,14 @@ void SpotDiagramDlg::updateParentDockContent()
     m_renderer->clear();
     m_renderer->set_grid_layout(fieldCount, 1);
 
-    Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
+    //Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
+    SpotDiagram *spot = new SpotDiagram(m_opticalSystem);
 
     for(int fi = 0; fi < fieldCount; fi++) {
         m_renderer->set_current_cell(fieldCount - fi - 1, 0);
 
         Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
-        auto plotData = abr->plot_spot_diagram(fld, pattern, nrd, dotSize);
+        auto plotData = spot->plot(fld, pattern, nrd, dotSize);
 
         m_renderer->draw_plot(plotData);
         m_renderer->set_x_axis_range(-scale, scale);
@@ -60,7 +61,7 @@ void SpotDiagramDlg::updateParentDockContent()
         m_renderer->draw_y_axis();
     }
 
-    delete abr;
+    delete spot;
 
     m_renderer->update();
 }

@@ -28,6 +28,7 @@
 #include "AnalysisDlg/FieldCurvatureDlg.h"
 #include "AnalysisDlg/ChromaticFocusShiftDlg.h"
 #include "AnalysisDlg/SpotDiagramDlg.h"
+#include "AnalysisDlg/OpdFanDlg.h"
 
 using namespace ads;
 
@@ -59,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionFieldCurvature,         SIGNAL(triggered()), this, SLOT(showFieldCurvature()));
     QObject::connect(ui->actionChromaticFocusShift,    SIGNAL(triggered()), this, SLOT(showChromaticFocusShift()));
     QObject::connect(ui->actionSpotDiagram,            SIGNAL(triggered()), this, SLOT(showSpotDiagram()));
+    QObject::connect(ui->actionOpdFan,                 SIGNAL(triggered()), this, SLOT(showOpdFan()));
 
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -70,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // create optical system
     opt_sys_ = std::make_shared<OpticalSystem>();
-    opt_sys_->create_minimum_system();
+    opt_sys_->initialize();
 
     // set system editor as central dock
     m_dockManager = new CDockManager(this);
@@ -167,7 +169,7 @@ void MainWindow::syncUiWithSystem()
  * ********************************************************************************************************************************/
 void MainWindow::newFile()
 {
-    opt_sys_->create_minimum_system();
+    opt_sys_->initialize();
     //opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
@@ -264,6 +266,11 @@ void MainWindow::showSpotDiagram()
 void MainWindow::showTransverseRayFan()
 {
     showAnalysisPlot<TransverseRayFanDlg>("Transverse Aberration");
+}
+
+void MainWindow::showOpdFan()
+{
+    showAnalysisPlot<OpdFanDlg>("OPD Fan");
 }
 
 void MainWindow::showLongitudinal()
