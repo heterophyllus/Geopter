@@ -36,8 +36,8 @@ void ChromaticFocusShiftDlg::updateParentDockContent()
     ChromaticFocusShift *chrom = new ChromaticFocusShift(m_opticalSystem);
     auto plotData = chrom->plot(lower, higher);
 
-    double higher_y = plotData->point_set(0)->higher_y();
-    double lower_y  = plotData->point_set(0)->lower_y();
+    double higher_y = plotData->graph(0)->yrange().higher;
+    double lower_y  = plotData->graph(0)->yrange().lower;
 
     m_renderer->clear();
     m_renderer->draw_plot(plotData);

@@ -14,7 +14,8 @@ set(OPTICAL_SRCS
     analysis/layout.cpp
     analysis/wave_aberration.cpp
     analysis/reference_sphere.cpp
-
+    analysis/opd_fan.cpp
+    analysis/wavefront.cpp
 
     assembly/optical_assembly.cpp
     assembly/interface.cpp
@@ -74,7 +75,8 @@ set(OPTICAL_SRCS
     renderer/rgb.cpp
 
     data/plot_data.cpp
-    data/point_set.cpp
+    data/graph2d.cpp
+    data/map_data_3d.cpp
     #data/grid_array.cpp
 
     common/geopter_error.cpp

@@ -68,6 +68,7 @@
      <addaction name="actionLongitudinalAberration"/>
      <addaction name="actionChromaticFocusShift"/>
      <addaction name="separator"/>
+     <addaction name="actionWavefront"/>
     </widget>
     <addaction name="actionPrescription"/>
     <addaction name="separator"/>
@@ -191,6 +192,11 @@
   <action name="actionOpdFan">
    <property name="text">
     <string>OPD Fan</string>
+   </property>
+  </action>
+  <action name="actionWavefront">
+   <property name="text">
+    <string>Wavefront</string>
    </property>
   </action>
  </widget>

@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   plot_data.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #include <iostream>
 #include <iomanip>
@@ -44,17 +37,17 @@ PlotData::PlotData() :
     x_axis_label_("x"),
     y_axis_label_("y")
 {
-    pointsets_.clear();
+    graphs_.clear();
     optional_data_.clear();
 }
 
 
 PlotData::~PlotData()
 {
-    for(auto &ps: pointsets_){
-        ps.reset();
+    for(auto &g: graphs_){
+        g.reset();
     }
-    pointsets_.clear();
+    graphs_.clear();
 
     optional_data_.clear();
 }
@@ -73,8 +66,8 @@ void PlotData::print(std::ostringstream &oss)
     oss << std::endl;
 
     // data
-    for(auto &ps : pointsets_){
-        ps->print(oss);
+    for(auto &g : graphs_){
+        g->print(oss);
         oss << std::endl;
     }
 

@@ -78,10 +78,10 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
 
         // TODO: calculate RMS, Max diameter, etc
 
-        auto point_set = std::make_shared<PointSet>(ray_dx, ray_dy, color, Renderer::LineStyle::Dots, dot_size);
-        point_set->set_name(std::to_string(wvl) + "nm");
+        auto graph = std::make_shared<Graph2d>(ray_dx, ray_dy, color, Renderer::LineStyle::Dots, dot_size);
+        graph->set_name(std::to_string(wvl) + "nm");
 
-        plot_data->add_pointset(point_set);
+        plot_data->add_graph(graph);
     }
 
 

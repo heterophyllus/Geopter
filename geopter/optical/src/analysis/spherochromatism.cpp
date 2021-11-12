@@ -108,10 +108,10 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
         auto pointset = std::make_shared<PointSet>(slsa, spy, color);
         */
 
-        auto pointset = std::make_shared<PointSet>(lsa, py, color);
-        pointset->set_name(std::to_string(wvl) + "nm");
+        auto graph = std::make_shared<Graph2d>(lsa, py, color);
+        graph->set_name(std::to_string(wvl) + "nm");
 
-        plotdata->add_pointset(pointset);
+        plotdata->add_graph(graph);
     }
 
     delete tracer;

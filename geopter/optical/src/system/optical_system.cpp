@@ -105,13 +105,11 @@ void OpticalSystem::update_model()
 {
     opt_assembly_->update_model();
 
-    num_fld_ = opt_spec_->field_of_view()->field_count();
-    num_wvl_ = opt_spec_->spectral_region()->wvl_count();
-    ref_wvl_idx_ = opt_spec_->spectral_region()->reference_index();
-    ref_wvl_val_ = opt_spec_->spectral_region()->reference_wvl();
+    update_fundamental_data();
 
     // be carefull to the updating order
     update_paraxial_data();
+    update_fundamental_data();
     update_optical_spec();
     update_semi_diameters();
 }
@@ -126,6 +124,24 @@ void OpticalSystem::add_surface_and_gap(double r, double t, std::string mat_name
     opt_assembly_->current_gap()->set_material(m.get());
 }
 
+void OpticalSystem::update_fundamental_data()
+{
+    fund_data_.number_of_fields      = opt_spec_->field_of_view()->field_count();
+    fund_data_.number_of_wavelengths = opt_spec_->spectral_region()->wvl_count();
+    fund_data_.reference_wvl_index   = opt_spec_->spectral_region()->reference_index();
+    fund_data_.reference_wvl_value   = opt_spec_->spectral_region()->reference_wvl();
+
+    fund_data_.enp_distance = parax_data_->entrance_pupil_distance();
+    fund_data_.enp_radius   = parax_data_->entrance_pupil_radius();
+    fund_data_.exp_distance = parax_data_->exit_pupil_distance();
+    fund_data_.exp_radius   = parax_data_->exit_pupil_radius();
+
+    fund_data_.number_of_surfaces  = opt_assembly_->surface_count();
+    fund_data_.image_surface_index = opt_assembly_->image_index();
+    fund_data_.object_distance     = opt_assembly_->gap(0)->thi();
+    fund_data_.image_distance      = opt_assembly_->image_space_gap()->thi();
+}
+
 void OpticalSystem::update_optical_spec()
 {
     // update object coords
@@ -137,7 +153,7 @@ void OpticalSystem::update_optical_spec()
 
     const int field_type = opt_spec_->field_of_view()->field_type();
 
-    for(int fi = 0; fi < num_fld_; fi++){
+    for(int fi = 0; fi < fund_data_.number_of_fields; fi++){
         Field* fld = opt_spec_->field_of_view()->field(fi);
         double fld_x = fld->x();
         double fld_y = fld->y();
@@ -179,10 +195,10 @@ void OpticalSystem::update_optical_spec()
         tracer->set_apply_vig(true);
         tracer->set_aperture_check(false);
 
-        for(int fi = 0; fi < num_fld_; fi++){
+        for(int fi = 0; fi < fund_data_.number_of_fields; fi++){
             Field* fld = opt_spec_->field_of_view()->field(fi);
             try{
-                auto aim_pt = tracer->aim_chief_ray(fld, ref_wvl_val_);
+                auto aim_pt = tracer->aim_chief_ray(fld, fund_data_.reference_wvl_value);
                 opt_spec_->field_of_view()->field(fi)->set_aim_pt(aim_pt);
             }catch(TraceRayAimingFailedError &e){
                 std::cerr << "Ray aiming failed at field " << fi << std::endl;
@@ -217,12 +233,12 @@ void OpticalSystem::update_semi_diameters()
     std::shared_ptr<Ray> chief_ray, mer_upper_ray, mer_lower_ray, sag_upper_ray, sag_lower_ray;
 
 
-    for(int fi = 0; fi < num_fld_; fi++)
+    for(int fi = 0; fi < fund_data_.number_of_fields; fi++)
     {
         Field* fld = opt_spec_->field_of_view()->field(fi);
 
         try{
-            tracer->trace_reference_rays(ref_rays, fld, ref_wvl_val_);
+            tracer->trace_reference_rays(ref_rays, fld, fund_data_.reference_wvl_value);
         }catch(std::out_of_range &e){
             std::cout << e.what() << std::endl;
             continue;
@@ -274,7 +290,7 @@ void OpticalSystem::set_vignetting_factors()
 {
     SequentialTrace *tracer = new SequentialTrace(this);
 
-    for(int fi = 0; fi < num_fld_; fi++){
+    for(int fi = 0; fi < fund_data_.number_of_fields; fi++){
         Field* fld = opt_spec_->field_of_view()->field(fi);
         std::vector<double> vig_factors = tracer->compute_vignetting_factors(*fld);
         double vuy = vig_factors[0];

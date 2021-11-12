@@ -43,7 +43,6 @@ void TransverseRayFanDlg::updateParentDockContent()
     m_renderer->clear();
     m_renderer->set_grid_layout(fieldCount, 1);
 
-    //Aberration *abr = new Aberration(m_opticalSystem, m_renderer);
     TransverseRayFan *ray_fan = new TransverseRayFan(m_opticalSystem);
 
     for(int fi = 0; fi < fieldCount; fi++){

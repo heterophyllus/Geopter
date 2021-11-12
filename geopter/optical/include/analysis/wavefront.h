@@ -1,74 +1,47 @@
 /*******************************************************************************
 ** Geopter
-** Copyright (C) 2021 Hiiragi All Rights Reserved.
-** 
+** Copyright (C) 2021 Hiiragi
+**
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
 ** modify it under the terms of the GNU Lesser General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
-** 
+**
 ** This library is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** Lesser General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU Lesser General Public
 ** License along with this library; If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************************
-**           Author: Hiiragi                                   
+**           Author: Hiiragi
 **          Website: https://github.com/heterophyllus/Geopter
-**          Contact: heterophyllus.work@gmail.com                          
-**             Date: May 16th, 2021                                                                                          
+**          Contact: heterophyllus.work@gmail.com
+**             Date: November 11th, 2021
 ********************************************************************************/
 
+#ifndef WAVEFRONT_H
+#define WAVEFRONT_H
 
-#include <iostream>
-#include <iomanip>
+#include "analysis/wave_aberration.h"
+#include "data/grid_array.h"
+#include "data/map_data_3d.h"
 
-#include "data/plot_data.h"
+namespace geopter{
 
-using namespace geopter;
-
-
-PlotData::PlotData() :
-    title_(""),
-    x_axis_label_("x"),
-    y_axis_label_("y")
+/** Wavefront map */
+class Wavefront : WaveAberration
 {
-    graphs_.clear();
-    optional_data_.clear();
-}
+public:
+    Wavefront(OpticalSystem *opt_sys);
 
+    /** Returns OPD grid array */
+    std::shared_ptr<MapData3d> plot(Field* fld, double wvl, int nrd);
+};
 
-PlotData::~PlotData()
-{
-    for(auto &g: graphs_){
-        g.reset();
-    }
-    graphs_.clear();
+} //namespace geopter
 
-    optional_data_.clear();
-}
-
-
-void PlotData::print()
-{
-    std::ostringstream oss;
-    print(oss);
-    std::cout << oss.str() << std::endl;
-}
-
-void PlotData::print(std::ostringstream &oss)
-{    
-    oss << title_ << std::endl;
-    oss << std::endl;
-
-    // data
-    for(auto &g : graphs_){
-        g->print(oss);
-        oss << std::endl;
-    }
-
-}
+#endif //WAVEFRONT_H

@@ -31,13 +31,13 @@ void OpdFanDlg::updateParentDockContent()
     m_renderer->clear();
     m_renderer->set_grid_layout(fieldCount, 1);
 
-    WaveAberration *abr = new WaveAberration(m_opticalSystem);
+    OpdFan *opd_fan = new OpdFan(m_opticalSystem);
 
     for(int fi = 0; fi < fieldCount; fi++){
         m_renderer->set_current_cell(fieldCount - fi - 1, 0);
 
         Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
-        auto plotData = abr->plot_opd_fan(fld, nrd);
+        auto plotData = opd_fan->plot(fld, nrd);
 
         m_renderer->draw_plot(plotData);
         m_renderer->set_x_axis_range(-1.0, 1.0);
@@ -48,7 +48,7 @@ void OpdFanDlg::updateParentDockContent()
         m_renderer->draw_y_axis();
     }
 
-    delete abr;
+    delete opd_fan;
 
     m_renderer->update();
 }

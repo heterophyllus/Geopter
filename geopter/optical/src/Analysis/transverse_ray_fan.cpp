@@ -101,9 +101,10 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
 
         }
 
-        auto point_set = std::make_shared<PointSet>(pupil_data, abr_data, render_color);
-        point_set->set_name( std::to_string(wvl) + "nm" );
-        plot_data->add_pointset(point_set);
+        auto graph = std::make_shared<Graph2d>(pupil_data, abr_data);
+        graph->set_render_color(render_color);
+        graph->set_name( std::to_string(wvl) + "nm" );
+        plot_data->add_graph(graph);
     }
 
     delete tracer;

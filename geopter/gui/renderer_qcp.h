@@ -3,9 +3,8 @@
 
 #include "renderer/renderer.h"
 #include "data/plot_data.h"
-
+#include "data/map_data_3d.h"
 #include "qcustomplot.h"
-
 
 using namespace geopter;
 
@@ -23,6 +22,8 @@ public:
     void set_current_cell(int row, int col) override;
 
     void draw_plot(const std::shared_ptr<PlotData> plotdata) override;
+
+    void draw_colored_map(const std::shared_ptr<MapData3d> mapdata);
 
     void draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0, double line_width= 1.0) override;
     void draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0, double line_width= 1.0) override;

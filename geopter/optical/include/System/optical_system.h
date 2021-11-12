@@ -38,6 +38,7 @@
 #include "assembly/optical_assembly.h"
 #include "material/material_library.h"
 #include "system/paraxial_data.h"
+#include "system/fundamental_data.h"
 
 namespace geopter {
 
@@ -73,6 +74,8 @@ public:
 
     inline ParaxialData* paraxial_data() const;
 
+    inline FundamentalData fundamental_data() const;
+
     void load_file(const std::string& filepath);
     void save_to_file(const std::string& filepath);
 
@@ -93,6 +96,7 @@ private:
     void update_optical_spec();
     void update_paraxial_data();
     void update_semi_diameters();
+    void update_fundamental_data();
 
     void transfer_to_exit_pupil(Surface* srf, const RayAtSurface* ray_seg, double exp_dist_parax);
 
@@ -105,10 +109,7 @@ private:
     std::string note_;
 
     // frequently used fundamental data
-    int num_wvl_;
-    int num_fld_;
-    int ref_wvl_idx_;
-    double ref_wvl_val_;
+    FundamentalData fund_data_;
 };
 
 
@@ -133,6 +134,10 @@ MaterialLibrary* OpticalSystem::material_lib() const
     return material_lib_.get();
 }
 
+FundamentalData OpticalSystem::fundamental_data() const
+{
+    return fund_data_;
+}
 
 
 } //namespace geopter

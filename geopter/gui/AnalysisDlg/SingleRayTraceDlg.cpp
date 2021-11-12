@@ -137,7 +137,7 @@ void SingleRayTraceDlg::doObjectRayTrace()
     double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
 
     SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
-    auto ray_trace_result = tracer->trace_ray_throughout_path(tracer->overall_sequential_path(wi), p0, dir0);
+    auto ray_trace_result = tracer->trace_ray_throughout_path(tracer->sequential_path(wi), p0, dir0);
     delete tracer;
 
     std::ostringstream oss;

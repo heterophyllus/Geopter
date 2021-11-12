@@ -53,18 +53,44 @@ void RendererQCP::set_current_cell(int row, int col)
 
 void RendererQCP::draw_plot(std::shared_ptr<PlotData> plotdata)
 {
-    const int npointset = plotdata->data_count();
+    const int num_graphs = plotdata->data_count();
 
-    for (int i = 0; i < npointset; i++) {
-        int ls = plotdata->point_set(i)->line_style();
-        double lw = plotdata->point_set(i)->line_width();
-        Rgb color = plotdata->point_set(i)->render_color();
+    for (int i = 0; i < num_graphs; i++) {
+        int ls = plotdata->graph(i)->line_style();
+        double lw = plotdata->graph(i)->line_width();
+        Rgb color = plotdata->graph(i)->render_color();
 
-        std::vector<double> x = plotdata->point_set(i)->x_data();
-        std::vector<double> y = plotdata->point_set(i)->y_data();
+        std::vector<double> x, y;
+        plotdata->graph(i)->get_data(x, y);
 
         draw_polyline(x, y, color, ls, lw);
     }
+}
+
+
+void RendererQCP::draw_colored_map(const std::shared_ptr<MapData3d> mapdata)
+{
+    QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
+    QCPColorMap *colorMap = new QCPColorMap(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
+
+    int nx = mapdata->rows();
+    int ny = mapdata->cols();
+    colorMap->data()->setSize(nx, ny);
+    colorMap->data()->setRange(QCPRange(-1, 1), QCPRange(-1, 1));
+
+    double x, y, z;
+    for (int xIndex=0; xIndex<nx; ++xIndex)
+    {
+      for (int yIndex=0; yIndex<ny; ++yIndex)
+      {
+        //colorMap->data()->cellToCoord(xIndex, yIndex, &x, &y);
+        z = mapdata->cell(yIndex, xIndex).z; //(x,y) (col, row)
+        colorMap->data()->setCell(xIndex, yIndex, z);
+      }
+    }
+
+    colorMap->setGradient(QCPColorGradient::gpJet);
+    colorMap->rescaleDataRange();
 }
 
 void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style, double line_width)

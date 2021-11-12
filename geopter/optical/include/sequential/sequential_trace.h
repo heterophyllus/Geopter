@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   sequential_trace.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef SEQUENTIALTRACE_H
 #define SEQUENTIALTRACE_H
 
@@ -50,14 +42,10 @@ public:
     SequentialTrace(OpticalSystem* sys);
     ~SequentialTrace();
 
+    /** Trace a single ray at the given pupil coordinate */
     std::shared_ptr<Ray> trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
 
-    /**
-     * @brief Trace reference rays (choe, meridional upper/lower, sagittal upper/lower)
-     * @param ref_rays
-     * @param fld
-     * @param wvl
-     */
+    /** Trace reference rays(chief, meridional upper/lower, sagittal upper/lower */
     void trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
 
     /**
@@ -75,12 +63,8 @@ public:
     /** Trace a ray throughout the given sequantial path */
     std::shared_ptr<Ray> trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
 
-    /**
-     * @brief trace chief ray according to Coddington equation
-     * @param fld Field
-     * @param wvl wavelength
-     * @return {x_focus_shift, y_focus_shift} (from image plane)
-     */
+
+    /** Trace chief ray and returns x/y focus shift */
     Eigen::Vector2d trace_coddington(const Field* fld, double wvl, double offset=0.0);
 
     Eigen::Vector2d aim_chief_ray(const Field* fld, double wvl);
@@ -96,11 +80,7 @@ public:
      */
     Eigen::Vector2d search_aim_point(int srf_idx, const Eigen::Vector2d& xy_target, const Field* fld, double wvl);
 
-    /** @brief Refract incoming direction, d_in, about normal
-     *  @param d_in incident direction
-     *  @param normal normal of the surface
-     *  @return direction of refracted ray
-     */
+    /**  Refract incoming direction, d_in, about normal */
     Eigen::Vector3d bend(const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out);
 
     /** Get object coordinate for the given field */
@@ -110,13 +90,12 @@ public:
     SequentialPath sequential_path(int start, int end, double wvl);
 
     /** Get sequential path object from object to image */
-    SequentialPath overall_sequential_path(double wvl);
+    SequentialPath sequential_path(double wvl);
 
 
     double compute_vignetting_factor_for_pupil(const Eigen::Vector2d& full_pupil, const Field& fld);
 
     std::vector<double> compute_vignetting_factors(const Field& fld);
-
 
     void set_aperture_check(bool state);
     bool aperture_check_state() const;
@@ -127,22 +106,12 @@ public:
 private:
     double y_stop_coordinate(double y1, int ifcx, const Eigen::Vector3d& pt0, double dist, double wvl, double y_target);
 
-
+    void pupil_coord_to_obj(Eigen::Vector3d& pt0, Eigen::Vector3d& dir0, const Eigen::Vector2d& pupil_crd, const Field* fld);
     
     OpticalSystem *opt_sys_;
-
-    int num_wvls_;
-    int num_flds_;
-    double ref_wvl_val_;
-    int ref_wvl_idx_;
-
-    int num_srfs_;
-    int num_gaps_;
-    int image_index_;
-    double object_distance_;
+    FundamentalData fund_data_;
 
     bool do_aperture_check_;
-
     bool do_apply_vig_;
 };
 

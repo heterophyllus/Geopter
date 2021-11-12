@@ -76,6 +76,7 @@ private slots:
     void showLongitudinal();
     void showFieldCurvature();
     void showChromaticFocusShift();
+    void showWavefront();
 
     // Tool menu
 

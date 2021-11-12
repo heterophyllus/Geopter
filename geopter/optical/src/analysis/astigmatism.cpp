@@ -141,14 +141,14 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
             }
         }
 
-        auto point_set_sag = std::make_shared<PointSet>(xfo, fy, color,Renderer::LineStyle::Solid);
-        point_set_sag->set_name(std::to_string(wvl) + "nm - S");
+        auto graph_sag = std::make_shared<Graph2d>(xfo, fy, color,Renderer::LineStyle::Solid);
+        graph_sag->set_name(std::to_string(wvl) + "nm - S");
 
-        auto point_set_tan = std::make_shared<PointSet>(yfo, fy, color,Renderer::LineStyle::Dots);
-        point_set_tan->set_name(std::to_string(wvl) + "nm - T");
+        auto graph_tan = std::make_shared<Graph2d>(yfo, fy, color,Renderer::LineStyle::Dots);
+        graph_tan->set_name(std::to_string(wvl) + "nm - T");
 
-        plot_data->add_pointset(point_set_sag);
-        plot_data->add_pointset(point_set_tan);
+        plot_data->add_graph(graph_sag);
+        plot_data->add_graph(graph_tan);
     }
 
     for(auto& fld : tmp_flds){

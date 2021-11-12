@@ -38,13 +38,14 @@
 
 #include "system/optical_system.h"
 
-#include "analysis/wave_aberration.h"
 #include "analysis/layout.h"
 #include "analysis/astigmatism.h"
 #include "analysis/spherochromatism.h"
 #include "analysis/chromatic_focus_shift.h"
 #include "analysis/spot_diagram.h"
 #include "analysis/transverse_ray_fan.h"
+#include "analysis/opd_fan.h"
+#include "analysis/wavefront.h"
 
 #include "assembly/optical_assembly.h"
 

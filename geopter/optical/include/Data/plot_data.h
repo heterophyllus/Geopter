@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   plot_data.h
-/// \author Hiiragi
-/// \date   October 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef PLOT_DATA_H
 #define PLOT_DATA_H
 
@@ -40,7 +32,7 @@
 #include <memory>
 #include <sstream>
 
-#include "data/point_set.h"
+#include "data/graph2d.h"
 
 namespace geopter {
 
@@ -50,7 +42,7 @@ public:
     PlotData();
     ~PlotData();
 
-    inline void add_pointset(std::shared_ptr<PointSet> points);
+    inline void add_graph(std::shared_ptr<Graph2d> graph);
     inline void add_optional_data(const std::string& dataname, double value);
     inline void set_title(const std::string& title);
     inline void set_x_axis_label(const std::string& label);
@@ -58,7 +50,7 @@ public:
 
     inline int data_count() const;
 
-    inline std::shared_ptr<PointSet> point_set(int i) const;
+    inline std::shared_ptr<Graph2d> graph(int i) const;
     inline double get_optional_data(const std::string& dataname) const;
     inline std::string title() const;
     inline std::string x_axis_label() const;
@@ -68,7 +60,7 @@ public:
     void print();
 
 private:
-    std::vector< std::shared_ptr<PointSet> > pointsets_;
+    std::vector< std::shared_ptr<Graph2d> > graphs_;
     std::map<std::string, double> optional_data_;
     std::string title_;
     std::string x_axis_label_;
@@ -77,9 +69,9 @@ private:
 };
 
 
-void PlotData::add_pointset(std::shared_ptr<PointSet> points)
+void PlotData::add_graph(std::shared_ptr<Graph2d> graph)
 {
-    pointsets_.push_back(points);
+    graphs_.push_back(graph);
 }
 
 void PlotData::add_optional_data(const std::string& dataname, double value)
@@ -102,9 +94,9 @@ void PlotData::set_y_axis_label(const std::string& label)
     y_axis_label_ = label;
 }
 
-std::shared_ptr<PointSet> PlotData::point_set(int i) const
+std::shared_ptr<Graph2d> PlotData::graph(int i) const
 {
-    return pointsets_[i];
+    return graphs_[i];
 }
 
 double PlotData::get_optional_data(const std::string& dataname) const
@@ -119,7 +111,7 @@ std::string PlotData::title() const
 
 int PlotData::data_count() const
 {
-    return pointsets_.size();
+    return graphs_.size();
 }
 
 std::string PlotData::x_axis_label() const

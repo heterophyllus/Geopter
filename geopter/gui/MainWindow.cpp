@@ -29,6 +29,7 @@
 #include "AnalysisDlg/ChromaticFocusShiftDlg.h"
 #include "AnalysisDlg/SpotDiagramDlg.h"
 #include "AnalysisDlg/OpdFanDlg.h"
+#include "AnalysisDlg/WavefrontMapDlg.h"
 
 using namespace ads;
 
@@ -61,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionChromaticFocusShift,    SIGNAL(triggered()), this, SLOT(showChromaticFocusShift()));
     QObject::connect(ui->actionSpotDiagram,            SIGNAL(triggered()), this, SLOT(showSpotDiagram()));
     QObject::connect(ui->actionOpdFan,                 SIGNAL(triggered()), this, SLOT(showOpdFan()));
+    QObject::connect(ui->actionWavefront,              SIGNAL(triggered()), this, SLOT(showWavefront()));
 
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -288,6 +290,10 @@ void MainWindow::showChromaticFocusShift()
     showAnalysisPlot<ChromaticFocusShiftDlg>("Chromatic Focus Shift");
 }
 
+void MainWindow::showWavefront()
+{
+    showAnalysisPlot<WavefrontMapDlg>("Wavefront Map");
+}
 
 template<class T>
 void MainWindow::showAnalysisPlot(QString dockTitleBase)
