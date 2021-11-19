@@ -49,26 +49,43 @@
      </property>
      <addaction name="actionParaxialRayTrace"/>
     </widget>
-    <widget class="QMenu" name="menuRaysAndSpot">
+    <widget class="QMenu" name="menuImage_Quality">
      <property name="title">
-      <string>Rays and Spot</string>
+      <string>Image Quality</string>
      </property>
-     <addaction name="actionSingleRayTrace"/>
-     <addaction name="separator"/>
-     <addaction name="actionSpotDiagram"/>
-    </widget>
-    <widget class="QMenu" name="menuAberration">
-     <property name="title">
-      <string>Aberration</string>
-     </property>
-     <addaction name="actionRayAberration"/>
-     <addaction name="actionOpdFan"/>
-     <addaction name="separator"/>
-     <addaction name="actionFieldCurvature"/>
-     <addaction name="actionLongitudinalAberration"/>
-     <addaction name="actionChromaticFocusShift"/>
-     <addaction name="separator"/>
-     <addaction name="actionWavefront"/>
+     <widget class="QMenu" name="menuAberrations">
+      <property name="title">
+       <string>Aberrations</string>
+      </property>
+      <addaction name="actionTransverseRayFan"/>
+      <addaction name="actionFieldCurvature"/>
+      <addaction name="actionSpherochromatism"/>
+      <addaction name="actionChromaticFocusShift"/>
+     </widget>
+     <widget class="QMenu" name="menuRays_ans_Spots">
+      <property name="title">
+       <string>Rays ans Spots</string>
+      </property>
+      <addaction name="actionSingleRayTrace"/>
+      <addaction name="actionSpotDiagram"/>
+     </widget>
+     <widget class="QMenu" name="menuWavefront">
+      <property name="title">
+       <string>Wavefront</string>
+      </property>
+      <addaction name="actionOpdFan"/>
+      <addaction name="actionWavefrontMap"/>
+     </widget>
+     <widget class="QMenu" name="menuPSF">
+      <property name="title">
+       <string>PSF</string>
+      </property>
+      <addaction name="actionFFT_PSF"/>
+     </widget>
+     <addaction name="menuRays_ans_Spots"/>
+     <addaction name="menuAberrations"/>
+     <addaction name="menuWavefront"/>
+     <addaction name="menuPSF"/>
     </widget>
     <addaction name="actionPrescription"/>
     <addaction name="separator"/>
@@ -76,8 +93,7 @@
     <addaction name="separator"/>
     <addaction name="menuParaxial"/>
     <addaction name="separator"/>
-    <addaction name="menuRaysAndSpot"/>
-    <addaction name="menuAberration"/>
+    <addaction name="menuImage_Quality"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -154,6 +170,21 @@
     <string>Paraxial Trace</string>
    </property>
   </action>
+  <action name="actionRayAberration">
+   <property name="text">
+    <string>Transverse Ray Fan</string>
+   </property>
+  </action>
+  <action name="actionPrescription">
+   <property name="text">
+    <string>Prescription</string>
+   </property>
+  </action>
+  <action name="actionWavefront">
+   <property name="text">
+    <string>Wavefront</string>
+   </property>
+  </action>
   <action name="actionSingleRayTrace">
    <property name="text">
     <string>Single Ray Trace</string>
@@ -164,7 +195,7 @@
     <string>Standard Spot Diagram</string>
    </property>
   </action>
-  <action name="actionRayAberration">
+  <action name="actionTransverseRayFan">
    <property name="text">
     <string>Transverse Ray Fan</string>
    </property>
@@ -174,9 +205,9 @@
     <string>Field Curvature</string>
    </property>
   </action>
-  <action name="actionLongitudinalAberration">
+  <action name="actionSpherochromatism">
    <property name="text">
-    <string>Longitudinal Aberration</string>
+    <string>Spherochromatism</string>
    </property>
   </action>
   <action name="actionChromaticFocusShift">
@@ -184,19 +215,19 @@
     <string>Chromatic Focus Shift</string>
    </property>
   </action>
-  <action name="actionPrescription">
-   <property name="text">
-    <string>Prescription</string>
-   </property>
-  </action>
   <action name="actionOpdFan">
    <property name="text">
     <string>OPD Fan</string>
    </property>
   </action>
-  <action name="actionWavefront">
+  <action name="actionWavefrontMap">
    <property name="text">
-    <string>Wavefront</string>
+    <string>Wavefront Map</string>
+   </property>
+  </action>
+  <action name="actionFFT_PSF">
+   <property name="text">
+    <string>FFT PSF</string>
    </property>
   </action>
  </widget>

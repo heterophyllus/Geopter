@@ -35,7 +35,7 @@ Wavefront::Wavefront(OpticalSystem *opt_sys) :
 
 }
 
-std::shared_ptr<MapData3d> Wavefront::plot(Field* fld, double wvl, int nrd)
+std::shared_ptr<MapData3d> Wavefront::plot(const Field* fld, double wvl, int nrd)
 {
     const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
     const double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
@@ -46,11 +46,9 @@ std::shared_ptr<MapData3d> Wavefront::plot(Field* fld, double wvl, int nrd)
     tracer->set_aperture_check(true);
     tracer->set_apply_vig(false);
 
-    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 0.0}), fld, wvl);
-    GridArray< std::shared_ptr<Ray> > rays = tracer->trace_grid_rays(fld, wvl, nrd);
+    SequentialPath seq_path = tracer->sequential_path(wvl);
 
-    int rows = rays.size();
-    int cols = rays[0].size();
+    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 0.0}), fld, wvl);
 
     std::vector<double> px;
     std::vector<double> py;
@@ -61,33 +59,42 @@ std::shared_ptr<MapData3d> Wavefront::plot(Field* fld, double wvl, int nrd)
         py.push_back( -1.0 + step*(double)i );
     }
 
-    GridArray<double> opd_grid;
+    GridArray<double> opd_grid(nrd, nrd);
 
+    Eigen::Vector2d pupil;
+
+    RayPtr ray = std::make_shared<Ray>(seq_path.size());
 
     for(int i = 0; i < nrd; i++)
     {
-        std::vector<double> opd_row;
-
         for(int j = 0 ; j < nrd; j++)
-        {
-            auto ray = rays[i][j];
+        {          
+            pupil(0) = -1.0 + step*(double)j;
+            pupil(1) = -1.0 + step*(double)i;
 
-            if(ray){
-                double opd = wave_abr_full_calc(ray, chief_ray);
-                opd *= convert_to_waves;
+            if(pupil.norm() < 1.0){
+                ray->set_status(RayStatus::PassThrough);
+                tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
 
-                opd_row.emplace_back(opd);
+                if(ray->status() == RayStatus::PassThrough){
+                    double opd = wave_abr_full_calc(ray, chief_ray);
+                    opd *= convert_to_waves;
+                    opd_grid.set_cell(i, j, opd);
+                }else{
+                    opd_grid.set_cell(i, j, NAN);
+                }
             }else{
-                opd_row.push_back(NAN);
+                opd_grid.set_cell(i, j, NAN);
             }
 
         }
 
-        opd_grid.emplace_back(opd_row);
     }
 
     auto mapdata = std::make_shared<MapData3d>();
     mapdata->set_data(px, py, opd_grid);
+
+    delete tracer;
 
     return mapdata;
 }

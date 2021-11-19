@@ -11,81 +11,59 @@ MapData3d::MapData3d()
 
 MapData3d::~MapData3d()
 {
+    xdata_.clear();
+    ydata_.clear();
 
-}
-
-void MapData3d::clear()
-{
-    for(auto &r : data_){
-        r.clear();
-    }
-    data_.clear();
 }
 
 
 void MapData3d::set_size(int rows, int cols, double fillin_val)
 {
-    this->clear();
-
-    auto p = Point3d(fillin_val, fillin_val, fillin_val);
-
-    for(int i = 0 ; i < rows; i++){
-        std::vector<Point3d> grid_row(cols, p);
-        data_.push_back(grid_row);
-    }
+    xdata_.resize(cols);
+    ydata_.resize(rows);
+    zdata_.resize(rows, cols);
+    zdata_.fill(fillin_val);
 }
 
 
-void MapData3d::set_data(const GridArray<Point3d>& points)
-{
-    data_ = points;
-}
 
 void MapData3d::set_data(const std::vector<double> &x, const std::vector<double> &y, const GridArray<double> &z)
 {
     assert(x.size() == y.size());
-    int rows = y.size();
-    int cols = x.size();
 
-    set_size(rows, cols, NAN);
-
-    for(int row = 0; row < rows; row++){
-        for(int col = 0; col < cols; col++){
-            int i = row_col_to_index(row, col);
-            set_cell_data(row, col, Point3d(x[i], y[i], z[row][col]));
-        }
-    }
+    xdata_ = x;
+    ydata_ = y;
+    zdata_ = z;
 }
 
-void MapData3d::set_cell_data(int i, int j, Point3d pt)
-{
-    data_[i][j] = pt;
-}
-
-void MapData3d::set_cell_data(int i, int j, double x, double y, double z)
-{
-    data_[i][j] = Point3d(x,y,z);
-}
 
 Point3d MapData3d::cell(int i, int j)
 {
-    return data_[i][j];
+    return Point3d(xdata_[j], ydata_[i], zdata_.at(i, j));
 }
 
 int MapData3d::rows() const
 {
-    return data_.size();
+    return ydata_.size();
 }
 
 int MapData3d::cols() const
 {
-    return data_[0].size();
+    return xdata_.size();
 }
 
-int MapData3d::row_col_to_index(int row, int col)
+Eigen::MatrixXd MapData3d::to_matrix()
 {
-    //int rows = data_.size();
-    int cols = data_[0].size();
+    int rows = this->rows();
+    int cols = this->cols();
 
-    return cols*row + col;
+    Eigen::MatrixXd m(rows, cols);
+
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            m(i,j) = zdata_.at(i, j);
+        }
+    }
+
+    return m;
 }

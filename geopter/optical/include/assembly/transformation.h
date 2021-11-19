@@ -23,22 +23,12 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   transformation.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
-#ifndef TRANSFORM_H
-#define TRANSFORM_H
+#ifndef GEOPTER_TRANSFORM_H
+#define GEOPTER_TRANSFORM_H
 
 #include "Eigen/Core"
 
 namespace geopter{
-
-class Surface;
 
 struct Transformation
 {
@@ -50,7 +40,6 @@ struct Transformation
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    static void transform_after_surface(Eigen::Vector3d& before_pt, Eigen::Vector3d& before_dir, const Surface* srf, const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& after_dir);
 };
 
 

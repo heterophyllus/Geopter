@@ -32,6 +32,7 @@
 #include <memory>
 #include <sstream>
 
+#include "Eigen/Core"
 #include "renderer/rgb.h"
 #include "data/grid_array.h"
 
@@ -39,7 +40,7 @@ namespace geopter{
 
 struct Point3d
 {
-    Point3d(double xx, double yy, double zz){
+    Point3d(double xx=0.0, double yy=0.0, double zz=0.0){
         x = xx;
         y = yy;
         z = zz;
@@ -56,11 +57,8 @@ public:
     MapData3d();
     ~MapData3d();
 
-    void set_data(const GridArray<Point3d>& points);
     void set_data(const std::vector<double>& x, const std::vector<double>& y, const GridArray<double>& z);
 
-    void set_cell_data(int i, int j, Point3d pt);
-    void set_cell_data(int i, int j, double x, double y, double z);
     void set_size(int rows, int cols, double fillin_val);
 
     Point3d cell(int i, int j);
@@ -68,12 +66,16 @@ public:
     int rows() const;
     int cols() const;
 
-    void clear();
+    const std::vector<double>& xdata() {return xdata_;};
+    const std::vector<double>& ydata() {return ydata_;};
+
+    Eigen::MatrixXd to_matrix();
 
 private:
-    GridArray<Point3d> data_;
+    std::vector<double> xdata_;
+    std::vector<double> ydata_;
+    GridArray<double> zdata_;
 
-    int row_col_to_index(int row, int col);
     // RgbGradient colormap_;
 };
 

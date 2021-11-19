@@ -75,15 +75,15 @@ void RendererQCP::draw_colored_map(const std::shared_ptr<MapData3d> mapdata)
 
     int nx = mapdata->rows();
     int ny = mapdata->cols();
+
     colorMap->data()->setSize(nx, ny);
-    colorMap->data()->setRange(QCPRange(-1, 1), QCPRange(-1, 1));
+    colorMap->data()->setRange(QCPRange(-1,1), QCPRange(-1,1));
 
     double x, y, z;
-    for (int xIndex=0; xIndex<nx; ++xIndex)
+    for (int xIndex = 0; xIndex < nx; ++xIndex)
     {
-      for (int yIndex=0; yIndex<ny; ++yIndex)
+      for (int yIndex = 0; yIndex < ny; ++yIndex)
       {
-        //colorMap->data()->cellToCoord(xIndex, yIndex, &x, &y);
         z = mapdata->cell(yIndex, xIndex).z; //(x,y) (col, row)
         colorMap->data()->setCell(xIndex, yIndex, z);
       }
@@ -91,6 +91,10 @@ void RendererQCP::draw_colored_map(const std::shared_ptr<MapData3d> mapdata)
 
     colorMap->setGradient(QCPColorGradient::gpJet);
     colorMap->rescaleDataRange();
+
+    axisRect->axis(QCPAxis::atBottom)->setVisible(false);
+    axisRect->axis(QCPAxis::atLeft)->setVisible(false);
+    customPlot_->replot();
 }
 
 void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style, double line_width)
@@ -211,6 +215,16 @@ void RendererQCP::draw_dots(const std::vector<double> &x, const std::vector<doub
     dots->data()->clear();
     dots->data()->set(dotsData, true);
     dots->setVisible(true);
+}
+
+QCPRange RendererQCP::current_x_axis_range()
+{
+    return customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atBottom)->range();
+}
+
+QCPRange RendererQCP::current_y_axis_range()
+{
+    return customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atLeft)->range();
 }
 
 void RendererQCP::set_x_axis_range(double xmin, double xmax)

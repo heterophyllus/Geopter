@@ -74,33 +74,8 @@ void SequentialTrace::pupil_coord_to_obj(Eigen::Vector3d& pt0, Eigen::Vector3d& 
     dir0.normalize();
 }
 
-std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field *fld, double wvl)
+RayPtr SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field *fld, double wvl)
 {
-
-    /*
-    Eigen::Vector2d vig_pupil = pupil_crd;
-
-    if(do_apply_vig_){
-        vig_pupil = fld->apply_vignetting(pupil_crd);
-    }
-
-    double eprad = opt_sys_->paraxial_data()->entrance_pupil_radius();
-    Eigen::Vector2d aim_pt = fld->aim_pt();
-
-    double obj_dist = opt_sys_->paraxial_data()->object_distance();
-    double enp_dist = opt_sys_->paraxial_data()->entrance_pupil_distance();
-
-    Eigen::Vector3d pt0 = this->object_coord(fld);
-    Eigen::Vector3d pt1;
-    pt1(0) = eprad*vig_pupil(0) + aim_pt(0);
-    pt1(1) = eprad*vig_pupil(1) + aim_pt(1);
-    pt1(2) = obj_dist + enp_dist;
-
-    Eigen::Vector3d dir0 = pt1 - pt0;
-    dir0.normalize();
-    */
-
-
     Eigen::Vector3d pt0;
     Eigen::Vector3d dir0;
 
@@ -116,7 +91,19 @@ std::shared_ptr<Ray> SequentialTrace::trace_pupil_ray(const Eigen::Vector2d& pup
 
 }
 
-void SequentialTrace::trace_reference_rays(std::vector<std::shared_ptr<Ray>> &ref_rays, const Field *fld, double wvl)
+void SequentialTrace::trace_pupil_ray(RayPtr ray, const SequentialPath &seq_path, const Eigen::Vector2d &pupil_crd, const Field *fld, double wvl)
+{
+    Eigen::Vector3d pt0;
+    Eigen::Vector3d dir0;
+
+    ray->set_pupil_coord(pupil_crd);
+    ray->set_wvl(wvl);
+
+    pupil_coord_to_obj(pt0, dir0, pupil_crd, fld);
+    trace_ray_throughout_path(ray, seq_path, pt0, dir0);
+}
+
+void SequentialTrace::trace_reference_rays(std::vector<RayPtr> &ref_rays, const Field *fld, double wvl)
 {
     ref_rays.clear();
 
@@ -134,55 +121,8 @@ void SequentialTrace::trace_reference_rays(std::vector<std::shared_ptr<Ray>> &re
     }
 }
 
-int SequentialTrace::trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> >& rays, const std::vector<Eigen::Vector2d>& pupils, const Field* fld, double wvl)
-{
-    double eprad = opt_sys_->paraxial_data()->entrance_pupil_radius();
-    Eigen::Vector2d aim_pt = fld->aim_pt();
 
-    //Eigen::Vector3d pt0 = this->object_coord(fld);
-    Eigen::Vector3d pt0 = fld->object_coord();
-
-    SequentialPath path = sequential_path(0, fund_data_.image_surface_index, wvl);
-
-    rays.clear();
-    rays.reserve(pupils.size());
-
-    int valid_count = 0;
-
-    for(auto& pupil : pupils)
-    {
-        Eigen::Vector2d vig_pupil = pupil;
-
-        if(do_apply_vig_){
-            vig_pupil = fld->apply_vignetting(pupil);
-        }
-
-        double obj_dist = opt_sys_->paraxial_data()->object_distance();
-        double enp_dist = opt_sys_->paraxial_data()->entrance_pupil_distance();
-        Eigen::Vector3d pt1;
-        pt1(0) = eprad*vig_pupil(0) + aim_pt(0);
-        pt1(1) = eprad*vig_pupil(1) + aim_pt(1);
-        pt1(2) = obj_dist + enp_dist;
-
-        Eigen::Vector3d dir0 = pt1 - pt0;
-        dir0.normalize();
-
-        try{
-            auto ray = trace_ray_throughout_path(path, pt0, dir0);
-            ray->set_wvl(wvl);
-            valid_count++;
-            rays.emplace_back(ray);
-        }catch(TraceError &e){
-            continue;
-        }
-
-    }
-
-    assert(valid_count == (int)rays.size());
-    return valid_count;
-}
-
-std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0)
+RayPtr SequentialTrace::trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0)
 {
     std::shared_ptr<Ray> ray = std::make_shared<Ray>();
 
@@ -283,21 +223,113 @@ std::shared_ptr<Ray> SequentialTrace::trace_ray_throughout_path(const Sequential
     return ray;
 }
 
-GridArray< std::shared_ptr<Ray> > SequentialTrace::trace_grid_rays(const Field* fld, double wvl, int nrd)
+void SequentialTrace::trace_ray_throughout_path(RayPtr ray, const SequentialPath &seq_path, const Eigen::Vector3d &pt0, const Eigen::Vector3d &dir0)
 {
-    GridArray< std::shared_ptr<Ray> > ray_grid;
+    const int path_size = seq_path.size();
+
+    if(ray->size() != path_size){
+        ray->init(path_size);
+    }
+
+    Eigen::Vector3d before_pt  = pt0;
+    Eigen::Vector3d before_dir = dir0;
+    Eigen::Vector3d intersect_pt;
+    Eigen::Vector3d after_dir;
+    double distance_from_before = 0.0;
+    double n_out = seq_path.at(0).rind;
+    double n_in  = n_out;
+    Transformation transformation_from_before = seq_path.at(0).srf->local_transform();
+    double op_delta = 0.0;
+    double opl = 0.0;
+
+    constexpr double eps = 1.0e-7;
+    constexpr double z_dir = 1.0; // used for reflection, not yet implemented
+
+
+    // first surface
+    Eigen::Vector3d srf_normal_1st = seq_path.at(0).srf->normal(pt0);
+    ray->at(0)->set_data(pt0, srf_normal_1st, dir0, 0.0, 0.0);
+
+
+    // trace ray throughout the path till the image
+    Eigen::Matrix3d rt;
+    Eigen::Vector3d t, rel_before_pt, rel_before_dir, foot_of_perpendicular_pt, srf_normal;
+    int cur_srf_idx = 1;
+    try {
+        for(cur_srf_idx = 1; cur_srf_idx < path_size; cur_srf_idx++) {
+
+            rt = transformation_from_before.rotation;
+            t  = transformation_from_before.transfer;
+
+            rel_before_pt = rt*(before_pt - t); // relative source point looked from current surface
+            rel_before_dir = rt*before_dir;     // relative ray direction looked from current surface
+
+            double dist_from_before_to_perpendicular = -rel_before_pt.dot(rel_before_dir); // distance from previous point to foot of perpendicular
+            foot_of_perpendicular_pt = rel_before_pt + dist_from_before_to_perpendicular*rel_before_dir; // foot of perpendicular from the current surface apex to the incident ray line
+
+            Surface* cur_srf = seq_path.at(cur_srf_idx).srf;
+            double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
+            cur_srf->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
+
+            distance_from_before = dist_from_before_to_perpendicular + dist_from_perpendicular_to_intersect_pt; // distance between before and current intersect point
+
+            n_out = seq_path.at(cur_srf_idx).rind;
+            srf_normal = cur_srf->normal(intersect_pt); // surface normal at the intersect point
+            after_dir = bend(before_dir, srf_normal, n_in, n_out);
+
+            opl = n_in * distance_from_before;
+
+            ray->at(cur_srf_idx)->set_data(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before, opl);
+
+            if(do_aperture_check_) {
+                if( !cur_srf->point_inside(intersect_pt(0),intersect_pt(1)) ){
+                    throw TraceBlockedByApertureError();
+                }
+            }
+
+            before_pt  = intersect_pt;
+            before_dir = after_dir;
+            n_in       = n_out;
+            transformation_from_before = cur_srf->local_transform();
+        }
+
+    } catch (TraceMissedSurfaceError &e) {
+        ray->set_status(RayStatus::MissedSurface);
+        e.set_ray(ray);
+        e.set_surface_index(cur_srf_idx);
+
+        //throw e;
+
+    } catch (TraceTIRError& e){
+        ray->set_status(RayStatus::TotalReflection);
+        e.set_ray(ray);
+        e.set_surface_index(cur_srf_idx);
+        //throw e;
+
+    } catch (TraceBlockedByApertureError& e) {
+        ray->set_status(RayStatus::Blocked);
+        e.set_ray(ray);
+        e.set_surface_index(cur_srf_idx);
+        //throw e;
+    }
+
+    ray->set_status(RayStatus::PassThrough);
+    //op_delta += opl;
+}
+
+
+GridArray<RayPtr> SequentialTrace::trace_grid_rays(const Field* fld, double wvl, int nrd)
+{
+    GridArray<RayPtr> ray_grid(nrd, nrd);
 
     SequentialPath path = sequential_path(wvl);
 
     Eigen::Vector2d pupil;
     Eigen::Vector3d pt0, dir0;
-
-    std::vector< std::shared_ptr<Ray> > grid_row;
+    RayPtr ray = nullptr;
 
     for(int i = 0; i < nrd; i++)
     {
-        grid_row.clear();
-
         double py = -1.0 + (double)i*2.0/(double)(nrd-1);
 
         for(int j = 0; j < nrd; j++)
@@ -306,28 +338,86 @@ GridArray< std::shared_ptr<Ray> > SequentialTrace::trace_grid_rays(const Field* 
             pupil(0) = px;
             pupil(1) = py;
 
+            ray = nullptr;
+
             double r2 = pow(pupil(0),2) + pow(pupil(1),2);
             if(r2 < 1.0){
                 pupil_coord_to_obj(pt0, dir0, pupil, fld);
 
                 try{
-                    auto ray = trace_ray_throughout_path(path, pt0, dir0);
+                    ray = trace_ray_throughout_path(path, pt0, dir0);
                     ray->set_wvl(wvl);
                     ray->set_pupil_coord(pupil);
-                    grid_row.push_back(ray);
+
                 }catch(TraceError &e){
-                    grid_row.push_back(nullptr);
+                    ray = nullptr;
                 }
 
-            }else{
-                grid_row.push_back(nullptr);
             }
+
+            ray_grid.set_cell(i, j, ray);
         }
 
-        ray_grid.emplace_back(grid_row);
     }
 
     return ray_grid;
+}
+
+
+
+HexapolarArray<RayPtr> SequentialTrace::trace_hexapolar_rays(const Field *fld, double wvl, int nrd)
+{
+    HexapolarArray<RayPtr> rays_hexapolar(nrd);
+
+    SequentialPath path = sequential_path(wvl);
+
+    Eigen::Vector2d pupil;
+    Eigen::Vector3d pt0, dir0;
+    RayPtr ray = nullptr;
+
+    int half_num_rings = nrd/2;
+    for (int r = 0; r < nrd/2; r++)
+    {
+        int num_rays_in_ring = 6*r;
+
+        // center of hexapolar
+        if(num_rays_in_ring == 0){
+            pupil(0) = 0.0;
+            pupil(1) = 0.0;
+            pupil_coord_to_obj(pt0, dir0, pupil, fld);
+            try{
+                ray = trace_ray_throughout_path(path, pt0, dir0);
+                ray->set_wvl(wvl);
+                ray->set_pupil_coord(pupil);
+            }catch(TraceError &e){
+                ray = nullptr;
+            }
+
+            rays_hexapolar[0] = ray;
+
+            continue;
+        }
+
+        double ang_step = 2*M_PI/(double)num_rays_in_ring;
+
+        for(int ai = 0; ai < num_rays_in_ring; ai++){
+            pupil(0) = (double)r * 1.0/(half_num_rings) * cos((double)ai*ang_step);
+            pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
+
+            pupil_coord_to_obj(pt0, dir0, pupil, fld);
+            try{
+                ray = trace_ray_throughout_path(path, pt0, dir0);
+                ray->set_wvl(wvl);
+                ray->set_pupil_coord(pupil);
+            }catch(TraceError &e){
+                ray = nullptr;
+            }
+
+            rays_hexapolar[ HexapolarArray<Ray>::ring_azimuth_to_index(r, ai) ] = ray;
+        }
+    }
+
+    return rays_hexapolar;
 
 }
 
@@ -340,7 +430,6 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl, 
 
     std::shared_ptr<Ray> ray;
 
-    // off axis
     try{
         ray = trace_pupil_ray(Eigen::Vector2d({0.0, offset}), fld, wvl);
     }catch(TraceError &e){
@@ -612,7 +701,6 @@ Eigen::Vector3d SequentialTrace::bend(const Eigen::Vector3d& d_in, const Eigen::
 
     return d_out;
 }
-
 
 Eigen::Vector3d SequentialTrace::object_coord(const Field* fld)
 {

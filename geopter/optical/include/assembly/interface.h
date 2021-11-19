@@ -69,8 +69,8 @@ public:
     bool point_inside(double x, double y) const;
     bool point_inside(const Eigen::Vector2d& pt) const;
 
-    inline Transformation local_transform() const;
-    inline Transformation global_transform() const;
+    inline const Transformation& local_transform() const;
+    inline const Transformation& global_transform() const;
 
 
     template<SurfaceProfile::Type type>
@@ -206,12 +206,12 @@ double Interface::semi_diameter() const
     return semi_diameter_;
 }
 
-Transformation Interface::local_transform() const
+const Transformation& Interface::local_transform() const
 {
     return lcl_tfrm_;
 }
 
-Transformation Interface::global_transform() const
+const Transformation& Interface::global_transform() const
 {
     return gbl_tfrm_;
 }

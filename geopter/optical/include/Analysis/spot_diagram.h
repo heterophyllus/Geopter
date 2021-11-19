@@ -37,10 +37,6 @@ public:
 
     std::shared_ptr<PlotData> plot(const Field* fld, int pattern, int nrd, double dot_size);
 
-private:
-    std::vector<Eigen::Vector2d> create_grid_circle(int nrd);
-    std::vector<Eigen::Vector2d> create_hexapolar(int nrd);
-
     enum SpotRayPattern{
         Grid,
         Hexapolar

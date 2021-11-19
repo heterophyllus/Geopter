@@ -27,6 +27,16 @@ RayAtSurface::~RayAtSurface()
     before_ = nullptr;
 }
 
+void RayAtSurface::set_data(const Eigen::Vector3d &inc_pt, const Eigen::Vector3d &normal, const Eigen::Vector3d &after_dir, double dist, double opl, RayAtSurface *before)
+{
+    intersect_pt_         = inc_pt;
+    normal_               = normal;
+    after_dir_            = after_dir;
+    distance_from_before_ = dist;
+    opl_                  = opl;
+    before_               = before;
+}
+
 double RayAtSurface::aoi() const
 {
     Eigen::Vector3d inc_dir;

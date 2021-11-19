@@ -18,20 +18,6 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
     tracer->set_aperture_check(true);
     tracer->set_apply_vig(false);
 
-    std::vector<Eigen::Vector2d> pupils;
-
-    switch (pattern) {
-    case SpotDiagram::SpotRayPattern::Grid :
-        pupils = create_grid_circle(nrd);
-        break;
-    case SpotDiagram::SpotRayPattern::Hexapolar :
-        pupils = create_hexapolar(nrd);
-        break;
-    default:
-        throw "Undefined spot pattern";
-    }
-
-
     auto plot_data = std::make_shared<PlotData>();
     plot_data->set_title("Spot");
     plot_data->set_x_axis_label("dx");
@@ -48,32 +34,113 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
         return plot_data;
     }
 
-    //auto chief_ray = opt_sys_->reference_ray(1, fi, ref_wvl_idx_);
     double chief_ray_x = chief_ray->back()->x();
     double chief_ray_y = chief_ray->back()->y();
 
     // trace patterned rays for all wavelengths
-    std::vector<double> ray_dx, ray_dy;
-    std::vector< std::shared_ptr<Ray> > rays;
+    int num_data = nrd*nrd;
+    switch (pattern) {
+    case SpotDiagram::SpotRayPattern::Grid:
+        num_data = nrd*nrd;
+        break;
+    case SpotDiagram::SpotRayPattern::Hexapolar:
+        num_data = HexapolarArray<double>(nrd).total_number_of_points();
+        break;
+    }
+
+    Eigen::Vector2d pupil;
+
+    auto ray = std::make_shared<Ray>(chief_ray->size());
 
     for(int wi = 0; wi < num_wvl_; wi++){
+
+        std::vector<double> ray_dx; ray_dx.reserve(num_data);
+        std::vector<double> ray_dy; ray_dy.reserve(num_data);
 
         double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
         Rgb color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
 
-        int valid_ray_count = tracer->trace_pupil_pattern_rays(rays, pupils, fld, wvl);
+        SequentialPath seq_path = tracer->sequential_path(wvl);
 
-        ray_dx.clear();
-        ray_dy.clear();
+        if(SpotDiagram::SpotRayPattern::Grid == pattern)
+        {            
+            for(int i = 0; i < nrd; i++){
+                for(int j = 0; j < nrd; j++){
+                    pupil(0) = -1.0 + (double)j*2.0/(double)(nrd-1);
+                    pupil(1) = -1.0 + (double)i*2.0/(double)(nrd-1);
 
-        ray_dx.reserve(valid_ray_count);
-        ray_dy.reserve(valid_ray_count);
+                    ray->set_status(RayStatus::PassThrough);
 
-        for(auto& ray : rays){
-            if(ray->status() == RayStatus::PassThrough){
-                ray_dx.push_back(ray->back()->x() - chief_ray_x);
-                ray_dy.push_back(ray->back()->y() - chief_ray_y);
+                    double r2 = pow(pupil(0),2) + pow(pupil(1),2);
+                    if(r2 < 1.0){
+                        try{
+                            tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                            ray->set_wvl(wvl);
+                            ray->set_pupil_coord(pupil);
+                        }catch(TraceError &e){
+                            continue;
+                        }
+
+                        if(RayStatus::PassThrough == ray->status()){
+                            double ray_x = ray->back()->x();
+                            double ray_y = ray->back()->y();
+
+                            ray_dx.push_back(ray_x-chief_ray_x);
+                            ray_dy.push_back(ray_y-chief_ray_y);
+                        }
+                    }
+                }
             }
+
+
+        }else if(SpotDiagram::SpotRayPattern::Hexapolar == pattern){
+            int half_num_rings = nrd/2;
+            for (int r = 0; r < nrd/2; r++)
+            {
+                int num_rays_in_ring = 6*r;
+
+                // center of hexapolar
+                if(num_rays_in_ring == 0){
+                    pupil(0) = 0.0;
+                    pupil(1) = 0.0;
+                    try{
+                        tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                        ray->set_wvl(wvl);
+                        ray->set_pupil_coord(pupil);
+                    }catch(TraceError &e){
+
+                    }
+
+                    ray_dx.push_back( ray->back()->x() - chief_ray_x );
+                    ray_dy.push_back( ray->back()->y() - chief_ray_y );
+
+                    continue;
+                }
+
+                double ang_step = 2*M_PI/(double)num_rays_in_ring;
+
+                for(int ai = 0; ai < num_rays_in_ring; ai++){
+                    pupil(0) = (double)r * 1.0/(half_num_rings) * cos((double)ai*ang_step);
+                    pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
+                    ray->set_status(RayStatus::PassThrough);
+                    try{
+                        tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                        ray->set_wvl(wvl);
+                        ray->set_pupil_coord(pupil);
+                    }catch(TraceError &e){
+                        continue;
+                    }
+
+                    if(RayStatus::PassThrough == ray->status()){
+                        ray_dx.push_back( ray->back()->x() - chief_ray_x );
+                        ray_dy.push_back( ray->back()->y() - chief_ray_y );
+                    }
+                }
+            }
+
+
+        }else{
+            std::cerr << "Undefined spot pattern" << std::endl;
         }
 
         // TODO: calculate RMS, Max diameter, etc
@@ -84,59 +151,8 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
         plot_data->add_graph(graph);
     }
 
-
     delete tracer;
 
     return plot_data;
 }
 
-
-
-std::vector<Eigen::Vector2d> SpotDiagram::create_grid_circle(int nrd)
-{
-    std::vector<Eigen::Vector2d> pupils;
-    Eigen::Vector2d pupil;
-
-    for(int pi = 0; pi < nrd; pi++) {
-        pupil(0) = -1.0 + (double)pi*2.0/(double)(nrd-1);
-
-        for(int pj = 0; pj < nrd; pj++) {
-            pupil(1) = -1.0 + (double)pj*2.0/(double)(nrd-1);
-
-            //double r = sqrt( pow(pupil(0),2) + pow(pupil(1),2) );
-            double r2 = pow(pupil(0),2) + pow(pupil(1),2);
-            if(r2 <= 1.0){
-                pupils.push_back(pupil);
-            }
-        }
-    }
-
-    return pupils;
-}
-
-std::vector<Eigen::Vector2d> SpotDiagram::create_hexapolar(int nrd)
-{
-    std::vector<Eigen::Vector2d> pupils;
-    Eigen::Vector2d pupil;
-
-    int half_num_rings = nrd/2;
-    for (int r = 0; r < nrd/2; r++){
-        int num_rays_in_ring = 6*r;
-        if(num_rays_in_ring == 0){
-            pupil(0) = 0.0;
-            pupil(1) = 0.0;
-            pupils.push_back(pupil);
-            continue;
-        }
-
-        double ang_step = 2*M_PI/(double)num_rays_in_ring;
-
-        for(int ai = 0; ai < num_rays_in_ring; ai++){
-            pupil(0) = (double)r * 1.0/(half_num_rings) * cos((double)ai*ang_step);
-            pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
-            pupils.push_back(pupil);
-        }
-    }
-
-    return pupils;
-}

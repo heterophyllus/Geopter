@@ -34,7 +34,7 @@ class Graph2d
 {
 public:
     Graph2d();
-    Graph2d(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color= rgb_black, double line_width=1.0, int line_style=0);
+    Graph2d(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color= rgb_black, int line_style=0, double line_width=1.0);
     ~Graph2d();
 
     void set_data(const std::vector<double>& x, const std::vector<double>& y);

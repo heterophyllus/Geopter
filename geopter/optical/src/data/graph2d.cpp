@@ -13,7 +13,7 @@ Graph2d::Graph2d()
     line_style_ = 0;
 }
 
-Graph2d::Graph2d(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, double line_width, int line_style)
+Graph2d::Graph2d(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style, double line_width)
 {
     render_color_ = color;
     line_width_ = line_width;

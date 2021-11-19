@@ -30,6 +30,9 @@ public:
     void draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style=0, double line_width= 1.0) override;
     void draw_dots(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, double dot_size) override;
 
+    QCPRange current_x_axis_range();
+    QCPRange current_y_axis_range();
+
     void set_x_axis_range(double xmin, double xmax) override;
     void set_y_axis_range(double ymin, double ymax) override;
 

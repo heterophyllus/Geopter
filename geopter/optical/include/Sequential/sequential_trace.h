@@ -26,13 +26,11 @@
 #ifndef SEQUENTIALTRACE_H
 #define SEQUENTIALTRACE_H
 
-#include <memory>
-
-#include "Eigen/Core"
 
 #include "system/optical_system.h"
 #include "sequential/sequential_path.h"
 #include "data/grid_array.h"
+#include "data/hexapolar_array.h"
 
 namespace geopter {
 
@@ -42,26 +40,26 @@ public:
     SequentialTrace(OpticalSystem* sys);
     ~SequentialTrace();
 
+    /** Base function for ray tracing. Trace a ray throughout the given sequantial path */
+    RayPtr trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
+
+    void trace_ray_throughout_path(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
+
+
     /** Trace a single ray at the given pupil coordinate */
-    std::shared_ptr<Ray> trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
+    RayPtr trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
+
+    void trace_pupil_ray(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
 
     /** Trace reference rays(chief, meridional upper/lower, sagittal upper/lower */
     void trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
 
-    /**
-     * @brief Trace patterned rays (grid, hexapolar, etc)
-     * @param rays Traced Ray vector
-     * @param pupils pupil coordinated list
-     * @param fld Field pointer
-     * @param wvl wavelength value
-     * @return number of valid rays
-     */
-    int trace_pupil_pattern_rays(std::vector< std::shared_ptr<Ray> >& rays, const std::vector< Eigen::Vector2d >& pupils, const Field* fld, double wvl);
+    /** Trace grid pattern rays */
+    GridArray< RayPtr > trace_grid_rays(const Field* fld, double wvl, int nrd=21);
 
-    GridArray< std::shared_ptr<Ray> > trace_grid_rays(const Field* fld, double wvl, int nrd=21);
 
-    /** Trace a ray throughout the given sequantial path */
-    std::shared_ptr<Ray> trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
+    /** Trace hexapolar pattern rays */
+    HexapolarArray<RayPtr> trace_hexapolar_rays(const Field* fld, double wvl, int nrd=21);
 
 
     /** Trace chief ray and returns x/y focus shift */
@@ -89,7 +87,7 @@ public:
     /** Get sequential path between start and end */
     SequentialPath sequential_path(int start, int end, double wvl);
 
-    /** Get sequential path object from object to image */
+    /** Get overall sequential path object from object to image */
     SequentialPath sequential_path(double wvl);
 
 

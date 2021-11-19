@@ -10,7 +10,7 @@
 #include <QDebug>
 
 #include "MainWindow.h"
-#include "./ui_mainwindow.h"
+#include "./ui_MainWindow.h"
 
 #include "TextViewDock.h"
 #include "PlotViewDock.h"
@@ -30,6 +30,7 @@
 #include "AnalysisDlg/SpotDiagramDlg.h"
 #include "AnalysisDlg/OpdFanDlg.h"
 #include "AnalysisDlg/WavefrontMapDlg.h"
+#include "AnalysisDlg/FFT_PSFDlg.h"
 
 using namespace ads;
 
@@ -56,13 +57,14 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->action2DLayout,               SIGNAL(triggered()), this, SLOT(showLayout()));
     QObject::connect(ui->actionSingleRayTrace,         SIGNAL(triggered()), this, SLOT(showSingleRayTrace()));
     QObject::connect(ui->actionParaxialRayTrace,       SIGNAL(triggered()), this, SLOT(showParaxialRayTrace()));
-    QObject::connect(ui->actionRayAberration ,         SIGNAL(triggered()), this, SLOT(showTransverseRayFan()));
-    QObject::connect(ui->actionLongitudinalAberration, SIGNAL(triggered()), this, SLOT(showLongitudinal()));
+    QObject::connect(ui->actionTransverseRayFan,       SIGNAL(triggered()), this, SLOT(showTransverseRayFan()));
+    QObject::connect(ui->actionSpherochromatism,       SIGNAL(triggered()), this, SLOT(showLongitudinal()));
     QObject::connect(ui->actionFieldCurvature,         SIGNAL(triggered()), this, SLOT(showFieldCurvature()));
     QObject::connect(ui->actionChromaticFocusShift,    SIGNAL(triggered()), this, SLOT(showChromaticFocusShift()));
     QObject::connect(ui->actionSpotDiagram,            SIGNAL(triggered()), this, SLOT(showSpotDiagram()));
     QObject::connect(ui->actionOpdFan,                 SIGNAL(triggered()), this, SLOT(showOpdFan()));
-    QObject::connect(ui->actionWavefront,              SIGNAL(triggered()), this, SLOT(showWavefront()));
+    QObject::connect(ui->actionWavefrontMap,           SIGNAL(triggered()), this, SLOT(showWavefront()));
+    QObject::connect(ui->actionFFT_PSF,                SIGNAL(triggered()), this, SLOT(showFFTPSF()));
 
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -293,6 +295,11 @@ void MainWindow::showChromaticFocusShift()
 void MainWindow::showWavefront()
 {
     showAnalysisPlot<WavefrontMapDlg>("Wavefront Map");
+}
+
+void MainWindow::showFFTPSF()
+{
+    showAnalysisPlot<FFT_PSFDlg>("FFT PSF");
 }
 
 template<class T>

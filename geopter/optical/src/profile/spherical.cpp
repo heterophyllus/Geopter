@@ -23,18 +23,10 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   spherical.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #include <iostream>
 
 #include "profile/spherical.h"
-
 #include "sequential/trace_error.h"
 
 using namespace geopter;

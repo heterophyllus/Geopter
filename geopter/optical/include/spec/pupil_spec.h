@@ -23,21 +23,12 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   pupil_spec.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef PUPILSPEC_H
 #define PUPILSPEC_H
 
 #include <cassert>
-#include <vector>
-
-#include "Eigen/Core"
+#include <sstream>
 
 namespace geopter {
 
@@ -67,8 +58,6 @@ public:
     inline void set_value(double val);
 
     void print(std::ostringstream& oss);
-
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 private:
     int pupil_type_;

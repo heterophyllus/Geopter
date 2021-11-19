@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   ray.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #include <iostream>
 #include <iomanip>
 
@@ -47,6 +39,20 @@ Ray::Ray() :
     pupil_crd_ = Eigen::Vector2d::Zero(2);
 }
 
+Ray::Ray(int n) :
+    status_(RayStatus::PassThrough),
+    wvl_(0.0)
+{
+    ray_at_srfs_.reserve(n);
+    RayAtSurface* before = nullptr;
+    for(int i = 0; i < n; i++){
+        ray_at_srfs_.emplace_back( std::make_unique<RayAtSurface>() );
+        ray_at_srfs_.back()->set_before(before);
+        before = ray_at_srfs_.back().get();
+    }
+    array_size_ = n;
+}
+
 Ray::~Ray()
 {
     for(auto &r : ray_at_srfs_){
@@ -55,6 +61,22 @@ Ray::~Ray()
     ray_at_srfs_.clear();
 }
 
+void Ray::init(int n)
+{
+    for(auto &r : ray_at_srfs_){
+        r.reset();
+    }
+    ray_at_srfs_.clear();
+
+    ray_at_srfs_.reserve(n);
+    RayAtSurface* before = nullptr;
+    for(int i = 0; i < n; i++){
+        ray_at_srfs_.emplace_back( std::make_unique<RayAtSurface>() );
+        ray_at_srfs_.back()->set_before(before);
+        before = ray_at_srfs_.back().get();
+    }
+    array_size_ = n;
+}
 
 void Ray::prepend(std::unique_ptr<RayAtSurface> ray_at_srf)
 {

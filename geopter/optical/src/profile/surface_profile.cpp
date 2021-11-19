@@ -23,8 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-
-#include <iostream>
 #include "profile/surface_profile.h"
 #include "sequential/trace_error.h"
 
@@ -73,10 +71,10 @@ void SurfaceProfile::set_radius(double r)
 double SurfaceProfile::radius() const
 {
     double r = 0.0;
-    try {
-        r = 1.0/cv_;
-    }  catch (...) {
+    if(fabs(cv_) < std::numeric_limits<double>::epsilon()){
         r = 0.0;
+    }else{
+        r = 1.0/cv_;
     }
     return r;
 }

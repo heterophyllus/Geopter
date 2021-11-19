@@ -16,6 +16,7 @@ set(OPTICAL_SRCS
     analysis/reference_sphere.cpp
     analysis/opd_fan.cpp
     analysis/wavefront.cpp
+    analysis/diffractive_psf.cpp
 
     assembly/optical_assembly.cpp
     assembly/interface.cpp
@@ -92,8 +93,9 @@ add_library(${PROJECT_NAME} STATIC
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/geopter/optical/include
-    ${CMAKE_SOURCE_DIR}/3rdparty #Eigen, nlohman
+    ${CMAKE_SOURCE_DIR}/3rdparty #nlohman
     ${CMAKE_SOURCE_DIR}/3rdparty/spline/src
+    ${CMAKE_SOURCE_DIR}/3rdparty/eigen-3.3.9
 )
 
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)

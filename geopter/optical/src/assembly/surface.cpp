@@ -61,13 +61,8 @@ void Surface::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d& p
 }
 
 Eigen::Vector3d Surface::normal(Eigen::Vector3d p)
-{
-    try{
-        return profile_->normal(p);
-    }catch(TraceMissedSurfaceError &e){
-        std::cout << "TraceMissedSurfaceError : Surface::normal()" << std::endl;
-        throw e;
-    }
+{ 
+    return profile_->normal(p);
 }
 
 void Surface::print()

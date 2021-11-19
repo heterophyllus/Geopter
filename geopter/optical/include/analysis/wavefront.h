@@ -27,7 +27,6 @@
 #define WAVEFRONT_H
 
 #include "analysis/wave_aberration.h"
-#include "data/grid_array.h"
 #include "data/map_data_3d.h"
 
 namespace geopter{
@@ -39,7 +38,8 @@ public:
     Wavefront(OpticalSystem *opt_sys);
 
     /** Returns OPD grid array */
-    std::shared_ptr<MapData3d> plot(Field* fld, double wvl, int nrd);
+    std::shared_ptr<MapData3d> plot(const Field* fld, double wvl, int nrd);
+
 };
 
 } //namespace geopter

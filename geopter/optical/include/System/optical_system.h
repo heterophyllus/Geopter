@@ -82,6 +82,9 @@ public:
     void set_title(std::string title);
     void set_note(std::string text);
 
+    void set_solve(int type, double val=1.0);
+    void delete_solve();
+
     void set_vignetting_factors();
 
     void update_model();
@@ -97,6 +100,7 @@ private:
     void update_paraxial_data();
     void update_semi_diameters();
     void update_fundamental_data();
+    void update_solve();
 
     void transfer_to_exit_pupil(Surface* srf, const RayAtSurface* ray_seg, double exp_dist_parax);
 

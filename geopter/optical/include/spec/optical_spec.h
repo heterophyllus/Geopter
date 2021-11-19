@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   optical_spec.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef OPTICALSPEC_H
 #define OPTICALSPEC_H
 
@@ -63,8 +55,6 @@ private:
     std::unique_ptr<WvlSpec> spectral_region_;
     std::unique_ptr<PupilSpec> pupil_;
     std::unique_ptr<FieldSpec> field_of_view_;
-
-    int stop_;
 };
 
 

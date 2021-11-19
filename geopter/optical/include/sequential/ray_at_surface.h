@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   ray_at_surface.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef RAY_AT_SURFACE_H
 #define RAY_AT_SURFACE_H
@@ -44,12 +37,13 @@ class RayAtSurface
 public:
     RayAtSurface();
     RayAtSurface(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl, RayAtSurface *before=nullptr);
-
     ~RayAtSurface();
+
+    void set_data(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl, RayAtSurface *before=nullptr);
 
     inline void set_before(RayAtSurface* before);
 
-    inline Eigen::Vector3d intersect_pt() const;
+    inline const Eigen::Vector3d& intersect_pt() const;
 
     inline double distance_from_before() const;
 
@@ -61,12 +55,12 @@ public:
     inline double y() const;
     inline double z() const;
 
-    inline Eigen::Vector3d after_dir() const;
+    inline const Eigen::Vector3d& after_dir() const;
     inline double L() const;
     inline double M() const;
     inline double N() const;
 
-    inline Eigen::Vector3d surface_normal() const;
+    inline const Eigen::Vector3d& surface_normal() const;
     inline double srl() const;
     inline double srm() const;
     inline double srn() const;
@@ -80,6 +74,7 @@ public:
     /** Angle of refraction (signed) */
     double aor() const;
 
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 private:
     /** ray intersect point on the surface */
@@ -99,17 +94,17 @@ private:
 
     RayAtSurface* before_;
 
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+
+using RayAtSurfacePtr = std::shared_ptr<RayAtSurface>;
 
 void RayAtSurface::set_before(RayAtSurface *before)
 {
     before_ = before;
 }
 
-Eigen::Vector3d RayAtSurface::intersect_pt() const
+const Eigen::Vector3d& RayAtSurface::intersect_pt() const
 {
     return intersect_pt_;
 }
@@ -139,7 +134,7 @@ double RayAtSurface::distance_from_before() const
     return distance_from_before_;
 }
 
-Eigen::Vector3d RayAtSurface::after_dir() const
+const Eigen::Vector3d& RayAtSurface::after_dir() const
 {
     return after_dir_;
 }
@@ -159,7 +154,7 @@ double RayAtSurface::N() const
     return after_dir_(2);
 }
 
-Eigen::Vector3d RayAtSurface::surface_normal() const
+const Eigen::Vector3d& RayAtSurface::surface_normal() const
 {
     return normal_;
 }

@@ -23,22 +23,14 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   ray.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef RAY_H
 #define RAY_H
 
 #include <vector>
 #include <sstream>
 #include <memory>
+#include <cassert>
 
-#include "Eigen/Core"
 #include "ray_at_surface.h"
 #include "common/geopter_error.h"
 
@@ -58,7 +50,12 @@ class Ray
 {
 public:
     Ray();
+    Ray(int n);
     ~Ray();
+
+    RayAtSurface* operator[](std::size_t n) & {return ray_at_srfs_[n].get();}
+
+    void init(int n);
 
     /** Add data at the beginning */
     void prepend(std::unique_ptr<RayAtSurface> ray_at_srf);
@@ -69,16 +66,17 @@ public:
     inline void set_status(int s);
     inline void set_wvl(double wvl);
     inline void set_pupil_coord(const Eigen::Vector2d& pupil);
+    inline void set_reached_surface_index(int i);
 
     inline int size() const;
 
-    inline RayAtSurface* at(int i) const;
+    inline RayAtSurface* at(int i);
     inline RayAtSurface* front() const;
     inline RayAtSurface* back() const;
     inline RayAtSurface* at_lens_back() const;
     inline int status() const;
     inline double wavelength() const;
-    inline Eigen::Vector2d pupil_coord() const;
+    inline const Eigen::Vector2d& pupil_coord() const;
 
     double optical_path_length() const;
 
@@ -95,8 +93,11 @@ private:
     double wvl_;
     double opl_;
     int array_size_;
+    int reached_surface_index_;
     Eigen::Vector2d pupil_crd_;
 };
+
+using RayPtr = std::shared_ptr<Ray>;
 
 
 int Ray::size() const
@@ -115,7 +116,7 @@ double Ray::wavelength() const
     return wvl_;
 }
 
-RayAtSurface* Ray::at(int i) const
+RayAtSurface* Ray::at(int i)
 {    
     assert(array_size_ == (int)ray_at_srfs_.size());
 
@@ -166,7 +167,12 @@ void Ray::set_pupil_coord(const Eigen::Vector2d &pupil)
     pupil_crd_ = pupil;
 }
 
-Eigen::Vector2d Ray::pupil_coord() const
+void Ray::set_reached_surface_index(int i)
+{
+    reached_surface_index_ = i;
+}
+
+const Eigen::Vector2d& Ray::pupil_coord() const
 {
     return pupil_crd_;
 }
