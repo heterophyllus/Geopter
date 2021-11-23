@@ -63,7 +63,7 @@ void MainWindow::load_lens(QString filename)
     opt_sys_->load_file(filename.toStdString());
     opt_sys_->update_model();
     m_systemEditorDock->setOpticalSystem(opt_sys_);
-    m_systemEditorDock->syncUiWithSystem();
+    //m_systemEditorDock->syncUiWithSystem();
     //PythonQt::self()->pythonStdOut("Optical system loaded");
 }
 
@@ -79,7 +79,7 @@ void MainWindow::new_lens()
     //opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
-    m_systemEditorDock->syncUiWithSystem();
+    //m_systemEditorDock->syncUiWithSystem();
 }
 
 int MainWindow::nfld()
@@ -237,7 +237,7 @@ void MainWindow::transverse()
 
 void MainWindow::update_ui()
 {
-    m_systemEditorDock->syncUiWithSystem();
+    //m_systemEditorDock->syncUiWithSystem();
 }
 
 

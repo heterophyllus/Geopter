@@ -54,7 +54,7 @@ class OpticalSystem
 {
 public:
     OpticalSystem();
-    ~OpticalSystem();
+    virtual ~OpticalSystem();
 
     void initialize();
 
@@ -94,7 +94,7 @@ public:
     void print(std::ostringstream& oss);
 
 
-private:
+protected:
     void add_surface_and_gap(double r, double t, std::string mat_name);
     void update_optical_spec();
     void update_paraxial_data();

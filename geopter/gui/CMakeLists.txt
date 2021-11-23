@@ -32,6 +32,8 @@ set(GEOPTER_GUI_HEADERS
     MainWindow.h
     GeopterMacroFunc.h
 
+    #QOpticalSystem.h
+
     TextViewDock.h
     PlotViewDock.h
 
@@ -44,7 +46,17 @@ set(GEOPTER_GUI_HEADERS
     SystemEditor/SystemEditorDock.h
     SystemEditor/SystemEditorWidget.h
     SystemEditor/SurfacePropertyDlg.h
-    SystemEditor/float_delegate.h
+    #SystemEditor/float_delegate.h
+
+    SystemEditor/LensSpreadSheet.h
+    SystemEditor/SpreadSheetItem.h
+    SystemEditor/FloatDelegate.h
+    SystemEditor/OneByteDelegate.h
+    #SystemEditor/SpecEditorWidget.h
+    SystemEditor/FieldTable.h
+    SystemEditor/WavelengthTable.h
+    SystemEditor/SpecEditorDlg.h
+
 
     AnalysisDlg/AnalysisSettingDlg.h
     AnalysisDlg/PrescriptionDlg.h
@@ -70,6 +82,8 @@ set(GEOPTER_GUI_SOURCES
 
     GeopterMacroFunc.cpp
 
+    #QOpticalSystem.cpp
+
     TextViewDock.cpp
     PlotViewDock.cpp
 
@@ -80,6 +94,15 @@ set(GEOPTER_GUI_SOURCES
     SystemEditor/SystemEditorDock.cpp
     SystemEditor/SystemEditorWidget.cpp
     SystemEditor/SurfacePropertyDlg.cpp
+
+    SystemEditor/LensSpreadSheet.cpp
+    SystemEditor/SpreadSheetItem.cpp
+    SystemEditor/FloatDelegate.cpp
+    SystemEditor/OneByteDelegate.cpp
+    SystemEditor/FieldTable.cpp
+    SystemEditor/WavelengthTable.cpp
+    SystemEditor/SpecEditorDlg.cpp
+
 
     AnalysisDlg/AnalysisSettingDlg.cpp
     AnalysisDlg/PrescriptionDlg.cpp
@@ -101,8 +124,8 @@ set(GEOPTER_GUI_FORMS
     MainWindow.ui
 
     GeneralConfigDlg.ui
-    SystemEditor/SystemEditorWidget.ui
     SystemEditor/SurfacePropertyDlg.ui
+    SystemEditor/SpecEditorDlg.ui
 
     AnalysisDlg/PrescriptionDlg.ui
     AnalysisDlg/Layout2dDlg.ui

@@ -283,6 +283,7 @@ void OpticalSystem::update_semi_diameters()
 
     }
 
+    delete tracer;
 }
 
 

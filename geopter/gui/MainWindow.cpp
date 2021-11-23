@@ -113,7 +113,6 @@ MainWindow::MainWindow(QWidget *parent)
     QString agfDir = QApplication::applicationDirPath() + "/AGF";
     loadAgfsFromDir(agfDir);
 
-    m_systemEditorDock->syncUiWithSystem();
 }
 
 MainWindow::~MainWindow()
@@ -163,7 +162,8 @@ void MainWindow::loadAgfsFromDir(QString agfDir)
 
 void MainWindow::syncUiWithSystem()
 {
-    m_systemEditorDock->syncUiWithSystem();
+    //m_systemEditorDock->syncUiWithSystem();
+    m_systemEditorDock->updateUi();
 }
 
 /*********************************************************************************************************************************
@@ -177,7 +177,7 @@ void MainWindow::newFile()
     //opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
-    m_systemEditorDock->syncUiWithSystem();
+    //m_systemEditorDock->syncUiWithSystem();
 
     QMessageBox::information(this,tr("Info"), tr("Created new lens"));
 }
@@ -212,7 +212,8 @@ void MainWindow::openFile()
     opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
-    m_systemEditorDock->syncUiWithSystem();
+    //m_systemEditorDock->syncUiWithSystem();
+    m_systemEditorDock->updateUi();
 
     QMessageBox::information(this,tr("Info"), tr("OpticalSystem newly loaded"));
 }
@@ -233,7 +234,7 @@ void MainWindow::setVignettingFactors()
 {
     opt_sys_->set_vignetting_factors();
     opt_sys_->update_model();
-    m_systemEditorDock->syncUiWithSystem();
+    //m_systemEditorDock->syncUiWithSystem();
 }
 
 
