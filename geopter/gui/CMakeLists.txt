@@ -30,9 +30,11 @@ message(STATUS "Python_NumPy_FOUND= ${Python_NumPy_FOUND}")
 
 set(GEOPTER_GUI_HEADERS
     MainWindow.h
-    GeopterMacroFunc.h
 
-    #QOpticalSystem.h
+    OpticalSystemWrapper/QOpticalSystem.h
+    #OpticalSystemWrapper/QFieldSpec.h
+    #OpticalSystemWrapper/QOpticalSpec.h
+    #OpticalSystemWrapper/QPupilSpec.h
 
     TextViewDock.h
     PlotViewDock.h
@@ -46,17 +48,14 @@ set(GEOPTER_GUI_HEADERS
     SystemEditor/SystemEditorDock.h
     SystemEditor/SystemEditorWidget.h
     SystemEditor/SurfacePropertyDlg.h
-    #SystemEditor/float_delegate.h
 
     SystemEditor/LensSpreadSheet.h
     SystemEditor/SpreadSheetItem.h
     SystemEditor/FloatDelegate.h
     SystemEditor/OneByteDelegate.h
-    #SystemEditor/SpecEditorWidget.h
     SystemEditor/FieldTable.h
     SystemEditor/WavelengthTable.h
     SystemEditor/SpecEditorDlg.h
-
 
     AnalysisDlg/AnalysisSettingDlg.h
     AnalysisDlg/PrescriptionDlg.h
@@ -71,6 +70,7 @@ set(GEOPTER_GUI_HEADERS
     AnalysisDlg/OpdFanDlg.h
     AnalysisDlg/WavefrontMapDlg.h
     AnalysisDlg/FFT_PSFDlg.h
+    AnalysisDlg/GeoMtfDlg.h
 
 )
 
@@ -80,9 +80,10 @@ set(GEOPTER_GUI_SOURCES
 
     MainWindow.cpp
 
-    GeopterMacroFunc.cpp
-
-    #QOpticalSystem.cpp
+    OpticalSystemWrapper/QOpticalSystem.cpp
+    #OpticalSystemWrapper/QFieldSpec.cpp
+    #OpticalSystemWrapper/QOpticalSpec.cpp
+    #OpticalSystemWrapper/QPupilSpec.cpp
 
     TextViewDock.cpp
     PlotViewDock.cpp
@@ -94,7 +95,6 @@ set(GEOPTER_GUI_SOURCES
     SystemEditor/SystemEditorDock.cpp
     SystemEditor/SystemEditorWidget.cpp
     SystemEditor/SurfacePropertyDlg.cpp
-
     SystemEditor/LensSpreadSheet.cpp
     SystemEditor/SpreadSheetItem.cpp
     SystemEditor/FloatDelegate.cpp
@@ -102,7 +102,6 @@ set(GEOPTER_GUI_SOURCES
     SystemEditor/FieldTable.cpp
     SystemEditor/WavelengthTable.cpp
     SystemEditor/SpecEditorDlg.cpp
-
 
     AnalysisDlg/AnalysisSettingDlg.cpp
     AnalysisDlg/PrescriptionDlg.cpp
@@ -117,6 +116,7 @@ set(GEOPTER_GUI_SOURCES
     AnalysisDlg/OpdFanDlg.cpp
     AnalysisDlg/WavefrontMapDlg.cpp
     AnalysisDlg/FFT_PSFDlg.cpp
+    AnalysisDlg/GeoMtfDlg.cpp
 
 )
 
@@ -139,6 +139,7 @@ set(GEOPTER_GUI_FORMS
     AnalysisDlg/OpdFanDlg.ui
     AnalysisDlg/WavefrontMapDlg.ui
     AnalysisDlg/FFT_PSFDlg.ui
+    AnalysisDlg/GeoMtfDlg.ui
 )
 
 add_executable(${PROJECT_NAME} ${GEOPTER_GUI_SOURCES} ${GEOPTER_GUI_HEADERS} ${GEOPTER_GUI_FORMS})

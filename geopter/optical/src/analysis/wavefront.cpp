@@ -29,20 +29,38 @@
 
 using namespace geopter;
 
-Wavefront::Wavefront(OpticalSystem *opt_sys) :
-    WaveAberration(opt_sys)
+Wavefront::Wavefront(OpticalSystem* opt_sys)
+    :WaveAberration(opt_sys)
 {
 
 }
 
-std::shared_ptr<MapData3d> Wavefront::plot(const Field* fld, double wvl, int nrd)
+Eigen::MatrixXd Wavefront::to_matrix()
 {
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
-    const double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+
+    Eigen::MatrixXd m(ndim_, ndim_);
+
+    for(int i = 0; i < ndim_; i++){
+        for(int j = 0; j < ndim_; j++){
+            m(i,j) = data_[to_index(i,j)];
+        }
+    }
+
+    return m;
+
+}
+
+void Wavefront::from_opd_trace(OpticalSystem *opt_sys, const Field *fld, double wvl, int ndim)
+{
+    ndim_ = ndim;
+    wvl_ = wvl;
+
+    const int num_wvls = opt_sys->optical_spec()->spectral_region()->wvl_count();
+    const double ref_wvl_val = opt_sys->optical_spec()->spectral_region()->reference_wvl();
     const double nm_to_mm = 1.0e-6;
     const double convert_to_waves = 1.0/(nm_to_mm*ref_wvl_val);
 
-    SequentialTrace *tracer = new SequentialTrace(opt_sys_);
+    SequentialTrace *tracer = new SequentialTrace(opt_sys);
     tracer->set_aperture_check(true);
     tracer->set_apply_vig(false);
 
@@ -53,22 +71,22 @@ std::shared_ptr<MapData3d> Wavefront::plot(const Field* fld, double wvl, int nrd
     std::vector<double> px;
     std::vector<double> py;
 
-    double step = 2.0/(double)(nrd-1);
-    for(int i = 0; i < nrd; i++){
+    double step = 2.0/(double)(ndim-1);
+    for(int i = 0; i < ndim; i++){
         px.push_back( -1.0 + step*(double)i );
         py.push_back( -1.0 + step*(double)i );
     }
-
-    GridArray<double> opd_grid(nrd, nrd);
 
     Eigen::Vector2d pupil;
 
     RayPtr ray = std::make_shared<Ray>(seq_path.size());
 
-    for(int i = 0; i < nrd; i++)
+    data_.resize(ndim*ndim);
+
+    for(int i = 0; i < ndim; i++)
     {
-        for(int j = 0 ; j < nrd; j++)
-        {          
+        for(int j = 0 ; j < ndim; j++)
+        {
             pupil(0) = -1.0 + step*(double)j;
             pupil(1) = -1.0 + step*(double)i;
 
@@ -79,22 +97,17 @@ std::shared_ptr<MapData3d> Wavefront::plot(const Field* fld, double wvl, int nrd
                 if(ray->status() == RayStatus::PassThrough){
                     double opd = wave_abr_full_calc(ray, chief_ray);
                     opd *= convert_to_waves;
-                    opd_grid.set_cell(i, j, opd);
+                    data_[to_index(i, j)] = opd;
                 }else{
-                    opd_grid.set_cell(i, j, NAN);
+                    data_[to_index(i, j)] = NAN;
                 }
             }else{
-                opd_grid.set_cell(i, j, NAN);
+                data_[to_index(i, j)] = NAN;
             }
 
         }
 
     }
 
-    auto mapdata = std::make_shared<MapData3d>();
-    mapdata->set_data(px, py, opd_grid);
-
     delete tracer;
-
-    return mapdata;
 }

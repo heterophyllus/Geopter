@@ -48,6 +48,9 @@ public slots:
     /** remove current row */
     void removeSurface();
 
+    /** Set current surface as stop */
+    void setStop();
+
     /** Set display digit for float values */
     //void setDisplayDigit(int d);
 

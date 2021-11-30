@@ -67,6 +67,45 @@ void RendererQCP::draw_plot(std::shared_ptr<PlotData> plotdata)
     }
 }
 
+void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int colormap)
+{
+    QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
+    QCPColorMap *colorMap = new QCPColorMap(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
+
+    int nx = Z.rows();
+    int ny = Z.cols();
+
+    colorMap->data()->setSize(nx, ny);
+    colorMap->data()->setRange(QCPRange(0, nx), QCPRange(0, ny));
+    colorMap->setInterpolate(false);
+
+    double z;
+    for (int yIndex = 0; yIndex < ny; ++yIndex)
+    {
+      for (int xIndex = 0; xIndex < nx; ++xIndex)
+      {
+          if(type == 0){ //linear
+              z = Z(xIndex, yIndex); //(x,y) (col, row)
+          }else if(type == 1){ //logarithmic
+              z = std::log10(Z(xIndex, yIndex));
+          }else{
+              z = Z(xIndex, yIndex);
+          }
+
+          colorMap->data()->setCell(xIndex, yIndex, z);
+      }
+    }
+
+    if(colormap == 0){
+        colorMap->setGradient(QCPColorGradient::gpGrayscale);
+    }else{
+        colorMap->setGradient(QCPColorGradient::gpJet);
+    }
+
+    colorMap->rescaleDataRange(true);
+
+    customPlot_->replot();
+}
 
 void RendererQCP::draw_colored_map(const std::shared_ptr<MapData3d> mapdata)
 {

@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   field_spec.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef FIELDSPEC_H
 #define FIELDSPEC_H
@@ -84,7 +77,7 @@ public:
     void print();
     void print(std::ostringstream& oss);
 
-private:
+protected:
     int field_type_;
     std::vector< std::unique_ptr<Field> > fields_;
 };

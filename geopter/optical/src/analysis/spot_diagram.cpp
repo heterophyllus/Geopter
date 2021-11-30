@@ -12,7 +12,7 @@ SpotDiagram::SpotDiagram(OpticalSystem* opt_sys):
 
 }
 
-std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int nrd, double dot_size)
+std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int max_nrd, double dot_size)
 {
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
     tracer->set_aperture_check(true);
@@ -22,6 +22,15 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
     plot_data->set_title("Spot");
     plot_data->set_x_axis_label("dx");
     plot_data->set_y_axis_label("dy");
+
+    // weight list
+    const int num_wvls = opt_sys_->fundamental_data().number_of_wavelengths;
+    std::vector<double> wvl_weights(num_wvls);
+    for(int wi = 0; wi < num_wvls; wi++){
+        wvl_weights[wi] = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->weight();
+    }
+
+    double max_wt = *std::max_element(wvl_weights.begin(), wvl_weights.end());
 
 
     // trace chief ray
@@ -38,13 +47,13 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
     double chief_ray_y = chief_ray->back()->y();
 
     // trace patterned rays for all wavelengths
-    int num_data = nrd*nrd;
+    int num_data = max_nrd*max_nrd;
     switch (pattern) {
     case SpotDiagram::SpotRayPattern::Grid:
-        num_data = nrd*nrd;
+        num_data = max_nrd*max_nrd;
         break;
     case SpotDiagram::SpotRayPattern::Hexapolar:
-        num_data = HexapolarArray<double>(nrd).total_number_of_points();
+        num_data = HexapolarArray<double>(max_nrd).total_number_of_points();
         break;
     }
 
@@ -62,24 +71,20 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
 
         SequentialPath seq_path = tracer->sequential_path(wvl);
 
+        // calculate nrd for current wvl
+        int nrd = (wvl_weights[wi]/max_wt)*max_nrd;
+
         if(SpotDiagram::SpotRayPattern::Grid == pattern)
         {            
             for(int i = 0; i < nrd; i++){
                 for(int j = 0; j < nrd; j++){
-                    pupil(0) = -1.0 + (double)j*2.0/(double)(nrd-1);
-                    pupil(1) = -1.0 + (double)i*2.0/(double)(nrd-1);
+                    pupil(0) = -1.0 + static_cast<double>(j)*2.0/static_cast<double>(nrd-1);
+                    pupil(1) = -1.0 + static_cast<double>(i)*2.0/static_cast<double>(nrd-1);
 
-                    ray->set_status(RayStatus::PassThrough);
+                    if(pupil.norm() <= 1.0){
 
-                    double r2 = pow(pupil(0),2) + pow(pupil(1),2);
-                    if(r2 < 1.0){
-                        try{
-                            tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
-                            ray->set_wvl(wvl);
-                            ray->set_pupil_coord(pupil);
-                        }catch(TraceError &e){
-                            continue;
-                        }
+                        ray->set_status(RayStatus::PassThrough);
+                        tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
 
                         if(RayStatus::PassThrough == ray->status()){
                             double ray_x = ray->back()->x();
@@ -103,13 +108,9 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
                 if(num_rays_in_ring == 0){
                     pupil(0) = 0.0;
                     pupil(1) = 0.0;
-                    try{
-                        tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
-                        ray->set_wvl(wvl);
-                        ray->set_pupil_coord(pupil);
-                    }catch(TraceError &e){
 
-                    }
+                    ray->set_status(RayStatus::PassThrough);
+                    tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
 
                     ray_dx.push_back( ray->back()->x() - chief_ray_x );
                     ray_dy.push_back( ray->back()->y() - chief_ray_y );
@@ -122,14 +123,9 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int n
                 for(int ai = 0; ai < num_rays_in_ring; ai++){
                     pupil(0) = (double)r * 1.0/(half_num_rings) * cos((double)ai*ang_step);
                     pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
+
                     ray->set_status(RayStatus::PassThrough);
-                    try{
-                        tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
-                        ray->set_wvl(wvl);
-                        ray->set_pupil_coord(pupil);
-                    }catch(TraceError &e){
-                        continue;
-                    }
+                    tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
 
                     if(RayStatus::PassThrough == ray->status()){
                         ray_dx.push_back( ray->back()->x() - chief_ray_x );

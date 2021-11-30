@@ -17,6 +17,7 @@ set(OPTICAL_SRCS
     analysis/opd_fan.cpp
     analysis/wavefront.cpp
     analysis/diffractive_psf.cpp
+    analysis/geometrical_mtf.cpp
 
     assembly/optical_assembly.cpp
     assembly/interface.cpp
@@ -81,6 +82,7 @@ set(OPTICAL_SRCS
     #data/grid_array.cpp
 
     common/geopter_error.cpp
+    common/matrix_tool.cpp
 
 
     utility/utility.cpp

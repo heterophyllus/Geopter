@@ -31,6 +31,7 @@
 #include "AnalysisDlg/OpdFanDlg.h"
 #include "AnalysisDlg/WavefrontMapDlg.h"
 #include "AnalysisDlg/FFT_PSFDlg.h"
+#include "AnalysisDlg/GeoMtfDlg.h"
 
 using namespace ads;
 
@@ -65,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionOpdFan,                 SIGNAL(triggered()), this, SLOT(showOpdFan()));
     QObject::connect(ui->actionWavefrontMap,           SIGNAL(triggered()), this, SLOT(showWavefront()));
     QObject::connect(ui->actionFFT_PSF,                SIGNAL(triggered()), this, SLOT(showFFTPSF()));
+    QObject::connect(ui->actionGeoMTF,                 SIGNAL(triggered()), this, SLOT(showGeoMTF()));
 
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -75,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
     CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
 
     // create optical system
-    opt_sys_ = std::make_shared<OpticalSystem>();
+    opt_sys_ = std::make_shared<QOpticalSystem>();
     opt_sys_->initialize();
 
     // set system editor as central dock
@@ -113,6 +115,8 @@ MainWindow::MainWindow(QWidget *parent)
     QString agfDir = QApplication::applicationDirPath() + "/AGF";
     loadAgfsFromDir(agfDir);
 
+    PythonQt::self()->getMainModule().addObject("osys",opt_sys_.get());
+
 }
 
 MainWindow::~MainWindow()
@@ -132,10 +136,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
     QMainWindow::closeEvent(event);
 }
 
-OpticalSystem* MainWindow::optical_system()
-{
-    return opt_sys_.get();
-}
 
 void MainWindow::loadAgfsFromDir(QString agfDir)
 {
@@ -301,6 +301,11 @@ void MainWindow::showWavefront()
 void MainWindow::showFFTPSF()
 {
     showAnalysisPlot<FFT_PSFDlg>("FFT PSF");
+}
+
+void MainWindow::showGeoMTF()
+{
+    showAnalysisPlot<GeoMtfDlg>("Geometrical MTF");
 }
 
 template<class T>

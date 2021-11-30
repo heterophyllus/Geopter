@@ -62,7 +62,7 @@ void SurfaceProfile::set_radius(double r)
     }else if(std::isinf(r)){
         cv_ = 0.0;
     }else if(fabs(r) < std::numeric_limits<double>::epsilon()){
-        cv_ = 0.0;
+        cv_ = std::numeric_limits<double>::infinity();
     }else{
         cv_ = 1.0/r;
     }

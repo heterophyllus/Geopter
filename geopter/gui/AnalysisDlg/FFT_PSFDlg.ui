@@ -6,43 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>249</width>
-    <height>305</height>
+    <width>378</width>
+    <height>438</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>Sampling:</string>
+      <string>Type:</string>
      </property>
     </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="samplingCombo"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Display:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="displayCombo"/>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Field:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QComboBox" name="fieldCombo"/>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_4">
@@ -51,10 +28,22 @@
      </property>
     </widget>
    </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="samplingCombo"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="fieldCombo"/>
+   </item>
+   <item row="4" column="1">
+    <widget class="QComboBox" name="typeCombo"/>
+   </item>
+   <item row="5" column="1">
+    <widget class="QComboBox" name="colormapCombo"/>
+   </item>
    <item row="3" column="1">
     <widget class="QComboBox" name="wvlCombo"/>
    </item>
-   <item row="4" column="0" colspan="2">
+   <item row="8" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -63,6 +52,37 @@
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Field:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Sampling:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Colormap:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Image Plane Side Length: </string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="sideLengthEdit"/>
    </item>
   </layout>
  </widget>

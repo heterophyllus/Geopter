@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   gap.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #include "assembly/gap.h"
 
@@ -39,17 +32,17 @@ using namespace geopter;
 Gap::Gap()
 {
     thi_ = 0.0;
-    material_ = MaterialLibrary::air().get();
+    material_ = MaterialLibrary::air();
 }
 
-Gap::Gap(double t, Material* m)
+Gap::Gap(double t, std::shared_ptr<Material> m)
 {
     thi_ = t;
 
     if(m){
         material_ = m;
     }else{
-        material_ = MaterialLibrary::air().get();
+        material_ = MaterialLibrary::air();
     }
     
 }
@@ -60,11 +53,11 @@ Gap::~Gap()
     material_ = nullptr;
 }
 
-void Gap::set_material(Material *m)
+void Gap::set_material(std::shared_ptr<Material> m)
 {
     if(m){
         material_ = m;
     }else{
-        material_ = MaterialLibrary::air().get();
+        material_ = MaterialLibrary::air();
     }
 }

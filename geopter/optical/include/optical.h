@@ -47,6 +47,7 @@
 #include "analysis/opd_fan.h"
 #include "analysis/wavefront.h"
 #include "analysis/diffractive_psf.h"
+#include "analysis/geometrical_mtf.h"
 
 #include "assembly/optical_assembly.h"
 

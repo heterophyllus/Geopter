@@ -121,7 +121,7 @@ void OpticalSystem::add_surface_and_gap(double r, double t, std::string mat_name
     opt_assembly_->add_surface_and_gap();
     opt_assembly_->current_surface()->profile()->set_cv(1.0/r);
     opt_assembly_->current_gap()->set_thi(t);
-    opt_assembly_->current_gap()->set_material(m.get());
+    opt_assembly_->current_gap()->set_material(m);
 }
 
 void OpticalSystem::update_fundamental_data()
@@ -200,7 +200,7 @@ void OpticalSystem::update_optical_spec()
             try{
                 auto aim_pt = tracer->aim_chief_ray(fld, fund_data_.reference_wvl_value);
                 opt_spec_->field_of_view()->field(fi)->set_aim_pt(aim_pt);
-            }catch(TraceRayAimingFailedError &e){
+            }catch(TraceError &e){
                 std::cerr << "Ray aiming failed at field " << fi << std::endl;
                 continue;
             }
@@ -230,7 +230,6 @@ void OpticalSystem::update_semi_diameters()
 
     // update semi diameter
     std::vector< std::shared_ptr<Ray> > ref_rays;
-    std::shared_ptr<Ray> chief_ray, mer_upper_ray, mer_lower_ray, sag_upper_ray, sag_lower_ray;
 
 
     for(int fi = 0; fi < fund_data_.number_of_fields; fi++)
@@ -239,11 +238,9 @@ void OpticalSystem::update_semi_diameters()
 
         try{
             tracer->trace_reference_rays(ref_rays, fld, fund_data_.reference_wvl_value);
-        }catch(std::out_of_range &e){
-            std::cout << e.what() << std::endl;
+        }catch(TraceError &e){
+            std::cerr << e.what() << std::endl;
             continue;
-        }catch(...){
-            std::cout << "undefined error in OpticalSystem::update_semidiameter" << std::endl;
         }
 
         std::vector<double> ray_size_list;
@@ -262,12 +259,12 @@ void OpticalSystem::update_semi_diameters()
                 }
             }
             catch(std::out_of_range &e){
-                std::cout << e.what() << std::endl;
-                std::cout << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
+                std::cerr << e.what() << std::endl;
+                std::cerr << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
                 break;
             }
             catch(...){
-                std::cout << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
+                std::cerr << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
                 break;
             }
 
@@ -602,7 +599,7 @@ void OpticalSystem::load_file(const std::string &filepath)
 
         auto gap = opt_assembly_->current_gap();
         gap->set_thi(thi);
-        gap->set_material(mat.get());
+        gap->set_material(mat);
 
         ci++;
     }

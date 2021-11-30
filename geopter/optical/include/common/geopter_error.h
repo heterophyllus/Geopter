@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   geopter_error.h
-/// \author Hiiragi
-/// \date   October 24th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef GEOPTER_ERROR_H
 #define GEOPTER_ERROR_H
 
@@ -81,6 +73,12 @@ private:
     std::shared_ptr<Ray> ray_;
 };
 
+
+class NotImplementedError : public std::exception{
+public:
+    NotImplementedError();
+
+};
 
 }
 

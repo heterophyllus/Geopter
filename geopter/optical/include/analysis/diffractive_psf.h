@@ -11,13 +11,18 @@ class DiffractivePSF : WaveAberration
 public:
     DiffractivePSF(OpticalSystem *opt_sys);
 
-    std::shared_ptr<MapData3d> plot(const Field* fld, double wvl, int ndim, int maxdim);
+    void from_opd_trace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L=1.0);
 
-    Eigen::MatrixXd calc_psf(const Eigen::MatrixXd& wavefront, int ndim, int maxdim);
+    Eigen::MatrixXd to_matrix();
 
+protected:
     Eigen::MatrixXcd fft2(Eigen::MatrixXcd& mat);
+    Eigen::MatrixXcd ifft2(Eigen::MatrixXcd& mat);
 
-    GridArray<double> matrix_to_grid_array(const Eigen::MatrixXd& mat);
+
+    Eigen::MatrixXd wavefront_;
+    Eigen::MatrixXcd coh_;
+    Eigen::MatrixXd psf_;
 };
 
 }

@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     PythonQtObjectPtr mainModule = PythonQt::self()->getMainModule();
 
     MainWindow w; // This line must be after PythonQt::init()
-    mainModule.addObject("geopter_gui", &w);
+    mainModule.addObject("app", &w);
 
     w.show();
 

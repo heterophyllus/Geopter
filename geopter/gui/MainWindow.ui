@@ -82,10 +82,17 @@
       </property>
       <addaction name="actionFFT_PSF"/>
      </widget>
+     <widget class="QMenu" name="menuMTF">
+      <property name="title">
+       <string>MTF</string>
+      </property>
+      <addaction name="actionGeoMTF"/>
+     </widget>
      <addaction name="menuRays_ans_Spots"/>
      <addaction name="menuAberrations"/>
      <addaction name="menuWavefront"/>
      <addaction name="menuPSF"/>
+     <addaction name="menuMTF"/>
     </widget>
     <addaction name="actionPrescription"/>
     <addaction name="separator"/>
@@ -228,6 +235,11 @@
   <action name="actionFFT_PSF">
    <property name="text">
     <string>FFT PSF</string>
+   </property>
+  </action>
+  <action name="actionGeoMTF">
+   <property name="text">
+    <string>Geometrical MTF</string>
    </property>
   </action>
  </widget>

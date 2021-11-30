@@ -1,5 +1,3 @@
-// https://gist.github.com/tesch1/1126425eb7cb1dfea35c9f0480111908
-
 // circ_shift.h
 // https://stackoverflow.com/questions/46077242/eigen-modifyable-custom-expression/46301503#46301503
 // this file implements circShift, fftshift, and ifftshift for Eigen vectors/matrices.
@@ -71,10 +69,10 @@ struct traits<CircShiftedView<XprType, RowIndices, ColIndices>>
   {
     RowsAtCompileTime = traits<XprType>::RowsAtCompileTime,
     ColsAtCompileTime = traits<XprType>::ColsAtCompileTime,
-    MaxRowsAtCompileTime = (RowsAtCompileTime != Dynamic 
-                            ? int(RowsAtCompileTime) 
+    MaxRowsAtCompileTime = (RowsAtCompileTime != Dynamic
+                            ? int(RowsAtCompileTime)
                             : int(traits<XprType>::MaxRowsAtCompileTime)),
-    MaxColsAtCompileTime = (ColsAtCompileTime != Dynamic 
+    MaxColsAtCompileTime = (ColsAtCompileTime != Dynamic
                             ? int(ColsAtCompileTime)
                             : int(traits<XprType>::MaxColsAtCompileTime)),
     XprTypeIsRowMajor = (int(traits<XprType>::Flags) & RowMajorBit) != 0,
@@ -93,7 +91,7 @@ class CircShiftedViewImpl;
 
 
 template <typename XprType, typename RowShift, typename ColShift>
-class CircShiftedView : public CircShiftedViewImpl<XprType, RowShift, ColShift, 
+class CircShiftedView : public CircShiftedViewImpl<XprType, RowShift, ColShift,
                                                    typename internal::traits<XprType>::StorageKind>
 {
 public:
@@ -181,7 +179,7 @@ struct unary_evaluator<CircShiftedView<ArgType, RowIndices, ColIndices>, IndexBa
 
   enum
   {
-    CoeffReadCost = (evaluator<ArgType>::CoeffReadCost 
+    CoeffReadCost = (evaluator<ArgType>::CoeffReadCost
                      + NumTraits<Index>::AddCost  /* for comparison */
                      + NumTraits<Index>::AddCost) /* for addition */,
     Flags = (evaluator<ArgType>::Flags & HereditaryBits),

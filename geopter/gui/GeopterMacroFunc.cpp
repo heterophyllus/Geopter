@@ -173,7 +173,7 @@ void MainWindow::set_surface_glas(int s, QString glassname)
 {
     if( !check_surface_range(s) ) return;
 
-    geopter::Material* glass = opt_sys_->material_lib()->find(glassname.toStdString()).get();
+    auto glass = opt_sys_->material_lib()->find(glassname.toStdString());
 
     if(glass){
         opt_sys_->optical_assembly()->gap(s)->set_material(glass);

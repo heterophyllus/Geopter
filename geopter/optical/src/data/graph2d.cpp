@@ -24,78 +24,40 @@ Graph2d::Graph2d(const std::vector<double>& x, const std::vector<double>& y, con
 
 Graph2d::~Graph2d()
 {
-    data_.clear();
+    x_data_.clear();
+    y_data_.clear();
 }
 
 void Graph2d::set_data(const std::vector<double>& x, const std::vector<double>& y)
 {
     assert(x.size() == y.size());
 
-    const int num_pts = x.size();
-
-    for(int i = 0; i < num_pts; i++){
-        auto p = Point2d(x[i], y[i]);
-        data_.emplace_back(p);
-    }
-    
+    x_data_ = x;
+    y_data_ = y;
 }
 
 void Graph2d::add_data(double x, double y)
 {
-    data_.emplace_back(Point2d(x, y));
+    x_data_.push_back(x);
+    y_data_.push_back(y);
 }
 
 void Graph2d::get_data(std::vector<double>& xdata, std::vector<double>& ydata)
 {
-    const int num_pts = data_.size();
-
-    xdata.clear();
-    ydata.clear();
-
-    xdata.reserve(num_pts);
-    ydata.reserve(num_pts);
-
-    for(int i = 0; i < num_pts; i++){
-        xdata.push_back(data_[i].x);
-        ydata.push_back(data_[i].y);
-    }
-
+    xdata = x_data_;
+    ydata = y_data_;
 }
 
-DataRange Graph2d::xrange() const
+void Graph2d::get_x_range(double* lower, double* higher) const
 {
-    double xmin = std::numeric_limits<double>::infinity();
-    double xmax = - std::numeric_limits<double>::infinity();
-    const int num_pts = data_.size();
-    for(int i = 0; i < num_pts; i++) {
-        if(data_[i].x < xmin){
-            xmin = data_[i].x;
-        }
-
-        if(data_[i].x > xmax){
-            xmax = data_[i].x;
-        }
-    }
-
-    return DataRange(xmin, xmax);
+    *lower  = *std::min_element(x_data_.begin(), y_data_.end());
+    *higher = *std::max_element(x_data_.begin(), y_data_.end());
 }
 
-DataRange Graph2d::yrange() const
+void Graph2d::get_y_range(double* lower, double* higher) const
 {
-    double ymin = std::numeric_limits<double>::infinity();
-    double ymax = - std::numeric_limits<double>::infinity();
-    const int num_pts = data_.size();
-    for(int i = 0; i < num_pts; i++) {
-        if(data_[i].y < ymin){
-            ymin = data_[i].y;
-        }
-
-        if(data_[i].y > ymax){
-            ymax = data_[i].y;
-        }
-    }
-
-    return DataRange(ymin, ymax);
+    *lower  = *std::min_element(y_data_.begin(), y_data_.end());
+    *higher = *std::max_element(y_data_.begin(), y_data_.end());
 }
 
 void Graph2d::print(std::ostringstream &oss)
@@ -108,10 +70,10 @@ void Graph2d::print(std::ostringstream &oss)
     oss << std::setw(idx_w) << std::right << name_;
     oss << std::endl;
 
-    const int num_data = data_.size();
+    const int num_data = x_data_.size();
     for( int i = 0; i < num_data; i++) {
-        oss << std::setw(idx_w) << std::right << std::fixed << std::setprecision(prec) << data_[i].x;
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << data_[i].y;
+        oss << std::setw(idx_w) << std::right << std::fixed << std::setprecision(prec) << x_data_[i];
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << y_data_[i];
         oss << std::endl;
     }
 }

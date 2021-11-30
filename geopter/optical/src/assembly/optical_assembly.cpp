@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   optical_assembly.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -39,11 +32,10 @@
 #include <iomanip>
 
 #include "assembly/optical_assembly.h"
-
 #include "material/material_library.h"
-
 #include "spec/spectral_line.h"
 #include "spec/optical_spec.h"
+#include "utility/utility.h"
 
 using namespace geopter;
 
@@ -95,14 +87,14 @@ void OpticalAssembly::create_minimun_assembly()
 
     //auto air = std::make_shared<Air>();
     auto air = MaterialLibrary::air();
-    auto g = std::make_unique<Gap>(0.0, air.get());
+    auto g = std::make_unique<Gap>(0.0, air);
     gaps_.push_back(std::move(g));
 
     // add stop interface and gap
     auto s_stop = std::make_unique<Surface>("Stop");
     interfaces_.push_back(std::move(s_stop));
 
-    auto g_stop = std::make_unique<Gap>(0.0, air.get());
+    auto g_stop = std::make_unique<Gap>(0.0, air);
     gaps_.push_back(std::move(g_stop));
 
     stop_index_ = 1;
@@ -112,10 +104,24 @@ void OpticalAssembly::create_minimun_assembly()
     auto s_img = std::make_unique<Surface>("Img");
     interfaces_.push_back(std::move(s_img));
 
-    auto g_img = std::make_unique<Gap>(0.0, air.get());
+    auto g_img = std::make_unique<Gap>(0.0, air);
     gaps_.push_back(std::move(g_img));
 
     current_surface_index_ = 2;
+
+}
+
+
+void OpticalAssembly::setup_from_text(const std::string &lensdata)
+{
+    /*
+     * S   R         d      Material
+     * 1   223.541   6.85   1.8040:46.58
+     * 2   -51.775   1.50   1.7380:32.26
+     * ...
+     */
+
+   std::vector<std::string> splitted = Utility::split(lensdata, '\n');
 
 }
 

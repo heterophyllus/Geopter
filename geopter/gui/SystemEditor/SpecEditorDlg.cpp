@@ -76,6 +76,8 @@ void SpecEditorDlg::applyData(std::shared_ptr<OpticalSystem> optsys)
     optsys->optical_spec()->pupil_spec()->set_value(pupilValue);
 
     // fields
+    int fieldType = ui->fieldTypeCombo->currentIndex();
+    optsys->optical_spec()->field_of_view()->set_field_type(fieldType);
     ui->fieldTable->applyCurrentData(optsys);
 
     // wavelength

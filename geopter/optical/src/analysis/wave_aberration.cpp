@@ -30,7 +30,7 @@ double WaveAberration::wave_abr_full_calc(const std::shared_ptr<Ray>& ray, const
 
     int k = opt_sys_->optical_assembly()->image_index() - 1;
     Surface* srf = opt_sys_->optical_assembly()->surface(k);
-    double exp_dist_parax = opt_sys_->paraxial_data()->exit_pupil_distance();
+    //double exp_dist_parax = opt_sys_->paraxial_data()->exit_pupil_distance();
 
     double cr_exp_dist;
     Eigen::Vector3d cr_exp_pt;

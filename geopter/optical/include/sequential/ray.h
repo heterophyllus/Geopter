@@ -102,7 +102,7 @@ using RayPtr = std::shared_ptr<Ray>;
 
 int Ray::size() const
 {
-    //assert(ray_at_srfs_.empty() || array_size_ == (int)ray_at_srfs_.size());
+    assert(ray_at_srfs_.empty() || array_size_ == (int)ray_at_srfs_.size());
     return array_size_;
 }
 
@@ -118,7 +118,7 @@ double Ray::wavelength() const
 
 RayAtSurface* Ray::at(int i)
 {    
-    //assert(ray_at_srfs_.empty() || array_size_ == (int)ray_at_srfs_.size());
+    assert(ray_at_srfs_.empty() || array_size_ == (int)ray_at_srfs_.size());
 
     if(i < array_size_){
         return ray_at_srfs_[i].get();

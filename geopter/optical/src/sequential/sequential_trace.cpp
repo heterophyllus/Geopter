@@ -116,7 +116,12 @@ void SequentialTrace::trace_reference_rays(std::vector<RayPtr> &ref_rays, const 
     pupils[4] = Eigen::Vector2d({-1.0, 0.0});
 
     for(int i = 0; i < num_rays; i++){
-        std::shared_ptr<Ray> ray = trace_pupil_ray(pupils[i], fld, wvl);
+        std::shared_ptr<Ray> ray ;
+        try{
+            ray = trace_pupil_ray(pupils[i], fld, wvl);
+        }catch(TraceError &e){
+            ray = e.ray();
+        }
         ref_rays.push_back(ray);
     }
 }
@@ -297,23 +302,28 @@ void SequentialTrace::trace_ray_throughout_path(RayPtr ray, const SequentialPath
         ray->set_status(RayStatus::MissedSurface);
         e.set_ray(ray);
         e.set_surface_index(cur_srf_idx);
-
+        return;
         //throw e;
 
     } catch (TraceTIRError& e){
         ray->set_status(RayStatus::TotalReflection);
         e.set_ray(ray);
         e.set_surface_index(cur_srf_idx);
+        return;
         //throw e;
 
     } catch (TraceBlockedByApertureError& e) {
         ray->set_status(RayStatus::Blocked);
         e.set_ray(ray);
         e.set_surface_index(cur_srf_idx);
+        return;
         //throw e;
+    } catch(TraceError& e){
+        ray->set_status(4);
+        return;
     }
 
-    ray->set_status(RayStatus::PassThrough);
+    //ray->set_status(RayStatus::PassThrough);
     //op_delta += opl;
 }
 

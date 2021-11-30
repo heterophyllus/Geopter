@@ -28,8 +28,6 @@
 #define OPTICALASSEMBLY_H
 
 #include <vector>
-#include <string>
-#include <memory>
 
 #include "assembly/surface.h"
 #include "assembly/gap.h"
@@ -45,6 +43,8 @@ public:
     ~OpticalAssembly();
 
     void clear();
+
+    void setup_from_text(const std::string& lensdata);
 
     /** Get surface at the given index */
     inline Surface* surface(int i) const;

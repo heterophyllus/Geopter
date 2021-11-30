@@ -31,15 +31,32 @@
 
 namespace geopter{
 
-/** Wavefront map */
-class Wavefront : WaveAberration
+/** Wavefront
+ *
+ *  Wavefront is a grid array of optical path differences of the rays that is referenced to the chief ray on the exit pupil
+ */
+class Wavefront : public WaveAberration
 {
 public:
     Wavefront(OpticalSystem *opt_sys);
 
-    /** Returns OPD grid array */
-    std::shared_ptr<MapData3d> plot(const Field* fld, double wvl, int nrd);
+    /** create by tracing multiple rays */
+    void from_opd_trace(OpticalSystem *opt_sys, const Field* fld, double wvl, int ndim);
 
+    Eigen::MatrixXd to_matrix();
+
+    int ndim(){return ndim_;}
+
+    double wvl() const {return wvl_;}
+
+protected:
+    inline int to_index(int row, int col){
+        return ndim_*row + col;
+    };
+
+    std::vector<double> data_;
+    int ndim_;
+    double wvl_;
 };
 
 } //namespace geopter

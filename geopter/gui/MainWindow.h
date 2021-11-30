@@ -16,9 +16,7 @@
 
 #include "qdebugstream.h"
 
-#include "GeopterMacroFunc.h"
-
-#include "optical.h"
+#include "OpticalSystemWrapper/QOpticalSystem.h"
 using namespace geopter;
 
 
@@ -36,16 +34,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    DECRARE_GEOPTER_MACRO_FUNC
-
-    public Q_SLOTS:
-    OpticalSystem* optical_system();
-
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
 
-private slots:
+public slots:
     // File menu
     void newFile();
     void saveAs();
@@ -79,6 +72,7 @@ private slots:
 
     void showWavefront();
     void showFFTPSF();
+    void showGeoMTF();
 
     // Tool menu
 
@@ -103,7 +97,7 @@ private:
     PythonQtScriptingConsole* m_pyConsole;
     QDebugStream *m_qout;
     QDebugStream *m_qerr;
-    std::shared_ptr<OpticalSystem> opt_sys_;
+    std::shared_ptr<QOpticalSystem> opt_sys_;
 
 };
 

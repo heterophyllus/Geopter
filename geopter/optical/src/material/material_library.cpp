@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   material_library.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #include <math.h>
 
@@ -74,12 +67,6 @@ void MaterialLibrary::clear()
         catalogs_.clear();
     }
 
-    if( !materials_.empty() ){
-        for(auto &m : materials_){
-            m.reset();
-        }
-        materials_.clear();
-    }
 }
 
 std::shared_ptr<Air> MaterialLibrary::air()
@@ -132,7 +119,6 @@ std::shared_ptr<Material> MaterialLibrary::find(std::string material_name)
         double nd = std::stod(nd_and_vd[0]);
         double vd = std::stod(nd_and_vd[1]);
         auto buchdahl_glass = std::make_shared<BuchdahlGlass>(nd, vd);
-        materials_.push_back(buchdahl_glass);
         return buchdahl_glass;
     }else{
         // assume real glass name without catalog (ex. n-bk7)

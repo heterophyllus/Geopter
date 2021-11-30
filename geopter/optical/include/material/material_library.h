@@ -60,7 +60,6 @@ public:
 
 private:
     std::vector< std::unique_ptr<GlassCatalog> > catalogs_;
-    std::vector< std::shared_ptr<Material> > materials_;
     static std::shared_ptr<Air> air_;
 };
 

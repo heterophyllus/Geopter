@@ -5,6 +5,7 @@
 #include "SurfacePropertyDlg.h"
 #include <QHeaderView>
 #include <QMenu>
+#include <QMessageBox>
 #include <QDebug>
 
 LensSpreadSheet::LensSpreadSheet(std::shared_ptr<OpticalSystem> optsys, QWidget *parent)
@@ -81,8 +82,11 @@ void LensSpreadSheet::showContextMenuOnHeader()
         QAction *action2 = contextMenu.addAction("Remove");
         QObject::connect(action2, SIGNAL(triggered()), this, SLOT(removeSurface()));
 
-        QAction *action3 = contextMenu.addAction("Property");
-        QObject::connect(action3, SIGNAL(triggered()), this, SLOT(showSurfacePropertyDlg()));
+        QAction *action3 = contextMenu.addAction("Set stop");
+        QObject::connect(action3, SIGNAL(triggered()), this, SLOT(setStop()));
+
+        QAction *action4 = contextMenu.addAction("Property");
+        QObject::connect(action4, SIGNAL(triggered()), this, SLOT(showSurfacePropertyDlg()));
 
         contextMenu.exec(QCursor::pos());
     }
@@ -132,6 +136,14 @@ void LensSpreadSheet::removeSurface()
     m_opticalSystem->optical_assembly()->remove(row);
     m_opticalSystem->update_model();
 
+    this->reload();
+}
+
+void LensSpreadSheet::setStop()
+{
+    int s = this->currentRow();
+    m_opticalSystem->optical_assembly()->set_stop(s);
+    m_opticalSystem->update_model();
     this->reload();
 }
 
@@ -204,7 +216,6 @@ void LensSpreadSheet::applyChange(QTableWidgetItem* item)
     }
     else if(LensSpreadSheet::Radius == col){
         double radius = item->data(Qt::EditRole).toDouble();
-        qDebug() << "Radius= " << radius;
         m_opticalSystem->optical_assembly()->surface(si)->profile()->set_radius(radius);
     }
     else if(LensSpreadSheet::Thickness == col){
@@ -214,7 +225,12 @@ void LensSpreadSheet::applyChange(QTableWidgetItem* item)
     else if(LensSpreadSheet::Material == col){
         std::string matName = item->data(Qt::EditRole).toString().toStdString();
         auto mat = m_opticalSystem->material_lib()->find(matName);
-        m_opticalSystem->optical_assembly()->gap(si)->set_material(mat.get());
+
+        if(!mat){ // material not found in the library
+            QMessageBox::warning(this, tr("Error"), "Invalid material");
+        }
+
+        m_opticalSystem->optical_assembly()->gap(si)->set_material(mat);
     }
     else{
 

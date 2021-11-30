@@ -51,15 +51,15 @@ void WavefrontMapDlg::updateParentDockContent()
     int nrd = 16 * pow(2, nrd_pow);
 
     m_renderer->clear();
-    m_renderer->set_x_axis_range(-1.0, 1.0);
-    m_renderer->set_y_axis_range(-1.0, 1.0);
+    m_renderer->set_x_axis_range(0, nrd);
+    m_renderer->set_y_axis_range(0, nrd);
 
     Wavefront *wf = new Wavefront(m_opticalSystem);
     Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fieldIndex);
     double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wvlIndex)->value();
+    wf->from_opd_trace(m_opticalSystem, fld, wvl, nrd);
 
-    auto mapdata = wf->plot(fld, wvl, nrd);
-    m_renderer->draw_colored_map(mapdata);
+    m_renderer->draw_hist2d(wf->to_matrix(), 0, 1);
 
     delete wf;
 

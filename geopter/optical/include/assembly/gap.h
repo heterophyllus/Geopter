@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   gap.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef GAP_H
 #define GAP_H
 
@@ -60,7 +52,7 @@ class Gap
 {
 public:
     Gap();
-    Gap(double t, Material* m);
+    Gap(double t, std::shared_ptr<Material> m= nullptr);
     ~Gap();
 
     inline double thi() const;
@@ -68,11 +60,11 @@ public:
 
     inline Material* material() const;
 
-    void set_material(Material* m);
+    void set_material(std::shared_ptr<Material> m);
 
 private:
     double thi_;
-    Material* material_;
+    std::shared_ptr<Material> material_;
 };
 
 
@@ -89,7 +81,7 @@ void Gap::set_thi(double t)
 
 Material* Gap::material() const
 {
-    return material_;
+    return material_.get();
 }
 
 

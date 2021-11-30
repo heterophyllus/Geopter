@@ -13,17 +13,28 @@ FFT_PSFDlg::FFT_PSFDlg(OpticalSystem* sys, PlotViewDock *parent) :
 
     // sampling
     QStringList samplingComboItems;
-    samplingComboItems << "16x16" << "32x32" << "64x64" << "128x128" << "256x256" << "512x512";
+    samplingComboItems << "16x16" << "32x32" << "64x64" << "128x128" << "256x256" << "512x512" << "1024x1024";
     ui->samplingCombo->clear();
     ui->samplingCombo->addItems(samplingComboItems);
     ui->samplingCombo->setCurrentIndex(3);
 
-    // display
-    QStringList displayComboItems;
-    displayComboItems << "16x16" << "32x32" << "64x64" << "128x128" << "256x256" << "512x512";
-    ui->displayCombo->clear();
-    ui->displayCombo->addItems(displayComboItems);
-    ui->displayCombo->setCurrentIndex(2);
+    // image plane side length
+    ui->sideLengthEdit->setValidator(new QDoubleValidator(0.0, 100.0, 4, this));
+    ui->sideLengthEdit->setText("0.1");
+
+    // type
+    QStringList typeComboItems;
+    typeComboItems << "Linear" << "Logarithmic";
+    ui->typeCombo->clear();
+    ui->typeCombo->addItems(typeComboItems);
+    ui->typeCombo->setCurrentIndex(0);
+
+    // colormap
+    QStringList colormapComboItems;
+    colormapComboItems << "Gray" << "Jet";
+    ui->colormapCombo->clear();
+    ui->colormapCombo->addItems(colormapComboItems);
+    ui->colormapCombo->setCurrentIndex(1);
 
     // field
     QStringList fieldComboItems;
@@ -52,35 +63,28 @@ FFT_PSFDlg::~FFT_PSFDlg()
 void FFT_PSFDlg::updateParentDockContent()
 {
     m_opticalSystem->update_model();
+
     int fieldIndex = ui->fieldCombo->currentIndex();
     int wvlIndex = ui->wvlCombo->currentIndex();
-
     int ndim = 16 * pow(2, ui->samplingCombo->currentIndex());
-    int dispdim = 16 * pow(2, ui->displayCombo->currentIndex());
+    double L = ui->sideLengthEdit->text().toDouble();
 
-    m_renderer->clear();
-    m_renderer->set_x_axis_range(-1.0, 1.0);
-    m_renderer->set_y_axis_range(-1.0, 1.0);
+    int type = ui->typeCombo->currentIndex();
+    int colormap = ui->colormapCombo->currentIndex();
 
-    DiffractivePSF* psf = new DiffractivePSF(m_opticalSystem);
+
     Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fieldIndex);
     double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wvlIndex)->value();
 
-    auto mapdata = psf->plot(fld, wvl, ndim, ndim*2);
-
-    m_renderer->draw_colored_map(mapdata);
-
-    double ratio = static_cast<double>(dispdim)/static_cast<double>(ndim);
-    ratio = ratio*ratio;
-
-    double currentXmin = m_renderer->current_x_axis_range().lower;
-    double currentXmax = m_renderer->current_x_axis_range().upper;
-    double currentYmin = m_renderer->current_y_axis_range().lower;
-    double currentYmax = m_renderer->current_y_axis_range().upper;
+    DiffractivePSF* psf = new DiffractivePSF(m_opticalSystem);
+    psf->from_opd_trace(m_opticalSystem, fld, wvl, ndim, L);
 
 
-    m_renderer->set_x_axis_range(currentXmin*ratio, currentXmax*ratio);
-    m_renderer->set_y_axis_range(currentYmin*ratio, currentYmax*ratio);
+    m_renderer->clear();
+    m_renderer->draw_hist2d(psf->to_matrix(), type, colormap);
+
+    m_renderer->set_x_axis_range(0, ndim);
+    m_renderer->set_y_axis_range(0, ndim);
 
     m_renderer->update();
 

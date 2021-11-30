@@ -23,6 +23,7 @@ public:
 
     void draw_plot(const std::shared_ptr<PlotData> plotdata) override;
 
+    void draw_hist2d(const Eigen::MatrixXd& Z, int type, int colormap);
     void draw_colored_map(const std::shared_ptr<MapData3d> mapdata);
 
     void draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0, double line_width= 1.0) override;

@@ -1,10 +1,14 @@
 #include <complex>
+#include <cmath>
 #include <iostream>
 #include <fstream>
+#include "Eigen/Dense"
 #include "unsupported/Eigen/MatrixFunctions"
 #include "unsupported/Eigen/FFT"
 #include "analysis/diffractive_psf.h"
 #include "analysis/circ_shift.h"
+#include "sequential/sequential_trace.h"
+#include "sequential/trace_error.h"
 
 using namespace geopter;
 
@@ -13,86 +17,88 @@ DiffractivePSF::DiffractivePSF(OpticalSystem *opt_sys) :
 {
 
 }
-
-std::shared_ptr<MapData3d> DiffractivePSF::plot(const Field* fld, double wvl, int ndim, int maxdim)
+Eigen::MatrixXd DiffractivePSF::to_matrix()
 {
-    Wavefront *wf = new Wavefront(opt_sys_);
-    auto wf_mapdata = wf->plot(fld, wvl, ndim);
-
-    Eigen::MatrixXd wavefront = wf_mapdata->to_matrix();
-
-    Eigen::MatrixXd psf = calc_psf(wavefront, ndim, maxdim);
-
-    GridArray<double> psf_grid = matrix_to_grid_array(psf);
-
-    auto psf_mapdata = std::make_shared<MapData3d>();
-
-    double r = opt_sys_->fundamental_data().exp_radius;
-    double D = 2.0*r;
-    double du = D/ndim;
-    int N = psf.rows();
-    std::vector<double> x(N), y(N);
-    for(int i = 0; i < N; i++) {
-        x[i] = -2.0*r + du*(double)i/(double)(N-1);
-    }
-    y = x;
-
-    psf_mapdata->set_data(x, y, psf_grid);
-
-    return psf_mapdata;
+    return psf_;
 }
 
-Eigen::MatrixXd DiffractivePSF::calc_psf(const Eigen::MatrixXd& wavefront, int ndim, int maxdim)
+void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L)
 {
+    double du = L/static_cast<double>(M);
+    double img_dist = opt_sys->paraxial_data()->image_distance();
+    double exp_dist = opt_sys->paraxial_data()->exit_pupil_distance();
+    double zxp = (img_dist - exp_dist);
+    double wxp = opt_sys->paraxial_data()->exit_pupil_radius();
+    double lambda = wvl*1.0e-6;
+    double lz = lambda*zxp;
+    double k = 2.0*M_PI/lambda;
 
-    int maxdim_by_2 = maxdim/2;
-    Eigen::MatrixXcd W = Eigen::MatrixXcd::Zero(maxdim, maxdim);
-    int nd2 = ndim/2;
+    std::vector<double> u(M), v(M);
+    std::vector<double> fu(M), fv(M);
 
+    for(int i = 0; i < M; i++){
+        u[i] = -L/2.0 + static_cast<double>(i)*du;
+        fu[i]= -1.0/(2.0*du) + static_cast<double>(i)*(1.0/L);
+    }
+    fv = fu;
 
-    int ii = -1;
-    int jj = -1;
-    for(int i = maxdim_by_2-(nd2-1)-1; i < maxdim_by_2+(nd2+1)-1; i++){
-        ii++;
-        jj = -1;
-        for(int j = maxdim_by_2-(nd2-1)-1; j < maxdim_by_2+(nd2+1)-1; j++) {
-            jj++;
-            if(std::isnan(wavefront(ii,jj))){
-                W(i,j) = 0.0;
+    SequentialTrace *tracer = new SequentialTrace(opt_sys);
+    tracer->set_aperture_check(true);
+    tracer->set_apply_vig(false);
+
+    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 0.0}), fld, wvl);
+
+    SequentialPath seq_path = tracer->sequential_path(wvl);
+
+    Eigen::MatrixXd W = Eigen::MatrixXd::Zero(M, M);
+    Eigen::MatrixXcd A = Eigen::MatrixXcd::Zero(M, M);
+    Eigen::Vector2d pupil;
+    RayPtr ray = std::make_shared<Ray>(seq_path.size());
+
+    for(int i = 0; i < M; i++){
+        for(int j = 0; j < M; j++){
+            pupil(0) = fu[j] * lz/wxp;
+            pupil(1) = fv[i] * lz/wxp;
+
+            if(pupil.norm() <= 1.0){
+                ray->set_status(RayStatus::PassThrough);
+                tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+
+                if(ray->status() == RayStatus::PassThrough){
+                    double opd = wave_abr_full_calc(ray, chief_ray);
+                    W(i,j) = opd;
+                    A(i,j) = 1.0;
+                }else{
+                    W(i,j) = 0.0;
+                    A(i,j) = 0.0;
+                }
             }else{
-                W(i,j) = wavefront(ii,jj);
+                W(i,j) = 0.0;
+                A(i,j) = 0.0;
             }
+
         }
     }
 
-    //Eigen::MatrixXcd phase_exp = 1i * 2.0 * M_PI * W;
-    Eigen::MatrixXcd phase_exp = std::complex<double>(0.0,2.0*M_PI)*W;
-    Eigen::MatrixXcd phase = phase_exp.array().exp();
+    wavefront_ = W;
 
-    int phase_rows = phase.rows();
-    int phase_cols = phase.cols();
+    delete tracer;
 
-    for(int i = 0; i < phase_rows; i++) {
-        for(int j = 0; j < phase_cols; j++) {
-            if(norm(phase(i, j) - 1.0) < std::numeric_limits<double>::epsilon()) {
-                phase(i, j) = 0.0;
-            }
-        }
-    }
+    std::complex<double> im(0.0, 1.0);
 
-    Eigen::MatrixXcd AP1 = fftshift(phase);
-    Eigen::MatrixXcd AP2 = fft2(AP1);
-    Eigen::MatrixXcd AP3 = fftshift(AP2);
-    Eigen::MatrixXd AP = AP3.cwiseAbs2();
+    Eigen::MatrixXcd H = A.array() * ((-k*im*W).array().exp());
+    coh_ = H;
 
-    double AP_max = AP.maxCoeff();
-    //double AP_min = AP.minCoeff();
+    Eigen::MatrixXcd psf1 = ifftshift(H);
+    Eigen::MatrixXcd psf2 = fft2(psf1);
+    Eigen::MatrixXcd psf3 = fftshift(psf2);
+    Eigen::MatrixXd psf = psf3.array().abs();
 
-    AP = AP/AP_max;
 
-    AP.transposeInPlace();
-    return AP;
+    psf_ = psf;
 }
+
+
 
 Eigen::MatrixXcd DiffractivePSF::fft2(Eigen::MatrixXcd& mat)
 {
@@ -104,6 +110,7 @@ Eigen::MatrixXcd DiffractivePSF::fft2(Eigen::MatrixXcd& mat)
     Eigen::MatrixXcd temp(rows, cols);
     Eigen::MatrixXcd result(rows, cols);
 
+
     for(int j = 0; j < cols; j++) {
         temp.col(j) = fft.fwd(mat.col(j));
     }
@@ -114,20 +121,46 @@ Eigen::MatrixXcd DiffractivePSF::fft2(Eigen::MatrixXcd& mat)
         result.col(j) = fft.fwd(temp.col(j));
     }
 
+
+
+    /*
+    for (int k = 0; k < rows; k++) {
+        Eigen::VectorXcd tmpOut(rows);
+        fft.fwd(tmpOut, mat.row(k));
+        result.row(k) = tmpOut;
+    }
+
+    for (int k = 0; k < cols; k++) {
+        Eigen::VectorXcd tmpOut(cols);
+        fft.fwd(tmpOut, result.col(k));
+        result.col(k) = tmpOut;
+    }
+    */
+
+    /*
+    // https://github.com/Daniele122898/NumericalScience2019/blob/a16c6fa9a744df0abb718e1f7b4ab565730191a9/exercises4/template_fft2.cpp
+    for (int k = 0; k < rows; k++) {
+        Eigen::VectorXcd tv(mat.row(k));
+        temp.row(k) = fft.fwd(tv).transpose();
+    }
+
+    for (int k = 0; k < cols; k++) {
+        Eigen::VectorXcd tv(temp.col(k));
+        result.col(k) = fft.fwd(tv);
+    }
+    */
+
+
     return result;
 }
 
-GridArray<double> DiffractivePSF::matrix_to_grid_array(const Eigen::MatrixXd &mat)
+Eigen::MatrixXcd DiffractivePSF::ifft2(Eigen::MatrixXcd& mat)
 {
     int rows = mat.rows();
     int cols = mat.cols();
-    GridArray<double> grid(rows, cols);
+    Eigen::MatrixXcd mat_c = mat.conjugate();
+    Eigen::MatrixXcd C = fft2(mat_c);
+    Eigen::MatrixXcd result = C.conjugate()/(rows*cols);
 
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < cols; j++) {
-            grid.set_cell(i, j, mat(i,j));
-        }
-    }
-
-    return grid;
+    return result;
 }
