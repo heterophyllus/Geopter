@@ -1,5 +1,6 @@
-#include <complex>
+#define _USE_MATH_DEFINES
 #include <cmath>
+#include <complex>
 #include <iostream>
 #include <fstream>
 #include "Eigen/Dense"

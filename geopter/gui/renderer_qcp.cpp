@@ -67,7 +67,7 @@ void RendererQCP::draw_plot(std::shared_ptr<PlotData> plotdata)
     }
 }
 
-void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int colormap)
+void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int cmap)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
     QCPColorMap *colorMap = new QCPColorMap(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
@@ -79,14 +79,18 @@ void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int colormap)
     colorMap->data()->setRange(QCPRange(0, nx), QCPRange(0, ny));
     colorMap->setInterpolate(false);
 
-    double z;
+
     for (int yIndex = 0; yIndex < ny; ++yIndex)
     {
       for (int xIndex = 0; xIndex < nx; ++xIndex)
       {
-          z = Z(yIndex, xIndex); //(x,y) (col, row)
+          double z = Z(yIndex, xIndex); //(x,y) (col, row)
 
-          if(type == 0){
+          if(std::isnan(z)){
+              z = 0.0;
+          }
+
+          if(type == 0){ // linear
 
           }
           else if(type == 1){ //logarithmic
@@ -97,7 +101,7 @@ void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int colormap)
       }
     }
 
-    if(colormap == 0){
+    if(cmap == 0){
         colorMap->setGradient(QCPColorGradient::gpGrayscale);
     }else{
         colorMap->setGradient(QCPColorGradient::gpJet);

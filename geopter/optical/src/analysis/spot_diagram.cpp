@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <iostream>
 #include "analysis/spot_diagram.h"
 #include "sequential/sequential_trace.h"

@@ -93,8 +93,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_pyConsole = new PythonQtScriptingConsole(NULL, PythonQt::self()->getMainModule());
     QTextEdit* stdoutText = new QTextEdit;
     stdoutText->setReadOnly(true);
+    stdoutText->setLineWrapMode(QTextEdit::NoWrap);
     QTextEdit* stderrText = new QTextEdit;
     stderrText->setReadOnly(true);
+    stderrText->setLineWrapMode(QTextEdit::NoWrap);
     consoleTab->addTab(m_pyConsole, tr("PyConsole"));
     consoleTab->addTab(stdoutText, tr("Output"));
     consoleTab->addTab(stderrText, tr("Error"));

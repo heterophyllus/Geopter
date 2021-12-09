@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iomanip>
 #include <limits>
+#include <algorithm>
 #include "data/graph2d.h"
 
 using namespace geopter;

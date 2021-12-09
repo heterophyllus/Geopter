@@ -59,9 +59,10 @@ void WavefrontMapDlg::updateParentDockContent()
     double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wvlIndex)->value();
     wf->from_opd_trace(m_opticalSystem, fld, wvl, nrd);
 
-    std::cout << wf->to_matrix() << std::endl;
-
     m_renderer->draw_hist2d(wf->to_matrix(), 0, 1);
+
+    std::cout << "Wavefront:" << std::endl;
+    std::cout << wf->to_matrix() << std::endl;
 
     delete wf;
 
