@@ -389,7 +389,7 @@ class serializer
 
         for (std::size_t i = 0; i < s.size(); ++i)
         {
-            const auto byte = static_cast<uint8_t>(s[i]);
+            const auto byte = static_cast<std::uint8_t>(s[i]);
 
             switch (decode(state, codepoint, byte))
             {
@@ -499,7 +499,7 @@ class serializer
                     {
                         case error_handler_t::strict:
                         {
-                            std::string sn(3, '\0');
+                            std::string sn(9, '\0');
                             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
                             (std::snprintf)(&sn[0], sn.size(), "%.2X", byte);
                             JSON_THROW(type_error::create(316, "invalid UTF-8 byte at index " + std::to_string(i) + ": 0x" + sn, BasicJsonType()));
@@ -594,7 +594,7 @@ class serializer
             {
                 case error_handler_t::strict:
                 {
-                    std::string sn(3, '\0');
+                    std::string sn(9, '\0');
                     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
                     (std::snprintf)(&sn[0], sn.size(), "%.2X", static_cast<std::uint8_t>(s.back()));
                     JSON_THROW(type_error::create(316, "incomplete UTF-8 string; last byte: 0x" + sn, BasicJsonType()));
@@ -674,6 +674,7 @@ class serializer
     @tparam NumberType either @a number_integer_t or @a number_unsigned_t
     */
     template < typename NumberType, detail::enable_if_t <
+                   std::is_integral<NumberType>::value ||
                    std::is_same<NumberType, number_unsigned_t>::value ||
                    std::is_same<NumberType, number_integer_t>::value ||
                    std::is_same<NumberType, binary_char_t>::value,
@@ -706,7 +707,7 @@ class serializer
         // use a pointer to fill the buffer
         auto buffer_ptr = number_buffer.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto,cppcoreguidelines-pro-type-vararg,hicpp-vararg)
 
-        const bool is_negative = std::is_same<NumberType, number_integer_t>::value && !(x >= 0); // see issue #755
+        const bool is_negative = std::is_signed<NumberType>::value && !(x >= 0); // see issue #755
         number_unsigned_t abs_value;
 
         unsigned int n_chars{};
@@ -810,8 +811,8 @@ class serializer
         // erase thousands separator
         if (thousands_sep != '\0')
         {
-            auto* const end = std::remove(number_buffer.begin(),
-                                          number_buffer.begin() + len, thousands_sep);
+            // NOLINTNEXTLINE(readability-qualified-auto,llvm-qualified-auto): std::remove returns an iterator, see https://github.com/nlohmann/json/issues/3081
+            const auto end = std::remove(number_buffer.begin(), number_buffer.begin() + len, thousands_sep);
             std::fill(end, number_buffer.end(), '\0');
             JSON_ASSERT((end - number_buffer.begin()) <= len);
             len = (end - number_buffer.begin());
@@ -820,7 +821,8 @@ class serializer
         // convert decimal point to '.'
         if (decimal_point != '\0' && decimal_point != '.')
         {
-            auto* const dec_pos = std::find(number_buffer.begin(), number_buffer.end(), decimal_point);
+            // NOLINTNEXTLINE(readability-qualified-auto,llvm-qualified-auto): std::find returns an iterator, see https://github.com/nlohmann/json/issues/3081
+            const auto dec_pos = std::find(number_buffer.begin(), number_buffer.end(), decimal_point);
             if (dec_pos != number_buffer.end())
             {
                 *dec_pos = '.';
