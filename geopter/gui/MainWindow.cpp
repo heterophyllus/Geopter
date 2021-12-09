@@ -32,6 +32,7 @@
 #include "AnalysisDlg/WavefrontMapDlg.h"
 #include "AnalysisDlg/FFT_PSFDlg.h"
 #include "AnalysisDlg/GeoMtfDlg.h"
+#include "AnalysisDlg/FFT_MTFDlg.h"
 
 using namespace ads;
 
@@ -40,7 +41,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
 
     this->setWindowTitle("Geopter");
 
@@ -67,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionWavefrontMap,           SIGNAL(triggered()), this, SLOT(showWavefront()));
     QObject::connect(ui->actionFFT_PSF,                SIGNAL(triggered()), this, SLOT(showFFTPSF()));
     QObject::connect(ui->actionGeoMTF,                 SIGNAL(triggered()), this, SLOT(showGeoMTF()));
+    QObject::connect(ui->actionFFT_MTF,                SIGNAL(triggered()), this, SLOT(showFFTMTF()));
 
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -116,6 +117,7 @@ MainWindow::MainWindow(QWidget *parent)
     loadAgfsFromDir(agfDir);
 
     PythonQt::self()->getMainModule().addObject("osys",opt_sys_.get());
+    PythonQt::self()->getMainModule().addObject("lde",opt_sys_->LensDataEditor());
 
 }
 
@@ -162,7 +164,6 @@ void MainWindow::loadAgfsFromDir(QString agfDir)
 
 void MainWindow::syncUiWithSystem()
 {
-    //m_systemEditorDock->syncUiWithSystem();
     m_systemEditorDock->updateUi();
 }
 
@@ -177,7 +178,6 @@ void MainWindow::newFile()
     //opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
-    //m_systemEditorDock->syncUiWithSystem();
 
     QMessageBox::information(this,tr("Info"), tr("Created new lens"));
 }
@@ -191,7 +191,6 @@ void MainWindow::saveAs()
     }
 
     std::string json_path = filePath.toStdString();
-    //FileIO::save_to_json(*opt_sys_, json_path);
     opt_sys_->save_to_file(json_path);
 
     QMessageBox::information(this,tr("Info"), tr("Saved to JSON file"));
@@ -206,13 +205,11 @@ void MainWindow::openFile()
     }
 
     std::string json_path = filePaths.first().toStdString();
-    //FileIO::load_from_json(*opt_sys_,json_path);
     opt_sys_->load_file(json_path);
 
     opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
-    //m_systemEditorDock->syncUiWithSystem();
     m_systemEditorDock->updateUi();
 
     QMessageBox::information(this,tr("Info"), tr("OpticalSystem newly loaded"));
@@ -308,6 +305,11 @@ void MainWindow::showGeoMTF()
     showAnalysisPlot<GeoMtfDlg>("Geometrical MTF");
 }
 
+void MainWindow::showFFTMTF()
+{
+    showAnalysisPlot<FFT_MTFDlg>("FFT MTF");
+}
+
 template<class T>
 void MainWindow::showAnalysisPlot(QString dockTitleBase)
 {
@@ -394,4 +396,7 @@ void MainWindow::showAbout()
 
 }
 
-
+void MainWindow::updateUi()
+{
+    m_systemEditorDock->updateUi();
+}

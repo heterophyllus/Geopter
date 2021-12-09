@@ -47,6 +47,7 @@ public:
     inline void set_title(const std::string& title);
     inline void set_x_axis_label(const std::string& label);
     inline void set_y_axis_label(const std::string& label);
+    inline void set_plot_style(int ps);
 
     inline int data_count() const;
 
@@ -55,6 +56,7 @@ public:
     inline std::string title() const;
     inline std::string x_axis_label() const;
     inline std::string y_axis_label() const;
+    inline int plot_style() const;
 
     void print(std::ostringstream& oss);
     void print();
@@ -65,6 +67,7 @@ private:
     std::string title_;
     std::string x_axis_label_;
     std::string y_axis_label_;
+    int plot_style_;
     bool xy_reverse_;
 };
 
@@ -92,6 +95,11 @@ void PlotData::set_x_axis_label(const std::string& label)
 void PlotData::set_y_axis_label(const std::string& label)
 {
     y_axis_label_ = label;
+}
+
+void PlotData::set_plot_style(int ps)
+{
+    plot_style_ = ps;
 }
 
 std::shared_ptr<Graph2d> PlotData::graph(int i) const
@@ -122,6 +130,11 @@ std::string PlotData::x_axis_label() const
 std::string PlotData::y_axis_label() const
 {
     return y_axis_label_;
+}
+
+int PlotData::plot_style() const
+{
+    return plot_style_;
 }
 
 }

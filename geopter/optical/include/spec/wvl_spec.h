@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   wvl_spec.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef WVLSPEC_H
 #define WVLSPEC_H
 
@@ -65,6 +57,12 @@ public:
 
     /** Returns maximum wavelength value in current spectral region */
     double higher_wavelength() const;
+
+    /** Returns wavelength value list */
+    std::vector<double> get_wavelength_list() const;
+
+    /** Returns wavelength weight list */
+    std::vector<double> get_weight_list() const;
 
     /** Set reference index to the given index */
     inline void set_reference_index(int i);

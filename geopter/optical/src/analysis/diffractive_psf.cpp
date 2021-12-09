@@ -6,9 +6,10 @@
 #include "unsupported/Eigen/MatrixFunctions"
 #include "unsupported/Eigen/FFT"
 #include "analysis/diffractive_psf.h"
-#include "analysis/circ_shift.h"
 #include "sequential/sequential_trace.h"
 #include "sequential/trace_error.h"
+#include "common/matrix_tool.h"
+#include "common/circ_shift.h"
 
 using namespace geopter;
 
@@ -24,13 +25,26 @@ Eigen::MatrixXd DiffractivePSF::to_matrix()
 
 void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L)
 {
+    /*
+     * David G. Voelz, "Computational fourier optics : a MATLAB tutorial", SPIE
+     *
+     */
+
+    SequentialTrace *tracer = new SequentialTrace(opt_sys);
+    tracer->set_aperture_check(true);
+    tracer->set_apply_vig(false);
+
+    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 0.0}), fld, wvl);
+
     double du = L/static_cast<double>(M);
+    double img_ht = chief_ray->back()->height();
     double img_dist = opt_sys->paraxial_data()->image_distance();
     double exp_dist = opt_sys->paraxial_data()->exit_pupil_distance();
-    double zxp = (img_dist - exp_dist);
+    double zxp = img_dist - exp_dist;
+    double dxp = sqrt(zxp*zxp + img_ht*img_ht);
     double wxp = opt_sys->paraxial_data()->exit_pupil_radius();
     double lambda = wvl*1.0e-6;
-    double lz = lambda*zxp;
+    double lz = lambda*dxp;
     double k = 2.0*M_PI/lambda;
 
     std::vector<double> u(M), v(M);
@@ -42,15 +56,9 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
     }
     fv = fu;
 
-    SequentialTrace *tracer = new SequentialTrace(opt_sys);
-    tracer->set_aperture_check(true);
-    tracer->set_apply_vig(false);
-
-    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 0.0}), fld, wvl);
-
     SequentialPath seq_path = tracer->sequential_path(wvl);
 
-    Eigen::MatrixXd W = Eigen::MatrixXd::Zero(M, M);
+    W_ = Eigen::MatrixXd::Zero(M, M);
     Eigen::MatrixXcd A = Eigen::MatrixXcd::Zero(M, M);
     Eigen::Vector2d pupil;
     RayPtr ray = std::make_shared<Ray>(seq_path.size());
@@ -66,101 +74,33 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
 
                 if(ray->status() == RayStatus::PassThrough){
                     double opd = wave_abr_full_calc(ray, chief_ray);
-                    W(i,j) = opd;
+                    W_(i,j) = opd;
                     A(i,j) = 1.0;
                 }else{
-                    W(i,j) = 0.0;
+                    W_(i,j) = 0.0;
                     A(i,j) = 0.0;
                 }
             }else{
-                W(i,j) = 0.0;
+                W_(i,j) = 0.0;
                 A(i,j) = 0.0;
             }
 
         }
     }
 
-    wavefront_ = W;
-
     delete tracer;
 
     std::complex<double> im(0.0, 1.0);
 
-    Eigen::MatrixXcd H = A.array() * ((-k*im*W).array().exp());
+    Eigen::MatrixXcd H = A.array() * ((-k*im*W_).array().exp());
     coh_ = H;
 
     Eigen::MatrixXcd psf1 = ifftshift(H);
-    Eigen::MatrixXcd psf2 = fft2(psf1);
+    Eigen::MatrixXcd psf2 = MatrixTool::fft2(psf1);
     Eigen::MatrixXcd psf3 = fftshift(psf2);
     Eigen::MatrixXd psf = psf3.array().abs();
-
 
     psf_ = psf;
 }
 
 
-
-Eigen::MatrixXcd DiffractivePSF::fft2(Eigen::MatrixXcd& mat)
-{
-    Eigen::FFT<double> fft;
-
-    int rows = mat.rows();
-    int cols = mat.cols();
-
-    Eigen::MatrixXcd temp(rows, cols);
-    Eigen::MatrixXcd result(rows, cols);
-
-
-    for(int j = 0; j < cols; j++) {
-        temp.col(j) = fft.fwd(mat.col(j));
-    }
-
-    temp.transposeInPlace();
-
-    for(int j = 0; j < cols; j++) {
-        result.col(j) = fft.fwd(temp.col(j));
-    }
-
-
-
-    /*
-    for (int k = 0; k < rows; k++) {
-        Eigen::VectorXcd tmpOut(rows);
-        fft.fwd(tmpOut, mat.row(k));
-        result.row(k) = tmpOut;
-    }
-
-    for (int k = 0; k < cols; k++) {
-        Eigen::VectorXcd tmpOut(cols);
-        fft.fwd(tmpOut, result.col(k));
-        result.col(k) = tmpOut;
-    }
-    */
-
-    /*
-    // https://github.com/Daniele122898/NumericalScience2019/blob/a16c6fa9a744df0abb718e1f7b4ab565730191a9/exercises4/template_fft2.cpp
-    for (int k = 0; k < rows; k++) {
-        Eigen::VectorXcd tv(mat.row(k));
-        temp.row(k) = fft.fwd(tv).transpose();
-    }
-
-    for (int k = 0; k < cols; k++) {
-        Eigen::VectorXcd tv(temp.col(k));
-        result.col(k) = fft.fwd(tv);
-    }
-    */
-
-
-    return result;
-}
-
-Eigen::MatrixXcd DiffractivePSF::ifft2(Eigen::MatrixXcd& mat)
-{
-    int rows = mat.rows();
-    int cols = mat.cols();
-    Eigen::MatrixXcd mat_c = mat.conjugate();
-    Eigen::MatrixXcd C = fft2(mat_c);
-    Eigen::MatrixXcd result = C.conjugate()/(rows*cols);
-
-    return result;
-}

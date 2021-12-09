@@ -23,12 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   wvl_spec.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
 #include <iostream>
 #include <iomanip>
@@ -85,6 +79,29 @@ double WvlSpec::higher_wavelength() const
     return higher;
 }
 
+std::vector<double> WvlSpec::get_wavelength_list() const
+{
+    const int num_wvls = wvls_.size();
+    std::vector<double> wvl_list(num_wvls);
+
+    for(int wi =0; wi < num_wvls; wi++){
+        wvl_list[wi] = wvls_[wi]->value();
+    }
+
+    return wvl_list;
+}
+
+std::vector<double> WvlSpec::get_weight_list() const
+{
+    const int num_wvls = wvls_.size();
+    std::vector<double> wvl_list(num_wvls);
+
+    for(int wi =0; wi < num_wvls; wi++){
+        wvl_list[wi] = wvls_[wi]->weight();
+    }
+
+    return wvl_list;
+}
 
 void WvlSpec::add(double wl, double wt, Rgb render_color)
 {

@@ -12,15 +12,21 @@ class MatrixTool
 public:
     static void fft2(Eigen::MatrixXcd& out, const Eigen::MatrixXcd& in);
     static void ifft2(Eigen::MatrixXcd& out, const Eigen::MatrixXcd& in);
+    static Eigen::MatrixXcd fft2(const Eigen::MatrixXcd& in);
+    static Eigen::MatrixXcd ifft2(const Eigen::MatrixXcd& in);
+
+    static std::vector<double> to_std_vector(const Eigen::VectorXd& v);
+
+    static Eigen::VectorXd from_std_vector(const std::vector<double>& v);
 
     template <typename XprType>
-    static void matrix_to_csv(const std::string& filepath, Eigen::DenseBase<XprType>& mat);
+    static void csvwrite(const std::string& filepath, Eigen::DenseBase<XprType>& mat);
 };
 
 
 
 template <typename XprType>
-void MatrixTool::matrix_to_csv(const std::string& filepath, Eigen::DenseBase<XprType>& mat)
+void MatrixTool::csvwrite(const std::string& filepath, Eigen::DenseBase<XprType>& mat)
 {
     std::fstream fout(filepath, std::ios::out);
 

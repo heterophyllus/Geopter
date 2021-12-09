@@ -23,12 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   utility.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
 #include <sstream>
 #include <iostream>
@@ -37,18 +31,18 @@
 #include <iomanip>
 #include <limits>
 
-#include "utility/utility.h"
+#include "common/string_tool.h"
 
 using namespace geopter;
 
-void Utility::split_path(const std::string &full_path, std::string &folder_path, std::string &file_base, std::string &ext)
+void StringTool::split_path(const std::string &full_path, std::string &folder_path, std::string &file_base, std::string &ext)
 {
     file_base = std::filesystem::path(full_path).stem().u8string();
     folder_path = std::filesystem::path(full_path).parent_path().u8string();
     ext = std::filesystem::path(full_path).extension().u8string();
 }
 
-std::vector<std::string> Utility::split(const std::string& s, char delim)
+std::vector<std::string> StringTool::split(const std::string& s, char delim)
 {
     std::vector<std::string> elems;
     std::string item;
@@ -71,7 +65,7 @@ std::vector<std::string> Utility::split(const std::string& s, char delim)
 }
 
 
-bool Utility::starts_with(const std::string &s, const std::string &prefix)
+bool StringTool::starts_with(const std::string &s, const std::string &prefix)
 {
     auto size = prefix.size();
     if (s.size() < size) {
@@ -80,7 +74,7 @@ bool Utility::starts_with(const std::string &s, const std::string &prefix)
     return std::equal(std::begin(prefix), std::end(prefix), std::begin(s));
 }
 
-bool Utility::contains(const std::string &s, const std::string &item)
+bool StringTool::contains(const std::string &s, const std::string &item)
 {
     if(s.find(item) != std::string::npos){
         return true;

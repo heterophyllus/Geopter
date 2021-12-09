@@ -14,7 +14,7 @@ FieldTable::FieldTable(QWidget* parent)
     this->setColumnCount(hHeaderLabels.size());
     this->setHorizontalHeaderLabels(hHeaderLabels);
     this->setRowCount(1);
-    this->postProcess();
+    this->setupItems();
     this->setupVerticalHeader();
 
     this->setItemDelegateForColumn(FieldTable::X,      new FloatDelegate(m_displayDigit, true, this));
@@ -24,9 +24,6 @@ FieldTable::FieldTable(QWidget* parent)
     this->setItemDelegateForColumn(FieldTable::VLY,    new FloatDelegate(m_displayDigit, true, this));
     this->setItemDelegateForColumn(FieldTable::VUX,    new FloatDelegate(m_displayDigit, true, this));
     this->setItemDelegateForColumn(FieldTable::VLX,    new FloatDelegate(m_displayDigit, true, this));
-
-    //this->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
-    //QObject::connect(this->verticalHeader(), SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnHeader(const QPoint &)));
 
     QObject::connect(this, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onDoubleClick(QTableWidgetItem*)));
 
@@ -44,7 +41,7 @@ void FieldTable::setupVerticalHeader()
     this->setVerticalHeaderLabels(vHeaderLabels);
 }
 
-void FieldTable::postProcess()
+void FieldTable::setupItems()
 {
     for(int i = 0; i < this->rowCount(); i++) {
         for(int j = 0; j < this->columnCount(); j++) {
@@ -62,37 +59,14 @@ void FieldTable::postProcess()
 }
 
 
-void FieldTable::showContextMenuOnHeader(const QPoint &pos)
-{
-    qDebug() << "FieldTable::showContextMenu() in";
-
-    QMenu contextMenu;
-    contextMenu.clear();
-
-    QAction *action1 = contextMenu.addAction("Insert");
-    action1->setEnabled(true);
-
-    QObject::connect(action1, SIGNAL(triggered()), this, SLOT(insertField()));
-
-    QAction *action2 = contextMenu.addAction("Remove");
-    QObject::connect(action2, SIGNAL(triggered()), this, SLOT(removeField()));
-
-    QAction *action3 = contextMenu.addAction("Add");
-    QObject::connect(action3, SIGNAL(triggered()), this, SLOT(addField()));
-
-
-    contextMenu.exec(QCursor::pos());
-
-    qDebug() << "FieldTable::showContextMenu() out";
-}
-
 void FieldTable::insertField()
 {
     int row = this->currentRow();
     if(row < 0 || row >= this->rowCount()) return;
 
     this->insertRow(row);
-    this->postProcess();
+    this->setupItems();
+    this->setupVerticalHeader();
 
     int fi = row;
     Field* fld = new Field(); // create temporary field to get default value
@@ -114,14 +88,15 @@ void FieldTable::removeField()
     if(row < 0 || row >= this->rowCount()) return;
 
     this->removeRow(row);
-    this->postProcess();
+    this->setupItems();
+    this->setupVerticalHeader();
 }
 
 void FieldTable::addField()
 {
     int currentRowCount = this->rowCount();
     this->setRowCount(currentRowCount + 1);
-    this->postProcess();
+    this->setupItems();
 
     Field* fld = new Field();
     int fi = this->rowCount()-1;
@@ -157,7 +132,8 @@ void FieldTable::importFieldData(const std::shared_ptr<OpticalSystem> optsys)
 
     if(this->rowCount() != fieldCount){
         this->setRowCount(fieldCount);
-        this->postProcess();
+        this->setupItems();
+        this->setupVerticalHeader();
     }
 
     for(int fi = 0; fi < fieldCount; fi++) {

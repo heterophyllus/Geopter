@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   glass.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -40,12 +32,9 @@
 #include "material/glass_catalog.h"
 #include "material/dispersion_formula.h"
 #include "material/air.h"
-
 #include "environment/environment.h"
-
 #include "spec/spectral_line.h"
-
-#include "utility/utility.h"
+#include "common/string_tool.h"
 
 using namespace geopter;
 
@@ -118,7 +107,7 @@ void Glass::set_dispersion_formula(int i)
         formula_func_ptr_ = &(DispersionFormula::Extended2);
         break;
     case 13: // Unknown
-        if(Utility::contains(supplier_name_, "HIKARI")){
+        if(StringTool::contains(supplier_name_, "HIKARI")){
             formula_func_ptr_ = &(DispersionFormula::Nikon_Hikari);
         }else{
             formula_func_ptr_ = &(DispersionFormula::Unknown);

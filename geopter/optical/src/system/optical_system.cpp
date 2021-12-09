@@ -32,9 +32,9 @@
 #include <filesystem>
 #include <iomanip>
 
-#include "nlohmann/json.hpp"
 
-#include "Eigen/Core"
+
+
 #include "Eigen/Dense"
 
 #include "system/optical_system.h"
@@ -42,6 +42,8 @@
 #include "paraxial/paraxial_trace.h"
 #include "sequential/sequential_trace.h"
 #include "sequential/trace_error.h"
+
+#include "nlohmann/json.hpp"
 
 using namespace geopter;
 
@@ -428,10 +430,8 @@ void OpticalSystem::save_to_file(const std::string &filepath)
     }
 
     /* output to file */
-    std::ofstream fout(filepath);
-    //fout << std::setw(4) << json_data << std::endl;
+    std::ofstream fout(filepath, std::ios::out);
     fout << json_data.dump(4) << std::endl;
-
 }
 
 void OpticalSystem::load_file(const std::string &filepath)
@@ -615,17 +615,21 @@ void OpticalSystem::load_file(const std::string &filepath)
 
 void OpticalSystem::print(std::ostringstream &oss)
 {
-    oss << "Title : " << title_ << std::endl;
+    oss << "Title: " << title_ << std::endl;
     oss << std::endl;
     oss << "Note: " << std::endl;
     oss << note_ << std::endl;
     oss << std::endl;
 
-    oss << "Specifications:" << std::endl;
+    oss << "SPECIFICATIONS..." << std::endl;
     oss << std::endl;
     opt_spec_->print(oss);
 
-    oss << "Lens Data" << std::endl;
+    oss << "FIRST ORDER DATA..." << std::endl;
+    this->paraxial_data()->print(oss);
+    oss << std::endl;
+
+    oss << "LENS DATA..." << std::endl;
     oss << std::endl;
     opt_assembly_->print(oss);
     oss << std::endl;

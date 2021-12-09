@@ -35,7 +35,8 @@ using namespace geopter;
 PlotData::PlotData() :
     title_(""),
     x_axis_label_("x"),
-    y_axis_label_("y")
+    y_axis_label_("y"),
+    plot_style_(0)
 {
     graphs_.clear();
     optional_data_.clear();

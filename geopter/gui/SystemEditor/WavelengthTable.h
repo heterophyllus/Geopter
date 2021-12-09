@@ -22,29 +22,38 @@ public:
     void importWavelengthData(const std::shared_ptr<OpticalSystem> optsys);
     void applyCurrentData(std::shared_ptr<OpticalSystem> optsys);
 
-private slots:
-    /** Show context menu. This function is called when right click on the vertical header */
-    void showContextMenu();
+signals:
+    void setupCompleted();
 
-    /** Insert a new field to current row */
+    /** This signal is emitted when wavelength value is edited */
+    void valueEdited();
+
+public slots:
+
+    /** Insert a new wavelength to current row */
     void insertWavelength();
 
-    /** Remove current field from the table */
+    /** Remove current wavelength from the table */
     void removeWavelength();
 
+    /** Add new wavelength row */
     void addWavelength();
 
-    /** Slot function for cell double click */
+    /** Slot function called when a cell is double clicked */
     void onDoubleClick(QTableWidgetItem* item);
+
+    /** Slot function called when a cell is edited  */
+    void onItemChanged(QTableWidgetItem* item);
 
 private:
     void setWavelengthData(int row, const Wvl* wvl);
     void setupVerticalHeader();
-    void postProcess();
+    void setupItems();
 
     QColor rgbToQColor(const Rgb& rgb);
     Rgb QColorToRgb(const QColor& color);
 
+    bool m_settingUp;
     int m_displayDigit;
 };
 

@@ -27,8 +27,7 @@
 #define ELEMENT_H
 
 #include <string>
-
-#include "renderer/renderer.h"
+#include "renderer/rgb.h"
 
 namespace geopter {
 
@@ -40,10 +39,10 @@ public:
     virtual ~Element();
 
     virtual std::string label() const;
-
     virtual std::string element_type() const;
 
-    virtual void draw(Renderer* renderer);
+    Rgb render_color() const;
+    void set_render_color(const Rgb& color);
 
     //virtual double weight() const;
     //virtual double volume() const;
@@ -51,6 +50,7 @@ public:
 protected:
     std::string label_;
     std::string element_type_;
+    Rgb render_color_;
 };
 
 }

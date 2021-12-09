@@ -18,8 +18,8 @@ Graph2d::Graph2d(const std::vector<double>& x, const std::vector<double>& y, con
     render_color_ = color;
     line_width_ = line_width;
     line_style_ = line_style;
-
-    this->set_data(x,y);
+    x_data_ = x;
+    y_data_ = y;
 }
 
 Graph2d::~Graph2d()

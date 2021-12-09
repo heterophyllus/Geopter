@@ -23,16 +23,8 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   utility.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
-#ifndef GEOPTER_UTILITY_H
-#define GEOPTER_UTILITY_H
+#ifndef GEOPTER_STRING_TOOL_H
+#define GEOPTER_STRING_TOOL_H
 
 
 #include <string>
@@ -40,8 +32,8 @@
 
 namespace geopter {
 
-/** Utilities for general purpose */
-class Utility
+/** Utilities for string operation */
+class StringTool
 {
 public:
     /** Split file path into components */
@@ -59,4 +51,4 @@ public:
 
 }
 
-#endif //GEOPTER_UTILITY_H
+#endif //GEOPTER_STRING_TOOL_H

@@ -23,16 +23,8 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   lens.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
-#ifndef LENS_H
-#define LENS_H
+#ifndef GEOPTER_ELEMENT_LENS_H
+#define GEOPTER_ELEMENT_LENS_H
 
 #include "element.h"
 
@@ -51,19 +43,20 @@ public:
     Surface* surface1() const;
     Surface* surface2() const;
     
-    void draw(Renderer* renderer) override;
+    void set_render_color_s1(const Rgb& color);
+    void set_render_color_s2(const Rgb& color);
 
 private:
-    void draw_edge(Renderer* renderer);
-
     Surface* s1_;
     Surface* s2_;
     Gap* gap_;
 
     double max_edge_extent_;
     double min_edge_extent_;
+    Rgb render_color_s1_;
+    Rgb render_color_s2_;
 };
 
 } // namespace
 
-#endif
+#endif //GEOPTER_ELEMENT_LENS_H

@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   lend.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #include "element/lens.h"
 
@@ -37,17 +30,17 @@
 using namespace geopter;
 
 Lens::Lens(Surface* s1, Surface* s2, Gap* g) :
-    s1_(s1),
-    s2_(s2),
-    gap_(g)
+    s1_(s1),s2_(s2),
+    gap_(g),
+    render_color_s1_(rgb_black), render_color_s2_(rgb_black)
 {
     element_type_ = "Lens";
 }
 
 Lens::~Lens()
 {
-    s1_ = nullptr;
-    s2_ = nullptr;
+    s1_  = nullptr;
+    s2_  = nullptr;
     gap_ = nullptr;
 }
 
@@ -61,12 +54,13 @@ Surface* Lens::surface2() const
     return s2_;;
 }
 
-void Lens::draw(Renderer* renderer)
+void Lens::set_render_color_s1(const Rgb &color)
 {
-
+    render_color_s1_ = color;
 }
 
-void Lens::draw_edge(Renderer* renderer)
+void Lens::set_render_color_s2(const Rgb &color)
 {
-
+    render_color_s2_ = color;
 }
+

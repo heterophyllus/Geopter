@@ -274,7 +274,7 @@ void SequentialTrace::trace_ray_throughout_path(RayPtr ray, const SequentialPath
 
             Surface* cur_srf = seq_path.at(cur_srf_idx).srf;
             double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
-            cur_srf->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
+            cur_srf->profile()->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir, eps, z_dir);
 
             distance_from_before = dist_from_before_to_perpendicular + dist_from_perpendicular_to_intersect_pt; // distance between before and current intersect point
 

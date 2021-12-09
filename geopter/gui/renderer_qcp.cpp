@@ -84,12 +84,13 @@ void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int colormap)
     {
       for (int xIndex = 0; xIndex < nx; ++xIndex)
       {
-          if(type == 0){ //linear
-              z = Z(xIndex, yIndex); //(x,y) (col, row)
-          }else if(type == 1){ //logarithmic
-              z = std::log10(Z(xIndex, yIndex));
-          }else{
-              z = Z(xIndex, yIndex);
+          z = Z(yIndex, xIndex); //(x,y) (col, row)
+
+          if(type == 0){
+
+          }
+          else if(type == 1){ //logarithmic
+              z = std::log10(z);
           }
 
           colorMap->data()->setCell(xIndex, yIndex, z);

@@ -37,7 +37,7 @@ namespace geopter {
 class ParaxialTrace
 {
 public:
-    ParaxialTrace(OpticalSystem* sys);
+    ParaxialTrace(const OpticalSystem* sys);
     ~ParaxialTrace();
 
     /** 
@@ -63,17 +63,19 @@ public:
      * @param wi wavelength index
      * @return ParaxialPath 
      */
-    ParaxialPath paraxial_path(int start, int end, double wvl);
+    ParaxialPath paraxial_path(int start, int end, double wvl) const;
 
     void get_starting_coords(double *y0, double *u0, double *ybar0, double *ubar0) const;
 
+    Eigen::Matrix2d system_matrix(int s1, int s2, int wi) const;
+
 private:
-    ParaxialPath forward_paraxial_path(int start, int end, double wvl);
-    ParaxialPath reverse_paraxial_path(int start, int end, double wvl);
+    ParaxialPath forward_paraxial_path(int start, int end, double wvl) const;
+    ParaxialPath reverse_paraxial_path(int start, int end, double wvl) const;
 
     void compute_starting_data();
 
-    OpticalSystem* opt_sys_;
+    const OpticalSystem* opt_sys_;
 
     double ref_u0_;
     double ref_y0_;

@@ -35,7 +35,6 @@
 #include "material/material_library.h"
 #include "spec/spectral_line.h"
 #include "spec/optical_spec.h"
-#include "utility/utility.h"
 
 using namespace geopter;
 
@@ -112,18 +111,6 @@ void OpticalAssembly::create_minimun_assembly()
 }
 
 
-void OpticalAssembly::setup_from_text(const std::string &lensdata)
-{
-    /*
-     * S   R         d      Material
-     * 1   223.541   6.85   1.8040:46.58
-     * 2   -51.775   1.50   1.7380:32.26
-     * ...
-     */
-
-   std::vector<std::string> splitted = Utility::split(lensdata, '\n');
-
-}
 
 Gap* OpticalAssembly::image_space_gap() const
 {
@@ -142,28 +129,58 @@ void OpticalAssembly::set_stop(int i)
 }
 
 
-void OpticalAssembly::insert_surface(int i)
+void OpticalAssembly::insert(int i)
 {
+    this->insert(i, std::numeric_limits<double>::infinity(), 0.0, "AIR");
+}
+
+void OpticalAssembly::insert(int i, double r, double t, const std::string &mat_name)
+{
+    bool is_appending = false; // append after image
+
+    if(i < 0){
+        //std::cout << "insert before object" << std::endl;
+        i = 0;
+    }else if( i >= (int)interfaces_.size()){
+        //std::cout << "insert after image" << std::endl;
+        is_appending = true;
+    }
+
+    if(interfaces_.empty()){
+        is_appending = true;
+    }
+
     // update stop index
     if( i <= stop_index_){
         stop_index_ += 1;
     }
 
-    // create a new standard surface
-    auto s = std::make_unique<Surface>();
-
     // insert the surface
-    auto ifcs_itr = interfaces_.begin();
-    std::advance(ifcs_itr, i);
-    interfaces_.insert(ifcs_itr, std::move(s));
+    auto s = std::make_unique<Surface>(r);
 
-    // create a new 0 air gap
-    auto g = std::make_unique<Gap>();
+    if(is_appending){
+        interfaces_.push_back(std::move(s));
+    }
+    else{
+        auto ifcs_itr = interfaces_.begin();
+        std::advance(ifcs_itr, i);
+        interfaces_.insert(ifcs_itr, std::move(s));
+    }
+
+    // search material
+    auto m = MaterialLibrary::find(mat_name);
 
     // insert the gap
-    auto gap_itr = gaps_.begin();
-    std::advance(gap_itr, i);
-    gaps_.insert(gap_itr, std::move(g));
+    auto g = std::make_unique<Gap>(t,m);
+
+    if(is_appending){
+        gaps_.push_back(std::move(g));
+    }
+    else{
+        auto gap_itr = gaps_.begin();
+        std::advance(gap_itr, i);
+        gaps_.insert(gap_itr, std::move(g));
+    }
 
     current_surface_index_ = i;
 }

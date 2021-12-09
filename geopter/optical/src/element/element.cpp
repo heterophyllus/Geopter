@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   element.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #include "element/element.h"
 
 using namespace geopter;
@@ -39,6 +31,7 @@ Element::Element()
 {
     label_ = "";
     element_type_ = "";
+    render_color_ = rgb_black;
 }
 
 Element::~Element()
@@ -56,7 +49,12 @@ std::string Element::element_type() const
     return element_type_;
 }
 
-void Element::draw(Renderer* renderer)
+Rgb Element::render_color() const
 {
+    return render_color_;
+}
 
+void Element::set_render_color(const Rgb &color)
+{
+    render_color_ = color;
 }

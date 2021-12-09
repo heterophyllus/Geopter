@@ -51,7 +51,3 @@ Surface* DummyInterface::surface() const
     return s_;
 }
 
-void DummyInterface::draw(Renderer* renderer)
-{
-
-}

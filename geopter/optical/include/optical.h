@@ -33,9 +33,6 @@
     #include <dirent.h>
 #endif
 
-#include <memory>
-#include <vector>
-
 #include "system/optical_system.h"
 
 #include "analysis/layout.h"
@@ -48,6 +45,7 @@
 #include "analysis/wavefront.h"
 #include "analysis/diffractive_psf.h"
 #include "analysis/geometrical_mtf.h"
+#include "analysis/diffractive_mtf.h"
 
 #include "assembly/optical_assembly.h"
 
@@ -71,9 +69,10 @@
 #include "element/element_model.h"
 
 #include "renderer/renderer.h"
+//#include "renderer/renderer_gnuplot.h"
 #include "renderer/rgb.h"
 
-#include "utility/utility.h"
+#include "common/string_tool.h"
 
 #include "environment/environment.h"
 

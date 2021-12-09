@@ -18,15 +18,18 @@ public:
     ~SpecEditorDlg();
 
     void loadData(const std::shared_ptr<OpticalSystem> optsys);
-
     void applyData(std::shared_ptr<OpticalSystem> optsys);
 
 private slots:
-
+    /*
+    void onAddWavelength();
+    void onInsertWavelength();
+    void onRemoveWavelength();
+    */
+    void catchValueedited();
+    void setupReferenceWavelengthCombo(int current= -1);
 
 private:
-    void setupReferenceWavelengthCombo(int current);
-
     Ui::SpecEditorDlg *ui;
 };
 

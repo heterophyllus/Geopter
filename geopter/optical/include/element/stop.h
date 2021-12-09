@@ -23,16 +23,9 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   stop.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
-
-#ifndef STOP_H
-#define STOP_H
+#ifndef GEOPTER_ELEMENT_STOP_H
+#define GEOPTER_ELEMENT_STOP_H
 
 #include "element.h"
 
@@ -48,7 +41,6 @@ public:
     ~Stop();
 
     Surface* reference_surface() const;
-    void draw(Renderer* renderer) override;
 
 private:
     Surface* s_;
@@ -56,4 +48,4 @@ private:
 
 } // namespace
 
-#endif
+#endif //GEOPTER_ELEMENT_STOP_H

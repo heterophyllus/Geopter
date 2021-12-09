@@ -5,11 +5,11 @@
 ## Introduction
 Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-As for optical design tools, there are several proprietary software with advanced features to be a definitive choice for professional work. However, there seem to be few private users due to their unaffordable cost for an annual license.
+In the field of optical design, there have been several well-known proprietary software with advanced features. They must be a definitive choice for professional work, but they are not available for personal use due to expensive annual licensing fees.
 
-Open source projects may well be another option to get exposure to optical design. It is a fact that more and more optical simulation library are being developed recently. One of the disadvantage of the present libraries is to require matured programming skills to master how to use.
+For personal users, open source projects may well be another option to get in touch with optical design. In fact, more and more optical simulation library have been developed recently. One of the drawbacks of these libraries is that highly matured programming skills are required to master how to use them.
 
-Geopter aims to be somewhere in between. This software features to emphasize reasonable graphical interface, allowing users to focus on optical design process. Also, as is common with open source projects, the software is freely available and its whole internal aspects are open to the public.
+Geopter aims to be somewhere in between. This software features to emphasize reasonable graphical interface, allowing the users to focus on the optical design process. Also, as is common with open source projects, the software is freely available and its whole internal aspects are open to the public, which let the users learn, validate and even modify it on their own.
 
 The primary user of this software may be a fresh optical engineer or a student having interests in optics.  Geopter hopes to be a starting platform to gain an introductory experience in optical design.
 
@@ -22,12 +22,12 @@ Prebuilt binaries can be downloaded in [Release page](https://github.com/heterop
 Some example lenses are stored in "example" folder in json format.  In Geopter GUI, go File->Open and select a json file.
 
 ### Python scripting
-Unlike other optical design software such as Zemax and CodeV, Geopter doesn't have its own "macro" language.  Instead, it utilizes python for scripting and has an embeded interpreter. The "geopter_gui" object allows access to the parent application.　A simple example script is in "scripts" folder. To run it, in the console dock;
+Unlike other optical design software such as Zemax and CodeV, Geopter doesn't have its own "macro" language.  Instead, Python is embedded to utilize for scripting. The "app" and "osys" object allow access to the application and optical system.
+For the momemt, only a few functions are implemented.
 
-```
-import example
-example.run_demo(geopter_gui)
-```
+### Note
+In Geopter, the array index for fields, wavelengths and other arrays begin with 0. This is because of the necessity to keep consistency with Python as scripting language.
+
 
 ## Development
 ### Dependencies

@@ -50,6 +50,7 @@ void TransverseRayFanDlg::updateParentDockContent()
 
         Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
         auto plotData = ray_fan->plot(nrd, fld, ray_direction, abr_direction);
+        plotData->print();
 
         m_renderer->draw_plot(plotData);
         m_renderer->set_x_axis_range(-stopRadius, stopRadius);
@@ -61,6 +62,8 @@ void TransverseRayFanDlg::updateParentDockContent()
     }
 
     delete ray_fan;
+
+
 
     m_renderer->update();
 }

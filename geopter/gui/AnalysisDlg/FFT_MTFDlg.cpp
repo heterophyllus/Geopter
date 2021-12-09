@@ -1,13 +1,13 @@
-#include "GeoMtfDlg.h"
-#include "ui_GeoMtfDlg.h"
+#include "FFT_MTFDlg.h"
+#include "ui_FFT_MTFDlg.h"
 
-GeoMtfDlg::GeoMtfDlg(OpticalSystem* sys, PlotViewDock *parent) :
+FFT_MTFDlg::FFT_MTFDlg(OpticalSystem* sys, PlotViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
-    ui(new Ui::GeoMtfDlg),
+    ui(new Ui::FFT_MTFDlg),
     m_parentDock(parent)
 {
     ui->setupUi(this);
-    this->setWindowTitle("Geometrical MTF");
+    this->setWindowTitle("FFT MTF");
 
     m_renderer = new RendererQCP(m_parentDock->customPlot());
 
@@ -16,31 +16,38 @@ GeoMtfDlg::GeoMtfDlg(OpticalSystem* sys, PlotViewDock *parent) :
     samplingComboItems << "16x16" << "32x32" << "64x64" << "128x128" << "256x256" << "512x512" << "1024x1024";
     ui->samplingCombo->clear();
     ui->samplingCombo->addItems(samplingComboItems);
-    ui->samplingCombo->setCurrentIndex(1);
+    ui->samplingCombo->setCurrentIndex(3);
+
+    // image plane side length
+    ui->sideLengthEdit->setValidator(new QDoubleValidator(0.0, 100.0, 4, this));
+    ui->sideLengthEdit->setText("1.0");
+
 
     // max frequency
     ui->maxFreqEdit->setValidator(new QDoubleValidator(0.0, 1000.0, 2, this));
     ui->maxFreqEdit->setText(QString::number(100));
-
 }
 
-GeoMtfDlg::~GeoMtfDlg()
+FFT_MTFDlg::~FFT_MTFDlg()
 {
     delete ui;
 }
 
-void GeoMtfDlg::updateParentDockContent()
+void FFT_MTFDlg::updateParentDockContent()
 {
     m_opticalSystem->update_model();
 
-    int nrd = 16 * pow(2, ui->samplingCombo->currentIndex());
+    int M = 16 * pow(2, ui->samplingCombo->currentIndex());
+    double L = ui->sideLengthEdit->text().toDouble();
     double maxFreq = ui->maxFreqEdit->text().toDouble();
-    double step = 1.0;
 
-    GeometricalMTF* geoMTF = new GeometricalMTF;
-    auto plotData = geoMTF->plot(m_opticalSystem, nrd, maxFreq, step);
-    plotData->print();
-    delete geoMTF;
+    DiffractiveMTF* mtf = new DiffractiveMTF(m_opticalSystem);
+    auto plotData = mtf->plot(m_opticalSystem, M, L);
+    delete mtf;
+
+    std::ostringstream oss;
+    plotData->print(oss);
+    std::cout << oss.str() << std::endl;
 
     m_renderer->clear();
 
@@ -53,7 +60,5 @@ void GeoMtfDlg::updateParentDockContent()
     m_renderer->draw_y_axis();
 
     m_renderer->update();
-
-
 
 }

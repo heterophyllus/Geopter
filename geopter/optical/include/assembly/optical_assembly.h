@@ -28,9 +28,10 @@
 #define OPTICALASSEMBLY_H
 
 #include <vector>
-
+#include <iostream>
 #include "assembly/surface.h"
 #include "assembly/gap.h"
+#include "common/string_tool.h"
 
 namespace geopter {
 
@@ -44,7 +45,8 @@ public:
 
     void clear();
 
-    void setup_from_text(const std::string& lensdata);
+    template<typename ... A>
+    void setup_from_text(A... args);
 
     /** Get surface at the given index */
     inline Surface* surface(int i) const;
@@ -86,7 +88,9 @@ public:
     void add_surface_and_gap();
 
     /** insert a dummy surface */
-    void insert_surface(int i);
+    void insert(int i);
+
+    void insert(int i, double r, double t, const std::string& mat_name="AIR");
 
     /** Remove surface and gap from sequence model */
     void remove(int i);
@@ -169,6 +173,57 @@ Surface* OpticalAssembly::stop_surface() const
     return interfaces_[stop_index_].get();
 }
 
+template<typename... A>
+void OpticalAssembly::setup_from_text(A... args)
+{
+    /* lens data must be commma separated text
+     *
+     * 1,   190.7535,  3.000,  1.6937:53.3,
+     * 2,    18.8098,  9.500,
+     * 3,    51.5630,  2.9,    1.6937:53.3,
+     * 4, ...
+     * ...
+     * 27,  154.8320,  BF
+     *
+     */
+
+    this->clear();
+
+    // add obejct surface
+    this->insert(0);
+
+    int count = 0;
+    for(auto s : std::initializer_list<std::string>{args...}) {
+        count++;
+        std::vector<std::string> srtm = StringTool::split(s, ',');
+
+        int si = 0;
+        double r = 0;
+        double t = 0;
+
+        try{
+            si = std::stoi(srtm[0]);
+            r = std::stod(srtm[1]);
+            t = std::stod(srtm[2]);
+        }catch(...){
+            std::cerr << "Failed to parse line (" << count << ")" << std::endl;
+            this->insert(this->image_index()+1, std::numeric_limits<double>::infinity(), 0.0, "AIR");
+            continue;
+        }
+
+        std::string mat_name = "AIR";
+
+        if(srtm.size() > 3){
+            mat_name = srtm[3];
+        }
+
+        this->insert(si, r, t, mat_name);
+    }
+
+    // add image surface
+    this->insert(this->image_index() + 1, std::numeric_limits<double>::infinity(), 0.0, "AIR");
+
+}
 
 }
 

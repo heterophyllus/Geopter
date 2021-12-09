@@ -9,23 +9,21 @@
 
 WavelengthTable::WavelengthTable(QWidget* parent)
     : QTableWidget(parent),
+      m_settingUp(false),
       m_displayDigit(4)
 {
     QStringList hHeaderLabels({"Value", "Weight", "Color"});
     this->setColumnCount(hHeaderLabels.size());
     this->setHorizontalHeaderLabels(hHeaderLabels);
     this->setRowCount(1);
-    this->postProcess();
+    this->setupItems();
     this->setupVerticalHeader();
 
     this->setItemDelegateForColumn(WavelengthTable::Value,  new FloatDelegate(m_displayDigit, true, this));
     this->setItemDelegateForColumn(WavelengthTable::Weight, new FloatDelegate(m_displayDigit, true, this));
 
-    this->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(this->verticalHeader(), SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
-
     QObject::connect(this, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onDoubleClick(QTableWidgetItem*)));
-
+    QObject::connect(this, SIGNAL(itemChanged(QTableWidgetItem*)),       this, SLOT(onItemChanged(QTableWidgetItem*)));
 }
 
 
@@ -41,7 +39,7 @@ void WavelengthTable::setupVerticalHeader()
     this->setVerticalHeaderLabels(vHeaderLabels);
 }
 
-void WavelengthTable::postProcess()
+void WavelengthTable::setupItems()
 {
     for(int i = 0; i < this->rowCount(); i++) {
         for(int j = 0; j < this->columnCount(); j++) {
@@ -58,40 +56,34 @@ void WavelengthTable::postProcess()
     }
 }
 
-void WavelengthTable::showContextMenu()
-{
-    QMenu contextMenu;
-    QAction *action1 = contextMenu.addAction("Insert");
-    QObject::connect(action1, SIGNAL(triggered()), this, SLOT(insertWavelength()));
-
-    QAction *action2 = contextMenu.addAction("Remove");
-    QObject::connect(action2, SIGNAL(triggered()), this, SLOT(removeWavelength()));
-
-    QAction *action3 = contextMenu.addAction("Add");
-    QObject::connect(action3, SIGNAL(triggered()), this, SLOT(addWavelength()));
-
-
-    contextMenu.exec(QCursor::pos());
-}
 
 void WavelengthTable::insertWavelength()
 {
+    m_settingUp = true;
+
     int row = this->currentRow();
 
     if(row < 0 || row >= this->rowCount()) return;
 
     this->insertRow(row);
-    this->postProcess();
+    this->setupItems();
+    this->setupVerticalHeader();
 
     int wi = row;
-    Wvl* wvl = new Wvl();
+    Wvl* wvl = new Wvl(); // get default values
     this->setWavelengthData(wi, wvl);
     delete wvl;
+
+    m_settingUp = false;
+
+    emit setupCompleted();
 }
 
 void WavelengthTable::removeWavelength()
 {
     Q_ASSERT(this->rowCount() > 0);
+
+    m_settingUp = true;
 
     if(this->rowCount() == 1){
         QMessageBox::warning(this,tr("Error"), tr("At least one wavelength must be set"));
@@ -102,19 +94,31 @@ void WavelengthTable::removeWavelength()
     if(row < 0 || row >= this->rowCount()) return;
 
     this->removeRow(row);
-    this->postProcess();
+    this->setupItems();
+    this->setupVerticalHeader();
+
+    m_settingUp = false;
+
+    emit setupCompleted();
 }
 
 void WavelengthTable::addWavelength()
 {
+    m_settingUp = true;
+
     int currentRowCount = this->rowCount();
     this->setRowCount(currentRowCount + 1);
-    this->postProcess();
+    this->setupVerticalHeader();
+    this->setupItems();
 
     int wi = this->rowCount() - 1;
-    Wvl* wvl = new Wvl();
+    Wvl* wvl = new Wvl(); // get default values
     this->setWavelengthData(wi, wvl);
     delete wvl;
+
+    m_settingUp = false;
+
+    emit setupCompleted();
 }
 
 void WavelengthTable::setWavelengthData(int row, const Wvl* wvl)
@@ -131,17 +135,21 @@ void WavelengthTable::importWavelengthData(const std::shared_ptr<OpticalSystem> 
         return;
     }
 
+    m_settingUp = true;
+
     int wvlCount = optsys->optical_spec()->spectral_region()->wvl_count();
 
     if(this->rowCount() != wvlCount){
         this->setRowCount(wvlCount);
-        this->postProcess();
+        this->setupItems();
     }
 
     for(int wi = 0; wi < wvlCount; wi++) {
         Wvl* wvl = optsys->optical_spec()->spectral_region()->wvl(wi);
         this->setWavelengthData(wi, wvl);
     }
+
+    m_settingUp = false;
 }
 
 void WavelengthTable::applyCurrentData(std::shared_ptr<OpticalSystem> optsys)
@@ -188,9 +196,21 @@ void WavelengthTable::onDoubleClick(QTableWidgetItem* item)
                 }
             }
         }
+
+        emit valueEdited();
     }
 }
 
+void WavelengthTable::onItemChanged(QTableWidgetItem* item)
+{
+    if( !m_settingUp) {
+        int col = item->column();
+
+        if( WavelengthTable::Column::Value == col ){
+            emit valueEdited();
+        }
+    }
+}
 
 QColor WavelengthTable::rgbToQColor(const Rgb& rgb)
 {

@@ -38,6 +38,8 @@ void LongitudinalDlg::updateParentDockContent()
     auto plotData = sph->plot(numRays);
     delete sph;
 
+    plotData->print();
+
     m_renderer->clear();
     m_renderer->draw_plot(plotData);
     m_renderer->set_x_axis_range(-scale, scale);

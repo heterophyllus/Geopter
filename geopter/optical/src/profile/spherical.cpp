@@ -47,15 +47,6 @@ double Spherical::f(const Eigen::Vector3d& p) const
     return p(2) - 0.5*cv_*p.dot(p);
 }
 
-Eigen::Vector3d Spherical::df(const Eigen::Vector3d& p) const
-{
-    Eigen::Vector3d df;
-    df(0) = -cv_*p(0);
-    df(1) = -cv_*p(1);
-    df(2) = 1.0 - cv_*p(2);
-
-    return df;
-}
 
 
 double Spherical::sag(double x, double y) const

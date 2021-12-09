@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   spherical.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef SPHERICAL_H
 #define SPHERICAL_H
@@ -46,12 +39,24 @@ public:
     ~Spherical();
 
     double f(const Eigen::Vector3d& p) const override;
-    Eigen::Vector3d df(const Eigen::Vector3d& p) const override;
+    inline Eigen::Vector3d df(const Eigen::Vector3d& p) const override;
     double sag(double x, double y) const override;
 
     void intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps=1.0e-12, double z_dir=1.0) override;
 
 };
+
+
+
+Eigen::Vector3d Spherical::df(const Eigen::Vector3d& p) const
+{
+    Eigen::Vector3d df({-cv_*p(0),
+                        -cv_*p(1),
+                        1.0 - cv_*p(2)} );
+
+    return df;
+}
+
 
 } //namespace geopter
 

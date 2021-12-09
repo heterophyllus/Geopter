@@ -121,7 +121,7 @@ void LensSpreadSheet::insertSurface()
 {
     int row = this->currentRow();
 
-    m_opticalSystem->optical_assembly()->insert_surface(row);
+    m_opticalSystem->optical_assembly()->insert(row);
 
     this->insertRow(row);
     this->postProcess();

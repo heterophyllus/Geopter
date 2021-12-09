@@ -88,5 +88,7 @@ void FFT_PSFDlg::updateParentDockContent()
 
     m_renderer->update();
 
+    std::cout << psf->to_matrix() << std::endl;
+
     delete psf;
 }

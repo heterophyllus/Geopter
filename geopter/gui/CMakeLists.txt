@@ -32,6 +32,7 @@ set(GEOPTER_GUI_HEADERS
     MainWindow.h
 
     OpticalSystemWrapper/QOpticalSystem.h
+    OpticalSystemWrapper/QLensDataEditor.h
     #OpticalSystemWrapper/QFieldSpec.h
     #OpticalSystemWrapper/QOpticalSpec.h
     #OpticalSystemWrapper/QPupilSpec.h
@@ -71,6 +72,7 @@ set(GEOPTER_GUI_HEADERS
     AnalysisDlg/WavefrontMapDlg.h
     AnalysisDlg/FFT_PSFDlg.h
     AnalysisDlg/GeoMtfDlg.h
+    AnalysisDlg/FFT_MTFDlg.h
 
 )
 
@@ -81,6 +83,7 @@ set(GEOPTER_GUI_SOURCES
     MainWindow.cpp
 
     OpticalSystemWrapper/QOpticalSystem.cpp
+    OpticalSystemWrapper/QLensDataEditor.cpp
     #OpticalSystemWrapper/QFieldSpec.cpp
     #OpticalSystemWrapper/QOpticalSpec.cpp
     #OpticalSystemWrapper/QPupilSpec.cpp
@@ -117,6 +120,7 @@ set(GEOPTER_GUI_SOURCES
     AnalysisDlg/WavefrontMapDlg.cpp
     AnalysisDlg/FFT_PSFDlg.cpp
     AnalysisDlg/GeoMtfDlg.cpp
+    AnalysisDlg/FFT_MTFDlg.cpp
 
 )
 
@@ -140,6 +144,7 @@ set(GEOPTER_GUI_FORMS
     AnalysisDlg/WavefrontMapDlg.ui
     AnalysisDlg/FFT_PSFDlg.ui
     AnalysisDlg/GeoMtfDlg.ui
+    AnalysisDlg/FFT_MTFDlg.ui
 )
 
 add_executable(${PROJECT_NAME} ${GEOPTER_GUI_SOURCES} ${GEOPTER_GUI_HEADERS} ${GEOPTER_GUI_FORMS})
@@ -151,6 +156,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/extensions/PythonQt_QtAll
     ${CMAKE_SOURCE_DIR}/3rdparty/eigen-3.3.9
     ${CMAKE_SOURCE_DIR}/3rdparty/spline/src
+    ${CMAKE_SOURCE_DIR}/3rdparty
     ${CMAKE_SOURCE_DIR}/geopter/optical/include
     ${Python_INCLUDE_DIRS}
 )

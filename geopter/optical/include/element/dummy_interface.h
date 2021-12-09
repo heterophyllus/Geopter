@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   dummy_interface.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef DUMMY_INTERFACE_H
 #define DUMMY_INTERFACE_H
 
@@ -47,7 +39,6 @@ public:
     ~DummyInterface();
 
     Surface* surface() const;
-    void draw(Renderer* renderer) override;
 
 private:
     Surface* s_;

@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   glass_catalog.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #include <iostream>
 #include <fstream>
@@ -37,7 +30,7 @@
 #include <filesystem>
 
 #include "material/glass_catalog.h"
-#include "utility/utility.h"
+#include "common/string_tool.h"
 #include "spec/spectral_line.h"
 
 
@@ -115,11 +108,11 @@ bool GlassCatalog::load_agf(std::string agf_path)
 
     while(getline(ifs,line_str))
     {
-        if(Utility::starts_with(line_str, "NM"))
+        if(StringTool::starts_with(line_str, "NM"))
         {
             //NM <glass name> <dispersion formula #> <MIL#> <N(d)> <V(d)> <Exclude Sub> <status> <melt freq>
 
-            std::vector<std::string> line_parts = Utility::split(line_str,' ');
+            std::vector<std::string> line_parts = StringTool::split(line_str,' ');
             auto glass = std::make_shared<Glass>();
             glasses_.push_back(std::move(glass));
             std::string glassname = line_parts[1];
@@ -129,11 +122,11 @@ bool GlassCatalog::load_agf(std::string agf_path)
             glasses_.back()->set_dispersion_formula(atoi(line_parts[2].c_str()));
 
         }
-        else if(Utility::starts_with(line_str, "CD"))
+        else if(StringTool::starts_with(line_str, "CD"))
         {
             // CD <dispersion coefficients 1 - 10>
 
-            std::vector<std::string> line_parts = Utility::split(line_str,' ');
+            std::vector<std::string> line_parts = StringTool::split(line_str,' ');
             for(int i = 1; i < (int)line_parts.size(); i++){
                 double val;
                 try {
@@ -144,9 +137,9 @@ bool GlassCatalog::load_agf(std::string agf_path)
                 glasses_.back()->set_dispersion_coefs(i-1,val);
             }
         }
-        else if(Utility::starts_with(line_str, "TD"))
+        else if(StringTool::starts_with(line_str, "TD"))
         {
-            std::vector<std::string> line_parts = Utility::split(line_str,' ');
+            std::vector<std::string> line_parts = StringTool::split(line_str,' ');
             if(line_parts.size() == 8){
                 double D0 = std::stod(line_parts[1]);
                 double D1 = std::stod(line_parts[2]);

@@ -28,8 +28,6 @@ public:
     void applyCurrentData(std::shared_ptr<OpticalSystem> optsys);
 
 public slots:
-    /** Show context menu. This function is called when right click on the vertical header */
-    void showContextMenuOnHeader(const QPoint &pos);
 
     /** Insert a new field to current row */
     void insertField();
@@ -45,7 +43,7 @@ public slots:
 private:
     void setFieldData(int row, const Field* fld= nullptr);
     void setupVerticalHeader();
-    void postProcess();
+    void setupItems();
 
     QColor rgbToQColor(const Rgb& rgb);
     Rgb QColorToRgb(const QColor& color);

@@ -23,12 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   renderer.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
 
 #ifndef RENDERER_H
@@ -55,6 +49,11 @@ public:
     {
         Solid,
         Dots
+    };
+
+    enum PlotStyle{
+        Curve,
+        Scatter
     };
 
     virtual void set_grid_layout(int rows, int cols);
@@ -87,6 +86,8 @@ public:
     virtual void clear();
 
 protected:
+    int nrows_;
+    int ncols_;
     int current_cell_index_;
     int current_line_width_;
     int current_line_style_;

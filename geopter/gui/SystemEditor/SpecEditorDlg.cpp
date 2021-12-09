@@ -27,12 +27,19 @@ SpecEditorDlg::SpecEditorDlg(QWidget *parent) :
     QObject::connect(ui->insertWavelengthButton, SIGNAL(clicked()), ui->wavelengthTable, SLOT(insertWavelength()));
     QObject::connect(ui->removeWavelengthButton, SIGNAL(clicked()), ui->wavelengthTable, SLOT(removeWavelength()));
     QObject::connect(ui->addWavelengthButton,    SIGNAL(clicked()), ui->wavelengthTable, SLOT(addWavelength()));
+    QObject::connect(ui->wavelengthTable,        SIGNAL(setupCompleted()), this, SLOT(setupReferenceWavelengthCombo()));
+    QObject::connect(ui->wavelengthTable,        SIGNAL(valueEdited()), this, SLOT(setupReferenceWavelengthCombo()));
 
 }
 
 SpecEditorDlg::~SpecEditorDlg()
 {
     delete ui;
+}
+
+void SpecEditorDlg::catchValueedited()
+{
+    qDebug() << "Value Edited!";
 }
 
 void SpecEditorDlg::loadData(const std::shared_ptr<OpticalSystem> optsys)
@@ -99,8 +106,25 @@ void SpecEditorDlg::applyData(std::shared_ptr<OpticalSystem> optsys)
     optsys->update_model();
 }
 
+/*
+void SpecEditorDlg::onAddWavelength()
+{
+    int current = ui->referenceWavelengthCombo->currentIndex();
+    ui->wavelengthTable->addWavelength();
+    this->setupReferenceWavelengthCombo(current);
+}
+
+void SpecEditorDlg::onInsertWavelength()
+{
+    ui->wavelengthTable->insertWavelength();
+}
+*/
+
 void SpecEditorDlg::setupReferenceWavelengthCombo(int current)
 {
+    if(current < 0) {
+        current = ui->referenceWavelengthCombo->currentIndex();
+    }
     int wvlCount = ui->wavelengthTable->rowCount();
     QStringList wavelengthList;
     for(int wi = 0; wi < wvlCount; wi++){

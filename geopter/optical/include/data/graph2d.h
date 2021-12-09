@@ -6,6 +6,7 @@
 #include <sstream>
 #include "renderer/rgb.h"
 
+
 namespace geopter{
 
 class Graph2d
@@ -16,11 +17,14 @@ public:
     ~Graph2d();
 
     void set_data(const std::vector<double>& x, const std::vector<double>& y);
+    inline void set_data(int i, double x, double y);
     void add_data(double x, double y);
     inline void set_name(const std::string& name);
     inline void set_render_color(const Rgb& color);
     inline void set_line_width(double lw);
     inline void set_line_style(int ls);
+    inline void reserve(int n);
+    inline void resize(int n);
 
     inline int data_count() const;
     inline void get_data(double* x, double* y) const;
@@ -44,9 +48,16 @@ private:
     std::vector<double> y_data_;
     std::string name_;
     Rgb render_color_;
+    int plot_style_;
     int line_style_;
     double line_width_;
 };
+
+void Graph2d::set_data(int i, double x, double y)
+{
+    x_data_[i] = x;
+    y_data_[i] = y;
+}
 
 void Graph2d::set_name(const std::string &name)
 {
@@ -101,6 +112,18 @@ const std::vector<double>& Graph2d::x_data() const
 const std::vector<double>& Graph2d::y_data() const
 {
     return y_data_;
+}
+
+void Graph2d::reserve(int n)
+{
+    x_data_.reserve(n);
+    y_data_.reserve(n);
+}
+
+void Graph2d::resize(int n)
+{
+    x_data_.resize(n);
+    y_data_.resize(n);
 }
 
 } //namespace geopter

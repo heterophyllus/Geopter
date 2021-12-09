@@ -40,15 +40,17 @@
 #include "material/glass_catalog.h"
 #include "material/buchdahl_glass.h"
 
-#include "utility/utility.h"
+#include "common/string_tool.h"
 
 using namespace geopter;
 
+std::vector< std::unique_ptr<GlassCatalog> > MaterialLibrary::catalogs_;
 std::shared_ptr<Air> MaterialLibrary::air_;
 
 MaterialLibrary::MaterialLibrary()
 {
     air_ = std::make_shared<Air>();
+
 }
 
 MaterialLibrary::~MaterialLibrary()
@@ -74,7 +76,7 @@ std::shared_ptr<Air> MaterialLibrary::air()
     return air_;
 }
 
-GlassCatalog* MaterialLibrary::glass_catalog(int i) const
+GlassCatalog* MaterialLibrary::glass_catalog(int i)
 {
     if(i < (int)catalogs_.size()){
         return catalogs_[i].get();
@@ -83,7 +85,7 @@ GlassCatalog* MaterialLibrary::glass_catalog(int i) const
     }
 }
 
-GlassCatalog* MaterialLibrary::glass_catalog(const std::string catname) const
+GlassCatalog* MaterialLibrary::glass_catalog(const std::string catname)
 {
     for(auto &cat : catalogs_)
     {
@@ -101,11 +103,11 @@ int MaterialLibrary::catalog_count() const
 
 std::shared_ptr<Material> MaterialLibrary::find(std::string material_name)
 {
-    if(Utility::contains(material_name, "_")){
+    if(StringTool::contains(material_name, "_")){
         // assume real glass (ex. N-BK7_SCHOTT)
         std::transform(material_name.begin(), material_name.end(), material_name.begin(), ::toupper); // all-uppercase
-        std::vector<std::string> product_and_supplier = Utility::split(material_name, '_');
-        std::string product_name    = product_and_supplier[0];
+        std::vector<std::string> product_and_supplier = StringTool::split(material_name, '_');
+        std::string product_name  = product_and_supplier[0];
         std::string supplier_name = product_and_supplier[1];
         GlassCatalog* catalog = glass_catalog(supplier_name);
         if(catalog){
@@ -113,9 +115,9 @@ std::shared_ptr<Material> MaterialLibrary::find(std::string material_name)
         }else{
             return nullptr;
         }
-    }else if(Utility::contains(material_name, ":")){
-        // assume abbe glass
-        std::vector<std::string> nd_and_vd = Utility::split(material_name, ':');
+    }else if(StringTool::contains(material_name, ":")){
+        // assume model glass
+        std::vector<std::string> nd_and_vd = StringTool::split(material_name, ':');
         double nd = std::stod(nd_and_vd[0]);
         double vd = std::stod(nd_and_vd[1]);
         auto buchdahl_glass = std::make_shared<BuchdahlGlass>(nd, vd);

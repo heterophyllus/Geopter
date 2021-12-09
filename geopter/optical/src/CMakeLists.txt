@@ -18,6 +18,7 @@ set(OPTICAL_SRCS
     analysis/wavefront.cpp
     analysis/diffractive_psf.cpp
     analysis/geometrical_mtf.cpp
+    analysis/diffractive_mtf.cpp
 
     assembly/optical_assembly.cpp
     assembly/interface.cpp
@@ -51,7 +52,6 @@ set(OPTICAL_SRCS
     spec/wvl_spec.cpp
     spec/wvl.cpp
 
-
     material/material_library.cpp
     material/glass_catalog.cpp
     material/buchdahl_glass.cpp
@@ -74,6 +74,7 @@ set(OPTICAL_SRCS
 
     renderer/renderer.cpp
     renderer/renderer_mpl.cpp
+    #renderer/renderer_gnuplot.cpp
     renderer/rgb.cpp
 
     data/plot_data.cpp
@@ -83,9 +84,8 @@ set(OPTICAL_SRCS
 
     common/geopter_error.cpp
     common/matrix_tool.cpp
+    common/string_tool.cpp
 
-
-    utility/utility.cpp
 )
 
 
@@ -93,12 +93,16 @@ add_library(${PROJECT_NAME} STATIC
     ${OPTICAL_SRCS}
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+
+target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/geopter/optical/include
     ${CMAKE_SOURCE_DIR}/3rdparty #nlohman
     ${CMAKE_SOURCE_DIR}/3rdparty/spline/src
     ${CMAKE_SOURCE_DIR}/3rdparty/eigen-3.3.9
+    #${CMAKE_SOURCE_DIR}/3rdparty/matplotplusplus/source/matplot
 )
+
+#target_link_libraries(${PROJECT_NAME} PUBLIC  matplot    )
 
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 install(FILES ${HEADERS} DESTINATION include/optical)

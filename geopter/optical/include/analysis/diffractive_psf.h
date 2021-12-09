@@ -16,11 +16,8 @@ public:
     Eigen::MatrixXd to_matrix();
 
 protected:
-    Eigen::MatrixXcd fft2(Eigen::MatrixXcd& mat);
-    Eigen::MatrixXcd ifft2(Eigen::MatrixXcd& mat);
 
-
-    Eigen::MatrixXd wavefront_;
+    Eigen::MatrixXd W_;
     Eigen::MatrixXcd coh_;
     Eigen::MatrixXd psf_;
 };

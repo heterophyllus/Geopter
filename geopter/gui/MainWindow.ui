@@ -87,6 +87,7 @@
        <string>MTF</string>
       </property>
       <addaction name="actionGeoMTF"/>
+      <addaction name="actionFFT_MTF"/>
      </widget>
      <addaction name="menuRays_ans_Spots"/>
      <addaction name="menuAberrations"/>
@@ -240,6 +241,11 @@
   <action name="actionGeoMTF">
    <property name="text">
     <string>Geometrical MTF</string>
+   </property>
+  </action>
+  <action name="actionFFT_MTF">
+   <property name="text">
+    <string>FFT MTF</string>
    </property>
   </action>
  </widget>

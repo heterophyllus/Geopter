@@ -28,6 +28,7 @@
 
 #include <memory>
 #include <sstream>
+#include "Eigen/Core"
 #include "paraxial/paraxial_ray.h"
 
 
@@ -60,8 +61,6 @@ public:
     inline double image_height() const;
     inline double object_space_NA() const;
     inline double image_space_NA() const;
-
-    double effective_focal_length(int s1, int s2, int wi) const;
 
     void update(OpticalSystem* opt_sys);
 

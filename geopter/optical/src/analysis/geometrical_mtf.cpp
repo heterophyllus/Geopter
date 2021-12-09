@@ -30,6 +30,10 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
     }
 
     std::shared_ptr<PlotData> plot_data = std::make_shared<PlotData>();
+    plot_data->set_plot_style(0);
+    plot_data->set_title("Geometrical MTF");
+    plot_data->set_x_axis_label("Frequency");
+    plot_data->set_y_axis_label("MTF");
 
     SpotDiagram* spot = new SpotDiagram(opt_sys);
 
@@ -43,9 +47,6 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
         vs.reserve(nrd*nrd*num_wvls);
 
         for(int wi = 0; wi < num_wvls; wi++){
-            //std::vector<double> u, v;
-            //spot_data->graph(wi)->get_data(u, v);
-
             us.insert(us.end(), spot_data->graph(wi)->x_data().begin(), spot_data->graph(wi)->x_data().end());
             vs.insert(vs.end(), spot_data->graph(wi)->y_data().begin(), spot_data->graph(wi)->y_data().end());
         }
@@ -64,10 +65,13 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
         graph_tan->set_data(freqs, mtf_tan_list);
         graph_tan->set_line_style(1); // dotted line
         graph_tan->set_render_color(fld->render_color());
+        graph_tan->set_name("GeoMTF_T F" + std::to_string(fi));
 
         std::shared_ptr<Graph2d> graph_sag = std::make_shared<Graph2d>();
+        graph_tan->set_line_style(0);
         graph_sag->set_data(freqs, mtf_sag_list);
         graph_sag->set_render_color(fld->render_color());
+        graph_tan->set_name("GeoMTF_S F" + std::to_string(fi));
 
         plot_data->add_graph(graph_sag);
         plot_data->add_graph(graph_tan);

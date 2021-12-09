@@ -23,12 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   paraxial_trace.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
 
 #define _USE_MATH_DEFINES
@@ -40,7 +34,7 @@
 
 using namespace geopter;
 
-ParaxialTrace::ParaxialTrace(OpticalSystem* sys)
+ParaxialTrace::ParaxialTrace(const OpticalSystem* sys)
 {
     opt_sys_ = sys;
     compute_starting_data();
@@ -162,7 +156,7 @@ std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_ray_with_slope_at_s1(
     return p_ray_bar;
 }
 
-ParaxialPath ParaxialTrace::paraxial_path(int start, int end, double wvl)
+ParaxialPath ParaxialTrace::paraxial_path(int start, int end, double wvl) const
 {
     if(start <= end) {
         return forward_paraxial_path(start, end, wvl);
@@ -171,7 +165,7 @@ ParaxialPath ParaxialTrace::paraxial_path(int start, int end, double wvl)
     }
 }
 
-ParaxialPath ParaxialTrace::forward_paraxial_path(int start, int end, double wvl)
+ParaxialPath ParaxialTrace::forward_paraxial_path(int start, int end, double wvl) const
 {
     assert(start <= end);
 
@@ -197,7 +191,7 @@ ParaxialPath ParaxialTrace::forward_paraxial_path(int start, int end, double wvl
     return par_path;
 }
 
-ParaxialPath ParaxialTrace::reverse_paraxial_path(int start, int end, double wvl)
+ParaxialPath ParaxialTrace::reverse_paraxial_path(int start, int end, double wvl) const
 {
     assert(start >= end);
 
@@ -323,4 +317,51 @@ void ParaxialTrace::get_starting_coords(double *y0, double *u0, double *ybar0, d
     *u0 = ref_u0_;
     *ybar0 = ref_ybar0_;
     *ubar0 = ref_ubar0_;
+}
+
+Eigen::Matrix2d ParaxialTrace::system_matrix(int s1, int s2, int wi) const
+{
+    /*
+     *  |y'| =  |A B|  |y|
+     *  |nu'|   |C D|  |nu|
+     *
+     */
+
+    const double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
+
+    Eigen::Matrix2d M = Eigen::Matrix2d::Identity(2,2); // system matrix
+    Eigen::Matrix2d T = Eigen::Matrix2d::Identity(2,2); // transfer
+    Eigen::Matrix2d R = Eigen::Matrix2d::Identity(2,2); // refract
+
+    ParaxialPath path = paraxial_path(s1, s2, wvl);
+
+    double n, n_prime;
+
+    if( s1 > 0){
+        n = opt_sys_->optical_assembly()->gap(s1-1)->material()->rindex(wvl);
+    }else{
+        n = opt_sys_->optical_assembly()->gap(0)->material()->rindex(wvl);
+    }
+
+    for(int i = 0; i < path.size()-1; i++) {
+        n_prime = path.at(i).n;
+
+        // refract
+        double phi = (n_prime - n) * path.at(i).c;
+        R(1,0) = -phi;
+        M = R*M;
+
+        // transfer
+        T(0,1) = path.at(i).t/n_prime;
+        M = T*M;
+
+        n = n_prime;
+    }
+
+    // refract at s2
+    n_prime = path.back().n;
+    R(1,0) = -( (n_prime - n) * path.back().c );
+    M = R*M;
+
+    return M;
 }

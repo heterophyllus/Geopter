@@ -45,8 +45,8 @@ public:
     void clear();
 
     /** get glass catalog object pointer */
-    GlassCatalog* glass_catalog(const std::string catname) const;
-    GlassCatalog* glass_catalog(int i) const;
+    static GlassCatalog* glass_catalog(const std::string catname);
+    static GlassCatalog* glass_catalog(int i);
 
     /** Return number of loaded glass catalogs */
     int catalog_count() const;
@@ -54,12 +54,13 @@ public:
     /** load AGF files  */
     bool load_agf_files(const std::vector<std::string>& agf_paths);
 
-    std::shared_ptr<Material> find(std::string material_name);
+    /** Serach material from the loaded library. If not found, return nullptr */
+    static std::shared_ptr<Material> find(std::string material_name);
 
     static std::shared_ptr<Air> air();
 
 private:
-    std::vector< std::unique_ptr<GlassCatalog> > catalogs_;
+    static std::vector< std::unique_ptr<GlassCatalog> > catalogs_;
     static std::shared_ptr<Air> air_;
 };
 

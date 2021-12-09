@@ -73,6 +73,7 @@ public slots:
     void showWavefront();
     void showFFTPSF();
     void showGeoMTF();
+    void showFFTMTF();
 
     // Tool menu
 
@@ -80,6 +81,7 @@ public slots:
     // Help menu
     void showAbout();
 
+    void updateUi();
 private:    
     template<class T>
     void showAnalysisPlot(QString dockTitleBase);
