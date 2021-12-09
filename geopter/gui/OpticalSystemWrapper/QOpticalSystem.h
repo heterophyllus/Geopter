@@ -4,14 +4,13 @@
 #include <QObject>
 #include "system/optical_system.h"
 
-#include "QOpticalSpec.h"
+#include "QLensDataEditor.h"
 
 using namespace geopter;
 
 
 /** OpticalSystem wrapper to be accessed from PythonQt.
  *
- *  This is actually OpticalSystem which inherits QObject.
  *  Q_SLOTS functions are used for scripting.
  */
 class QOpticalSystem : public QObject, public OpticalSystem //Be sure that the first inherited class is a QObject
@@ -22,19 +21,33 @@ public:
     QOpticalSystem();
     ~QOpticalSystem();
 
-
 public Q_SLOTS:
-    QString title() const;
-    QString note() const;
 
-    double entrance_pupil_radius(){
-        fund_data_.enp_radius;
-    }
+    QString GetTitle() const;
+    QString GetNote() const;
+    double EntrancePupilDiameter() const;
+    double EntrancePupilDistance() const;
+    double ExitPupilDiameter() const;
+    double ExitPupilDistance() const;
+    int NumberOfSurfaces() const;
+    int NumberOfFields() const;
+    int NumberOfWavelengths() const;
+    double FocalLength(int start, int end) const;
+    double FocalLength() const; // overall
 
+    QLensDataEditor* LensDataEditor() const;
 
+    void SetTitle(QString note);
+    void SetNote(QString note);
 
-    //void set_title(const QString& title);
-    //void set_note(const QString& note);
+protected:
+    /** Output to python console */
+    void PythonStdOut(const QString& text) const;
+
+    /** Check the given suraface index */
+    bool CheckSurfaceIndex(int si) const;
+
+    std::unique_ptr<QLensDataEditor> lde_;
 
 };
 
