@@ -31,7 +31,6 @@ find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Multimedia MultimediaW
 add_subdirectory(3rdparty/Qt-Advanced-Docking)
 add_subdirectory(3rdparty/QCustomPlot)
 add_subdirectory(3rdparty/pythonqt)
-#add_subdirectory(3rdparty/matplotplusplus)
 add_subdirectory(geopter)
 
 file(COPY "${CMAKE_SOURCE_DIR}/data/AGF" DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
