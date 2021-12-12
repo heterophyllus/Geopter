@@ -7,3 +7,6 @@
 [submodule "3rdparty/pythonqt"]
 	path = 3rdparty/pythonqt
 	url = https://github.com/heterophyllus/pythonqt.git
+[submodule "3rdparty/Qt-Advanced-Docking-System"]
+	path = 3rdparty/Qt-Advanced-Docking-System
+	url = https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git

@@ -15,22 +15,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 message(STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY= ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
-
-## ***************************************************************************************
-## ** Qt
-## ***************************************************************************************
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
-# If cmake raises "QT_DIR not found" error, set Qt install path explicitly.
-# set(CMAKE_PREFIX_PATH "C:/Qt/(version)/(kit)")
-
-find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Multimedia MultimediaWidgets OpenGL SVG uitools REQUIRED)
-
-add_subdirectory(3rdparty/Qt-Advanced-Docking)
-add_subdirectory(3rdparty/QCustomPlot)
-add_subdirectory(3rdparty/pythonqt)
+add_subdirectory(3rdparty)
 add_subdirectory(geopter)
 
 file(COPY "${CMAKE_SOURCE_DIR}/data/AGF" DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
