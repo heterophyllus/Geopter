@@ -1741,23 +1741,23 @@ public:
   QCPAxisTickerText();
   
   // getters:
-  QMap<double, QString> &ticks() { return mTicks; }
+  QMultiMap<double, QString> &ticks() { return mTicks; }
   int subTickCount() const { return mSubTickCount; }
   
   // setters:
-  void setTicks(const QMap<double, QString> &ticks);
+  void setTicks(const QMultiMap<double, QString> &ticks);
   void setTicks(const QVector<double> &positions, const QVector<QString> &labels);
   void setSubTickCount(int subTicks);
   
   // non-virtual methods:
   void clear();
   void addTick(double position, const QString &label);
-  void addTicks(const QMap<double, QString> &ticks);
+  void addTicks(const QMultiMap<double, QString> &ticks);
   void addTicks(const QVector<double> &positions, const QVector<QString> &labels);
   
 protected:
   // property members:
-  QMap<double, QString> mTicks;
+  QMultiMap<double, QString> mTicks;
   int mSubTickCount;
   
   // reimplemented virtual methods:

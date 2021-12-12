@@ -1,0 +1,6 @@
+[submodule "3rdparty/qcustomplot"]
+	path = 3rdparty/qcustomplot
+	url = https://github.com/heterophyllus/qcustomplot.git
+[submodule "3rdparty/json"]
+	path = 3rdparty/json
+	url = https://github.com/nlohmann/json.git
