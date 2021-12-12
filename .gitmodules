@@ -4,3 +4,6 @@
 [submodule "3rdparty/json"]
 	path = 3rdparty/json
 	url = https://github.com/nlohmann/json.git
+[submodule "3rdparty/pythonqt"]
+	path = 3rdparty/pythonqt
+	url = https://github.com/heterophyllus/pythonqt.git
