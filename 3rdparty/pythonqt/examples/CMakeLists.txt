@@ -1,0 +1,2 @@
+add_subdirectory(PyGuiExample)
+add_subdirectory(PyScriptingConsole)
