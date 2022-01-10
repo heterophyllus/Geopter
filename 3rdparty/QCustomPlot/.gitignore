@@ -1,7 +1,0 @@
-# QtCreator
-*.user
-*.pro.user
-*.stash
-/build*/
-/qcustomplot-sharedlib/build*/
-/examples/build*/
