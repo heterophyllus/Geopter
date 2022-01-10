@@ -10,3 +10,6 @@
 [submodule "3rdparty/Qt-Advanced-Docking-System"]
 	path = 3rdparty/Qt-Advanced-Docking-System
 	url = https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git
+[submodule "3rdparty/spline"]
+	path = 3rdparty/spline
+	url = https://github.com/ttk592/spline.git
