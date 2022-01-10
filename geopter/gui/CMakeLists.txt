@@ -73,7 +73,6 @@ set(GEOPTER_GUI_HEADERS
     AnalysisDlg/FFT_PSFDlg.h
     AnalysisDlg/GeoMtfDlg.h
     AnalysisDlg/FFT_MTFDlg.h
-
 )
 
 
@@ -151,7 +150,7 @@ add_executable(${PROJECT_NAME} ${GEOPTER_GUI_SOURCES} ${GEOPTER_GUI_HEADERS} ${G
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/Qt-Advanced-Docking
-    ${CMAKE_SOURCE_DIR}/3rdparty/QCustomPlot
+    ${CMAKE_SOURCE_DIR}/3rdparty/qcustomplot
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/extensions/PythonQt_QtAll
     ${CMAKE_SOURCE_DIR}/3rdparty/eigen-3.3.9

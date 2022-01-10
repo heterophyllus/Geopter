@@ -1,0 +1,15 @@
+[submodule "3rdparty/qcustomplot"]
+	path = 3rdparty/qcustomplot
+	url = https://github.com/heterophyllus/qcustomplot.git
+[submodule "3rdparty/json"]
+	path = 3rdparty/json
+	url = https://github.com/nlohmann/json.git
+[submodule "3rdparty/pythonqt"]
+	path = 3rdparty/pythonqt
+	url = https://github.com/heterophyllus/pythonqt.git
+[submodule "3rdparty/Qt-Advanced-Docking-System"]
+	path = 3rdparty/Qt-Advanced-Docking-System
+	url = https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git
+[submodule "3rdparty/spline"]
+	path = 3rdparty/spline
+	url = https://github.com/ttk592/spline.git
