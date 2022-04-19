@@ -26,7 +26,7 @@ Unlike the other optical design software such as Zemax and CodeV, Geopter doesn'
 For the moment, only a few functions have been implemented.
 
 ### Note
-In Geopter, the array indexes for fields, wavelengths and other arrays start at 0 0 because of the necessity for consistency with Python.
+In Geopter, the array indexes for fields, wavelengths and other arrays start at 0 because of the necessity for consistency with Python.
 
 
 ## Development
