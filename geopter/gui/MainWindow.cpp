@@ -299,7 +299,8 @@ void MainWindow::showWavefront()
 
 void MainWindow::showFFTPSF()
 {
-    showAnalysisPlot<FFT_PSFDlg>("FFT PSF");
+    //showAnalysisPlot<FFT_PSFDlg>("FFT PSF");
+    QMessageBox::information(this,tr("Info"), tr("This function is currently not available"));
 }
 
 void MainWindow::showGeoMTF()
@@ -309,7 +310,8 @@ void MainWindow::showGeoMTF()
 
 void MainWindow::showFFTMTF()
 {
-    showAnalysisPlot<FFT_MTFDlg>("FFT MTF");
+    //showAnalysisPlot<FFT_MTFDlg>("FFT MTF");
+    QMessageBox::information(this,tr("Info"), tr("This function is currently not available"));
 }
 
 template<class T>
