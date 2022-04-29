@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   buchdahl_glass.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef BUCHDAHLGLASS_H
 #define BUCHDAHLGLASS_H
 
@@ -54,6 +46,8 @@ public:
     std::string glass_code() const;
 
     double abbe_d() const override;
+
+    std::string name() const override;
 
 private:
     void compute_coefs();

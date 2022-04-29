@@ -35,12 +35,10 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
 
     double max_wt = *std::max_element(wvl_weights.begin(), wvl_weights.end());
 
-
+    SequentialPath ref_seq_path = tracer->sequential_path(ref_wvl_val_);
     // trace chief ray
-    std::shared_ptr<Ray> chief_ray;
-    try{
-        chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
-    }catch(TraceError &e){
+    auto chief_ray = std::make_shared<Ray>(ref_seq_path.size());
+    if(TRACE_SUCCESS != tracer->trace_pupil_ray(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_) ){
         std::cerr << "Failed to trace chief ray" << std::endl;
         delete tracer;
         return plot_data;

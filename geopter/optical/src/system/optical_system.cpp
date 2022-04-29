@@ -33,8 +33,6 @@
 #include <iomanip>
 
 
-
-
 #include "Eigen/Dense"
 
 #include "system/optical_system.h"
@@ -197,12 +195,13 @@ void OpticalSystem::update_optical_spec()
         tracer->set_apply_vig(true);
         tracer->set_aperture_check(false);
 
+        Eigen::Vector2d aim_pt;
         for(int fi = 0; fi < fund_data_.number_of_fields; fi++){
             Field* fld = opt_spec_->field_of_view()->field(fi);
-            try{
-                auto aim_pt = tracer->aim_chief_ray(fld, fund_data_.reference_wvl_value);
+
+            if(tracer->aim_chief_ray(aim_pt, fld, fund_data_.reference_wvl_value)){
                 opt_spec_->field_of_view()->field(fi)->set_aim_pt(aim_pt);
-            }catch(TraceError &e){
+            }else{
                 std::cerr << "Ray aiming failed at field " << fi << std::endl;
                 continue;
             }
@@ -238,10 +237,8 @@ void OpticalSystem::update_semi_diameters()
     {
         Field* fld = opt_spec_->field_of_view()->field(fi);
 
-        try{
-            tracer->trace_reference_rays(ref_rays, fld, fund_data_.reference_wvl_value);
-        }catch(TraceError &e){
-            std::cerr << e.what() << std::endl;
+        if(!tracer->trace_reference_rays(ref_rays, fld, fund_data_.reference_wvl_value) ){
+            std::cerr << "Failed to trace reference rays:" << "f" << fi << std::endl;
             continue;
         }
 

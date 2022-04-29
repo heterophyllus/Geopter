@@ -48,7 +48,7 @@ public:
     inline double distance_from_before() const;
 
     /** optical path length from the previous to the current */
-    inline double optical_path_length() const;
+    inline double opl_from_before() const;
 
     /** Local coordinate at the intersection point */
     inline double x() const;
@@ -174,7 +174,7 @@ double RayAtSurface::srn() const
     return normal_(2);
 }
 
-double RayAtSurface::optical_path_length() const
+double RayAtSurface::opl_from_before() const
 {
     return opl_;
 }

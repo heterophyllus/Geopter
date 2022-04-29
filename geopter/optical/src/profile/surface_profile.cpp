@@ -109,13 +109,13 @@ double SurfaceProfile::deriv_2nd(double h) const
     return 0.0;
 }
 
-void SurfaceProfile::intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
+bool SurfaceProfile::intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
 {
-    intersect_spencer(pt, s, p0, d, eps, z_dir);
+    return intersect_spencer(pt, s, p0, d, eps, z_dir);
 }
 
 
-void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
+bool SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
 {
     Eigen::Vector3d p = p0;
     double s1 = -f(p)/d.dot(df(p));
@@ -135,6 +135,8 @@ void SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eig
 
     pt = p;
     s = s1;
+
+    return true;
 }
 
 void SurfaceProfile::print(std::ostringstream &oss)

@@ -47,12 +47,14 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
 
     const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
+    const int num_srfs = opt_sys_->optical_assembly()->surface_count();
 
     for(int wi = 0; wi < num_wvls; wi++)
     {
         double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
-
         Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
+
+        SequentialPath seq_path = tracer->sequential_path(wvl);
 
         std::vector<double> pupil_data;
         std::vector<double> opd_data;
@@ -64,18 +66,20 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
 
         //Eigen::Vector2d aim_pt = tracer->aim_chief_ray(fld, wvl);
         //fld->set_aim_pt(aim_pt);
-        std::shared_ptr<Ray> chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 0.0}), fld, wvl);
+        auto chief_ray = std::make_shared<Ray>(num_srfs);
+        int trace_result = tracer->trace_pupil_ray(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
+
+        if(TRACE_SUCCESS != trace_result){
+            std::cerr << "Trace error" << std::endl;
+        }
 
         for(int ri = 0; ri < nrd; ri++)
         {
             pupil(0) = 0.0;
             pupil(1) = -1.0 + (double)ri*2.0/(double)(nrd-1);
 
-            std::shared_ptr<Ray> ray;
-            try{
-                ray = tracer->trace_pupil_ray(pupil, fld, wvl);
-            }catch(TraceError &e){
-                ray = e.ray();
+            auto ray = std::make_shared<Ray>(num_srfs);
+            if( TRACE_SUCCESS != tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl) ){
                 break;
             }
 

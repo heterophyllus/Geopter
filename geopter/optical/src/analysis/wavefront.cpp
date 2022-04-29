@@ -66,7 +66,8 @@ void Wavefront::from_opd_trace(OpticalSystem *opt_sys, const Field *fld, double 
 
     SequentialPath seq_path = tracer->sequential_path(wvl);
 
-    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 0.0}), fld, wvl);
+    auto chief_ray = std::make_shared<Ray>(seq_path.size());
+    int trace_result = tracer->trace_pupil_ray(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
 
     std::vector<double> px;
     std::vector<double> py;

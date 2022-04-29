@@ -108,7 +108,7 @@ double EvenPolynomial::sag(double x, double y) const
     double inside_sqrt = 1.0 - (conic_+1.0)*cv_*cv_*r2;
     if(inside_sqrt < 0.0){
         std::cout << "TraceMissedSurface EvenPolynomial::sag()" << std::endl;
-        throw TraceMissedSurfaceError();
+        return NAN;
     }
     else{
         //z = cv_*r2 / ( 1.0 + sqrt(1.0 - (conic_+1.0)*cv_*cv_*r2) );

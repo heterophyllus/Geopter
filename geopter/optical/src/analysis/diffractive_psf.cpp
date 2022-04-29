@@ -35,7 +35,12 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
     tracer->set_aperture_check(true);
     tracer->set_apply_vig(false);
 
-    auto chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 0.0}), fld, wvl);
+    SequentialPath seq_path = tracer->sequential_path(wvl);
+
+    auto chief_ray = std::make_shared<Ray>(seq_path.size());
+    if( TRACE_SUCCESS != tracer->trace_pupil_ray(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl) ){
+        std::cerr << "Trace error" << std::endl;
+    }
 
     double du = L/static_cast<double>(M);
     double img_ht = chief_ray->back()->height();
@@ -57,7 +62,7 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
     }
     fv = fu;
 
-    SequentialPath seq_path = tracer->sequential_path(wvl);
+
 
     W_ = Eigen::MatrixXd::Zero(M, M);
     Eigen::MatrixXcd A = Eigen::MatrixXcd::Zero(M, M);

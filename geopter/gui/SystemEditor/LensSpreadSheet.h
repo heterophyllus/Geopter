@@ -58,6 +58,8 @@ public slots:
 
     void applyChange(QTableWidgetItem* item);
 
+private slots:
+    void onDoubleClick(QTableWidgetItem*);
 
 private:
     void setupVerticalHeader();

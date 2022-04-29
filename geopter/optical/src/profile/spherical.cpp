@@ -72,7 +72,7 @@ double Spherical::sag(double x, double y) const
 }
 
 
-void Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
+bool Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
 {
     Eigen::Vector3d p = p0;
     double ax2 = cv_;
@@ -82,7 +82,8 @@ void Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d&
     double inside_sqrt = b*b - ax2*cx2;
 
     if(inside_sqrt < 0.0){
-        throw TraceMissedSurfaceError();
+        //throw TraceMissedSurfaceError();
+        return false;
     }
     else{
         double s1 = cx2/(z_dir*sqrt(b*b - ax2*cx2) -b );
@@ -91,4 +92,6 @@ void Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d&
         pt = p1;
         s = s1;
     }
+
+    return true;
 }

@@ -34,14 +34,15 @@ using namespace geopter;
 Ray::Ray() :
     status_(RayStatus::PassThrough),
     wvl_(0.0),
-    array_size_(0)
+    reached_surface_index_(0)
 {
     pupil_crd_ = Eigen::Vector2d::Zero(2);
 }
 
 Ray::Ray(int n) :
     status_(RayStatus::PassThrough),
-    wvl_(0.0)
+    wvl_(0.0),
+    reached_surface_index_(0)
 {
     ray_at_srfs_.reserve(n);
     RayAtSurface* before = nullptr;
@@ -50,7 +51,6 @@ Ray::Ray(int n) :
         ray_at_srfs_.back()->set_before(before);
         before = ray_at_srfs_.back().get();
     }
-    array_size_ = n;
 }
 
 Ray::~Ray()
@@ -61,12 +61,9 @@ Ray::~Ray()
     ray_at_srfs_.clear();
 }
 
-void Ray::init(int n)
+void Ray::allocate(int n)
 {
-    for(auto &r : ray_at_srfs_){
-        r.reset();
-    }
-    ray_at_srfs_.clear();
+    this->clear();
 
     ray_at_srfs_.reserve(n);
     RayAtSurface* before = nullptr;
@@ -75,14 +72,12 @@ void Ray::init(int n)
         ray_at_srfs_.back()->set_before(before);
         before = ray_at_srfs_.back().get();
     }
-    array_size_ = n;
 }
 
 void Ray::prepend(std::unique_ptr<RayAtSurface> ray_at_srf)
 {
     ray_at_srfs_.insert(ray_at_srfs_.begin(), std::move(ray_at_srf));
     ray_at_srfs_.front()->set_before( ray_at_srfs_[1].get() );
-    array_size_ += 1;
 }
 
 
@@ -95,7 +90,6 @@ void Ray::append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, c
         before = ray_at_srfs_.back().get();
     }
     ray_at_srfs_.emplace_back(std::make_unique<RayAtSurface>(inc_pt, normal, after_dir, dist, opl, before));
-    array_size_ += 1;
     opl_ += opl;
 }
 
@@ -107,17 +101,29 @@ void Ray::clear()
             r.reset();
         }
         ray_at_srfs_.clear();
-        array_size_ = 0;
     }
 }
 
+void Ray::set_reached_surface(int i)
+{
+    reached_surface_index_ = i;
+
+    /*
+    if( i < (int)ray_at_srfs_.size()-1 ){
+        for(int j = i+1; j < (int)ray_at_srfs_.size(); j++){
+            ray_at_srfs_[j] = nullptr;
+        }
+    }
+    */
+
+}
 
 double Ray::optical_path_length() const
 {
     double opl_tot = 0.0;
     int last_surf_idx = ray_at_srfs_.size()-1-1;
     for(int i = 2; i <= last_surf_idx; i++){
-        opl_tot += ray_at_srfs_[i]->optical_path_length();
+        opl_tot += ray_at_srfs_[i]->opl_from_before();
     }
     return opl_tot;
 }

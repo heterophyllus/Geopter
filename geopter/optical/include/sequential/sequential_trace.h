@@ -29,6 +29,7 @@
 
 #include "system/optical_system.h"
 #include "sequential/sequential_path.h"
+#include "sequential/trace_error.h"
 #include "data/grid_array.h"
 #include "data/hexapolar_array.h"
 
@@ -41,18 +42,14 @@ public:
     ~SequentialTrace();
 
     /** Base function for ray tracing. Trace a ray throughout the given sequantial path */
-    RayPtr trace_ray_throughout_path(const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
-
-    void trace_ray_throughout_path(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
+    TraceError trace_ray_throughout_path(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
 
 
     /** Trace a single ray at the given pupil coordinate */
-    RayPtr trace_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
-
-    void trace_pupil_ray(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
+    TraceError trace_pupil_ray(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
 
     /** Trace reference rays(chief, meridional upper/lower, sagittal upper/lower */
-    void trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
+    bool trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
 
     /** Trace grid pattern rays */
     GridArray< RayPtr > trace_grid_rays(const Field* fld, double wvl, int nrd=21);
@@ -65,7 +62,7 @@ public:
     /** Trace chief ray and returns x/y focus shift */
     Eigen::Vector2d trace_coddington(const Field* fld, double wvl, double offset=0.0);
 
-    Eigen::Vector2d aim_chief_ray(const Field* fld, double wvl);
+    bool aim_chief_ray(Eigen::Vector2d& aim_pt, const Field* fld, double wvl);
 
     /**
      * @brief Search aim point of the ray to xy_target on the given surface
@@ -76,10 +73,10 @@ public:
      * @param wi wavelength index
      * @return Eigen::Vector2d aim point on paraxial entrance pupil plane
      */
-    Eigen::Vector2d search_aim_point(int srf_idx, const Eigen::Vector2d& xy_target, const Field* fld, double wvl);
+    bool search_aim_point(Eigen::Vector2d& aim_pt, int srf_idx, const Eigen::Vector2d& xy_target, const Field* fld, double wvl);
 
     /**  Refract incoming direction, d_in, about normal */
-    Eigen::Vector3d bend(const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out);
+    bool bend(Eigen::Vector3d& d_out, const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out);
 
     /** Get object coordinate for the given field */
     Eigen::Vector3d object_coord(const Field* fld);

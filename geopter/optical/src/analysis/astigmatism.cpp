@@ -41,6 +41,7 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
 {
     const int stop_index = opt_sys_->optical_assembly()->stop_index();
     const double h_stop = opt_sys_->optical_assembly()->surface(stop_index)->semi_diameter();
+    const int num_srfs = opt_sys_->optical_assembly()->surface_count();
 
     double maxfld = opt_sys_->optical_spec()->field_of_view()->max_field();
 
@@ -75,6 +76,17 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
             pupil_offsets.push_back(0.0);
         }
     }else{ // intermidiate ray
+
+        auto ray_upper = std::make_shared<Ray>();
+        auto ray_lower = std::make_shared<Ray>();
+
+        ray_upper->allocate(num_srfs);
+        ray_lower->allocate(num_srfs);
+
+        SequentialPath seq_path = tracer->sequential_path(ref_wvl_val_);
+
+        Eigen::Vector2d aim_pt;
+
         for(int fi = 0; fi < num_rays; fi++){
             tmp_fld = new Field;
 
@@ -82,14 +94,10 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
             ys.push_back(y);
             tmp_fld->set_y(y);
 
-            try{
-                Eigen::Vector2d aim_pt = tracer->aim_chief_ray(tmp_fld, ref_wvl_val_);
+            if(tracer->aim_chief_ray(aim_pt, tmp_fld, ref_wvl_val_) ){
                 tmp_fld->set_aim_pt(aim_pt);
-            }catch(TraceRayAimingFailedError &e){
-                std::cerr << e.cause_str() << std::endl;
-                continue;
-            }catch(...){
-                std::cerr << "Unknown error" << std::endl;
+            }else{
+                std::cerr << "Aim chief ray error" << std::endl;
                 continue;
             }
 
@@ -100,8 +108,8 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
 
             tmp_flds.push_back(tmp_fld);
 
-            auto ray_upper = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, 1.0}), tmp_fld, ref_wvl_val_);
-            auto ray_lower = tracer->trace_pupil_ray(Eigen::Vector2d({0.0, -1.0}), tmp_fld, ref_wvl_val_);
+            tracer->trace_pupil_ray(ray_upper, seq_path, Eigen::Vector2d({0.0, 1.0}),  tmp_fld, ref_wvl_val_);
+            tracer->trace_pupil_ray(ray_lower, seq_path, Eigen::Vector2d({0.0, -1.0}), tmp_fld, ref_wvl_val_);
 
             double h_upper = ray_upper->at(stop_index)->y();
             double h_lower = ray_lower->at(stop_index)->y();
@@ -130,15 +138,10 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
 
             fy.push_back(ys[fi]);
 
-            try{
-                Eigen::Vector2d s_t = tracer->trace_coddington(tmp_fld, wvl, pupil_offset);
+            Eigen::Vector2d s_t = tracer->trace_coddington(tmp_fld, wvl, pupil_offset);
 
-                xfo.push_back(s_t(0));
-                yfo.push_back(s_t(1));
-            }catch(TraceError &e){
-                std::cerr << "Failed to trace coddington: " << "Field " << fi << ": " << e.cause_str() << std::endl;
-                continue;
-            }
+            xfo.push_back(s_t(0));
+            yfo.push_back(s_t(1));
         }
 
         auto graph_sag = std::make_shared<Graph2d>(xfo, fy, color,Renderer::LineStyle::Solid);

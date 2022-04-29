@@ -100,7 +100,9 @@ void SingleRayTraceDlg::doPupilRayTrace()
 
     // trace
     SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
-    std::shared_ptr<Ray> ray_trace_result = tracer->trace_pupil_ray(pupil_crd, fld, wvl);
+    SequentialPath seq_path = tracer->sequential_path(wvl);
+    auto ray_trace_result = std::make_shared<Ray>(seq_path.size());
+    tracer->trace_pupil_ray(ray_trace_result, seq_path, pupil_crd, fld, wvl);
     delete tracer;
 
     // construct output text
@@ -137,7 +139,9 @@ void SingleRayTraceDlg::doObjectRayTrace()
     double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
 
     SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
-    auto ray_trace_result = tracer->trace_ray_throughout_path(tracer->sequential_path(wi), p0, dir0);
+    SequentialPath seq_path = tracer->sequential_path(wvl);
+    auto ray_trace_result = std::make_shared<Ray>(seq_path.size());
+    tracer->trace_ray_throughout_path(ray_trace_result, seq_path, p0, dir0);
     delete tracer;
 
     std::ostringstream oss;

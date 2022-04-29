@@ -85,29 +85,50 @@ void Layout::draw_reference_rays()
     int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
     double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
     int num_flds = opt_sys_->optical_spec()->field_of_view()->field_count();
+    int num_srfs = opt_sys_->optical_assembly()->surface_count();
 
     Rgb color;
     std::shared_ptr<Ray> ray;
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
 
+    SequentialPath seq_path = tracer->sequential_path(ref_wvl_val);
+
+    auto r1 = std::make_shared<Ray>(num_srfs);
+    auto r2 = std::make_shared<Ray>(num_srfs);
+    auto r3 = std::make_shared<Ray>(num_srfs);
+
     for(int fi = 0; fi < num_flds; fi++)
     {
         Field* fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
         color = fld->render_color();
 
-        try{
-            std::vector<std::shared_ptr<Ray>> ref_rays;
-            tracer->trace_reference_rays(ref_rays, fld, ref_wvl_val);
+        int trace_result = tracer->trace_pupil_ray(r1, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, ref_wvl_val);
+        draw_single_ray(r1, color);
+        if( TRACE_SUCCESS == trace_result){
 
-            draw_single_ray(ref_rays[ReferenceRay::ChiefRay], color);
-            draw_single_ray(ref_rays[ReferenceRay::MeridionalUpperRay], color);
-            draw_single_ray(ref_rays[ReferenceRay::MeridionalLowerRay], color);
-
-        }catch(std::out_of_range &e){
-            std::cerr << "Ray out of range : Layout::draw_reference_rays()" << std::endl;
-            continue;
+        }else if (TRACE_TIR_ERROR == trace_result){
+            std::cerr << "Total reflection at surface " << r1->reached_surface() << ", chief ray on F" << fi << std::endl;
         }
+
+
+        trace_result = tracer->trace_pupil_ray(r2, seq_path, Eigen::Vector2d({0.0, 1.0}), fld, ref_wvl_val);
+        draw_single_ray(r2, color);
+        if( TRACE_SUCCESS == trace_result){
+
+        }else if (TRACE_TIR_ERROR == trace_result){
+            std::cerr << "Total reflection at surface " << r2->reached_surface() << ", upper meridional ray on F" << fi << std::endl;
+        }
+
+
+        trace_result = tracer->trace_pupil_ray(r3, seq_path, Eigen::Vector2d({0.0, -1.0}), fld, ref_wvl_val);
+        draw_single_ray(r3, color);
+        if( TRACE_SUCCESS == trace_result){
+
+        }else if (TRACE_TIR_ERROR == trace_result){
+            std::cerr << "Total reflection at surface " << r3->reached_surface() << ", lower meridional ray on F" << fi << std::endl;
+        }
+
     }
 
     delete tracer;
@@ -118,12 +139,15 @@ void Layout::draw_fan_rays(int nrd)
 {
     double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
     int num_flds = opt_sys_->optical_spec()->field_of_view()->field_count();
+    int num_srfs = opt_sys_->optical_assembly()->surface_count();
 
     Rgb color;
-    std::shared_ptr<Ray> ray;
+    auto ray = std::make_shared<Ray>(num_srfs);
     Eigen::Vector2d pupil;
     
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
+
+    SequentialPath seq_path = tracer->sequential_path(ref_wvl_val);
 
     double step = 2.0/(double)(nrd-1);
 
@@ -137,11 +161,7 @@ void Layout::draw_fan_rays(int nrd)
             pupil(0) = 0.0;
             pupil(1) = -1.0 + (double)ri*step;
 
-            try{
-                ray = tracer->trace_pupil_ray(pupil, fld, ref_wvl_val);
-            }catch(TraceError &e){
-                ray = e.ray();
-            }
+            int trace_result = tracer->trace_pupil_ray(ray, seq_path, pupil, fld, ref_wvl_val);
 
             draw_single_ray(ray, color);
         }
@@ -170,10 +190,9 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
         draw_surface(s1, mech_d, color);
         draw_surface(s2, mech_d, color);
 
-        try{
-            edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-            edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
-        }catch(TraceMissedSurfaceError &e){
+        edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+        edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+        if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
             edge_pt1(0) = 0.0;
             edge_pt2(0) = 0.0;
         }
@@ -188,11 +207,10 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
             draw_surface(s1, mech_d,color);
             draw_surface(s2, mech_d,   color);
 
-            try{
-                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
-            }
-            catch(TraceMissedSurfaceError &e){
+            edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+            edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+
+            if(std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0))){
                 edge_pt1(0) = 0.0;
                 edge_pt2(0) = 0.0;
             }
@@ -206,11 +224,10 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, od2,   color);
                 draw_flat(s2, od2, mech_d, color);
 
-                try{
-                    edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-                    edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
-                }
-                catch(TraceMissedSurfaceError &e){
+                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+
+                if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                     edge_pt1(0) = 0.0;
                     edge_pt2(0) = 0.0;
                 }
@@ -223,11 +240,10 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, mech_d,   color);
                 draw_flat(s1, od1, mech_d, color);
 
-                try{
-                    edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
-                    edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
-                }
-                catch(TraceMissedSurfaceError &e){
+                edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+
+                if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                     edge_pt1(0) = 0.0;
                     edge_pt2(0) = 0.0;
                 }
@@ -245,11 +261,10 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
             draw_surface(s1, mech_d,color);
             draw_surface(s2, mech_d,   color);
 
-            try{
-                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
-            }
-            catch(TraceMissedSurfaceError &e){
+            edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+            edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+
+            if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                 edge_pt1(0) = 0.0;
                 edge_pt2(0) = 0.0;
             }
@@ -263,11 +278,10 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, od2,   color);
                 draw_flat(s2, od2, mech_d, color);
 
-                try{
-                    edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-                    edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
-                }
-                catch(TraceMissedSurfaceError &e){
+                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+
+                if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                     edge_pt1(0) = 0.0;
                     edge_pt2(0) = 0.0;
                 }
@@ -280,11 +294,10 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, mech_d,   color);
                 draw_flat(s1, od1, mech_d, color);
 
-                try{
-                    edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
-                    edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
-                }
-                catch(TraceMissedSurfaceError &e){
+                edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+
+                if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                     edge_pt1(0) = 0.0;
                     edge_pt2(0) = 0.0;
                 }
@@ -301,11 +314,10 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
         draw_flat(s1, od1, mech_d, color);
         draw_flat(s2, od2, mech_d, color);
 
-        try{
-            edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
-            edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
-        }
-        catch(TraceMissedSurfaceError &e){
+        edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
+        edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+
+        if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
             edge_pt1(0) = 0.0;
             edge_pt2(0) = 0.0;
         }
@@ -350,10 +362,9 @@ void Layout::draw_surface(Surface* srf, double max_y, const Rgb& color)
 
 void Layout::draw_single_ray(const std::shared_ptr<Ray>& ray, const Rgb& color)
 {
-    for(int i = 1; i < ray->size(); i++)
+    for(int i = 1; i <= ray->reached_surface(); i++)
     {
         Eigen::Vector3d pt_to = ray->at(i)->intersect_pt();
-
         Eigen::Vector3d pt_from = ray->at(i-1)->intersect_pt();
 
         Surface* cur_srf = opt_sys_->optical_assembly()->surface(i);

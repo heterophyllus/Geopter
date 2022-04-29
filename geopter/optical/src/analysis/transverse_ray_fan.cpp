@@ -38,12 +38,14 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
         plot_data->set_y_axis_label("dy");
     }
 
+    SequentialPath ref_seq_path = tracer->sequential_path(ref_wvl_val_);
+
     // trace chief ray
-    std::shared_ptr<Ray> chief_ray;
-    try{
-        chief_ray = tracer->trace_pupil_ray(Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
-    }catch(TraceError &e){
-        std::cerr << "Failed to trace chief ray: " << e.cause_str() << std::endl;
+    auto chief_ray = std::make_shared<Ray>();
+
+    int trace_result = tracer->trace_pupil_ray(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
+    if(TRACE_SUCCESS != trace_result){
+        std::cerr << "Failed to trace chief ray: " << std::endl;
         delete tracer;
         return plot_data;
     }
@@ -56,6 +58,8 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
     {
         double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
         Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
+
+        SequentialPath seq_path = tracer->sequential_path(wvl);
 
         std::vector<double> pupil_data;
         std::vector<double> abr_data;
@@ -70,11 +74,9 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
                 pupil(1) = -1.0 + (double)ri*2.0/(double)(nrd-1);
             }
 
-            std::shared_ptr<Ray> ray;
-            try{
-                ray = tracer->trace_pupil_ray(pupil, fld, wvl);
-            }catch(TraceError &e){
-                ray = e.ray();
+            auto ray = std::make_shared<Ray>(ref_seq_path.size());
+
+            if(TRACE_SUCCESS != tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl)){
                 break;
             }
 

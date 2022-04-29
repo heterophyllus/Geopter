@@ -233,7 +233,7 @@ void MainWindow::setVignettingFactors()
 {
     opt_sys_->set_vignetting_factors();
     opt_sys_->update_model();
-    //m_systemEditorDock->syncUiWithSystem();
+    m_systemEditorDock->updateUi();
 }
 
 

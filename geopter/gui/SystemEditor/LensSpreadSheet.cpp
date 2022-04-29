@@ -32,6 +32,8 @@ LensSpreadSheet::LensSpreadSheet(std::shared_ptr<OpticalSystem> optsys, QWidget 
 
     QObject::connect(this,  SIGNAL(itemChanged(QTableWidgetItem*)), this,  SLOT(applyChange(QTableWidgetItem*)) );
 
+    QObject::connect(this, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onDoubleClick(QTableWidgetItem*)));
+
     this->reload();
 }
 
@@ -113,8 +115,26 @@ void LensSpreadSheet::showSurfacePropertyDlg()
     SurfacePropertyDlg dlg(m_opticalSystem, si, this);
     dlg.syncUiWithSystem();
     if(dlg.exec() == QDialog::Accepted){
+        m_opticalSystem->update_model();
         updateUiSurfaceData(si);
     }
+}
+
+void LensSpreadSheet::onDoubleClick(QTableWidgetItem* item)
+{
+    int col = item->column();
+
+    switch (col) {
+    case Column::SurfaceType:
+    case Column::Mode:
+    case Column::SemiDiameter:
+    case Column::Aperture:
+        showSurfacePropertyDlg();
+        break;
+    }
+
+    this->applyChange(item);
+    this->reload();
 }
 
 void LensSpreadSheet::insertSurface()
@@ -156,7 +176,7 @@ void LensSpreadSheet::updateUiSurfaceData(int si)
     std::string surfaceType  = m_opticalSystem->optical_assembly()->surface(si)->profile()->name();
     std::string interactMode = m_opticalSystem->optical_assembly()->surface(si)->interact_mode();
     double sd                = m_opticalSystem->optical_assembly()->surface(si)->semi_diameter();
-    //double max_ap            = m_opticalSystem->optical_assembly()->surface(si)->max_aperture();
+    double max_ap            = m_opticalSystem->optical_assembly()->surface(si)->max_aperture();
     std::string apertureType = m_opticalSystem->optical_assembly()->surface(si)->aperture_shape();
 
     if(surfaceType == "SPH"){
@@ -167,18 +187,22 @@ void LensSpreadSheet::updateUiSurfaceData(int si)
         surfaceType = "OddAsphere";
     }
 
-    if(apertureType == "None"){
-        apertureType = "";
-    }
-
     setValue(si, LensSpreadSheet::Label,        QString().fromStdString(surfaceLabel));
     setValue(si, LensSpreadSheet::SurfaceType,  QString().fromStdString(surfaceType));
     setValue(si, LensSpreadSheet::Radius,       radius);
     setValue(si, LensSpreadSheet::Thickness,    thi);
     setValue(si, LensSpreadSheet::Material,     QString().fromStdString(materialName));
     setValue(si, LensSpreadSheet::Mode,         QString().fromStdString(interactMode));
-    setValue(si, LensSpreadSheet::SemiDiameter, sd);
-    setValue(si, LensSpreadSheet::Aperture,     QString().fromStdString(apertureType));
+
+    if(apertureType == "None"){
+        apertureType = "";
+        setValue(si, LensSpreadSheet::SemiDiameter, sd);
+        setValue(si, LensSpreadSheet::Aperture,     QString().fromStdString(apertureType));
+    }else if(apertureType == "Circular"){
+        setValue(si, LensSpreadSheet::SemiDiameter, max_ap);
+        setValue(si, LensSpreadSheet::Aperture,     QString().fromStdString(apertureType));
+    }
+
 }
 
 void LensSpreadSheet::setValue(int row, int col, QVariant value, int role)
@@ -267,3 +291,4 @@ void LensSpreadSheet::setupVerticalHeader()
     this->setVerticalHeaderLabels(vHeaderLabels);
 
 }
+

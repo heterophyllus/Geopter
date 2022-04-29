@@ -23,70 +23,17 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   trace_error.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
 
 #ifndef TRACEERROR_H
 #define TRACEERROR_H
 
-#include "ray.h"
-
-namespace geopter {
-
-class Surface;
-
-class TraceError : public std::exception
-{
-public:
-    TraceError();
-    virtual ~TraceError();
-
-    virtual std::string cause_str() const;
-    std::shared_ptr<Ray> ray() const;
-    int surface_index() const;
-
-    void set_ray(std::shared_ptr<Ray> ray);
-    void set_surface(Surface* s);
-    void set_surface_index(int i);
-
-protected:
-    std::string cause_str_;
-    std::shared_ptr<Ray> ray_;
-    Surface* caused_surface_;
-    int surface_index_;
-};
-
-
-class TraceTIRError : public TraceError
-{
-public:
-    TraceTIRError();
-};
-
-class TraceMissedSurfaceError : public TraceError
-{
-public:
-    TraceMissedSurfaceError();
-};
-
-
-class TraceBlockedByApertureError : public TraceError
-{
-public:
-    TraceBlockedByApertureError();
-};
-
-class TraceRayAimingFailedError : public TraceError
-{
-public:
-    TraceRayAimingFailedError();
-};
-
-} //namespace geopter
+#ifndef TraceError
+#define TraceError uint32_t
+#define TRACE_SUCCESS             (0x0000)
+#define TRACE_TIR_ERROR           (0x1000)
+#define TRACE_MISSEDSURFACE_ERROR (0x2000)
+#define TRACE_BLOCKED_ERROR       (0x2001)
+#endif
 
 #endif // TRACEERROR_H

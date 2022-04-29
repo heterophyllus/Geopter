@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   buchdahl_glass.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -48,7 +40,7 @@ BuchdahlGlass::BuchdahlGlass(double nd, double vd) : Material(),
 {
     n_ = nd;
     compute_coefs();
-    name_ = this->glass_code();
+    //name_ = this->glass_code();
 }
 
 BuchdahlGlass::~BuchdahlGlass()
@@ -56,6 +48,10 @@ BuchdahlGlass::~BuchdahlGlass()
 
 }
 
+std::string BuchdahlGlass::name() const
+{
+    return std::to_string(n_) + ":" + std::to_string(vd_);
+}
 
 double BuchdahlGlass::rindex(double wv_nm) const
 {

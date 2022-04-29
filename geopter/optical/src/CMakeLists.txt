@@ -69,7 +69,7 @@ set(OPTICAL_SRCS
     sequential/sequential_path.cpp
     sequential/ray.cpp
     sequential/ray_at_surface.cpp
-    sequential/trace_error.cpp
+    #sequential/trace_error.cpp
     sequential/sequential_trace.cpp
 
     renderer/renderer.cpp

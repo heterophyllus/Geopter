@@ -55,7 +55,7 @@ public:
 
     RayAtSurface* operator[](std::size_t n) & {return ray_at_srfs_[n].get();}
 
-    void init(int n);
+    void allocate(int n);
 
     /** Add data at the beginning */
     void prepend(std::unique_ptr<RayAtSurface> ray_at_srf);
@@ -66,9 +66,12 @@ public:
     inline void set_status(int s);
     inline void set_wvl(double wvl);
     inline void set_pupil_coord(const Eigen::Vector2d& pupil);
-    inline void set_reached_surface_index(int i);
+
+    void set_reached_surface(int i);
 
     inline int size() const;
+
+    inline int reached_surface() const;
 
     inline RayAtSurface* at(int i);
     inline RayAtSurface* front() const;
@@ -92,7 +95,6 @@ private:
     int status_;
     double wvl_;
     double opl_;
-    int array_size_;
     int reached_surface_index_;
     Eigen::Vector2d pupil_crd_;
 };
@@ -102,8 +104,12 @@ using RayPtr = std::shared_ptr<Ray>;
 
 int Ray::size() const
 {
-    assert(ray_at_srfs_.empty() || array_size_ == (int)ray_at_srfs_.size());
-    return array_size_;
+    return (int)ray_at_srfs_.size();
+}
+
+int Ray::reached_surface() const
+{
+    return reached_surface_index_;
 }
 
 int Ray::status() const
@@ -118,9 +124,7 @@ double Ray::wavelength() const
 
 RayAtSurface* Ray::at(int i)
 {    
-    assert(ray_at_srfs_.empty() || array_size_ == (int)ray_at_srfs_.size());
-
-    if(i < array_size_){
+    if(i < (int)ray_at_srfs_.size()){
         return ray_at_srfs_[i].get();
     }else{
         throw RayOutOfRangeError();
@@ -165,11 +169,6 @@ void Ray::set_status(int s)
 void Ray::set_pupil_coord(const Eigen::Vector2d &pupil)
 {
     pupil_crd_ = pupil;
-}
-
-void Ray::set_reached_surface_index(int i)
-{
-    reached_surface_index_ = i;
 }
 
 const Eigen::Vector2d& Ray::pupil_coord() const

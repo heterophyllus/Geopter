@@ -64,6 +64,8 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
         double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
         Rgb color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
 
+        SequentialPath seq_path = tracer->sequential_path(wvl);
+
         std::vector<double> py;
         std::vector<double> lsa;
 
@@ -75,12 +77,10 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
             pupil(0) = 0.0;
             pupil(1) = (double)ri/(double)(num_rays-1);
 
-            std::shared_ptr<Ray> ray;
-            try{
-                ray = tracer->trace_pupil_ray(pupil, fld0, wvl);
-            }catch(TraceError &e){
+            auto ray = std::make_shared<Ray>(seq_path.size());
+
+            if(TRACE_SUCCESS != tracer->trace_pupil_ray(ray, seq_path, pupil, fld0, wvl) ){
                 std::cerr << "Failed to trace ray: " << "pupil= (" << pupil(0) << "," << pupil(1) << ")" << std::endl;
-                std::cerr << e.cause_str() << std::endl;
                 continue;
             }
 
