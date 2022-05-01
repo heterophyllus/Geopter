@@ -121,16 +121,22 @@ bool SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eig
     double s1 = -f(p)/d.dot(df(p));
     double s2;
     double delta = fabs(s1);
-    constexpr int max_itr = 30;
+    constexpr int max_iter = 30;
     int iter = 0;
 
-    while(delta > eps && iter < max_itr)
+    while(delta > eps)
     {
         p = p0 + s1*d;
         s2 = s1 - f(p)/d.dot(df(p));
         delta = fabs(s2-s1);
         s1 = s2;
         iter++;
+
+        if(iter > max_iter){
+            pt = p;
+            s = s1;
+            return false;
+        }
     }
 
     pt = p;

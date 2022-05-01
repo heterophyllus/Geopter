@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   field.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 #include "spec/field.h"
 
 using namespace geopter;
@@ -41,7 +34,7 @@ Field::Field():
     render_color_(rgb_black)
 {
     aim_pt_ = Eigen::Vector2d::Zero(2);
-    object_coord_ = Eigen::Vector3d::Zero(3);
+    object_pt_ = Eigen::Vector3d::Zero(3);
 }
 
 Field::Field(double x, double y, const Rgb& color) :
@@ -51,7 +44,7 @@ Field::Field(double x, double y, const Rgb& color) :
     render_color_(color)
 {
     aim_pt_ = Eigen::Vector2d::Zero(2);
-    object_coord_ = Eigen::Vector3d::Zero(3);
+    object_pt_ = Eigen::Vector3d::Zero(3);
 }
 
 
@@ -62,7 +55,7 @@ Field::Field(double x, double y, double wt, const Rgb& color, double vuy, double
     render_color_(color)
 {
     aim_pt_ = Eigen::Vector2d::Zero(2);
-    object_coord_ = Eigen::Vector3d::Zero(3);
+    object_pt_ = Eigen::Vector3d::Zero(3);
 }
 
 Field::~Field()

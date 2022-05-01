@@ -185,7 +185,7 @@ void OpticalSystem::update_optical_spec()
             obj_pt = Eigen::Vector3d::Zero(3);
         }
 
-        fld->set_object_coord(obj_pt);
+        fld->set_object_pt(obj_pt);
     }
 
     // update aim pt
@@ -196,11 +196,13 @@ void OpticalSystem::update_optical_spec()
         tracer->set_aperture_check(false);
 
         Eigen::Vector2d aim_pt;
+        Eigen::Vector3d obj_pt;
         for(int fi = 0; fi < fund_data_.number_of_fields; fi++){
             Field* fld = opt_spec_->field_of_view()->field(fi);
 
-            if(tracer->aim_chief_ray(aim_pt, fld, fund_data_.reference_wvl_value)){
+            if(tracer->aim_chief_ray(aim_pt, obj_pt, fld, fund_data_.reference_wvl_value)){
                 opt_spec_->field_of_view()->field(fi)->set_aim_pt(aim_pt);
+                opt_spec_->field_of_view()->field(fi)->set_object_pt(obj_pt);
             }else{
                 std::cerr << "Ray aiming failed at field " << fi << std::endl;
                 continue;

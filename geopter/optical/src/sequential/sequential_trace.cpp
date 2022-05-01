@@ -62,7 +62,7 @@ void SequentialTrace::pupil_coord_to_obj(Eigen::Vector3d& pt0, Eigen::Vector3d& 
     double obj_dist = fund_data_.object_distance;
     double enp_dist = fund_data_.enp_distance;
 
-    pt0 = this->object_coord(fld);
+    pt0 = this->get_default_object_pt(fld);
 
     Eigen::Vector3d pt1;
     pt1(0) = eprad*vig_pupil(0) + aim_pt(0);
@@ -119,11 +119,9 @@ TraceError SequentialTrace::trace_ray_throughout_path(RayPtr ray, const Sequenti
 {
     const int path_size = seq_path.size();
 
-    /*
     if(ray->size() != path_size){
         ray->allocate(path_size);
     }
-    */
 
     Eigen::Vector3d before_pt  = pt0;
     Eigen::Vector3d before_dir = dir0;
@@ -133,7 +131,7 @@ TraceError SequentialTrace::trace_ray_throughout_path(RayPtr ray, const Sequenti
     double n_out = seq_path.at(0).rind;
     double n_in  = n_out;
     Transformation transformation_from_before = seq_path.at(0).srf->local_transform();
-    double op_delta = 0.0;
+    //double op_delta = 0.0;
     double opl = 0.0;
 
     constexpr double eps = 1.0e-7;
@@ -205,110 +203,6 @@ TraceError SequentialTrace::trace_ray_throughout_path(RayPtr ray, const Sequenti
     ray->set_reached_surface(ray->size()-1);
 
     return TRACE_SUCCESS;
-}
-
-
-GridArray<RayPtr> SequentialTrace::trace_grid_rays(const Field* fld, double wvl, int nrd)
-{
-    GridArray<RayPtr> ray_grid(nrd, nrd);
-
-    SequentialPath path = sequential_path(wvl);
-    const int path_size = path.size();
-
-    Eigen::Vector2d pupil;
-    Eigen::Vector3d pt0, dir0;
-
-    for(int i = 0; i < nrd; i++)
-    {
-        double py = -1.0 + (double)i*2.0/(double)(nrd-1);
-
-        for(int j = 0; j < nrd; j++)
-        {
-            double px = -1.0 + (double)j*2.0/(double)(nrd-1);
-            pupil(0) = px;
-            pupil(1) = py;
-
-            double r2 = pow(pupil(0),2) + pow(pupil(1),2);
-
-            if(r2 < 1.0){
-                auto ray = std::make_shared<Ray>(path_size);
-                pupil_coord_to_obj(pt0, dir0, pupil, fld);
-
-                if(TRACE_SUCCESS == trace_ray_throughout_path(ray, path, pt0, dir0) ){
-                    ray->set_wvl(wvl);
-                    ray->set_pupil_coord(pupil);
-                }
-                ray_grid.set_cell(i, j, ray);
-            }else{
-                ray_grid.set_cell(i, j, nullptr);
-            }
-
-
-        }
-
-    }
-
-    return ray_grid;
-}
-
-
-
-HexapolarArray<RayPtr> SequentialTrace::trace_hexapolar_rays(const Field *fld, double wvl, int nrd)
-{
-    HexapolarArray<RayPtr> rays_hexapolar(nrd);
-
-    SequentialPath path = sequential_path(wvl);
-    const int path_size = path.size();
-
-    Eigen::Vector2d pupil;
-    Eigen::Vector3d pt0, dir0;
-
-    int half_num_rings = nrd/2;
-    for (int r = 0; r < nrd/2; r++)
-    {
-        int num_rays_in_ring = 6*r;
-
-        // center of hexapolar
-        if(num_rays_in_ring == 0){
-            pupil(0) = 0.0;
-            pupil(1) = 0.0;
-            pupil_coord_to_obj(pt0, dir0, pupil, fld);
-
-            auto ray = std::make_shared<Ray>(path_size);
-
-
-            if(TRACE_SUCCESS == trace_ray_throughout_path(ray, path, pt0, dir0)){
-                ray->set_wvl(wvl);
-                ray->set_pupil_coord(pupil);
-                rays_hexapolar[0] = ray;
-            }else{
-                rays_hexapolar[0] = nullptr;
-            }
-            continue;
-        }
-
-        double ang_step = 2*M_PI/(double)num_rays_in_ring;
-
-        for(int ai = 0; ai < num_rays_in_ring; ai++){
-            pupil(0) = (double)r * 1.0/(half_num_rings) * cos((double)ai*ang_step);
-            pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
-
-            pupil_coord_to_obj(pt0, dir0, pupil, fld);
-
-            auto ray = std::make_shared<Ray>(path_size);
-            if( TRACE_SUCCESS == trace_ray_throughout_path(ray, path, pt0, dir0) ){
-                ray->set_wvl(wvl);
-                ray->set_pupil_coord(pupil);
-                rays_hexapolar[ HexapolarArray<Ray>::ring_azimuth_to_index(r, ai) ] = ray;
-            }else{
-                rays_hexapolar[ HexapolarArray<Ray>::ring_azimuth_to_index(r, ai) ] = nullptr;
-            }
-
-        }
-    }
-
-    return rays_hexapolar;
-
 }
 
 
@@ -465,101 +359,130 @@ SequentialPath SequentialTrace::sequential_path(int start, int end, double wvl)
 }
 
 
-bool SequentialTrace::aim_chief_ray(Eigen::Vector2d& aim_pt, const Field *fld, double wvl)
+bool SequentialTrace::aim_chief_ray(Eigen::Vector2d& aim_pt, Eigen::Vector3d& obj_pt, const Field *fld, double wvl)
 {
     int stop = opt_sys_->optical_assembly()->stop_index();
     Eigen::Vector2d xy_target({0.0, 0.0});
 
-    return search_aim_point(aim_pt, stop, xy_target, fld, wvl);
+    SequentialPath seq_path = sequential_path(wvl);
+
+    auto ray = std::make_shared<Ray>(seq_path.size());
+    bool result = search_ray_aiming_at_surface(ray, fld, stop, xy_target);
+
+    if(result){
+        aim_pt = ray->pupil_coord();
+        obj_pt = ray->at(0)->intersect_pt();
+        return true;
+    }else{
+        return false;
+    }
+
+    //return search_aim_point(aim_pt, stop, xy_target, fld, wvl);
 }
 
 
-bool SequentialTrace::search_aim_point(Eigen::Vector2d& aim_pt, int srf_idx, const Eigen::Vector2d& xy_target, const Field *fld, double wvl)
-{
-    assert(srf_idx > 0);
 
+bool SequentialTrace::search_ray_aiming_at_surface(RayPtr ray, const Field *fld, int target_srf_idx, const Eigen::Vector2d &xy_target)
+{
+    const int fld_type = opt_sys_->optical_spec()->field_of_view()->field_type();
+    double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
     double enp_dist = opt_sys_->paraxial_data()->entrance_pupil_distance();
     double obj_dist = opt_sys_->optical_assembly()->gap(0)->thi();
     double obj2enp_dist = obj_dist + enp_dist;
 
-    Eigen::Vector3d pt0 = this->object_coord(fld);
+    SequentialPath seq_path = sequential_path(ref_wvl);
 
-    Eigen::Vector2d start_coords;
-    double start_y;
+    Eigen::Vector3d obj_pt = this->get_default_object_pt(fld);
+    Eigen::Vector3d orig_obj_pt = obj_pt;
+    Eigen::Vector2d aim_pt({0.0, 0.0});
+    Eigen::Vector3d enp_pt = Eigen::Vector3d({aim_pt(0), aim_pt(1), obj2enp_dist});
+    Eigen::Vector3d dir0, dir0_prime;
+
     double y_target = xy_target(1);
-
+    double y_ray1, y_ray2;
+    double y1, y2;
 
     // newton
-    int cnt = 0;
+    int loop = 0;
     constexpr int max_loop_cnt = 30;
-    double x1,x2,y1,y2;
-    double diff_x;
-    double next_x;
     constexpr double delta = 1.0e-5;
     constexpr double error = 1.0e-5;
+    int trace_result1, trace_result2;
 
-    x1 = 0.0;
+    ray->allocate(seq_path.size());
 
-    while(true) {
-        cnt++;
-        x2 = x1 + delta;
+    y1 = 0.0;
 
-        if(cnt > max_loop_cnt){
-            x1 = 0.0;
-            break;
+    while(true){
+        loop++;
+
+        if(loop > max_loop_cnt){
+            aim_pt(0) = 0.0;
+            aim_pt(1) = 0.0;
+            return false;
         }
 
-        y1 = y_stop_coordinate(x1,srf_idx,pt0, obj2enp_dist, wvl, y_target);
-        y2 = y_stop_coordinate(x2,srf_idx,pt0, obj2enp_dist, wvl, y_target);
 
-        if(std::isnan(y2)){
-            x2 = x1 - delta;
-            y2 = y_stop_coordinate(x2,srf_idx,pt0, obj2enp_dist, wvl, y_target);
+        y2 = y1 + delta;
+
+        if(fld_type == FieldType::OBJ_ANG){
+            obj_pt = orig_obj_pt + Eigen::Vector3d({0.0, y1, 0.0});
         }
-        else if(fabs(y1 - y_target) < error) {
-            break;
-        }
-
-        diff_x = (y2 - y1) / (x2 - x1);
-        next_x = x1 - y1/diff_x;
-
-        x1 = next_x;
-    }
-
-    start_y = x1;
-
-    start_coords(0) = 0.0;
-    start_coords(1) = start_y;
-
-    if(std::isnan(start_y)){
-        return false;
-    }
-
-    aim_pt = start_coords;
-    return true;
-}
-
-double SequentialTrace::y_stop_coordinate(double y1, int ifcx, const Eigen::Vector3d& pt0, double dist, double wvl, double y_target)
-{
-    Eigen::Vector3d pt1({0.0, y1, dist});
-    Eigen::Vector3d dir0 = pt1 - pt0;
-    dir0.normalize();
-
-    SequentialPath path = sequential_path(wvl);
-    auto ray = std::make_shared<Ray>(path.size());
-
-
-    if( TRACE_SUCCESS == trace_ray_throughout_path(ray, path, pt0, dir0)){
-        double y_ray = ray->at(ifcx)->y();
-        return (y_ray - y_target);
-    }else{
-        if(ifcx < ray->reached_surface()){
-            double y_ray = ray->at(ifcx)->y();
-            return (y_ray - y_target);
+        enp_pt(1) = y1;
+        dir0 = (enp_pt - obj_pt).normalized();
+        aim_pt(0) = enp_pt(0);
+        aim_pt(1) = enp_pt(1);
+        ray->set_pupil_coord(aim_pt);
+        trace_result1 = trace_ray_throughout_path(ray, seq_path, obj_pt, dir0);
+        if(trace_result1 == TRACE_SUCCESS){
+            y_ray1 = ray->at(target_srf_idx)->y();
         }else{
-            return NAN;
+            if(ray->reached_surface() >= target_srf_idx){
+                y_ray1 = ray->at(target_srf_idx)->y();
+            }else{
+                continue;
+            }
         }
+
+
+        if(fld_type == FieldType::OBJ_ANG){
+            obj_pt = orig_obj_pt + Eigen::Vector3d({0.0, y2, 0.0});
+        }
+        enp_pt(1) = y2;
+        dir0 = (enp_pt - obj_pt).normalized();
+        aim_pt(0) = enp_pt(0);
+        aim_pt(1) = enp_pt(1);
+        ray->set_pupil_coord(aim_pt);
+        trace_result2 = trace_ray_throughout_path(ray, seq_path, obj_pt, dir0);
+        if(trace_result2 == TRACE_SUCCESS){
+            y_ray2 = ray->at(target_srf_idx)->y();
+        }else{
+            if(ray->reached_surface() >= target_srf_idx){
+                y_ray2 = ray->at(target_srf_idx)->y();
+            }else{
+                continue;
+            }
+        }
+
+
+        if( fabs(y_ray1 - y_target) < error){
+            aim_pt(0) = 0.0;
+            aim_pt(1) = y1;
+            return true;
+        }
+
+
+        double diff_y = (y_ray2 - y_ray1)/(y2 - y1);
+        double next_y = y1 - (y_ray1 - y_target)/diff_y;
+
+        y1 = next_y;
     }
+
+    aim_pt(0) = 0.0;
+    aim_pt(1) = y1;
+
+    return true;
+
 }
 
 bool SequentialTrace::bend(Eigen::Vector3d& d_out, const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out)
@@ -582,7 +505,7 @@ bool SequentialTrace::bend(Eigen::Vector3d& d_out, const Eigen::Vector3d& d_in, 
     return true;
 }
 
-Eigen::Vector3d SequentialTrace::object_coord(const Field* fld)
+Eigen::Vector3d SequentialTrace::get_default_object_pt(const Field* fld)
 {
     Eigen::Vector3d obj_pt;
     Eigen::Vector3d ang_dg;
@@ -738,23 +661,3 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     return vig;
 }
 
-
-void SequentialTrace::set_aperture_check(bool state)
-{
-    do_aperture_check_ = state;
-}
-
-bool SequentialTrace::aperture_check_state() const
-{
-    return do_aperture_check_;
-}
-
-void SequentialTrace::set_apply_vig(bool state)
-{
-    do_apply_vig_ = state;
-}
-
-bool SequentialTrace::apply_vig_status() const
-{
-    return do_apply_vig_;;
-}

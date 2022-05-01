@@ -41,7 +41,7 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
     SequentialPath ref_seq_path = tracer->sequential_path(ref_wvl_val_);
 
     // trace chief ray
-    auto chief_ray = std::make_shared<Ray>();
+    auto chief_ray = std::make_shared<Ray>(ref_seq_path.size());
 
     int trace_result = tracer->trace_pupil_ray(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
     if(TRACE_SUCCESS != trace_result){
@@ -74,10 +74,10 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
                 pupil(1) = -1.0 + (double)ri*2.0/(double)(nrd-1);
             }
 
-            auto ray = std::make_shared<Ray>(ref_seq_path.size());
+            auto ray = std::make_shared<Ray>(seq_path.size());
 
             if(TRACE_SUCCESS != tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl)){
-                break;
+                continue;
             }
 
             if(ray->status() == RayStatus::PassThrough){

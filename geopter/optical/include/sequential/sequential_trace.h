@@ -29,6 +29,7 @@
 
 #include "system/optical_system.h"
 #include "sequential/sequential_path.h"
+#include "sequential/ray.h"
 #include "sequential/trace_error.h"
 #include "data/grid_array.h"
 #include "data/hexapolar_array.h"
@@ -51,35 +52,19 @@ public:
     /** Trace reference rays(chief, meridional upper/lower, sagittal upper/lower */
     bool trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
 
-    /** Trace grid pattern rays */
-    GridArray< RayPtr > trace_grid_rays(const Field* fld, double wvl, int nrd=21);
-
-
-    /** Trace hexapolar pattern rays */
-    HexapolarArray<RayPtr> trace_hexapolar_rays(const Field* fld, double wvl, int nrd=21);
-
 
     /** Trace chief ray and returns x/y focus shift */
     Eigen::Vector2d trace_coddington(const Field* fld, double wvl, double offset=0.0);
 
-    bool aim_chief_ray(Eigen::Vector2d& aim_pt, const Field* fld, double wvl);
+    bool search_ray_aiming_at_surface(RayPtr ray, const Field* fld, int target_srf_idx, const Eigen::Vector2d& xy_target);
 
-    /**
-     * @brief Search aim point of the ray to xy_target on the given surface
-     * 
-     * @param srf_idx target surface index
-     * @param xy_target target coordinate
-     * @param fi field index
-     * @param wi wavelength index
-     * @return Eigen::Vector2d aim point on paraxial entrance pupil plane
-     */
-    bool search_aim_point(Eigen::Vector2d& aim_pt, int srf_idx, const Eigen::Vector2d& xy_target, const Field* fld, double wvl);
+    bool aim_chief_ray(Eigen::Vector2d& aim_pt, Eigen::Vector3d& obj_pt, const Field* fld, double wvl);
 
     /**  Refract incoming direction, d_in, about normal */
     bool bend(Eigen::Vector3d& d_out, const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out);
 
     /** Get object coordinate for the given field */
-    Eigen::Vector3d object_coord(const Field* fld);
+    Eigen::Vector3d get_default_object_pt(const Field* fld);
 
     /** Get sequential path between start and end */
     SequentialPath sequential_path(int start, int end, double wvl);
@@ -92,15 +77,13 @@ public:
 
     std::vector<double> compute_vignetting_factors(const Field& fld);
 
-    void set_aperture_check(bool state);
-    bool aperture_check_state() const;
+    inline void set_aperture_check(bool state);
+    inline bool aperture_check_state() const;
 
-    void set_apply_vig(bool state);
-    bool apply_vig_status() const;
+    inline void set_apply_vig(bool state);
+    inline bool apply_vig_status() const;
 
 private:
-    double y_stop_coordinate(double y1, int ifcx, const Eigen::Vector3d& pt0, double dist, double wvl, double y_target);
-
     void pupil_coord_to_obj(Eigen::Vector3d& pt0, Eigen::Vector3d& dir0, const Eigen::Vector2d& pupil_crd, const Field* fld);
     
     OpticalSystem *opt_sys_;
@@ -109,6 +92,28 @@ private:
     bool do_aperture_check_;
     bool do_apply_vig_;
 };
+
+
+void SequentialTrace::set_aperture_check(bool state)
+{
+    do_aperture_check_ = state;
+}
+
+bool SequentialTrace::aperture_check_state() const
+{
+    return do_aperture_check_;
+}
+
+void SequentialTrace::set_apply_vig(bool state)
+{
+    do_apply_vig_ = state;
+}
+
+bool SequentialTrace::apply_vig_status() const
+{
+    return do_apply_vig_;
+}
+
 
 }
 

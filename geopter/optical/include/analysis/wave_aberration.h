@@ -4,6 +4,7 @@
 #include "system/optical_system.h"
 #include "analysis/reference_sphere.h"
 #include "data/plot_data.h"
+#include "sequential/ray.h"
 
 namespace geopter {
 

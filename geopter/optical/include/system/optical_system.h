@@ -39,6 +39,7 @@
 #include "material/material_library.h"
 #include "system/paraxial_data.h"
 #include "system/fundamental_data.h"
+#include "sequential/ray_at_surface.h"
 
 namespace geopter {
 

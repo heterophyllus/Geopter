@@ -86,6 +86,7 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
         SequentialPath seq_path = tracer->sequential_path(ref_wvl_val_);
 
         Eigen::Vector2d aim_pt;
+        Eigen::Vector3d obj_pt;
 
         for(int fi = 0; fi < num_rays; fi++){
             tmp_fld = new Field;
@@ -94,8 +95,9 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
             ys.push_back(y);
             tmp_fld->set_y(y);
 
-            if(tracer->aim_chief_ray(aim_pt, tmp_fld, ref_wvl_val_) ){
+            if(tracer->aim_chief_ray(aim_pt, obj_pt, tmp_fld, ref_wvl_val_) ){
                 tmp_fld->set_aim_pt(aim_pt);
+                tmp_fld->set_object_pt(obj_pt);
             }else{
                 std::cerr << "Aim chief ray error" << std::endl;
                 continue;

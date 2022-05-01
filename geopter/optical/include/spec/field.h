@@ -29,7 +29,6 @@
 
 #include "Eigen/Core"
 #include "renderer/rgb.h"
-#include "sequential/ray.h"
 
 namespace geopter {
 
@@ -52,7 +51,7 @@ public:
     inline double weight() const;
     inline Rgb render_color() const;
     inline Eigen::Vector2d aim_pt() const;
-    inline Eigen::Vector3d object_coord() const;
+    inline Eigen::Vector3d object_pt() const;
 
     inline void set_x(double x);
     inline void set_y(double y);
@@ -63,7 +62,7 @@ public:
     inline void set_weight(double wt);
     inline void set_render_color(const Rgb& color);
     inline void set_aim_pt(const Eigen::Vector2d& aim_pt);
-    inline void set_object_coord(const Eigen::Vector3d& obj_crd);
+    inline void set_object_pt(const Eigen::Vector3d& obj_pt);
 
     Eigen::Vector2d apply_vignetting(const Eigen::Vector2d& pupil) const;
 
@@ -79,7 +78,7 @@ private:
     double vly_;
 
     Eigen::Vector2d aim_pt_;
-    Eigen::Vector3d object_coord_;
+    Eigen::Vector3d object_pt_;
 
     Rgb render_color_;
 };
@@ -126,9 +125,9 @@ Rgb Field::render_color() const
     return render_color_;
 }
 
-Eigen::Vector3d Field::object_coord() const
+Eigen::Vector3d Field::object_pt() const
 {
-    return object_coord_;
+    return object_pt_;
 }
 
 void Field::set_x(double x)
@@ -181,9 +180,9 @@ void Field::set_aim_pt(const Eigen::Vector2d& aim_pt)
     aim_pt_ = aim_pt;
 }
 
-void Field::set_object_coord(const Eigen::Vector3d& obj_crd)
+void Field::set_object_pt(const Eigen::Vector3d& obj_pt)
 {
-    object_coord_ = obj_crd;
+    object_pt_ = obj_pt;
 }
 
 
