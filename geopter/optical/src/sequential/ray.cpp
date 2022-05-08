@@ -34,6 +34,7 @@ using namespace geopter;
 Ray::Ray() :
     status_(RayStatus::PassThrough),
     wvl_(0.0),
+    size_(0),
     reached_surface_index_(0)
 {
     pupil_crd_ = Eigen::Vector2d::Zero(2);
@@ -44,13 +45,7 @@ Ray::Ray(int n) :
     wvl_(0.0),
     reached_surface_index_(0)
 {
-    ray_at_srfs_.reserve(n);
-    RayAtSurface* before = nullptr;
-    for(int i = 0; i < n; i++){
-        ray_at_srfs_.emplace_back( std::make_unique<RayAtSurface>() );
-        ray_at_srfs_.back()->set_before(before);
-        before = ray_at_srfs_.back().get();
-    }
+    this->allocate(n);
 }
 
 Ray::~Ray()
@@ -72,12 +67,14 @@ void Ray::allocate(int n)
         ray_at_srfs_.back()->set_before(before);
         before = ray_at_srfs_.back().get();
     }
+    size_ = ray_at_srfs_.size();
 }
 
 void Ray::prepend(std::unique_ptr<RayAtSurface> ray_at_srf)
 {
     ray_at_srfs_.insert(ray_at_srfs_.begin(), std::move(ray_at_srf));
     ray_at_srfs_.front()->set_before( ray_at_srfs_[1].get() );
+    size_ += 1;
 }
 
 
@@ -91,6 +88,7 @@ void Ray::append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, c
     }
     ray_at_srfs_.emplace_back(std::make_unique<RayAtSurface>(inc_pt, normal, after_dir, dist, opl, before));
     opl_ += opl;
+    size_ += 1;
 }
 
 
@@ -102,6 +100,7 @@ void Ray::clear()
         }
         ray_at_srfs_.clear();
     }
+    size_ = 0;
 }
 
 void Ray::set_reached_surface(int i)
@@ -155,10 +154,15 @@ void Ray::print(std::ostringstream& oss)
         oss << "Unknown Status";
     }
     oss << std::endl;
+
+
+    // wavelength
+    oss << "Wavelength: " << wvl_ << "nm" << std::endl;
+
     oss << std::endl;
 
     // intercept
-    // headder label, S   X   Y   Z
+    // headder label, S   X   Y   Z   AOI
     oss << std::setw(idx_w) << std::right << "S";
     oss << std::setw(val_w) << std::right << "X";
     oss << std::setw(val_w) << std::right << "Y";
@@ -166,6 +170,7 @@ void Ray::print(std::ostringstream& oss)
     oss << std::setw(val_w) << std::right << "L";
     oss << std::setw(val_w) << std::right << "M";
     oss << std::setw(val_w) << std::right << "N";
+    oss << std::setw(val_w) << std::right << "AOI";
     oss << std::endl;
 
     for(int si = 0; si < num_srfs; si++)
@@ -180,6 +185,9 @@ void Ray::print(std::ostringstream& oss)
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(0);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(1);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(2);
+
+        double aoi = ray_at_srfs_[si]->aoi();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << aoi;
 
         oss << std::endl;
     }

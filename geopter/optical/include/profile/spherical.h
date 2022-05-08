@@ -42,7 +42,7 @@ public:
     inline Eigen::Vector3d df(const Eigen::Vector3d& p) const override;
     double sag(double x, double y) const override;
 
-    bool intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps=1.0e-12, double z_dir=1.0) override;
+    bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir) override;
 
 };
 

@@ -37,13 +37,11 @@ Astigmatism::Astigmatism(OpticalSystem* opt_sys):
 
 }
 
-std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
+std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
 {
-    const int stop_index = opt_sys_->optical_assembly()->stop_index();
-    const double h_stop = opt_sys_->optical_assembly()->surface(stop_index)->semi_diameter();
     const int num_srfs = opt_sys_->optical_assembly()->surface_count();
-
-    double maxfld = opt_sys_->optical_spec()->field_of_view()->max_field();
+    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
+    const double maxfld = opt_sys_->optical_spec()->field_of_view()->max_field();
 
     auto plot_data = std::make_shared<PlotData>();
     plot_data->set_title("Astigmatism");
@@ -55,92 +53,68 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
     tracer->set_aperture_check(true);
 
     // create temporary fields
-    Field *tmp_fld;
     std::vector<Field*> tmp_flds;
-    std::vector<double> pupil_offsets;
     std::vector<double> ys;
 
     tmp_flds.reserve(num_rays);
-    pupil_offsets.reserve(num_rays);
     ys.reserve(num_rays);
 
-    if(ray_aiming_type == 0){ // chief ray
-        for(int fi = 0; fi < num_rays; fi++){
-            tmp_fld = new Field;
+    SequentialPath seq_path = tracer->sequential_path(ref_wvl_val_);
 
-            double y = maxfld*(double)fi/(double)(num_rays-1);
-            ys.push_back(y);
-            tmp_fld->set_y(y);
+    Eigen::Vector2d aim_pt({0.0, 0.0});
+    Eigen::Vector3d obj_pt;
 
+    for(int fi = 0; fi < num_rays; fi++){
+        Field* tmp_fld = new Field;
+
+        double y = maxfld*(double)fi/(double)(num_rays-1);
+        ys.push_back(y);
+        tmp_fld->set_y(y);
+
+        if(tracer->aim_chief_ray(aim_pt, obj_pt, tmp_fld, ref_wvl_val_) ){
+            tmp_fld->set_aim_pt(aim_pt);
+            //tmp_fld->set_object_pt(obj_pt);
             tmp_flds.push_back(tmp_fld);
-            pupil_offsets.push_back(0.0);
+        }else{
+            std::cerr << "Aim chief ray error" << std::endl;
+            delete tmp_fld;
+            continue;
         }
-    }else{ // intermidiate ray
 
-        auto ray_upper = std::make_shared<Ray>();
-        auto ray_lower = std::make_shared<Ray>();
-
-        ray_upper->allocate(num_srfs);
-        ray_lower->allocate(num_srfs);
-
-        SequentialPath seq_path = tracer->sequential_path(ref_wvl_val_);
-
-        Eigen::Vector2d aim_pt;
-        Eigen::Vector3d obj_pt;
-
-        for(int fi = 0; fi < num_rays; fi++){
-            tmp_fld = new Field;
-
-            double y = maxfld*(double)fi/(double)(num_rays-1);
-            ys.push_back(y);
-            tmp_fld->set_y(y);
-
-            if(tracer->aim_chief_ray(aim_pt, obj_pt, tmp_fld, ref_wvl_val_) ){
-                tmp_fld->set_aim_pt(aim_pt);
-                tmp_fld->set_object_pt(obj_pt);
-            }else{
-                std::cerr << "Aim chief ray error" << std::endl;
-                continue;
-            }
-
-            double vuy = tracer->compute_vignetting_factor_for_pupil(Eigen::Vector2d({0.0, 1.0}), *tmp_fld);
-            double vly = tracer->compute_vignetting_factor_for_pupil(Eigen::Vector2d({0.0, -1.0}), *tmp_fld);
-            tmp_fld->set_vuy(vuy);
-            tmp_fld->set_vly(vly);
-
-            tmp_flds.push_back(tmp_fld);
-
-            tracer->trace_pupil_ray(ray_upper, seq_path, Eigen::Vector2d({0.0, 1.0}),  tmp_fld, ref_wvl_val_);
-            tracer->trace_pupil_ray(ray_lower, seq_path, Eigen::Vector2d({0.0, -1.0}), tmp_fld, ref_wvl_val_);
-
-            double h_upper = ray_upper->at(stop_index)->y();
-            double h_lower = ray_lower->at(stop_index)->y();
-
-            double pupil_offset = (h_upper + h_lower)/2.0/h_stop;
-            pupil_offsets.push_back(pupil_offset);
-        }
     }
 
 
     // trace coddington for all wavelengths
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
+
+    Eigen::Vector2d s_t({0.0, 0.0});
+
+    auto ray = std::make_shared<Ray>(num_srfs);
 
     for(int wi = 0; wi < num_wvls; wi++){
 
         double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
         Rgb color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
 
+        SequentialPath seq_path = tracer->sequential_path(wvl);
+
         std::vector<double> fy;
         std::vector<double> xfo;
         std::vector<double> yfo;
 
         for(int fi = 0; fi < num_rays; fi++) {
-            tmp_fld = tmp_flds[fi];
-            double pupil_offset = pupil_offsets[fi];
+            Field* tmp_fld = tmp_flds[fi];
+
+            if(TRACE_SUCCESS != tracer->trace_pupil_ray(ray, seq_path, Eigen::Vector2d({0.0, 0.0}), tmp_fld, wvl)){
+                std::cerr << "Failed to trace chief ray" << std::endl;
+                continue;
+            }
+
+            if( ! tracer->trace_coddington(s_t, ray, seq_path)){
+                std::cerr << "Failed to compute coddington" << std::endl;
+                continue;
+            }
 
             fy.push_back(ys[fi]);
-
-            Eigen::Vector2d s_t = tracer->trace_coddington(tmp_fld, wvl, pupil_offset);
 
             xfo.push_back(s_t(0));
             yfo.push_back(s_t(1));
@@ -160,7 +134,6 @@ std::shared_ptr<PlotData> Astigmatism::plot(int ray_aiming_type, int num_rays)
         delete fld;
     }
 
-    pupil_offsets.clear();
     ys.clear();
 
     delete tracer;

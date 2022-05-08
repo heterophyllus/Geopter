@@ -31,7 +31,8 @@ using namespace geopter;
 SurfaceProfile::SurfaceProfile()
 {
     name_ = "None";
-    cv_ = 0.0;
+    cv_  = 0.0;
+    eps_ = 1.0e-5;
 }
 
 
@@ -109,38 +110,34 @@ double SurfaceProfile::deriv_2nd(double h) const
     return 0.0;
 }
 
-bool SurfaceProfile::intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
+bool SurfaceProfile::intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
 {
-    return intersect_spencer(pt, s, p0, d, eps, z_dir);
-}
+    // Spencer's method
 
-
-bool SurfaceProfile::intersect_spencer(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
-{
     Eigen::Vector3d p = p0;
-    double s1 = -f(p)/d.dot(df(p));
+    double s1 = -f(p)/dir.dot(df(p));
     double s2;
     double delta = fabs(s1);
     constexpr int max_iter = 30;
     int iter = 0;
 
-    while(delta > eps)
+    while(delta > eps_)
     {
-        p = p0 + s1*d;
-        s2 = s1 - f(p)/d.dot(df(p));
+        p = p0 + s1*dir;
+        s2 = s1 - f(p)/dir.dot(df(p));
         delta = fabs(s2-s1);
         s1 = s2;
         iter++;
 
         if(iter > max_iter){
             pt = p;
-            s = s1;
+            distance = s1;
             return false;
         }
     }
 
     pt = p;
-    s = s1;
+    distance = s1;
 
     return true;
 }

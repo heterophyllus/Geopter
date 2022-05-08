@@ -11,7 +11,21 @@ using namespace geopter;
 SpotDiagram::SpotDiagram(OpticalSystem* opt_sys):
     RayAberration(opt_sys)
 {
+    // weight list
+    SequentialTrace *tracer = new SequentialTrace(opt_sys_);
+    const int num_wvls = opt_sys_->fundamental_data().number_of_wavelengths;
+    wvl_weights_.reserve(num_wvls);
+    for(int wi = 0; wi < num_wvls; wi++){
+        wvl_weights_.push_back( opt_sys_->optical_spec()->spectral_region()->wvl(wi)->weight() );
+        seq_paths_.push_back( tracer->sequential_path(opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value()) );
+    }
+    delete tracer;
+}
 
+SpotDiagram::~SpotDiagram()
+{
+    wvl_weights_.clear();
+    seq_paths_.clear();
 }
 
 std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int max_nrd, double dot_size)
@@ -26,16 +40,10 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
     plot_data->set_y_axis_label("dy");
     plot_data->set_plot_style(Renderer::PlotStyle::Scatter);
 
-    // weight list
-    const int num_wvls = opt_sys_->fundamental_data().number_of_wavelengths;
-    std::vector<double> wvl_weights(num_wvls);
-    for(int wi = 0; wi < num_wvls; wi++){
-        wvl_weights[wi] = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->weight();
-    }
 
-    double max_wt = *std::max_element(wvl_weights.begin(), wvl_weights.end());
+    double max_wt = *std::max_element(wvl_weights_.begin(), wvl_weights_.end());
 
-    SequentialPath ref_seq_path = tracer->sequential_path(ref_wvl_val_);
+    SequentialPath ref_seq_path = seq_paths_[ref_wvl_idx_];
     // trace chief ray
     auto chief_ray = std::make_shared<Ray>(ref_seq_path.size());
     if(TRACE_SUCCESS != tracer->trace_pupil_ray(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_) ){
@@ -64,10 +72,9 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
         graph->set_render_color(color);
         graph->set_line_width(dot_size);
 
-        SequentialPath seq_path = tracer->sequential_path(wvl);
 
         // calculate nrd for current wvl
-        int nrd = (wvl_weights[wi]/max_wt)*max_nrd;
+        int nrd = (wvl_weights_[wi]/max_wt)*max_nrd;
 
         if(SpotDiagram::SpotRayPattern::Grid == pattern)
         {            
@@ -83,7 +90,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     if(pupil.norm() <= 1.0){
 
                         ray->set_status(RayStatus::PassThrough);
-                        tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                        tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
 
                         if(RayStatus::PassThrough == ray->status()){
 
@@ -121,7 +128,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     pupil(1) = 0.0;
 
                     ray->set_status(RayStatus::PassThrough);
-                    tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                    tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
 
                     double dx = ray->back()->x() - chief_ray_x;
                     double dy = ray->back()->y() - chief_ray_y;
@@ -139,7 +146,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
 
                     ray->set_status(RayStatus::PassThrough);
-                    tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                    tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
 
                     if(RayStatus::PassThrough == ray->status()){
                         double dx = ray->back()->x() - chief_ray_x;

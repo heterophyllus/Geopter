@@ -1,5 +1,6 @@
 #include "analysis/geometrical_mtf.h"
 #include "analysis/spot_diagram.h"
+#include "renderer/renderer.h"
 
 using namespace geopter;
 
@@ -63,12 +64,12 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
 
         std::shared_ptr<Graph2d> graph_tan = std::make_shared<Graph2d>();
         graph_tan->set_data(freqs, mtf_tan_list);
-        graph_tan->set_line_style(1); // dotted line
+        graph_tan->set_line_style(Renderer::LineStyle::Dots);
         graph_tan->set_render_color(fld->render_color());
         graph_tan->set_name("GeoMTF_T F" + std::to_string(fi));
 
         std::shared_ptr<Graph2d> graph_sag = std::make_shared<Graph2d>();
-        graph_tan->set_line_style(0);
+        graph_tan->set_line_style(Renderer::LineStyle::Solid);
         graph_sag->set_data(freqs, mtf_sag_list);
         graph_sag->set_render_color(fld->render_color());
         graph_tan->set_name("GeoMTF_S F" + std::to_string(fi));

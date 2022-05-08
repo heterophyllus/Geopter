@@ -72,12 +72,13 @@ double Spherical::sag(double x, double y) const
 }
 
 
-bool Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps, double z_dir)
+bool Spherical::intersect(Eigen::Vector3d &pt, double &distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
 {
-    Eigen::Vector3d p = p0;
+    constexpr double z_dir = 1.0; // z direction, currently reflection is not supported
+
     double ax2 = cv_;
-    double cx2 = cv_*(p.dot(p)) - 2*p(2);
-    double b = cv_*(d.dot(p)) - d(2);
+    double cx2 = cv_*(p0.dot(p0)) - 2*p0(2);
+    double b = cv_*(dir.dot(p0)) - dir(2);
 
     double inside_sqrt = b*b - ax2*cx2;
 
@@ -86,11 +87,8 @@ bool Spherical::intersect(Eigen::Vector3d &pt, double &s, const Eigen::Vector3d&
         return false;
     }
     else{
-        double s1 = cx2/(z_dir*sqrt(b*b - ax2*cx2) -b );
-        Eigen::Vector3d p1 = p + s1*d;
-
-        pt = p1;
-        s = s1;
+        distance = cx2/(z_dir*sqrt(b*b - ax2*cx2) -b );
+        pt = p0 + distance*dir;
     }
 
     return true;

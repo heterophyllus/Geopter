@@ -95,6 +95,7 @@ private:
     int status_;
     double wvl_;
     double opl_;
+    int size_;
     int reached_surface_index_;
     Eigen::Vector2d pupil_crd_;
 };
@@ -124,10 +125,11 @@ double Ray::wavelength() const
 
 RayAtSurface* Ray::at(int i)
 {    
-    if(i < (int)ray_at_srfs_.size()){
+    assert(size_ == (int)ray_at_srfs_.size());
+    if(i < size_){
         return ray_at_srfs_[i].get();
     }else{
-        throw RayOutOfRangeError();
+        return nullptr;
     }
 }
 

@@ -36,10 +36,10 @@ class RayAtSurface
 {
 public:
     RayAtSurface();
-    RayAtSurface(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl, RayAtSurface *before=nullptr);
+    RayAtSurface(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl, RayAtSurface* before);
     ~RayAtSurface();
 
-    void set_data(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl, RayAtSurface *before=nullptr);
+    void set_data(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
 
     inline void set_before(RayAtSurface* before);
 

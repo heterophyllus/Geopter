@@ -77,23 +77,9 @@ public:
     /**
      * @brief Intersect a profile, starting from an arbitrary point
      * @param p0 start point of the ray in the profile's coordinate system
-     * @param d direction cosine of the ray in the profile's coordinate system
-     * @param eps numeric tolerance for convergence of any iterative procedure
-     * @param z_dir +1 if propagation positive direction, -1 if otherwise
+     * @param dir direction cosine of the ray in the profile's coordinate system
      */
-    virtual bool intersect(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps=1.0e-12, double z_dir=1.0);
-
-    /**
-     * @brief Intersect a profile, starting from an arbitrary point
-     * @note From Spencer and Murty, General Ray-Tracing Procedure <https://doi.org/10.1364/JOSA.52.000672>
-     * @param pt intersect point
-     * @param distance to the intersect point
-     * @param p0 start point of the ray in the profile's coordinate system
-     * @param d direction cosine of the ray in the profile's coordinate system
-     * @param eps numeric tolerance for convergence of any iterative procedure
-     * @param z_dir +1 if propagation positive direction, -1 if otherwise
-     */
-    virtual bool intersect_spencer(Eigen::Vector3d& pt, double& s, const Eigen::Vector3d& p0, const Eigen::Vector3d& d, double eps=1.0e-12, double z_dir=1.0);
+    virtual bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
 
     /**
      * @brief Print coefficinet data
@@ -104,6 +90,7 @@ public:
 protected:
     double cv_;
     std::string name_;
+    double eps_;
 };
 
 } //namespace geopter

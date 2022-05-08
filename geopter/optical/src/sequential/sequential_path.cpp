@@ -64,8 +64,7 @@ void SequentialPath::append(SequentialPathComponent seq_path_comp)
 
 void SequentialPath::append(Surface *s, double thi, double n)
 {
-    SequentialPathComponent seq_path_comp(s, thi, n);
-    seq_path_comps_.push_back(seq_path_comp);
+    seq_path_comps_.emplace_back( SequentialPathComponent(s, thi, n) );
     array_size_ += 1;
 }
 

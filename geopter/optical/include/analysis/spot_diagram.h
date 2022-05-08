@@ -27,6 +27,7 @@
 #define SPOT_DIAGRAM_H
 
 #include "analysis/ray_aberration.h"
+#include "sequential/sequential_path.h"
 
 namespace geopter {
 
@@ -34,6 +35,7 @@ class SpotDiagram : RayAberration
 {
 public:
     SpotDiagram(OpticalSystem* opt_sys);
+    ~SpotDiagram();
 
     std::shared_ptr<PlotData> plot(const Field* fld, int pattern, int nrd, double dot_size);
 
@@ -41,6 +43,10 @@ public:
         Grid,
         Hexapolar
     };
+
+private:
+    std::vector<double> wvl_weights_;
+    std::vector<SequentialPath> seq_paths_;
 };
 
 }

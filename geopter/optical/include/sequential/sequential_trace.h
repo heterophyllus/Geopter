@@ -54,9 +54,11 @@ public:
 
 
     /** Trace chief ray and returns x/y focus shift */
-    Eigen::Vector2d trace_coddington(const Field* fld, double wvl, double offset=0.0);
+    Eigen::Vector2d trace_coddington(const Field* fld, double wvl);
 
-    bool search_ray_aiming_at_surface(RayPtr ray, const Field* fld, int target_srf_idx, const Eigen::Vector2d& xy_target);
+    bool trace_coddington(Eigen::Vector2d& s_t, const std::shared_ptr<Ray> ray, const SequentialPath& path);
+
+    bool search_ray_aiming_at_surface(RayPtr ray, Eigen::Vector2d& aim_pt, const Field* fld, int target_srf_idx, const Eigen::Vector2d& xy_target);
 
     bool aim_chief_ray(Eigen::Vector2d& aim_pt, Eigen::Vector3d& obj_pt, const Field* fld, double wvl);
 

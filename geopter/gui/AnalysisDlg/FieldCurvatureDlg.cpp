@@ -20,8 +20,9 @@ FieldCurvatureDlg::FieldCurvatureDlg(OpticalSystem* sys, PlotViewDock *parent) :
     ui->numRaysEdit->setValidator(new QIntValidator(2, 100, this));
     ui->numRaysEdit->setText(QString::number(20));
 
-    ui->rayAimingCombo->addItems(QStringList({"Chief Ray", "Intermediate Ray"}));
-    ui->rayAimingCombo->setCurrentIndex(0);
+    // FIXME : It is unclear why the buttonBox of this dialog itself doesn't work, though that of other dialogs work fine.
+    QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    QObject::connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 FieldCurvatureDlg::~FieldCurvatureDlg()
@@ -35,12 +36,11 @@ void FieldCurvatureDlg::updateParentDockContent()
     m_opticalSystem->update_model();
     double maxField = m_opticalSystem->optical_spec()->field_of_view()->max_field();
 
-    int rayAimingType = ui->rayAimingCombo->currentIndex();
     double scale = ui->scaleEdit->text().toDouble();
     int numRays = ui->numRaysEdit->text().toInt();
 
     Astigmatism *ast = new Astigmatism(m_opticalSystem);
-    auto plotData = ast->plot(rayAimingType, numRays);
+    auto plotData = ast->plot(numRays);
     plotData->print();
 
     m_renderer->clear();

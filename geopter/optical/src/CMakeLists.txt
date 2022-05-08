@@ -61,6 +61,7 @@ set(OPTICAL_SRCS
 
     system/optical_system.cpp
     system/paraxial_data.cpp
+    system/solve.cpp
 
     paraxial/paraxial_ray.cpp
     paraxial/paraxial_path.cpp

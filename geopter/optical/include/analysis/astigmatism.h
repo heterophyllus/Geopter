@@ -34,7 +34,7 @@ class Astigmatism : RayAberration
 {
 public:
     Astigmatism(OpticalSystem* opt_sys);
-    std::shared_ptr<PlotData> plot(int ray_aiming_type, int num_rays= 10);
+    std::shared_ptr<PlotData> plot(int num_rays= 10);
 };
 
 }
