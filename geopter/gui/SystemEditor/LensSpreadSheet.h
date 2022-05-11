@@ -42,6 +42,12 @@ public slots:
     /** show surface property dialog */
     void showSurfacePropertyDlg();
 
+    /** show solve setting dialog */
+    void showRadiusSolveDlg();
+
+    /** show solve setting dialog */
+    void showThicknessSolveSettingDlg();
+
     /** insert to current row */
     void insertSurface();
 

@@ -96,9 +96,19 @@ void LensSpreadSheet::showContextMenuOnHeader()
 
 void LensSpreadSheet::showContextMenuOnCell()
 {
+    int column = this->currentColumn();
+
     QMenu contextMenu;
     QAction *action1 = contextMenu.addAction("Property");
     QObject::connect(action1, SIGNAL(triggered()), this, SLOT(showSurfacePropertyDlg()));
+
+    QAction *action2 = contextMenu.addAction("Solve");
+    if(LensSpreadSheet::Column::Radius == column){
+        QObject::connect(action2, SIGNAL(triggered()), this, SLOT(showRadiusSolveDlg()));
+    }else if(LensSpreadSheet::Column::Thickness == column){
+        QObject::connect(action2, SIGNAL(triggered()), this, SLOT(showThicknessPropertyDlg()));
+    }
+
 
     contextMenu.exec(QCursor::pos());
 }

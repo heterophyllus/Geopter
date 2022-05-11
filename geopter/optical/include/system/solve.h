@@ -32,21 +32,24 @@
 
 namespace geopter{
 
-enum SolveType
-{
-    EdgeThickness,
-    OverallLength,
-    ParaxialImageDistance,
-    ReductionRatio
-};
+class OpticalSystem;
 
 class Solve
 {
 public:
+
+    enum SolveType
+    {
+        EdgeThickness,
+        OverallLength,
+        ParaxialImageDistance,
+        ReductionRatio
+    };
+
     Solve();
     virtual ~Solve();
 
-    virtual void apply() = 0;
+    virtual void apply(OpticalSystem* opt_sys) = 0;
 
 protected:
     double value_;
@@ -56,41 +59,34 @@ protected:
 class EdgeThicknessSolve : public Solve
 {
 public:
-    EdgeThicknessSolve();
+    EdgeThicknessSolve(int gap_index, double value, double height);
 
-    void apply() override; // center thickness for given edge thickness
-
+    void apply(OpticalSystem* opt_sys) override;
 private:
-    Gap* gap_;
-    Surface* srf_;
-    Surface* srf_next_;
-    double semi_diameter_;
+    int gap_index_;
+    double height_;
 };
 
 class OverallLengthSolve : public Solve
 {
 public:
-    OverallLengthSolve();
-
-    void apply() override;
-
+    OverallLengthSolve(int gi, double value, int s1, int s2);
+    void apply(OpticalSystem* opt_sys) override;
 private:
-    Gap* gap_;
-    Surface* srf_start;
-    Surface* srf_end_;
+    int surface1_;
+    int surface2_;
+    int gap_index_;
+
 };
 
 class ParaxialImageSolve : public Solve
 {
+    // image space gap
 public:
     ParaxialImageSolve();
 
-    void apply() override;
+    void apply(OpticalSystem* opt_sys) override;
 
-    void set_gap(Gap* gap);
-
-private:
-    Gap* gap_; //sI-1
 };
 
 

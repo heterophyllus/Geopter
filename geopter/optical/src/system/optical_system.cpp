@@ -101,6 +101,12 @@ void OpticalSystem::initialize()
     update_model();
 }
 
+void OpticalSystem::remove_gap_solve(int i)
+{
+    auto itr = gap_solves_.cbegin();
+    gap_solves_.erase(itr + i);
+}
+
 void OpticalSystem::update_model()
 {
     opt_assembly_->update_model();
@@ -108,21 +114,13 @@ void OpticalSystem::update_model()
     update_fundamental_data();
 
     // be carefull to the updating order
+    update_solve();
     update_paraxial_data();
     update_fundamental_data();
     update_optical_spec();
     update_semi_diameters();
 }
 
-void OpticalSystem::add_surface_and_gap(double r, double t, std::string mat_name)
-{
-    auto m = material_lib_->find(mat_name);
-
-    opt_assembly_->add_surface_and_gap();
-    opt_assembly_->current_surface()->profile()->set_cv(1.0/r);
-    opt_assembly_->current_gap()->set_thi(t);
-    opt_assembly_->current_gap()->set_material(m);
-}
 
 void OpticalSystem::update_fundamental_data()
 {
@@ -282,6 +280,13 @@ void OpticalSystem::update_semi_diameters()
     }
 
     delete tracer;
+}
+
+void OpticalSystem::update_solve()
+{
+    for(auto &s : gap_solves_){
+        s->apply(this);
+    }
 }
 
 
