@@ -4,13 +4,10 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QGridLayout>
-#include "LensSpreadSheet.h"
+#include "LensDataTableView.h"
 #include "SpecEditorDlg.h"
 
-/**  This widget is contained inside SystemEditorDock
- *
- *   It includes "Specification" button and lens spreadsheet
-*/
+/** The widget inside of central dock that includes "Specification" button and lens data spreadsheet view */
 class SystemEditorWidget : public QWidget
 {
     Q_OBJECT
@@ -21,7 +18,7 @@ public:
 
     void setOpticalSystem(std::shared_ptr<geopter::OpticalSystem> optsys);
 
-    LensSpreadSheet* lensSpreadSheet();
+    LensDataTableView* lensDataView();
 
 public slots:
     void showSpecEditorDlg();
@@ -29,7 +26,7 @@ public slots:
 private:
     QGridLayout *m_gridLayout;
     QPushButton *m_specButton;
-    LensSpreadSheet* m_lensSpreadSheet;
+    LensDataTableView* m_lensDataView;
     std::shared_ptr<geopter::OpticalSystem> m_opticalSystem;
 };
 

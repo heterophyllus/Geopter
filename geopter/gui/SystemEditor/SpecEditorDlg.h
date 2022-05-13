@@ -2,8 +2,8 @@
 #define SPECEDITORDLG_H
 
 #include <QDialog>
-#include "SystemEditor/FieldTable.h"
-#include "SystemEditor/WavelengthTable.h"
+#include "SystemEditor/FieldTableWidget.h"
+#include "SystemEditor/WavelengthTableWidget.h"
 
 namespace Ui {
 class SpecEditorDlg;
@@ -26,7 +26,7 @@ private slots:
     void onInsertWavelength();
     void onRemoveWavelength();
     */
-    void catchValueedited();
+    void catchValueEdited();
     void setupReferenceWavelengthCombo(int current= -1);
 
 private:

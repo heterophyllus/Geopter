@@ -18,6 +18,8 @@
 
 #include "renderer_qcp.h"
 
+#include "SystemEditor/SystemDataConstant.h"
+
 #include "AnalysisDlg/AnalysisSettingDlg.h"
 #include "AnalysisDlg/Layout2dDlg.h"
 #include "AnalysisDlg/TransverseRayFanDlg.h"
@@ -166,7 +168,7 @@ void MainWindow::loadAgfsFromDir(QString agfDir)
 
 void MainWindow::syncUiWithSystem()
 {
-    m_systemEditorDock->updateUi();
+    //m_systemEditorDock->updateUi();
 }
 
 /*********************************************************************************************************************************
@@ -212,7 +214,7 @@ void MainWindow::openFile()
     opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
-    m_systemEditorDock->updateUi();
+    m_systemEditorDock->rebuildUi();
 
     QMessageBox::information(this,tr("Info"), tr("OpticalSystem newly loaded"));
 }
@@ -233,7 +235,10 @@ void MainWindow::setVignettingFactors()
 {
     opt_sys_->set_vignetting_factors();
     opt_sys_->update_model();
-    m_systemEditorDock->updateUi();
+
+    // In order to update UI, emit signal by running a simple function
+    int stop = opt_sys_->optical_assembly()->stop_index();
+    m_systemEditorDock->systemEditorWidget()->lensDataView()->lensDataModel()->setStop(stop);
 }
 
 
@@ -402,5 +407,5 @@ void MainWindow::showAbout()
 
 void MainWindow::updateUi()
 {
-    m_systemEditorDock->updateUi();
+    m_systemEditorDock->rebuildUi();
 }

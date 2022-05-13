@@ -1,5 +1,6 @@
 #include "SpecEditorDlg.h"
 #include "ui_SpecEditorDlg.h"
+#include "SystemDataConstant.h"
 #include <QMenu>
 #include <QDebug>
 
@@ -37,7 +38,7 @@ SpecEditorDlg::~SpecEditorDlg()
     delete ui;
 }
 
-void SpecEditorDlg::catchValueedited()
+void SpecEditorDlg::catchValueEdited()
 {
     qDebug() << "Value Edited!";
 }
@@ -132,7 +133,7 @@ void SpecEditorDlg::setupReferenceWavelengthCombo(int current)
         // W1: 588.00
         // W2: 475.00
         // ...
-        double val = ui->wavelengthTable->item(wi, WavelengthTable::Value)->data(Qt::EditRole).toDouble();
+        double val = ui->wavelengthTable->item(wi, static_cast<int>(WavelengthTableColumn::Value))->data(Qt::EditRole).toDouble();
         wavelengthList << "W" + QString::number(wi) + ": " + QString::number(val);
     }
 

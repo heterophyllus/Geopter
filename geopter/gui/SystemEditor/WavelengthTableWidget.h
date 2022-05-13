@@ -6,18 +6,12 @@
 using namespace geopter;
 
 /** Table widget for wavelength spec */
-class WavelengthTable : public QTableWidget
+class WavelengthTableWidget : public QTableWidget
 {
     Q_OBJECT
 
 public:
-    WavelengthTable(QWidget* parent = nullptr);
-
-    enum Column{
-        Value,
-        Weight,
-        Color
-    };
+    WavelengthTableWidget(QWidget* parent = nullptr);
 
     void importWavelengthData(const std::shared_ptr<OpticalSystem> optsys);
     void applyCurrentData(std::shared_ptr<OpticalSystem> optsys);

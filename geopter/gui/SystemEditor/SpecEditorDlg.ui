@@ -160,7 +160,7 @@
         </spacer>
        </item>
        <item row="2" column="0" colspan="4">
-        <widget class="FieldTable" name="fieldTable"/>
+        <widget class="FieldTableWidget" name="fieldTable"/>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_7">
@@ -240,7 +240,7 @@
         </spacer>
        </item>
        <item row="1" column="0" colspan="4">
-        <widget class="WavelengthTable" name="wavelengthTable"/>
+        <widget class="WavelengthTableWidget" name="wavelengthTable"/>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_5">
@@ -341,12 +341,12 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FieldTable</class>
+   <class>FieldTableWidget</class>
    <extends>QTableWidget</extends>
    <header>SystemEditor/FieldTable.h</header>
   </customwidget>
   <customwidget>
-   <class>WavelengthTable</class>
+   <class>WavelengthTableWidget</class>
    <extends>QTableWidget</extends>
    <header>SystemEditor/WavelengthTable.h</header>
   </customwidget>

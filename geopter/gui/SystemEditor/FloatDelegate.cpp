@@ -34,13 +34,23 @@ void FloatDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
     }
 }
 
+QWidget* FloatDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & /*option*/, const QModelIndex & /*index*/) const
+{
+    QLineEdit *editor = new QLineEdit(parent);
+
+    return editor;
+}
+
+void FloatDelegate::setDecimal(int decimal)
+{
+    nDecimals_ = decimal;
+}
 
 void FloatDelegate::setModelData(QWidget *editor,
                                 QAbstractItemModel *model,
                                 const QModelIndex &index) const
 {
     QVariant value = editor->property("text");
-
 
     bool isNumber = false;
     double number = value.toDouble(&isNumber);
@@ -54,7 +64,6 @@ void FloatDelegate::setModelData(QWidget *editor,
     }else{ // not a number
         std::cerr << "Not a number: " << value.toString().toStdString();
     }
-
 
     model->setData(index, value);
 }

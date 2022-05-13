@@ -1,4 +1,4 @@
-#include "WavelengthTable.h"
+#include "WavelengthTableWidget.h"
 #include "SystemEditor/FloatDelegate.h"
 #include <QHeaderView>
 #include <QMessageBox>
@@ -6,8 +6,9 @@
 #include <QColorDialog>
 #include <QInputDialog>
 #include <QDebug>
+#include "SystemDataConstant.h"
 
-WavelengthTable::WavelengthTable(QWidget* parent)
+WavelengthTableWidget::WavelengthTableWidget(QWidget* parent)
     : QTableWidget(parent),
       m_settingUp(false),
       m_displayDigit(4)
@@ -19,15 +20,15 @@ WavelengthTable::WavelengthTable(QWidget* parent)
     this->setupItems();
     this->setupVerticalHeader();
 
-    this->setItemDelegateForColumn(WavelengthTable::Value,  new FloatDelegate(m_displayDigit, true, this));
-    this->setItemDelegateForColumn(WavelengthTable::Weight, new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(WavelengthTableColumn::Value),  new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(WavelengthTableColumn::Weight), new FloatDelegate(m_displayDigit, true, this));
 
     QObject::connect(this, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onDoubleClick(QTableWidgetItem*)));
     QObject::connect(this, SIGNAL(itemChanged(QTableWidgetItem*)),       this, SLOT(onItemChanged(QTableWidgetItem*)));
 }
 
 
-void WavelengthTable::setupVerticalHeader()
+void WavelengthTableWidget::setupVerticalHeader()
 {
     int fieldCount = this->rowCount();
     QStringList vHeaderLabels;
@@ -39,7 +40,7 @@ void WavelengthTable::setupVerticalHeader()
     this->setVerticalHeaderLabels(vHeaderLabels);
 }
 
-void WavelengthTable::setupItems()
+void WavelengthTableWidget::setupItems()
 {
     for(int i = 0; i < this->rowCount(); i++) {
         for(int j = 0; j < this->columnCount(); j++) {
@@ -49,7 +50,7 @@ void WavelengthTable::setupItems()
             }
 
             item = this->item(i, j);
-            if(WavelengthTable::Color == j) {
+            if( static_cast<int>(WavelengthTableColumn::Color) == j) {
                 item->setFlags(item->flags() ^ Qt::ItemIsEditable);
             }
         }
@@ -57,7 +58,7 @@ void WavelengthTable::setupItems()
 }
 
 
-void WavelengthTable::insertWavelength()
+void WavelengthTableWidget::insertWavelength()
 {
     m_settingUp = true;
 
@@ -79,7 +80,7 @@ void WavelengthTable::insertWavelength()
     emit setupCompleted();
 }
 
-void WavelengthTable::removeWavelength()
+void WavelengthTableWidget::removeWavelength()
 {
     Q_ASSERT(this->rowCount() > 0);
 
@@ -102,7 +103,7 @@ void WavelengthTable::removeWavelength()
     emit setupCompleted();
 }
 
-void WavelengthTable::addWavelength()
+void WavelengthTableWidget::addWavelength()
 {
     m_settingUp = true;
 
@@ -121,15 +122,15 @@ void WavelengthTable::addWavelength()
     emit setupCompleted();
 }
 
-void WavelengthTable::setWavelengthData(int row, const Wvl* wvl)
+void WavelengthTableWidget::setWavelengthData(int row, const Wvl* wvl)
 {
-    this->item(row, WavelengthTable::Value)->setData(Qt::EditRole, wvl->value());
-    this->item(row, WavelengthTable::Weight)->setData(Qt::EditRole, wvl->weight());
-    this->item(row, WavelengthTable::Color)->setBackground(QBrush(rgbToQColor(wvl->render_color())));
+    this->item(row, static_cast<int>(WavelengthTableColumn::Value))->setData(Qt::EditRole, wvl->value());
+    this->item(row, static_cast<int>(WavelengthTableColumn::Weight))->setData(Qt::EditRole, wvl->weight());
+    this->item(row, static_cast<int>(WavelengthTableColumn::Color))->setBackground(QBrush(rgbToQColor(wvl->render_color())));
 }
 
 
-void WavelengthTable::importWavelengthData(const std::shared_ptr<OpticalSystem> optsys)
+void WavelengthTableWidget::importWavelengthData(const std::shared_ptr<OpticalSystem> optsys)
 {
     if( !optsys){
         return;
@@ -152,32 +153,32 @@ void WavelengthTable::importWavelengthData(const std::shared_ptr<OpticalSystem> 
     m_settingUp = false;
 }
 
-void WavelengthTable::applyCurrentData(std::shared_ptr<OpticalSystem> optsys)
+void WavelengthTableWidget::applyCurrentData(std::shared_ptr<OpticalSystem> optsys)
 {
     optsys->optical_spec()->spectral_region()->clear();
     for(int wi = 0; wi < this->rowCount(); wi++) {
-        double val = this->item(wi, WavelengthTable::Value)->data(Qt::EditRole).toDouble();
-        double wt  = this->item(wi, WavelengthTable::Weight)->data(Qt::EditRole).toDouble();
-        QColor qcolor = this->item(wi, WavelengthTable::Color)->background().color();
+        double val = this->item(wi, static_cast<int>(WavelengthTableColumn::Value))->data(Qt::EditRole).toDouble();
+        double wt  = this->item(wi, static_cast<int>(WavelengthTableColumn::Weight))->data(Qt::EditRole).toDouble();
+        QColor qcolor = this->item(wi, static_cast<int>(WavelengthTableColumn::Color))->background().color();
         Rgb color = QColorToRgb(qcolor);
 
         optsys->optical_spec()->spectral_region()->add(val, wt, color);
     }
 }
 
-void WavelengthTable::onDoubleClick(QTableWidgetItem* item)
+void WavelengthTableWidget::onDoubleClick(QTableWidgetItem* item)
 {
     if(!item) return;
 
     int col = item->column();
 
-    if(WavelengthTable::Color == col) {
+    if( static_cast<int>(WavelengthTableColumn::Color) == col) {
         QColor color = QColorDialog::getColor(Qt::black, this, tr("Select Color"), QColorDialog::DontUseNativeDialog);
         if (color.isValid()) {
             item->setBackground(QBrush(color));
         }
     }
-    else if(WavelengthTable::Value == col) {
+    else if( static_cast<int>(WavelengthTableColumn::Value) == col) {
         QStringList presets;
         presets << "t" << "s" << "r" << "C" << "C_" << "D" << "d" << "e" << "F" << "F_" << "g" << "h" << "i";
 
@@ -201,18 +202,18 @@ void WavelengthTable::onDoubleClick(QTableWidgetItem* item)
     }
 }
 
-void WavelengthTable::onItemChanged(QTableWidgetItem* item)
+void WavelengthTableWidget::onItemChanged(QTableWidgetItem* item)
 {
     if( !m_settingUp) {
         int col = item->column();
 
-        if( WavelengthTable::Column::Value == col ){
+        if( static_cast<int>(WavelengthTableColumn::Value) == col ){
             emit valueEdited();
         }
     }
 }
 
-QColor WavelengthTable::rgbToQColor(const Rgb& rgb)
+QColor WavelengthTableWidget::rgbToQColor(const Rgb& rgb)
 {
     int r = (int)(255.0*rgb.r);
     int g = (int)(255.0*rgb.g);
@@ -223,7 +224,7 @@ QColor WavelengthTable::rgbToQColor(const Rgb& rgb)
     return QColor(r,g,b,a);
 }
 
-Rgb WavelengthTable::QColorToRgb(const QColor& color)
+Rgb WavelengthTableWidget::QColorToRgb(const QColor& color)
 {
     double r = (double)color.red() / 255.0;
     double g = (double)color.green() / 255.0;

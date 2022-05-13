@@ -19,14 +19,25 @@ SystemEditorDock::~SystemEditorDock()
     m_opticalSystem.reset();
 }
 
-
 void SystemEditorDock::setOpticalSystem(std::shared_ptr<OpticalSystem> sys)
 {
     m_opticalSystem = sys;
+    m_systemEditorWidget->setOpticalSystem(m_opticalSystem);
 }
 
-
-void SystemEditorDock::updateUi()
+SystemEditorWidget* SystemEditorDock::systemEditorWidget()
 {
-    m_systemEditorWidget->lensSpreadSheet()->reload();
+    return m_systemEditorWidget;
+}
+
+void SystemEditorDock::rebuildUi()
+{
+    try{
+        delete m_systemEditorWidget;
+    }catch(...){
+        qDebug() << "delete error : system editor widget";
+    }
+
+    m_systemEditorWidget = new SystemEditorWidget(m_opticalSystem, this);
+    this->setWidget(m_systemEditorWidget);
 }

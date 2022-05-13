@@ -2,6 +2,7 @@
 #define CELLDELEGATE_H
 
 #include <QItemDelegate>
+#include <QLineEdit>
 
 class FloatDelegate : public QItemDelegate
 {
@@ -9,15 +10,13 @@ class FloatDelegate : public QItemDelegate
 
 public:
     FloatDelegate(int decimals, bool allowInf= true, QWidget* parent=nullptr);
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
-    void setDecimal(int decimal){
-        nDecimals_ = decimal;
-    }
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    void setDecimal(int decimal);
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 protected:
     void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const override;
-
 
 private:
     int nDecimals_;

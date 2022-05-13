@@ -2,27 +2,16 @@
 #define FIELDTABLE_H
 
 #include <QTableWidget>
-#include "optical.h"
+#include "system/optical_system.h"
 using namespace geopter;
 
 /** Table widget for fields specification */
-class FieldTable : public QTableWidget
+class FieldTableWidget : public QTableWidget
 {
     Q_OBJECT
 
 public:
-    FieldTable(QWidget* parent = nullptr);
-
-    enum Column{
-        X,
-        Y,
-        Weight,
-        Color,
-        VUY,
-        VLY,
-        VUX,
-        VLX
-    };
+    FieldTableWidget(QWidget* parent = nullptr);
 
     void importFieldData(const std::shared_ptr<OpticalSystem> optsys);
     void applyCurrentData(std::shared_ptr<OpticalSystem> optsys);

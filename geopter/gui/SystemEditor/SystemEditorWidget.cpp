@@ -16,9 +16,9 @@ SystemEditorWidget::SystemEditorWidget(std::shared_ptr<geopter::OpticalSystem> o
     m_specButton = new QPushButton(this);
     m_specButton->setText("Specifications");
 
-    m_lensSpreadSheet = new LensSpreadSheet(m_opticalSystem, this);
+    m_lensDataView = new LensDataTableView(m_opticalSystem);
     m_gridLayout->addWidget(m_specButton,0,0,1,1);
-    m_gridLayout->addWidget(m_lensSpreadSheet,1,0,1,2);
+    m_gridLayout->addWidget(m_lensDataView,1,0,1,2);
 
     QObject::connect(m_specButton, SIGNAL(clicked()), this, SLOT(showSpecEditorDlg()) );
 
@@ -27,30 +27,29 @@ SystemEditorWidget::SystemEditorWidget(std::shared_ptr<geopter::OpticalSystem> o
 SystemEditorWidget::~SystemEditorWidget()
 {
     delete m_specButton;
-    delete m_lensSpreadSheet;
+    delete m_lensDataView;
     delete m_gridLayout;
 }
 
 void SystemEditorWidget::setOpticalSystem(std::shared_ptr<geopter::OpticalSystem> optsys)
 {
     m_opticalSystem = optsys;
+    m_lensDataView->lensDataModel()->setOpticalSystem(m_opticalSystem);
 }
 
-LensSpreadSheet* SystemEditorWidget::lensSpreadSheet()
+LensDataTableView* SystemEditorWidget::lensDataView()
 {
-    return m_lensSpreadSheet;
+    return m_lensDataView;
 }
 
 void SystemEditorWidget::showSpecEditorDlg()
 {
-
     SpecEditorDlg dlg(nullptr);
     dlg.loadData(m_opticalSystem);
-
 
     if(dlg.exec() == QDialog::Accepted){
         dlg.applyData(m_opticalSystem);
         m_opticalSystem->update_model();
-        m_lensSpreadSheet->reload();
+        m_lensDataView->update();
     }
 }

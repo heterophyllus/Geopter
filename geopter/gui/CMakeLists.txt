@@ -50,12 +50,17 @@ set(GEOPTER_GUI_HEADERS
     SystemEditor/SystemEditorWidget.h
     SystemEditor/SurfacePropertyDlg.h
 
-    SystemEditor/LensSpreadSheet.h
-    SystemEditor/SpreadSheetItem.h
+    SystemEditor/SystemDataConstant.h
+    SystemEditor/LensDataTableView.h
+    SystemEditor/LensDataModel.h
+    SystemEditor/TableHeaderItem.h
+    SystemEditor/GridTableHeaderView.h
+    SystemEditor/GridTableHeaderModel.h
     SystemEditor/FloatDelegate.h
     SystemEditor/OneByteDelegate.h
-    SystemEditor/FieldTable.h
-    SystemEditor/WavelengthTable.h
+    SystemEditor/NotEditableDelegate.h
+    SystemEditor/FieldTableWidget.h
+    SystemEditor/WavelengthTableWidget.h
     SystemEditor/SpecEditorDlg.h
 
     AnalysisDlg/AnalysisSettingDlg.h
@@ -97,12 +102,17 @@ set(GEOPTER_GUI_SOURCES
     SystemEditor/SystemEditorDock.cpp
     SystemEditor/SystemEditorWidget.cpp
     SystemEditor/SurfacePropertyDlg.cpp
-    SystemEditor/LensSpreadSheet.cpp
-    SystemEditor/SpreadSheetItem.cpp
+
+    SystemEditor/LensDataTableView.cpp
+    SystemEditor/LensDataModel.cpp
+    SystemEditor/TableHeaderItem.cpp
+    SystemEditor/GridTableHeaderView.cpp
+    SystemEditor/GridTableHeaderModel.cpp
+
     SystemEditor/FloatDelegate.cpp
     SystemEditor/OneByteDelegate.cpp
-    SystemEditor/FieldTable.cpp
-    SystemEditor/WavelengthTable.cpp
+    SystemEditor/FieldTableWidget.cpp
+    SystemEditor/WavelengthTableWidget.cpp
     SystemEditor/SpecEditorDlg.cpp
 
     AnalysisDlg/AnalysisSettingDlg.cpp

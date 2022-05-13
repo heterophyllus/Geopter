@@ -18,8 +18,8 @@ public:
     ~SystemEditorDock();
 
     void setOpticalSystem(std::shared_ptr<OpticalSystem> sys);
-
-    void updateUi();
+    SystemEditorWidget* systemEditorWidget();
+    void rebuildUi();
 
 private :
     std::shared_ptr<OpticalSystem> m_opticalSystem;

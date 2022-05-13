@@ -1,12 +1,13 @@
-#include "FieldTable.h"
+#include "FieldTableWidget.h"
 #include "SystemEditor/FloatDelegate.h"
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QMenu>
 #include <QColorDialog>
 #include <QDebug>
+#include "SystemEditor/SystemDataConstant.h"
 
-FieldTable::FieldTable(QWidget* parent)
+FieldTableWidget::FieldTableWidget(QWidget* parent)
     : QTableWidget(parent),
       m_displayDigit(4)
 {
@@ -17,19 +18,19 @@ FieldTable::FieldTable(QWidget* parent)
     this->setupItems();
     this->setupVerticalHeader();
 
-    this->setItemDelegateForColumn(FieldTable::X,      new FloatDelegate(m_displayDigit, true, this));
-    this->setItemDelegateForColumn(FieldTable::Y,      new FloatDelegate(m_displayDigit, true, this));
-    this->setItemDelegateForColumn(FieldTable::Weight, new FloatDelegate(m_displayDigit, true, this));
-    this->setItemDelegateForColumn(FieldTable::VUY,    new FloatDelegate(m_displayDigit, true, this));
-    this->setItemDelegateForColumn(FieldTable::VLY,    new FloatDelegate(m_displayDigit, true, this));
-    this->setItemDelegateForColumn(FieldTable::VUX,    new FloatDelegate(m_displayDigit, true, this));
-    this->setItemDelegateForColumn(FieldTable::VLX,    new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(FieldTableColumn::X),      new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(FieldTableColumn::Y),      new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(FieldTableColumn::Weight), new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(FieldTableColumn::VUY),    new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(FieldTableColumn::VLY),    new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(FieldTableColumn::VUX),    new FloatDelegate(m_displayDigit, true, this));
+    this->setItemDelegateForColumn(static_cast<int>(FieldTableColumn::VLX),    new FloatDelegate(m_displayDigit, true, this));
 
     QObject::connect(this, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onDoubleClick(QTableWidgetItem*)));
 
 }
 
-void FieldTable::setupVerticalHeader()
+void FieldTableWidget::setupVerticalHeader()
 {
     int fieldCount = this->rowCount();
     QStringList vHeaderLabels;
@@ -41,7 +42,7 @@ void FieldTable::setupVerticalHeader()
     this->setVerticalHeaderLabels(vHeaderLabels);
 }
 
-void FieldTable::setupItems()
+void FieldTableWidget::setupItems()
 {
     for(int i = 0; i < this->rowCount(); i++) {
         for(int j = 0; j < this->columnCount(); j++) {
@@ -51,7 +52,7 @@ void FieldTable::setupItems()
             }
 
             item = this->item(i, j);
-            if(FieldTable::Color == j) {
+            if(static_cast<int>(FieldTableColumn::Color) == j) {
                 item->setFlags(item->flags() ^ Qt::ItemIsEditable);
             }
         }
@@ -59,7 +60,7 @@ void FieldTable::setupItems()
 }
 
 
-void FieldTable::insertField()
+void FieldTableWidget::insertField()
 {
     int row = this->currentRow();
     if(row < 0 || row >= this->rowCount()) return;
@@ -75,7 +76,7 @@ void FieldTable::insertField()
 
 }
 
-void FieldTable::removeField()
+void FieldTableWidget::removeField()
 {
     Q_ASSERT(this->rowCount() > 0);
 
@@ -92,7 +93,7 @@ void FieldTable::removeField()
     this->setupVerticalHeader();
 }
 
-void FieldTable::addField()
+void FieldTableWidget::addField()
 {
     int currentRowCount = this->rowCount();
     this->setRowCount(currentRowCount + 1);
@@ -107,22 +108,22 @@ void FieldTable::addField()
 }
 
 
-void FieldTable::setFieldData(int row, const Field* fld)
+void FieldTableWidget::setFieldData(int row, const Field* fld)
 {
     if(!fld) return;
 
-    this->item(row, FieldTable::X)->setData(Qt::EditRole, fld->x());
-    this->item(row, FieldTable::Y)->setData(Qt::EditRole, fld->y());
-    this->item(row, FieldTable::Weight)->setData(Qt::EditRole, fld->weight());
-    this->item(row, FieldTable::Color)->setBackground(QBrush( rgbToQColor(fld->render_color()) ));
-    this->item(row, FieldTable::VUY)->setData(Qt::EditRole, fld->vuy());
-    this->item(row, FieldTable::VLY)->setData(Qt::EditRole, fld->vly());
-    this->item(row, FieldTable::VUX)->setData(Qt::EditRole, fld->vux());
-    this->item(row, FieldTable::VLX)->setData(Qt::EditRole, fld->vlx());
+    this->item(row, static_cast<int>(FieldTableColumn::X))->setData(Qt::EditRole, fld->x());
+    this->item(row, static_cast<int>(FieldTableColumn::Y))->setData(Qt::EditRole, fld->y());
+    this->item(row, static_cast<int>(FieldTableColumn::Weight))->setData(Qt::EditRole, fld->weight());
+    this->item(row, static_cast<int>(FieldTableColumn::Color))->setBackground(QBrush( rgbToQColor(fld->render_color()) ));
+    this->item(row, static_cast<int>(FieldTableColumn::VUY))->setData(Qt::EditRole, fld->vuy());
+    this->item(row, static_cast<int>(FieldTableColumn::VLY))->setData(Qt::EditRole, fld->vly());
+    this->item(row, static_cast<int>(FieldTableColumn::VUX))->setData(Qt::EditRole, fld->vux());
+    this->item(row, static_cast<int>(FieldTableColumn::VLX))->setData(Qt::EditRole, fld->vlx());
 }
 
 
-void FieldTable::importFieldData(const std::shared_ptr<OpticalSystem> optsys)
+void FieldTableWidget::importFieldData(const std::shared_ptr<OpticalSystem> optsys)
 {
     if( !optsys){
         return;
@@ -143,31 +144,31 @@ void FieldTable::importFieldData(const std::shared_ptr<OpticalSystem> optsys)
 
 }
 
-void FieldTable::applyCurrentData(std::shared_ptr<OpticalSystem> optsys)
+void FieldTableWidget::applyCurrentData(std::shared_ptr<OpticalSystem> optsys)
 {
     optsys->optical_spec()->field_of_view()->clear();
     for(int fi = 0; fi < this->rowCount(); fi++){
-        double x   = this->item(fi, FieldTable::X)->data(Qt::EditRole).toDouble();
-        double y   = this->item(fi, FieldTable::Y)->data(Qt::EditRole).toDouble();
-        double wt  = this->item(fi, FieldTable::Weight)->data(Qt::EditRole).toDouble();
-        QColor color = this->item(fi, FieldTable::Color)->background().color();
+        double x   = this->item(fi, static_cast<int>(FieldTableColumn::X))->data(Qt::EditRole).toDouble();
+        double y   = this->item(fi, static_cast<int>(FieldTableColumn::Y))->data(Qt::EditRole).toDouble();
+        double wt  = this->item(fi, static_cast<int>(FieldTableColumn::Weight))->data(Qt::EditRole).toDouble();
+        QColor color = this->item(fi, static_cast<int>(FieldTableColumn::Color))->background().color();
         Rgb render_color = QColorToRgb(color);
-        double vuy = this->item(fi, FieldTable::VUY)->data(Qt::EditRole).toDouble();
-        double vly = this->item(fi, FieldTable::VLY)->data(Qt::EditRole).toDouble();
-        double vux = this->item(fi, FieldTable::VUX)->data(Qt::EditRole).toDouble();
-        double vlx = this->item(fi, FieldTable::VLX)->data(Qt::EditRole).toDouble();
+        double vuy = this->item(fi, static_cast<int>(FieldTableColumn::VUY))->data(Qt::EditRole).toDouble();
+        double vly = this->item(fi, static_cast<int>(FieldTableColumn::VLY))->data(Qt::EditRole).toDouble();
+        double vux = this->item(fi, static_cast<int>(FieldTableColumn::VUX))->data(Qt::EditRole).toDouble();
+        double vlx = this->item(fi, static_cast<int>(FieldTableColumn::VLX))->data(Qt::EditRole).toDouble();
 
         optsys->optical_spec()->field_of_view()->add(x, y, wt, render_color, vuy, vly, vux, vlx);
     }
 }
 
-void FieldTable::onDoubleClick(QTableWidgetItem* item)
+void FieldTableWidget::onDoubleClick(QTableWidgetItem* item)
 {
     if(!item) return;
 
     int col = item->column();
 
-    if(FieldTable::Color == col){
+    if(static_cast<int>(FieldTableColumn::Color) == col){
         QColor color = QColorDialog::getColor(Qt::black, this, tr("Select Color"), QColorDialog::DontUseNativeDialog);
         if (color.isValid()) {
             item->setBackground(QBrush(color));
@@ -175,7 +176,7 @@ void FieldTable::onDoubleClick(QTableWidgetItem* item)
     }
 }
 
-QColor FieldTable::rgbToQColor(const Rgb& rgb)
+QColor FieldTableWidget::rgbToQColor(const Rgb& rgb)
 {
     int r = (int)(255.0*rgb.r);
     int g = (int)(255.0*rgb.g);
@@ -186,7 +187,7 @@ QColor FieldTable::rgbToQColor(const Rgb& rgb)
     return QColor(r,g,b,a);
 }
 
-Rgb FieldTable::QColorToRgb(const QColor& color)
+Rgb FieldTableWidget::QColorToRgb(const QColor& color)
 {
     double r = (double)color.red() / 255.0;
     double g = (double)color.green() / 255.0;
