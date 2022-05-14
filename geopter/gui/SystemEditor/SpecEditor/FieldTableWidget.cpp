@@ -1,11 +1,12 @@
 #include "FieldTableWidget.h"
-#include "SystemEditor/FloatDelegate.h"
+#include "SystemEditor/Delegate/FloatDelegate.h"
+#include "SystemEditor/SystemDataConstant.h"
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QMenu>
 #include <QColorDialog>
 #include <QDebug>
-#include "SystemEditor/SystemDataConstant.h"
+
 
 FieldTableWidget::FieldTableWidget(QWidget* parent)
     : QTableWidget(parent),

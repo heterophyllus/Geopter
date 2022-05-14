@@ -1,5 +1,5 @@
 #include "SystemEditorWidget.h"
-#include "SpecEditorDlg.h"
+#include "SpecEditor/SpecEditorDlg.h"
 #include <QClipboard>
 #include <QShortcut>
 

@@ -1,10 +1,10 @@
 #include <QDebug>
 #include <QMenu>
 #include "LensDataTableView.h"
-#include "SystemDataConstant.h"
-#include "NotEditableDelegate.h"
-#include "FloatDelegate.h"
-#include "OneByteDelegate.h"
+#include "SystemEditor/SystemDataConstant.h"
+#include "SystemEditor/Delegate/NotEditableDelegate.h"
+#include "SystemEditor/Delegate/FloatDelegate.h"
+#include "SystemEditor/Delegate/OneByteDelegate.h"
 #include "SurfacePropertyDlg.h"
 
 LensDataTableView::LensDataTableView(std::shared_ptr<OpticalSystem> opt_sys, QWidget *parent) :

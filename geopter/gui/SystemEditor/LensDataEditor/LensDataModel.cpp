@@ -1,6 +1,7 @@
 #include "LensDataModel.h"
-#include "SystemDataConstant.h"
+#include "SystemEditor/SystemDataConstant.h"
 #include <QDebug>
+#include <QColor>
 
 LensDataModel::LensDataModel(std::shared_ptr<OpticalSystem> opt_sys, QObject *parent) :
     QAbstractTableModel(parent)
@@ -52,7 +53,6 @@ QVariant LensDataModel::data(const QModelIndex &index, int role) const
         const int i = index.row();
         const int j = index.column();
 
-
         if( LensDataColumn::Label == j){
             return QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->label());
         }else if (LensDataColumn::SurfaceType == j){
@@ -86,15 +86,20 @@ QVariant LensDataModel::data(const QModelIndex &index, int role) const
         }else{
             return QVariant();
         }
-
-    }else{
-        return QVariant();
+    }else if(role == Qt::BackgroundRole){
+        // colorize cells of radius or thickness with solve
+        //return QColor(0,0,255);
     }
+
+    return QVariant();
+
 }
 
 bool LensDataModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if(index.isValid() && role == Qt::EditRole){
+    if( !index.isValid() ) return false;
+
+    if(role == Qt::EditRole){
         const int i = index.row();
         const int j = index.column();
         if(LensDataColumn::Label == j){

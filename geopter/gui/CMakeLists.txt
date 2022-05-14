@@ -37,8 +37,8 @@ set(GEOPTER_GUI_HEADERS
     #OpticalSystemWrapper/QOpticalSpec.h
     #OpticalSystemWrapper/QPupilSpec.h
 
-    TextViewDock.h
-    PlotViewDock.h
+    Dock/TextViewDock.h
+    Dock/PlotViewDock.h
 
     renderer_qcp.h
 
@@ -48,21 +48,23 @@ set(GEOPTER_GUI_HEADERS
 
     SystemEditor/SystemEditorDock.h
     SystemEditor/SystemEditorWidget.h
-    SystemEditor/SurfacePropertyDlg.h
-
     SystemEditor/SystemDataConstant.h
-    SystemEditor/LensDataTableView.h
-    SystemEditor/LensDataModel.h
-    SystemEditor/TableHeaderItem.h
-    SystemEditor/GridTableHeaderView.h
-    SystemEditor/GridTableHeaderModel.h
-    SystemEditor/FloatDelegate.h
-    SystemEditor/OneByteDelegate.h
-    SystemEditor/NotEditableDelegate.h
-    SystemEditor/FieldTableWidget.h
-    SystemEditor/WavelengthTableWidget.h
-    SystemEditor/SpecEditorDlg.h
 
+    SystemEditor/LensDataEditor/LensDataTableView.h
+    SystemEditor/LensDataEditor/LensDataModel.h
+    SystemEditor/LensDataEditor/TableHeaderItem.h
+    SystemEditor/LensDataEditor/GridTableHeaderView.h
+    SystemEditor/LensDataEditor/GridTableHeaderModel.h
+    SystemEditor/LensDataEditor/SurfacePropertyDlg.h
+
+    SystemEditor/Delegate/FloatDelegate.h
+    SystemEditor/Delegate/OneByteDelegate.h
+    SystemEditor/Delegate/NotEditableDelegate.h
+
+    SystemEditor/SpecEditor/SpecEditorDlg.h
+    SystemEditor/SpecEditor/FieldTableWidget.h
+    SystemEditor/SpecEditor/WavelengthTableWidget.h
+    
     AnalysisDlg/AnalysisSettingDlg.h
     AnalysisDlg/PrescriptionDlg.h
     AnalysisDlg/Layout2dDlg.h
@@ -92,8 +94,8 @@ set(GEOPTER_GUI_SOURCES
     #OpticalSystemWrapper/QOpticalSpec.cpp
     #OpticalSystemWrapper/QPupilSpec.cpp
 
-    TextViewDock.cpp
-    PlotViewDock.cpp
+    Dock/TextViewDock.cpp
+    Dock/PlotViewDock.cpp
 
     renderer_qcp.cpp
 
@@ -101,20 +103,21 @@ set(GEOPTER_GUI_SOURCES
 
     SystemEditor/SystemEditorDock.cpp
     SystemEditor/SystemEditorWidget.cpp
-    SystemEditor/SurfacePropertyDlg.cpp
 
-    SystemEditor/LensDataTableView.cpp
-    SystemEditor/LensDataModel.cpp
-    SystemEditor/TableHeaderItem.cpp
-    SystemEditor/GridTableHeaderView.cpp
-    SystemEditor/GridTableHeaderModel.cpp
+    SystemEditor/LensDataEditor/LensDataTableView.cpp
+    SystemEditor/LensDataEditor/LensDataModel.cpp
+    SystemEditor/LensDataEditor/TableHeaderItem.cpp
+    SystemEditor/LensDataEditor/GridTableHeaderView.cpp
+    SystemEditor/LensDataEditor/GridTableHeaderModel.cpp
+    SystemEditor/LensDataEditor/SurfacePropertyDlg.cpp
 
-    SystemEditor/FloatDelegate.cpp
-    SystemEditor/OneByteDelegate.cpp
-    SystemEditor/FieldTableWidget.cpp
-    SystemEditor/WavelengthTableWidget.cpp
-    SystemEditor/SpecEditorDlg.cpp
+    SystemEditor/Delegate/FloatDelegate.cpp
+    SystemEditor/Delegate/OneByteDelegate.cpp
 
+    SystemEditor/SpecEditor/SpecEditorDlg.cpp
+    SystemEditor/SpecEditor/FieldTableWidget.cpp
+    SystemEditor/SpecEditor/WavelengthTableWidget.cpp
+    
     AnalysisDlg/AnalysisSettingDlg.cpp
     AnalysisDlg/PrescriptionDlg.cpp
     AnalysisDlg/Layout2dDlg.cpp
@@ -137,8 +140,8 @@ set(GEOPTER_GUI_FORMS
     MainWindow.ui
 
     GeneralConfigDlg.ui
-    SystemEditor/SurfacePropertyDlg.ui
-    SystemEditor/SpecEditorDlg.ui
+    SystemEditor/LensDataEditor/SurfacePropertyDlg.ui
+    SystemEditor/SpecEditor/SpecEditorDlg.ui
 
     AnalysisDlg/PrescriptionDlg.ui
     AnalysisDlg/Layout2dDlg.ui

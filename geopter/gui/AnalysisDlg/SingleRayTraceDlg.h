@@ -2,7 +2,7 @@
 #define SINGLE_RAY_TRACE_DIALOG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "TextViewDock.h"
+#include "Dock/TextViewDock.h"
 
 namespace Ui {
 class SingleRayTraceDlg;

@@ -1,6 +1,6 @@
 #include "SpecEditorDlg.h"
 #include "ui_SpecEditorDlg.h"
-#include "SystemDataConstant.h"
+#include "SystemEditor/SystemDataConstant.h"
 #include <QMenu>
 #include <QDebug>
 

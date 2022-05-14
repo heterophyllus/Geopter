@@ -2,8 +2,8 @@
 #define SPECEDITORDLG_H
 
 #include <QDialog>
-#include "SystemEditor/FieldTableWidget.h"
-#include "SystemEditor/WavelengthTableWidget.h"
+#include "FieldTableWidget.h"
+#include "WavelengthTableWidget.h"
 
 namespace Ui {
 class SpecEditorDlg;

@@ -4,8 +4,8 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QGridLayout>
-#include "LensDataTableView.h"
-#include "SpecEditorDlg.h"
+#include "LensDataEditor/LensDataTableView.h"
+#include "SpecEditor/SpecEditorDlg.h"
 
 /** The widget inside of central dock that includes "Specification" button and lens data spreadsheet view */
 class SystemEditorWidget : public QWidget

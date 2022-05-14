@@ -2,7 +2,7 @@
 #include <QVBoxLayout>
 
 #include "SystemEditorDock.h"
-#include "SpecEditorDlg.h"
+#include "SpecEditor/SpecEditorDlg.h"
 
 SystemEditorDock::SystemEditorDock(std::shared_ptr<OpticalSystem> opt_sys, QString label, QWidget *parent) :
     ads::CDockWidget(label, parent),

@@ -2,7 +2,7 @@
 #define PRESCRIPTION_SETTING_DIALOG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "TextViewDock.h"
+#include "Dock/TextViewDock.h"
 
 namespace Ui {
 class PrescriptionDlg;

@@ -12,8 +12,6 @@
 #include "MainWindow.h"
 #include "./ui_MainWindow.h"
 
-#include "TextViewDock.h"
-#include "PlotViewDock.h"
 #include "GeneralConfigDlg.h"
 
 #include "renderer_qcp.h"

@@ -1,12 +1,12 @@
 #include "WavelengthTableWidget.h"
-#include "SystemEditor/FloatDelegate.h"
+#include "SystemEditor/Delegate/FloatDelegate.h"
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QMenu>
 #include <QColorDialog>
 #include <QInputDialog>
 #include <QDebug>
-#include "SystemDataConstant.h"
+#include "SystemEditor/SystemDataConstant.h"
 
 WavelengthTableWidget::WavelengthTableWidget(QWidget* parent)
     : QTableWidget(parent),

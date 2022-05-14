@@ -2,7 +2,7 @@
 #define LAYOUT_DIALOG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "PlotViewDock.h"
+#include "Dock/PlotViewDock.h"
 #include "renderer_qcp.h"
 
 namespace Ui {
