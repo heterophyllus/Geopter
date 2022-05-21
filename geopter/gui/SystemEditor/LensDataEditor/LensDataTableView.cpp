@@ -6,6 +6,7 @@
 #include "SystemEditor/Delegate/FloatDelegate.h"
 #include "SystemEditor/Delegate/OneByteDelegate.h"
 #include "SurfacePropertyDlg.h"
+#include <QInputDialog>
 
 LensDataTableView::LensDataTableView(std::shared_ptr<OpticalSystem> opt_sys, QWidget *parent) :
     QTableView(parent),
@@ -158,6 +159,8 @@ void LensDataTableView::showContextMenuOnCell()
     QMenu contextMenu;
     QAction *action1 = contextMenu.addAction("Property");
     QObject::connect(action1, SIGNAL(triggered()), this, SLOT(showSurfacePropertyDlg()));
+    QAction *action2 = contextMenu.addAction("Solve");
+    QObject::connect(action2, SIGNAL(triggered()), this, SLOT(showSolveSelectionDlg()));
 
     contextMenu.exec(QCursor::pos());
 }
@@ -194,6 +197,15 @@ void LensDataTableView::showSurfacePropertyDlg()
     if(dlg.exec() == QDialog::Accepted){
         m_opt_sys->update_model();
     }
+}
+
+void LensDataTableView::showSolveSelectionDlg()
+{
+    bool ok;
+    QStringList items({ "Edge Thickness", "Overall Length", "Paraxial Image" });
+
+    QString item = QInputDialog::getItem(this, tr("Solve"), tr("Solve Type"), items, 0, false, &ok);
+    qDebug() << "Selected item= " << item;
 }
 
 void LensDataTableView::onDoubleClick(const QModelIndex &index)

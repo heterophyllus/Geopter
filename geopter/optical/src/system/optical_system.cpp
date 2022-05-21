@@ -53,6 +53,9 @@ OpticalSystem::OpticalSystem() :
     opt_assembly_ = std::make_unique<OpticalAssembly>();
     material_lib_ = std::make_unique<MaterialLibrary>();
     parax_data_   = std::make_unique<ParaxialData>();
+
+    gap_solves_.clear();
+    surface_solves_.clear();
 }
 
 OpticalSystem::~OpticalSystem()
@@ -69,6 +72,19 @@ void OpticalSystem::clear()
     note_ = "";
     opt_assembly_->clear();
     opt_spec_->clear();
+
+    auto gs_itr = gap_solves_.begin();
+    while (gs_itr != gap_solves_.end()) {
+        gs_itr->second.reset();
+    }
+    gap_solves_.clear();
+
+    auto ss_itr = surface_solves_.begin();
+    while (ss_itr != surface_solves_.end()) {
+        ss_itr->second.reset();
+    }
+    surface_solves_.clear();
+
 }
 
 std::string OpticalSystem::title() const
@@ -103,8 +119,25 @@ void OpticalSystem::initialize()
 
 void OpticalSystem::remove_gap_solve(int i)
 {
-    auto itr = gap_solves_.cbegin();
-    gap_solves_.erase(itr + i);
+    gap_solves_.erase(i);
+}
+
+bool OpticalSystem::has_gap_solve_at(int i)
+{
+    if(gap_solves_.find(i) == gap_solves_.end()){
+        return false;
+    }else{
+        return true;;
+    }
+}
+
+bool OpticalSystem::has_surface_solve_at(int i)
+{
+    if(surface_solves_.find(i) == surface_solves_.end()){
+        return false;
+    }else{
+        return true;
+    }
 }
 
 void OpticalSystem::update_model()
@@ -284,8 +317,16 @@ void OpticalSystem::update_semi_diameters()
 
 void OpticalSystem::update_solve()
 {
-    for(auto &s : gap_solves_){
-        s->apply(this);
+    auto gs_itr = gap_solves_.begin();
+    while(gs_itr != gap_solves_.end()){
+        gs_itr->second->apply(this);
+        gs_itr++;
+    }
+
+    auto ss_itr = surface_solves_.begin();
+    while (ss_itr != surface_solves_.end()) {
+        ss_itr->second->apply(this);
+        ss_itr++;
     }
 }
 

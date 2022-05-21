@@ -44,18 +44,21 @@ enum FieldType{
 class FieldSpec
 {
 public:
-    FieldSpec(int field_type=1);
+    FieldSpec();
+    FieldSpec(int field_type);
     ~FieldSpec();
-
 
     /** Returns current field type */
     inline int field_type() const;
 
     /** Get number of fields */
-    inline int field_count();
+    inline int field_count() const;
 
     /** Access to field component */
-    inline Field* field(int i);
+    inline Field* field(int i) const;
+
+    /** Returns the maximum field of view */
+    inline double max_field() const;
 
     /**
      * @brief Set field type
@@ -69,19 +72,18 @@ public:
     /** Remove field at the given index */
     void remove(int i);
 
-    /** Calculates the maximum field of view */
-    double max_field();
-
     void clear();
 
     void print();
     void print(std::ostringstream& oss);
 
 protected:
+    void update();
+
     int field_type_;
     std::vector< std::unique_ptr<Field> > fields_;
+    double max_field_;
 };
-
 
 
 int FieldSpec::field_type() const
@@ -89,14 +91,19 @@ int FieldSpec::field_type() const
     return field_type_;
 }
 
-Field* FieldSpec::field(int i)
+Field* FieldSpec::field(int i) const
 {
     return fields_[i].get();
 }
 
-int FieldSpec::field_count()
+int FieldSpec::field_count() const
 {
     return (int)fields_.size();
+}
+
+double FieldSpec::max_field() const
+{
+    return max_field_;
 }
 
 } //namespace geopter

@@ -33,10 +33,12 @@
 
 using namespace geopter;
 
-WvlSpec::WvlSpec()
+WvlSpec::WvlSpec() :
+    reference_index_(0),
+    higher_(0.0),
+    lower_(0.0)
 {
     clear();
-    reference_index_ = 0;
 }
 
 
@@ -50,34 +52,6 @@ WvlSpec::~WvlSpec()
     }
 }
 
-
-double WvlSpec::lower_wavelength() const
-{
-    assert(wvls_.size() > 0);
-
-    double lower = wvls_[0]->value();
-    for(int i = 0; i < (int)wvls_.size(); i++){
-        if(lower > wvls_[i]->value()){
-            lower = wvls_[i]->value();
-        }
-    }
-
-    return lower;
-}
-
-double WvlSpec::higher_wavelength() const
-{
-    assert(wvls_.size() > 0);
-
-    double higher = wvls_[0]->value();
-    for(int i = 0; i < (int)wvls_.size(); i++){
-        if(higher < wvls_[i]->value()){
-            higher = wvls_[i]->value();
-        }
-    }
-
-    return higher;
-}
 
 std::vector<double> WvlSpec::get_wavelength_list() const
 {
@@ -107,6 +81,7 @@ void WvlSpec::add(double wl, double wt, Rgb render_color)
 {
     auto w = std::make_unique<Wvl>(wl, wt, render_color);
     wvls_.push_back(std::move(w));
+    update();
 }
 
 void WvlSpec::remove(int i)
@@ -117,7 +92,8 @@ void WvlSpec::remove(int i)
         wvls_[i].reset();
         auto itr = wvls_.begin() + i;
         wvls_.erase(itr);
-   }
+    }
+    update();
 }
 
 void WvlSpec::clear()
@@ -129,6 +105,26 @@ void WvlSpec::clear()
         wvls_.clear();
     }
     reference_index_ = 0;
+
+    higher_ = 0.0;
+    lower_ = 0.0;
+}
+
+void WvlSpec::update()
+{
+    assert( !wvls_.empty());
+
+    higher_ = wvls_[0]->value();
+    lower_ = wvls_[0]->value();
+    for(int i = 0; i < (int)wvls_.size(); i++){
+        if(higher_ < wvls_[i]->value()){
+            higher_ = wvls_[i]->value();
+        }
+
+        if(lower_ > wvls_[i]->value()){
+            lower_ = wvls_[i]->value();
+        }
+    }
 }
 
 void WvlSpec::print()

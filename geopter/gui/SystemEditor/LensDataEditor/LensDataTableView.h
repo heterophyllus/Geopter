@@ -28,6 +28,7 @@ private slots:
     void removeRow();
     void setStop();
     void showSurfacePropertyDlg();
+    void showSolveSelectionDlg();
 
     void horizontalHeaderSectionPressed(int beginSection, int endSection);
     void verticalHeaderSectionPressed(int beginSection, int endSection);

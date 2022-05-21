@@ -32,6 +32,7 @@
 #include <memory>
 #include <sstream>
 #include <vector>
+#include <map>
 #include <cassert>
 
 #include "spec/optical_spec.h"
@@ -97,6 +98,9 @@ public:
 
     void remove_gap_solve(int i);
 
+    bool has_surface_solve_at(int i);
+    bool has_gap_solve_at(int i);
+
     void set_vignetting_factors();
 
     void update_model();
@@ -120,7 +124,8 @@ protected:
     std::unique_ptr<ParaxialData> parax_data_;
     std::unique_ptr<MaterialLibrary> material_lib_;
 
-    std::vector< std::unique_ptr<Solve> > gap_solves_;
+    std::map<int, std::unique_ptr<Solve> > gap_solves_;
+    std::map<int, std::unique_ptr<Solve> > surface_solves_;
 
     std::string title_;
     std::string note_;
@@ -161,7 +166,7 @@ void OpticalSystem::add_gap_solve(int gap_index, double value, double height)
 {
     switch (Type) {
     case Solve::SolveType::EdgeThickness:
-        gap_solves_.emplace_back(std::make_unique<EdgeThicknessSolve>(gap_index, value, height));
+        gap_solves_.emplace(gap_index, std::make_unique<EdgeThicknessSolve>(gap_index, value, height));
         break;
     default:
         std::cerr << "syntax error in add_gap_solve" << std::endl;
@@ -174,7 +179,7 @@ void OpticalSystem::add_gap_solve(int gap_index, double value, int s1, int s2)
 {
     switch (Type) {
     case Solve::SolveType::OverallLength:
-        gap_solves_.emplace_back(std::make_unique<OverallLengthSolve>(gap_index, value, s1, s2));
+        gap_solves_.emplace(gap_index, std::make_unique<OverallLengthSolve>(gap_index, value, s1, s2));
         break;
     default:
         std::cerr << "syntax error in add_gap_solve" << std::endl;
@@ -186,7 +191,7 @@ void OpticalSystem::add_gap_solve()
 {
     switch (Type) {
     case Solve::SolveType::ParaxialImageDistance:
-        gap_solves_.emplace_back(std::make_unique<ParaxialImageSolve>());
+        gap_solves_.emplace(optical_assembly()->image_space_gap(), std::make_unique<ParaxialImageSolve>());
         break;
     default:
         std::cerr << "syntax error in add_gap_solve" << std::endl;

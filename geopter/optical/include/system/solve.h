@@ -72,11 +72,11 @@ class OverallLengthSolve : public Solve
 public:
     OverallLengthSolve(int gi, double value, int s1, int s2);
     void apply(OpticalSystem* opt_sys) override;
+
 private:
     int surface1_;
     int surface2_;
     int gap_index_;
-
 };
 
 class ParaxialImageSolve : public Solve

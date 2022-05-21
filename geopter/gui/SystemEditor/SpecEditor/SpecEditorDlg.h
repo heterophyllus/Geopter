@@ -2,8 +2,8 @@
 #define SPECEDITORDLG_H
 
 #include <QDialog>
-#include "FieldTableWidget.h"
-#include "WavelengthTableWidget.h"
+#include "optical.h"
+using namespace geopter;
 
 namespace Ui {
 class SpecEditorDlg;
@@ -21,16 +21,12 @@ public:
     void applyData(std::shared_ptr<OpticalSystem> optsys);
 
 private slots:
-    /*
-    void onAddWavelength();
-    void onInsertWavelength();
-    void onRemoveWavelength();
-    */
     void catchValueEdited();
     void setupReferenceWavelengthCombo(int current= -1);
 
 private:
     Ui::SpecEditorDlg *ui;
+
 };
 
 #endif // SPECEDITORDLG_H

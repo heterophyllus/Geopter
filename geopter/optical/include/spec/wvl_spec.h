@@ -52,20 +52,20 @@ public:
     /** Returns current reference wavelength index */
     inline int reference_index() const;
 
+    /** Set reference index to the given index */
+    inline void set_reference_index(int i);
+
     /** Returns minimum wavelength value in current spectral region */
-    double lower_wavelength() const;
+    inline double lower_wavelength() const;
 
     /** Returns maximum wavelength value in current spectral region */
-    double higher_wavelength() const;
+    inline double higher_wavelength() const;
 
     /** Returns wavelength value list */
     std::vector<double> get_wavelength_list() const;
 
     /** Returns wavelength weight list */
     std::vector<double> get_weight_list() const;
-
-    /** Set reference index to the given index */
-    inline void set_reference_index(int i);
 
     /** Add a new wavelength */
     void add(double wl, double wt= 1.0, Rgb render_color= rgb_black);
@@ -79,9 +79,14 @@ public:
     void print(std::ostringstream& oss);
 
 private:
+    void update();
+
     int reference_index_;
 
     std::vector< std::unique_ptr<Wvl> > wvls_;
+
+    double higher_;
+    double lower_;
 };
 
 
@@ -106,10 +111,19 @@ double WvlSpec::reference_wvl() const
     return wvls_[reference_index_]->value();
 }
 
-
 void WvlSpec::set_reference_index(int i)
 {
     reference_index_ = i;
+}
+
+double WvlSpec::lower_wavelength() const
+{
+    return lower_;
+}
+
+double WvlSpec::higher_wavelength() const
+{
+    return higher_;
 }
 
 } //namespace geopter

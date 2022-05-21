@@ -1,6 +1,10 @@
 #include "SpecEditorDlg.h"
 #include "ui_SpecEditorDlg.h"
 #include "SystemEditor/SystemDataConstant.h"
+#include "FieldTableView.h"
+#include "FieldTableModel.h"
+#include "WavelengthTableView.h"
+#include "WavelengthTableModel.h"
 #include <QMenu>
 #include <QDebug>
 
@@ -18,16 +22,17 @@ SpecEditorDlg::SpecEditorDlg(QWidget *parent) :
     //field
     QStringList fieldTypeList({"Object Angle","Object Height","Paraxial Image Height"});
     ui->fieldTypeCombo->addItems(fieldTypeList);
+    ui->fieldTable->init();
 
     // in modal dialog, context menu doesn't work, so we implement buttons instead
-    QObject::connect(ui->insertFieldButton, SIGNAL(clicked()), ui->fieldTable, SLOT(insertField()));
-    QObject::connect(ui->removeFieldButton, SIGNAL(clicked()), ui->fieldTable, SLOT(removeField()));
-    QObject::connect(ui->addFieldButton,    SIGNAL(clicked()), ui->fieldTable, SLOT(addField()));
+    QObject::connect(ui->insertFieldButton, SIGNAL(clicked()), ui->fieldTable, SLOT(insertRow()));
+    QObject::connect(ui->removeFieldButton, SIGNAL(clicked()), ui->fieldTable, SLOT(removeRow()));
+    QObject::connect(ui->addFieldButton,    SIGNAL(clicked()), ui->fieldTable, SLOT(addRow()));
 
     // wavelength
-    QObject::connect(ui->insertWavelengthButton, SIGNAL(clicked()), ui->wavelengthTable, SLOT(insertWavelength()));
-    QObject::connect(ui->removeWavelengthButton, SIGNAL(clicked()), ui->wavelengthTable, SLOT(removeWavelength()));
-    QObject::connect(ui->addWavelengthButton,    SIGNAL(clicked()), ui->wavelengthTable, SLOT(addWavelength()));
+    QObject::connect(ui->insertWavelengthButton, SIGNAL(clicked()), ui->wavelengthTable, SLOT(insertRow()));
+    QObject::connect(ui->removeWavelengthButton, SIGNAL(clicked()), ui->wavelengthTable, SLOT(removeRow()));
+    QObject::connect(ui->addWavelengthButton,    SIGNAL(clicked()), ui->wavelengthTable, SLOT(addRow()));
     QObject::connect(ui->wavelengthTable,        SIGNAL(setupCompleted()), this, SLOT(setupReferenceWavelengthCombo()));
     QObject::connect(ui->wavelengthTable,        SIGNAL(valueEdited()), this, SLOT(setupReferenceWavelengthCombo()));
 
@@ -55,11 +60,11 @@ void SpecEditorDlg::loadData(const std::shared_ptr<OpticalSystem> optsys)
     // fields
     int fieldType = optsys->optical_spec()->field_of_view()->field_type();
     ui->fieldTypeCombo->setCurrentIndex(fieldType);
-    ui->fieldTable->importFieldData(optsys);
+    dynamic_cast<FieldTableModel*>(ui->fieldTable->model())->setData(optsys);
 
     // wavelengths
-    ui->wavelengthTable->importWavelengthData(optsys);
     int refWvlIdx = optsys->optical_spec()->spectral_region()->reference_index();
+    dynamic_cast<WavelengthTableModel*>(ui->wavelengthTable->model())->setData(optsys);
     setupReferenceWavelengthCombo(refWvlIdx);
 
     // title/note
@@ -86,10 +91,10 @@ void SpecEditorDlg::applyData(std::shared_ptr<OpticalSystem> optsys)
     // fields
     int fieldType = ui->fieldTypeCombo->currentIndex();
     optsys->optical_spec()->field_of_view()->set_field_type(fieldType);
-    ui->fieldTable->applyCurrentData(optsys);
+    dynamic_cast<FieldTableModel*>(ui->fieldTable->model())->applyData(optsys);
 
     // wavelength
-    ui->wavelengthTable->applyCurrentData(optsys);
+    dynamic_cast<WavelengthTableModel*>(ui->wavelengthTable->model())->applyData(optsys);
     int ref = ui->referenceWavelengthCombo->currentIndex();
     optsys->optical_spec()->spectral_region()->set_reference_index(ref);
 
@@ -107,33 +112,23 @@ void SpecEditorDlg::applyData(std::shared_ptr<OpticalSystem> optsys)
     optsys->update_model();
 }
 
-/*
-void SpecEditorDlg::onAddWavelength()
-{
-    int current = ui->referenceWavelengthCombo->currentIndex();
-    ui->wavelengthTable->addWavelength();
-    this->setupReferenceWavelengthCombo(current);
-}
-
-void SpecEditorDlg::onInsertWavelength()
-{
-    ui->wavelengthTable->insertWavelength();
-}
-*/
 
 void SpecEditorDlg::setupReferenceWavelengthCombo(int current)
 {
     if(current < 0) {
         current = ui->referenceWavelengthCombo->currentIndex();
     }
-    int wvlCount = ui->wavelengthTable->rowCount();
+    int wvlCount = dynamic_cast<WavelengthTableModel*>(ui->wavelengthTable->model())->rowCount();
     QStringList wavelengthList;
     for(int wi = 0; wi < wvlCount; wi++){
         // W0: 630.00
         // W1: 588.00
         // W2: 475.00
         // ...
-        double val = ui->wavelengthTable->item(wi, static_cast<int>(WavelengthTableColumn::Value))->data(Qt::EditRole).toDouble();
+        int row = wi;
+        int col = static_cast<int>(WavelengthTableColumn::Value);
+        QModelIndex index = dynamic_cast<WavelengthTableModel*>(ui->wavelengthTable->model())->index(row, col);
+        double val = dynamic_cast<WavelengthTableModel*>(ui->wavelengthTable->model())->data(index).toDouble();
         wavelengthList << "W" + QString::number(wi) + ": " + QString::number(val);
     }
 

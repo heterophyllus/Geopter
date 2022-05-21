@@ -62,9 +62,13 @@ set(GEOPTER_GUI_HEADERS
     SystemEditor/Delegate/NotEditableDelegate.h
 
     SystemEditor/SpecEditor/SpecEditorDlg.h
-    SystemEditor/SpecEditor/FieldTableWidget.h
-    SystemEditor/SpecEditor/WavelengthTableWidget.h
-    
+    SystemEditor/SpecEditor/FieldTableView.h
+    SystemEditor/SpecEditor/FieldTableModel.h
+    SystemEditor/SpecEditor/FieldData.h
+    SystemEditor/SpecEditor/WavelengthTableView.h
+    SystemEditor/SpecEditor/WavelengthTableModel.h
+    SystemEditor/SpecEditor/WavelengthData.h
+
     AnalysisDlg/AnalysisSettingDlg.h
     AnalysisDlg/PrescriptionDlg.h
     AnalysisDlg/Layout2dDlg.h
@@ -115,8 +119,10 @@ set(GEOPTER_GUI_SOURCES
     SystemEditor/Delegate/OneByteDelegate.cpp
 
     SystemEditor/SpecEditor/SpecEditorDlg.cpp
-    SystemEditor/SpecEditor/FieldTableWidget.cpp
-    SystemEditor/SpecEditor/WavelengthTableWidget.cpp
+    SystemEditor/SpecEditor/FieldTableView.cpp
+    SystemEditor/SpecEditor/FieldTableModel.cpp
+    SystemEditor/SpecEditor/WavelengthTableView.cpp
+    SystemEditor/SpecEditor/WavelengthTableModel.cpp
     
     AnalysisDlg/AnalysisSettingDlg.cpp
     AnalysisDlg/PrescriptionDlg.cpp

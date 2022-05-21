@@ -17,7 +17,7 @@
    <item>
     <widget class="QToolBox" name="toolBox">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="pupilPage">
       <property name="geometry">
@@ -120,16 +120,13 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="insertFieldButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+       <item row="0" column="1" colspan="3">
+        <widget class="QComboBox" name="fieldTypeCombo"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>Insert</string>
+          <string>Field Type:</string>
          </property>
         </widget>
        </item>
@@ -143,6 +140,19 @@
          </property>
          <property name="text">
           <string>Remove</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="insertFieldButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Insert</string>
          </property>
         </widget>
        </item>
@@ -160,17 +170,7 @@
         </spacer>
        </item>
        <item row="2" column="0" colspan="4">
-        <widget class="FieldTableWidget" name="fieldTable"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Field Type:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="3">
-        <widget class="QComboBox" name="fieldTypeCombo"/>
+        <widget class="FieldTableView" name="fieldTable"/>
        </item>
       </layout>
      </widget>
@@ -187,32 +187,6 @@
        <string>Wavelengths</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="3">
-        <widget class="QPushButton" name="addWavelengthButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Add</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="insertWavelengthButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Insert</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="2">
         <widget class="QPushButton" name="removeWavelengthButton">
          <property name="sizePolicy">
@@ -239,9 +213,6 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="0" colspan="4">
-        <widget class="WavelengthTableWidget" name="wavelengthTable"/>
-       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
@@ -251,6 +222,35 @@
        </item>
        <item row="2" column="1" colspan="3">
         <widget class="QComboBox" name="referenceWavelengthCombo"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="insertWavelengthButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Insert</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="addWavelengthButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="4">
+        <widget class="WavelengthTableView" name="wavelengthTable"/>
        </item>
       </layout>
      </widget>
@@ -341,14 +341,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FieldTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header>SystemEditor/FieldTable.h</header>
+   <class>FieldTableView</class>
+   <extends>QTableView</extends>
+   <header>SystemEditor/SpecEditor/FieldTableView.h</header>
   </customwidget>
   <customwidget>
-   <class>WavelengthTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header>SystemEditor/WavelengthTable.h</header>
+   <class>WavelengthTableView</class>
+   <extends>QTableView</extends>
+   <header>SystemEditor/SpecEditor/WavelengthTableView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   field_spec.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #include "spec/field_spec.h"
 
 #include <iostream>
@@ -38,9 +30,16 @@
 
 using namespace geopter;
 
+FieldSpec::FieldSpec()
+{
+    field_type_ = FieldType::OBJ_ANG;
+    max_field_ = 0.0;
+}
+
 FieldSpec::FieldSpec(int field_type)
 {
     field_type_ = field_type;
+    max_field_ = 0.0;
 }
 
 FieldSpec::~FieldSpec()
@@ -48,25 +47,17 @@ FieldSpec::~FieldSpec()
     clear();
 }
 
-
 void FieldSpec::set_field_type(int i)
 {
-    switch (i) {
-    case FieldType::OBJ_ANG:
-    case FieldType::OBJ_HT:
-    case FieldType::IMG_HT:
-        field_type_ = i;
-        break;
-
-    default:
-        throw("Unknown field type");
-    }
+    assert( i >= 0 && i < 3);
+    field_type_ = i;
 }
 
 void FieldSpec::add(double x, double y, double wt, Rgb color, double vuy, double vly, double vux, double vlx)
 {
     auto fld = std::make_unique<Field>(x, y, wt, color, vuy, vly, vux, vlx);
     fields_.push_back(std::move(fld));
+    update();
 }
 
 void FieldSpec::remove(int i)
@@ -79,24 +70,28 @@ void FieldSpec::remove(int i)
         auto itr = fields_.begin() + i;
         fields_.erase(itr);
     }
-
+    update();
 }
 
 
-double FieldSpec::max_field()
+void FieldSpec::update()
 {
+    assert(!fields_.empty());
+
     double max_fld_sqrd = 0.0;
 
     for(auto& f : fields_)
     {
-        double fld_sqrd = f->x()*f->x() + f->y()*f->y();
+        double x = f->x();
+        double y = f->y();
+        double fld_sqrd = x*x + y*y;
         if(fld_sqrd > max_fld_sqrd)
         {
             max_fld_sqrd = fld_sqrd;
         }
     }
 
-    return sqrt(max_fld_sqrd);
+    max_field_ = sqrt(max_fld_sqrd);
 }
 
 void FieldSpec::clear()
@@ -107,6 +102,7 @@ void FieldSpec::clear()
         }
         fields_.clear();
     }
+    max_field_ = 0.0;
 }
 
 

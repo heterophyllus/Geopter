@@ -49,9 +49,10 @@ QVariant LensDataModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
+    const int i = index.row();
+    const int j = index.column();
+
     if(role == Qt::DisplayRole || role == Qt::EditRole){
-        const int i = index.row();
-        const int j = index.column();
 
         if( LensDataColumn::Label == j){
             return QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->label());
@@ -89,6 +90,7 @@ QVariant LensDataModel::data(const QModelIndex &index, int role) const
     }else if(role == Qt::BackgroundRole){
         // colorize cells of radius or thickness with solve
         //return QColor(0,0,255);
+
     }
 
     return QVariant();
