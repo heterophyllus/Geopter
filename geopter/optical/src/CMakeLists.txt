@@ -21,13 +21,13 @@ set(OPTICAL_SRCS
     analysis/diffractive_mtf.cpp
 
     assembly/optical_assembly.cpp
-    assembly/interface.cpp
     assembly/surface.cpp
     assembly/aperture.cpp
     assembly/circular.cpp
     assembly/gap.cpp
     assembly/decenter_data.cpp
     assembly/transformation.cpp
+    assembly/solve.cpp
 
     profile/surface_profile.cpp
     profile/spherical.cpp
@@ -61,7 +61,6 @@ set(OPTICAL_SRCS
 
     system/optical_system.cpp
     system/paraxial_data.cpp
-    system/solve.cpp
 
     paraxial/paraxial_ray.cpp
     paraxial/paraxial_path.cpp

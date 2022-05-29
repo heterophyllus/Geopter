@@ -23,28 +23,28 @@
 **             Date: May 4th, 2022
 ********************************************************************************/
 
-#include "system/solve.h"
+#include "assembly/solve.h"
 #include "system/optical_system.h"
 
 using namespace geopter;
-
-Solve::Solve()
-{
-    value_ = 0.0;
-}
-
-Solve::~Solve()
-{
-
-}
 
 
 EdgeThicknessSolve::EdgeThicknessSolve(int gap_index, double height, double value) :
     Solve()
 {
+    solve_type_ = SolveType::EdgeThickness;
     gap_index_ = gap_index;
     height_ = height;
     value_ = value;
+}
+
+bool EdgeThicknessSolve::check(const OpticalSystem *opt_sys)
+{
+    if(gap_index_ < 0 || height_ < 0.0 || value_ < 0.0) return false;
+
+    if(gap_index_ > opt_sys->optical_assembly()->gap_count()-1) return false;
+
+    return true;
 }
 
 void EdgeThicknessSolve::apply(OpticalSystem* opt_sys)
@@ -61,10 +61,20 @@ void EdgeThicknessSolve::apply(OpticalSystem* opt_sys)
 
 OverallLengthSolve::OverallLengthSolve(int gi, double value, int s1, int s2) : Solve()
 {
+    solve_type_ = SolveType::OverallLength;
     surface1_ = s1;
     surface2_ = s2;
     gap_index_ = gi;
     value_ = value;
+}
+
+bool OverallLengthSolve::check(const OpticalSystem *opt_sys)
+{
+    if(surface1_ >= surface2_) return false;
+    if(surface2_ > opt_sys->optical_assembly()->surface_count()-1) return false;
+    if(gap_index_ > opt_sys->optical_assembly()->gap_count()-1) return false;
+
+    return true;
 }
 
 void OverallLengthSolve::apply(OpticalSystem *opt_sys)
@@ -77,10 +87,17 @@ void OverallLengthSolve::apply(OpticalSystem *opt_sys)
 }
 
 
-ParaxialImageSolve::ParaxialImageSolve() :
+ParaxialImageSolve::ParaxialImageSolve(int gi) :
     Solve()
 {
+    solve_type_ = SolveType::ParaxialImageDistance;
+    gap_index_ = gi;
+}
 
+bool ParaxialImageSolve::check(const OpticalSystem *opt_sys)
+{
+    if(gap_index_ == opt_sys->optical_assembly()->gap_count() -1) return true;
+    return false;
 }
 
 void ParaxialImageSolve::apply(OpticalSystem* opt_sys)
@@ -99,7 +116,7 @@ void ParaxialImageSolve::apply(OpticalSystem* opt_sys)
         double phi = (n_prime - n)*c;
         double d = opt_sys->optical_assembly()->gap(i)->thi();
 
-        l_prime = n_prime/(phi - n/l);
+        l_prime = n_prime/(phi + n/l);
 
         l = l_prime - d;
     }

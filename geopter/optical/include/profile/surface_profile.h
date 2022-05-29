@@ -46,17 +46,17 @@ public:
     SurfaceProfile();
     virtual ~SurfaceProfile();
 
-    virtual std::string name() const;
+    inline std::string name() const;
 
-    virtual void set_cv(double c);
+    inline void set_cv(double c);
 
     /** Returns center curvature */
-    virtual double cv() const;
+    inline double cv() const;
 
-    virtual void set_radius(double r);
+    void set_radius(double r);
 
     /** Returns center radius */
-    virtual double radius() const;
+    double radius() const;
 
     /** Returns the value of the profile function at point @param{p} */
     virtual double f(const Eigen::Vector3d& p) const;
@@ -92,6 +92,23 @@ protected:
     std::string name_;
     double eps_;
 };
+
+std::string SurfaceProfile::name() const
+{
+    return name_;
+}
+
+double SurfaceProfile::cv() const
+{
+    return cv_;
+}
+
+void SurfaceProfile::set_cv(double c)
+{
+    cv_ = c;
+}
+
+
 
 } //namespace geopter
 

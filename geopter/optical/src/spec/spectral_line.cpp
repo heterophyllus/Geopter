@@ -64,6 +64,9 @@ double SpectralLine::wavelength(const std::string& spectralname)
     else if(spectralname == "C_"){
         return SpectralLine::C_;
     }
+    else if(spectralname == "C\'"){
+        return SpectralLine::C_;
+    }
     else if(spectralname == "D"){
         return SpectralLine::D;
     }

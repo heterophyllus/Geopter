@@ -29,8 +29,10 @@
 
 #include <vector>
 #include <iostream>
+#include <map>
 #include "assembly/surface.h"
 #include "assembly/gap.h"
+#include "assembly/solve.h"
 #include "common/string_tool.h"
 
 namespace geopter {
@@ -79,7 +81,6 @@ public:
     /** Returns the last gap */
     Gap* image_space_gap() const;
 
-
     /** Set the given surface as stop */
     void set_stop(int i);
 
@@ -95,12 +96,13 @@ public:
     /** Remove surface and gap from sequence model */
     void remove(int i);
 
-
     /** Compute and update global surface coordinates with reference to @param{ref_srf} */
     void set_global_transforms(int ref_srf=1);
 
     /** Compute and update forward surface coordinates (r.T, t) for each interface */
     void set_local_transforms();
+
+    void set_gap_solve(int gi, std::unique_ptr<Solve> solve);
 
     void update_model();
 
@@ -118,8 +120,10 @@ private:
 
     int stop_index_;
     int current_surface_index_;
-};
 
+    std::map<int, std::unique_ptr<Solve> > gap_solves_;
+    std::map<int, std::unique_ptr<Solve> > surface_solves_;
+};
 
 
 

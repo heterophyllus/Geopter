@@ -42,11 +42,6 @@ Spherical::~Spherical()
 
 }
 
-double Spherical::f(const Eigen::Vector3d& p) const
-{
-    return p(2) - 0.5*cv_*p.dot(p);
-}
-
 
 
 double Spherical::sag(double x, double y) const
@@ -64,7 +59,7 @@ double Spherical::sag(double x, double y) const
             return NAN;
         }
 
-        double adj = sqrt(r*r - x*x - y*y);
+        double adj = sqrt(adj2);
 
         return r*(1-fabs(adj/r));
     }
@@ -87,7 +82,7 @@ bool Spherical::intersect(Eigen::Vector3d &pt, double &distance, const Eigen::Ve
         return false;
     }
     else{
-        distance = cx2/(z_dir*sqrt(b*b - ax2*cx2) -b );
+        distance = cx2/(z_dir*sqrt(inside_sqrt) -b );
         pt = p0 + distance*dir;
     }
 

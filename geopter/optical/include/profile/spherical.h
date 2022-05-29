@@ -38,7 +38,7 @@ public:
     Spherical(double c=0.0);
     ~Spherical();
 
-    double f(const Eigen::Vector3d& p) const override;
+    inline double f(const Eigen::Vector3d& p) const override;
     inline Eigen::Vector3d df(const Eigen::Vector3d& p) const override;
     double sag(double x, double y) const override;
 
@@ -46,6 +46,11 @@ public:
 
 };
 
+
+double Spherical::f(const Eigen::Vector3d& p) const
+{
+    return p(2) - 0.5*cv_*p.dot(p);
+}
 
 
 Eigen::Vector3d Spherical::df(const Eigen::Vector3d& p) const

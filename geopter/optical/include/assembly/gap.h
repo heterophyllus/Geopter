@@ -31,7 +31,7 @@
 
 #include "material/material.h"
 #include "material/material_library.h"
-
+#include "assembly/solve.h"
 
 namespace geopter {
 
@@ -59,12 +59,19 @@ public:
     inline void set_thi(double t);
 
     inline Material* material() const;
-
     void set_material(std::shared_ptr<Material> m);
+
+    inline void set_solve(std::unique_ptr<Solve> solve);
+    inline void remove_solve();
+    inline Solve* solve() const;
+
+    inline bool has_solve() const;
+    inline int solve_type() const;
 
 private:
     double thi_;
     std::shared_ptr<Material> material_;
+    std::unique_ptr<Solve> solve_;
 };
 
 
@@ -78,12 +85,40 @@ void Gap::set_thi(double t)
     thi_ = t;
 }
 
-
 Material* Gap::material() const
 {
     return material_.get();
 }
 
+void Gap::set_solve(std::unique_ptr<Solve> solve)
+{
+    solve_ = std::move(solve);
+}
+
+void Gap::remove_solve()
+{
+    solve_.reset();
+}
+
+Solve* Gap::solve() const
+{
+    return solve_.get();
+}
+
+bool Gap::has_solve() const
+{
+    if(solve_) return true;
+    return false;
+}
+
+int Gap::solve_type() const
+{
+    if(solve_){
+        return solve_->solve_type();
+    }else{
+        return -1;
+    }
+}
 
 } //namespace geopter
 

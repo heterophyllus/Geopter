@@ -192,6 +192,7 @@ void FieldTableModel::addRow()
     beginInsertRows(QModelIndex(), m_fields.count(), m_fields.count());
     m_fields.append(FieldData());
     endInsertRows();
+    emit dataChanged(this->index(0,0), this->index(m_fields.size()-1, 7));
 }
 
 void FieldTableModel::applyData(std::shared_ptr<OpticalSystem> opt_sys)

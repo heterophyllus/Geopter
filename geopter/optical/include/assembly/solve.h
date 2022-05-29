@@ -27,8 +27,6 @@
 #ifndef GEOPTER_SOLVE_H
 #define GEOPTER_SOLVE_H
 
-#include "assembly/surface.h"
-#include "assembly/gap.h"
 
 namespace geopter{
 
@@ -42,17 +40,22 @@ public:
     {
         EdgeThickness,
         OverallLength,
-        ParaxialImageDistance,
-        ReductionRatio
+        ParaxialImageDistance
     };
 
-    Solve();
-    virtual ~Solve();
+    Solve(){solve_type_ = -1;}
 
+    /** Check parameters */
+    virtual bool check(const OpticalSystem* /*opt_sys*/){ return true; }
+
+    /** Apply solved value to the system */
     virtual void apply(OpticalSystem* opt_sys) = 0;
 
+    /** Returns solve type as integer. If -1, no valid solve is set */
+    int solve_type() const {return solve_type_;}
+
 protected:
-    double value_;
+    int solve_type_;
 };
 
 
@@ -60,33 +63,39 @@ class EdgeThicknessSolve : public Solve
 {
 public:
     EdgeThicknessSolve(int gap_index, double value, double height);
-
+    bool check(const OpticalSystem* opt_sys) override;
     void apply(OpticalSystem* opt_sys) override;
+
 private:
     int gap_index_;
     double height_;
+    double value_;
 };
 
 class OverallLengthSolve : public Solve
 {
 public:
     OverallLengthSolve(int gi, double value, int s1, int s2);
+    bool check(const OpticalSystem* opt_sys) override;
     void apply(OpticalSystem* opt_sys) override;
 
 private:
     int surface1_;
     int surface2_;
     int gap_index_;
+    double value_;
 };
 
 class ParaxialImageSolve : public Solve
 {
     // image space gap
 public:
-    ParaxialImageSolve();
-
+    ParaxialImageSolve(int gi);
+    bool check(const OpticalSystem* opt_sys) override;
     void apply(OpticalSystem* opt_sys) override;
 
+private:
+    int gap_index_;
 };
 
 

@@ -1,48 +1,56 @@
-#include "LensDataModel.h"
+#include "LensDataTableModel.h"
 #include "SystemEditor/SystemDataConstant.h"
 #include <QDebug>
 #include <QColor>
+#include <QStandardItem>
 
-LensDataModel::LensDataModel(std::shared_ptr<OpticalSystem> opt_sys, QObject *parent) :
+LensDataTableModel::LensDataTableModel(std::shared_ptr<OpticalSystem> opt_sys, QObject *parent) :
     QAbstractTableModel(parent)
 {
     m_opt_sys = opt_sys;
 }
 
-LensDataModel::~LensDataModel()
+LensDataTableModel::~LensDataTableModel()
 {
     m_opt_sys = nullptr;
 }
 
-void LensDataModel::setOpticalSystem(std::shared_ptr<OpticalSystem> opt_sys)
+void LensDataTableModel::setOpticalSystem(std::shared_ptr<OpticalSystem> opt_sys)
 {
     m_opt_sys = opt_sys;
 }
 
-int LensDataModel::columnCount(const QModelIndex & /*parent*/) const
+int LensDataTableModel::columnCount(const QModelIndex & /*parent*/) const
 {
     return 10;
 }
 
-int LensDataModel::rowCount(const QModelIndex & /*parent*/) const
+int LensDataTableModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return m_opt_sys->optical_assembly()->surface_count();
 }
 
-Qt::ItemFlags LensDataModel::flags(const QModelIndex &index) const
+Qt::ItemFlags LensDataTableModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid()){
-        return Qt::ItemIsEnabled;
+    if (!index.isValid()) return Qt::ItemIsEnabled;
+
+    // uneditable
+    int i = index.row();
+    int j = index.column();
+    if(m_opt_sys->optical_assembly()->gap(i)->has_solve() && j == LensDataColumn::Thickness){
+        return QAbstractItemModel::flags(index);
+    }
+
+    if(m_opt_sys->optical_assembly()->surface(i)->has_solve() && j == LensDataColumn::Radius) {
+        return QAbstractItemModel::flags(index);
     }
 
     return ( QAbstractItemModel::flags(index) | Qt::ItemIsEditable );
 }
 
-QVariant LensDataModel::data(const QModelIndex &index, int role) const
+QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid()) {
-        return QVariant();
-    }
+    if(!index.isValid())  return QVariant();
 
     if(index.row() >= m_opt_sys->optical_assembly()->surface_count()){
         qDebug() << "Out of surface range";
@@ -84,12 +92,19 @@ QVariant LensDataModel::data(const QModelIndex &index, int role) const
             }else{
                 return aperture_shape;
             }
+        }else if(LensDataColumn::ThicknessSolve == j){
+            if(m_opt_sys->optical_assembly()->gap(i)->has_solve()){
+                return tr("S");
+            }
         }else{
             return QVariant();
         }
     }else if(role == Qt::BackgroundRole){
         // colorize cells of radius or thickness with solve
         //return QColor(0,0,255);
+        if(m_opt_sys->optical_assembly()->gap(i)->has_solve() && LensDataColumn::Thickness == j){
+            return QColor(128,128,128);
+        }
 
     }
 
@@ -97,7 +112,7 @@ QVariant LensDataModel::data(const QModelIndex &index, int role) const
 
 }
 
-bool LensDataModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool LensDataTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if( !index.isValid() ) return false;
 
@@ -109,7 +124,9 @@ bool LensDataModel::setData(const QModelIndex &index, const QVariant &value, int
         }else if(LensDataColumn::Radius == j){
             m_opt_sys->optical_assembly()->surface(i)->profile()->set_radius(value.toDouble());
         }else if(LensDataColumn::Thickness == j){
-            m_opt_sys->optical_assembly()->gap(i)->set_thi(value.toDouble());
+            if( ! m_opt_sys->optical_assembly()->gap(i)->has_solve()){
+                m_opt_sys->optical_assembly()->gap(i)->set_thi(value.toDouble());
+            }
         }else if(LensDataColumn::Material == j){
             auto m = MaterialLibrary::find(value.toString().toStdString());
             m_opt_sys->optical_assembly()->gap(i)->set_material(m);
@@ -131,7 +148,7 @@ bool LensDataModel::setData(const QModelIndex &index, const QVariant &value, int
     return false;
 }
 
-QVariant LensDataModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant LensDataTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if(role != Qt::DisplayRole) {
         return QVariant();
@@ -170,7 +187,7 @@ QVariant LensDataModel::headerData(int section, Qt::Orientation orientation, int
     }
 }
 
-bool LensDataModel::insertRows(int row, int count, const QModelIndex & /*parent*/)
+bool LensDataTableModel::insertRows(int row, int count, const QModelIndex & /*parent*/)
 {
     beginInsertRows(QModelIndex(), row, row+count-1);
     for(auto i = 0; i < count; i++){
@@ -182,7 +199,7 @@ bool LensDataModel::insertRows(int row, int count, const QModelIndex & /*parent*
     return true;
 }
 
-bool LensDataModel::removeRows(int row, int count, const QModelIndex & /*parent*/)
+bool LensDataTableModel::removeRows(int row, int count, const QModelIndex & /*parent*/)
 {
     beginRemoveRows(QModelIndex(), row, row + count - 1);
     for (auto i = 0; i < count; ++i){
@@ -193,15 +210,8 @@ bool LensDataModel::removeRows(int row, int count, const QModelIndex & /*parent*
     return true;
 }
 
-void LensDataModel::appendData()
-{
-    int n = m_opt_sys->optical_assembly()->surface_count();
-    beginInsertRows(QModelIndex(), n, n);
-    m_opt_sys->optical_assembly()->add_surface_and_gap();
-    endInsertRows();
-}
 
-void LensDataModel::setStop(int i)
+void LensDataTableModel::setStop(int i)
 {
     m_opt_sys->optical_assembly()->set_stop(i);
     m_opt_sys->update_model();

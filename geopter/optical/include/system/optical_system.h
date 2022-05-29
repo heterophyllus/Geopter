@@ -40,9 +40,7 @@
 #include "material/material_library.h"
 #include "system/paraxial_data.h"
 #include "system/fundamental_data.h"
-#include "system/solve.h"
 #include "sequential/ray_at_surface.h"
-
 
 
 namespace geopter {
@@ -87,20 +85,6 @@ public:
     void set_title(std::string title);
     void set_note(std::string text);
 
-    template<Solve::SolveType Type>
-    void add_gap_solve(int gap_index, double value, double height);
-
-    template<Solve::SolveType Type>
-    void add_gap_solve(int gap_index, double value, int s1, int s2);
-
-    template<Solve::SolveType Type>
-    void add_gap_solve();
-
-    void remove_gap_solve(int i);
-
-    bool has_surface_solve_at(int i);
-    bool has_gap_solve_at(int i);
-
     void set_vignetting_factors();
 
     void update_model();
@@ -123,9 +107,6 @@ protected:
     std::unique_ptr<OpticalSpec> opt_spec_;
     std::unique_ptr<ParaxialData> parax_data_;
     std::unique_ptr<MaterialLibrary> material_lib_;
-
-    std::map<int, std::unique_ptr<Solve> > gap_solves_;
-    std::map<int, std::unique_ptr<Solve> > surface_solves_;
 
     std::string title_;
     std::string note_;
@@ -161,42 +142,6 @@ FundamentalData OpticalSystem::fundamental_data() const
     return fund_data_;
 }
 
-template<Solve::SolveType Type>
-void OpticalSystem::add_gap_solve(int gap_index, double value, double height)
-{
-    switch (Type) {
-    case Solve::SolveType::EdgeThickness:
-        gap_solves_.emplace(gap_index, std::make_unique<EdgeThicknessSolve>(gap_index, value, height));
-        break;
-    default:
-        std::cerr << "syntax error in add_gap_solve" << std::endl;
-    }
-}
-
-
-template<Solve::SolveType Type>
-void OpticalSystem::add_gap_solve(int gap_index, double value, int s1, int s2)
-{
-    switch (Type) {
-    case Solve::SolveType::OverallLength:
-        gap_solves_.emplace(gap_index, std::make_unique<OverallLengthSolve>(gap_index, value, s1, s2));
-        break;
-    default:
-        std::cerr << "syntax error in add_gap_solve" << std::endl;
-    }
-}
-
-template<Solve::SolveType Type>
-void OpticalSystem::add_gap_solve()
-{
-    switch (Type) {
-    case Solve::SolveType::ParaxialImageDistance:
-        gap_solves_.emplace(optical_assembly()->image_space_gap(), std::make_unique<ParaxialImageSolve>());
-        break;
-    default:
-        std::cerr << "syntax error in add_gap_solve" << std::endl;
-    }
-}
 
 } //namespace geopter
 

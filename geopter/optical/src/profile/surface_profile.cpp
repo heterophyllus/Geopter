@@ -41,20 +41,6 @@ SurfaceProfile::~SurfaceProfile()
 
 }
 
-std::string SurfaceProfile::name() const
-{
-    return name_;
-}
-
-void SurfaceProfile::set_cv(double c)
-{
-    cv_ = c;
-}
-
-double SurfaceProfile::cv() const
-{
-    return cv_;
-}
 
 void SurfaceProfile::set_radius(double r)
 {
@@ -71,21 +57,19 @@ void SurfaceProfile::set_radius(double r)
 
 double SurfaceProfile::radius() const
 {
-    double r = 0.0;
     if(fabs(cv_) < std::numeric_limits<double>::epsilon()){
-        r = std::numeric_limits<double>::infinity();
+        return std::numeric_limits<double>::infinity();
     }else{
-        r = 1.0/cv_;
+        return 1.0/cv_;
     }
-    return r;
 }
 
-double SurfaceProfile::f(const Eigen::Vector3d& p) const
+double SurfaceProfile::f(const Eigen::Vector3d& /*p*/) const
 {
     return 0.0;
 }
 
-Eigen::Vector3d SurfaceProfile::df(const Eigen::Vector3d& p) const
+Eigen::Vector3d SurfaceProfile::df(const Eigen::Vector3d& /*p*/) const
 {
     return Eigen::Vector3d::Zero(3);
 }
@@ -95,17 +79,17 @@ Eigen::Vector3d SurfaceProfile::normal(const Eigen::Vector3d& p) const
     return df(p).normalized();
 }
 
-double SurfaceProfile::sag(double x, double y) const
+double SurfaceProfile::sag(double /*x*/, double /*y*/) const
 {
     return 0.0;
 }
 
-double SurfaceProfile::deriv_1st(double h) const
+double SurfaceProfile::deriv_1st(double /*h*/) const
 {
     return 0.0;
 }
 
-double SurfaceProfile::deriv_2nd(double h) const
+double SurfaceProfile::deriv_2nd(double /*h*/) const
 {
     return 0.0;
 }
@@ -142,7 +126,7 @@ bool SurfaceProfile::intersect(Eigen::Vector3d& pt, double& distance, const Eige
     return true;
 }
 
-void SurfaceProfile::print(std::ostringstream &oss)
+void SurfaceProfile::print(std::ostringstream & /*oss*/)
 {
 
 }

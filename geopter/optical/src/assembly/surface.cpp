@@ -27,32 +27,105 @@
 #include <sstream>
 
 #include "assembly/surface.h"
-#include "assembly/aperture.h"
-
-#include "sequential/trace_error.h"
-
 
 using namespace geopter;
 
-Surface::Surface(std::string lbl) : Interface()
+Surface::Surface(std::string lbl)
 {
     label_ = lbl;
-    profile_ = std::make_unique<Spherical>();
-    semi_diameter_ = 0.0;
+    interact_mode_ = "Transmit";
+    lcl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
+    lcl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
+
+    gbl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
+    gbl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
+
+    profile_ = std::make_unique<Spherical>(0.0);
+
+    solve_ = nullptr;
+
+    decenter_ = nullptr;
 }
 
-Surface::Surface(double r) : Interface()
+Surface::Surface(double r)
 {
     label_ = "";
+    interact_mode_ = "Transmit";
     profile_ = std::make_unique<Spherical>();
     profile_->set_radius(r);
-    semi_diameter_ = 0.0;
+    lcl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
+    lcl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
+
+    gbl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
+    gbl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
+
+    solve_ = nullptr;
+
+    decenter_ = nullptr;
 }
 
 Surface::~Surface()
 {
     profile_.reset();
+    if(edge_aperture_){
+        edge_aperture_.reset();
+    }
+    if(clear_aperture_){
+        clear_aperture_.reset();
+    }
+    solve_.reset();
 }
+
+std::string Surface::aperture_shape() const
+{
+    if(clear_aperture_){
+        return clear_aperture_->shape_name();
+    }else{
+        return "None";
+    }
+}
+
+double Surface::max_aperture() const
+{
+    if(clear_aperture_) {
+        return clear_aperture_->max_dimension();
+    }else{
+        return semi_diameter_;
+    }
+}
+
+void Surface::remove_clear_aperture()
+{
+    if(clear_aperture_){
+        clear_aperture_.reset();
+    }
+}
+
+bool Surface::point_inside(double x, double y) const
+{
+    if(clear_aperture_) {
+        return clear_aperture_->point_inside(x, y);
+    }
+    return true;
+}
+
+bool Surface::point_inside(const Eigen::Vector2d& pt) const
+{
+    if(clear_aperture_) {
+        return clear_aperture_->point_inside(pt(0), pt(1));
+    }
+    return true;
+}
+
+
+
+void Surface::update()
+{
+    if(decenter_){
+        decenter_->update();
+    }
+}
+
 
 void Surface::print()
 {

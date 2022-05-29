@@ -4,13 +4,13 @@
 #include <QAbstractTableModel>
 #include "OpticalSystemWrapper/QOpticalSystem.h"
 
-class LensDataModel : public QAbstractTableModel
+class LensDataTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit LensDataModel(std::shared_ptr<OpticalSystem> opt_sys, QObject *parent = nullptr);
-    virtual ~LensDataModel() override;
+    explicit LensDataTableModel(std::shared_ptr<OpticalSystem> opt_sys, QObject *parent = nullptr);
+    virtual ~LensDataTableModel() override;
 
     void setOpticalSystem(std::shared_ptr<OpticalSystem> opt_sys);
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -21,7 +21,6 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    void appendData();
     void setStop(int i);
 
 private:

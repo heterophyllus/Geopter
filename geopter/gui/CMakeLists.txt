@@ -21,12 +21,17 @@ find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Multimedia MultimediaW
 ## ***************************************************************************************
 #set(Python_ADDITIONAL_VERSIONS 3.9)
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
+EXEC_PROGRAM ("${PYTHON_BINARY}"
+      ARGS "-c 'import numpy; print(numpy.get_include())'"
+      OUTPUT_VARIABLE PYTHON_NUMPY_INCLUDE_DIR
+      RETURN_VALUE PYTHON_NUMPY_NOT_FOUND)
+
 message(STATUS "Python_FOUND= ${Python_FOUND}")
 message(STATUS "Python_VERSION= ${Python_VERSION}")
 message(STATUS "Python_INCLUDE_DIRS= ${Python_INCLUDE_DIRS}")
 message(STATUS "Python_LIBRARIES= ${Python_LIBRARIES}")
 message(STATUS "Python_NumPy_FOUND= ${Python_NumPy_FOUND}")
-
+message(STATUS "PYTHON_NUMPY_INCLUDE_DIR= ${PYTHON_NUMPY_INCLUDE_DIR}")
 
 set(GEOPTER_GUI_HEADERS
     MainWindow.h
@@ -51,11 +56,15 @@ set(GEOPTER_GUI_HEADERS
     SystemEditor/SystemDataConstant.h
 
     SystemEditor/LensDataEditor/LensDataTableView.h
-    SystemEditor/LensDataEditor/LensDataModel.h
+    SystemEditor/LensDataEditor/LensDataTableModel.h
     SystemEditor/LensDataEditor/TableHeaderItem.h
     SystemEditor/LensDataEditor/GridTableHeaderView.h
     SystemEditor/LensDataEditor/GridTableHeaderModel.h
     SystemEditor/LensDataEditor/SurfacePropertyDlg.h
+
+    SystemEditor/SolveDlg/SolveSelectionDlg.h
+    SystemEditor/SolveDlg/EdgeThicknessSolveDlg.h
+    SystemEditor/SolveDlg/OverallLengthSolveDlg.h
 
     SystemEditor/Delegate/FloatDelegate.h
     SystemEditor/Delegate/OneByteDelegate.h
@@ -109,7 +118,7 @@ set(GEOPTER_GUI_SOURCES
     SystemEditor/SystemEditorWidget.cpp
 
     SystemEditor/LensDataEditor/LensDataTableView.cpp
-    SystemEditor/LensDataEditor/LensDataModel.cpp
+    SystemEditor/LensDataEditor/LensDataTableModel.cpp
     SystemEditor/LensDataEditor/TableHeaderItem.cpp
     SystemEditor/LensDataEditor/GridTableHeaderView.cpp
     SystemEditor/LensDataEditor/GridTableHeaderModel.cpp

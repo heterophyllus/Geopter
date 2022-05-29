@@ -51,10 +51,9 @@ OpticalAssembly::~OpticalAssembly()
 
 void OpticalAssembly::update_model()
 {
+    // update transforms
     set_local_transforms();
-
-    constexpr int ref_srf = 1;
-    set_global_transforms(ref_srf);
+    set_global_transforms(1);
 }
 
 void OpticalAssembly::clear()
@@ -74,6 +73,20 @@ void OpticalAssembly::clear()
         }
         gaps_.clear();
     }
+
+    auto gs_itr = gap_solves_.begin();
+    while (gs_itr != gap_solves_.end()) {
+        gs_itr->second.reset();
+        gs_itr++;
+    }
+    gap_solves_.clear();
+
+    auto ss_itr = surface_solves_.begin();
+    while (ss_itr != surface_solves_.end()) {
+        ss_itr->second.reset();
+        ss_itr++;
+    }
+    surface_solves_.clear();
 }
 
 void OpticalAssembly::create_minimun_assembly()
@@ -109,7 +122,6 @@ void OpticalAssembly::create_minimun_assembly()
     current_surface_index_ = 2;
 
 }
-
 
 
 Gap* OpticalAssembly::image_space_gap() const
@@ -183,6 +195,9 @@ void OpticalAssembly::insert(int i, double r, double t, const std::string &mat_n
     }
 
     current_surface_index_ = i;
+
+    //update solve settings
+
 }
 
 void OpticalAssembly::remove(int i)
@@ -286,6 +301,10 @@ void OpticalAssembly::set_global_transforms(int ref_srf)
     }
 }
 
+void OpticalAssembly::set_gap_solve(int gi, std::unique_ptr<Solve> solve)
+{
+    gap_solves_.emplace(gi, std::move(solve));
+}
 
 double OpticalAssembly::overall_length(int start, int end)
 {

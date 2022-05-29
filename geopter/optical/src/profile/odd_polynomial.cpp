@@ -228,7 +228,7 @@ void OddPolynomial::print(std::ostringstream &oss)
     update_max_nonzero_index();
 
     constexpr int label_w = 6;
-    constexpr int val_w = 16;
+    //constexpr int val_w = 16;
     constexpr int prec  = 6;
 
     oss << std::setw(label_w) << std::left << "Type";

@@ -2,7 +2,7 @@
 #define LENS_DATA_VIEW_H
 
 #include <QTableView>
-#include "LensDataModel.h"
+#include "LensDataTableModel.h"
 #include "GridTableHeaderView.h"
 #include "OpticalSystemWrapper/QOpticalSystem.h"
 
@@ -18,7 +18,7 @@ public:
     void setGridHeaderview(Qt::Orientation orientation, int levels);
     GridTableHeaderView *gridHeaderview(Qt::Orientation orientation);
 
-    LensDataModel* lensDataModel();
+    LensDataTableModel* lensDataModel();
 
 private slots:
     void onDoubleClick(const QModelIndex &index);
@@ -28,13 +28,13 @@ private slots:
     void removeRow();
     void setStop();
     void showSurfacePropertyDlg();
-    void showSolveSelectionDlg();
+    void showSolveSelectionDlg(int si);
 
     void horizontalHeaderSectionPressed(int beginSection, int endSection);
     void verticalHeaderSectionPressed(int beginSection, int endSection);
 
 private:
-    LensDataModel* m_model;
+    LensDataTableModel* m_model;
     std::shared_ptr<OpticalSystem> m_opt_sys;
 };
 

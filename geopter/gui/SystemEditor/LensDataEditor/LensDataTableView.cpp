@@ -1,18 +1,21 @@
 #include <QDebug>
 #include <QMenu>
+#include <QInputDialog>
 #include "LensDataTableView.h"
 #include "SystemEditor/SystemDataConstant.h"
 #include "SystemEditor/Delegate/NotEditableDelegate.h"
 #include "SystemEditor/Delegate/FloatDelegate.h"
 #include "SystemEditor/Delegate/OneByteDelegate.h"
 #include "SurfacePropertyDlg.h"
-#include <QInputDialog>
+#include "SystemEditor/SolveDlg/SolveSelectionDlg.h"
+#include "SystemEditor/SolveDlg/EdgeThicknessSolveDlg.h"
+#include "SystemEditor/SolveDlg/OverallLengthSolveDlg.h"
 
 LensDataTableView::LensDataTableView(std::shared_ptr<OpticalSystem> opt_sys, QWidget *parent) :
     QTableView(parent),
     m_opt_sys(opt_sys)
 {
-    m_model = new LensDataModel(m_opt_sys, this);
+    m_model = new LensDataTableModel(m_opt_sys, this);
     this->setModel(m_model);
 
     // delegates
@@ -58,7 +61,7 @@ LensDataTableView::~LensDataTableView()
     delete m_model;
 }
 
-LensDataModel* LensDataTableView::lensDataModel()
+LensDataTableModel* LensDataTableView::lensDataModel()
 {
     return m_model;
 }
@@ -199,24 +202,69 @@ void LensDataTableView::showSurfacePropertyDlg()
     }
 }
 
-void LensDataTableView::showSolveSelectionDlg()
+void LensDataTableView::showSolveSelectionDlg(int si)
 {
-    bool ok;
-    QStringList items({ "Edge Thickness", "Overall Length", "Paraxial Image" });
+    bool isLastSurface = false;
+    if(si == m_opt_sys->optical_assembly()->gap_count()-1){
+        isLastSurface = true;
+    }
 
-    QString item = QInputDialog::getItem(this, tr("Solve"), tr("Solve Type"), items, 0, false, &ok);
-    qDebug() << "Selected item= " << item;
+    int currentSolveIndex = m_opt_sys->optical_assembly()->gap(si)->solve_type();
+    if(currentSolveIndex < 0){
+        currentSolveIndex = 0;
+    }
+    SolveSelectionDlg solveDlg(currentSolveIndex, isLastSurface, this);
+
+    if(solveDlg.exec() == QDialog::Accepted){
+        int selectedIndex = solveDlg.selectedIndex();
+
+        if(selectedIndex == Solve::EdgeThickness){
+            EdgeThicknessSolveDlg *edgeDlg = new EdgeThicknessSolveDlg();
+            if(edgeDlg->exec() == QDialog::Accepted){
+                auto solve = std::make_unique<EdgeThicknessSolve>(si, edgeDlg->value(), edgeDlg->height());
+                if(solve->check(m_opt_sys.get())){
+                    m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
+                    m_opt_sys->update_model();
+                }else{
+                    solve.reset();
+                }
+            }
+            delete edgeDlg;
+        }else if(selectedIndex == Solve::OverallLength){
+            OverallLengthSolveDlg *dlg = new OverallLengthSolveDlg();
+            if(dlg->exec() == QDialog::Accepted){
+                auto solve = std::make_unique<OverallLengthSolve>(si, dlg->value(), dlg->startSurface(), dlg->endSurface());
+                if(solve->check(m_opt_sys.get())){
+                    m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
+                    m_opt_sys->update_model();
+                }
+            }
+            delete dlg;
+        }else if(selectedIndex == Solve::ParaxialImageDistance){
+            // no dialog
+            auto solve = std::make_unique<ParaxialImageSolve>(si);
+            if(solve->check(m_opt_sys.get())){
+                m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
+                m_opt_sys->update_model();
+            }
+        }
+    }
+
+
 }
 
 void LensDataTableView::onDoubleClick(const QModelIndex &index)
 {
-    const int column = index.column();
-    switch (column) {
+    switch (index.column()) {
     case LensDataColumn::SurfaceType:
     case LensDataColumn::Mode:
     case LensDataColumn::SemiDiameter:
     case LensDataColumn::Aperture:
         showSurfacePropertyDlg();
+        break;
+    //case LensDataColumn::RadiusSolve:
+    case LensDataColumn::ThicknessSolve:
+        showSolveSelectionDlg(index.row());
         break;
     }
 }
