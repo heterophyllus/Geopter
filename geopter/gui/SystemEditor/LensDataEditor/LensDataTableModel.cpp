@@ -45,6 +45,10 @@ Qt::ItemFlags LensDataTableModel::flags(const QModelIndex &index) const
         return QAbstractItemModel::flags(index);
     }
 
+    if(i == this->rowCount()-1){ // image surface
+        return QAbstractItemModel::flags(index);
+    }
+
     return ( QAbstractItemModel::flags(index) | Qt::ItemIsEditable );
 }
 
@@ -100,10 +104,15 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
             return QVariant();
         }
     }else if(role == Qt::BackgroundRole){
-        // colorize cells of radius or thickness with solve
-        //return QColor(0,0,255);
+        QColor gray = QColor(200,200,200);
+
+        // image
+        if(i == m_opt_sys->optical_assembly()->surface_count()-1){
+            return gray;
+        }
+        // solve
         if(m_opt_sys->optical_assembly()->gap(i)->has_solve() && LensDataColumn::Thickness == j){
-            return QColor(128,128,128);
+            return gray;
         }
 
     }

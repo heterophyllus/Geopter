@@ -70,6 +70,8 @@ void Graph2d::print(std::ostringstream &oss)
     oss << std::setw(idx_w) << std::right << "";
     oss << std::setw(idx_w) << std::right << name_;
     oss << std::endl;
+    oss << std::setw(idx_w) << std::right << std::fixed << x_label_;
+    oss << std::setw(idx_w) << std::right << std::fixed << y_label_;
 
     const int num_data = x_data_.size();
     for( int i = 0; i < num_data; i++) {

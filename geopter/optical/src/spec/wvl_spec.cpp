@@ -36,7 +36,8 @@ using namespace geopter;
 WvlSpec::WvlSpec() :
     reference_index_(0),
     higher_(0.0),
-    lower_(0.0)
+    lower_(0.0),
+    max_weight_(1.0)
 {
     clear();
 }
@@ -108,22 +109,25 @@ void WvlSpec::clear()
 
     higher_ = 0.0;
     lower_ = 0.0;
+    max_weight_ = 1.0;
 }
 
 void WvlSpec::update()
 {
     assert( !wvls_.empty());
 
+    // update higher/lower values, max weight
     higher_ = wvls_[0]->value();
-    lower_ = wvls_[0]->value();
-    for(int i = 0; i < (int)wvls_.size(); i++){
-        if(higher_ < wvls_[i]->value()){
-            higher_ = wvls_[i]->value();
-        }
+    lower_  = wvls_[0]->value();
+    max_weight_ = 0.0;
 
-        if(lower_ > wvls_[i]->value()){
-            lower_ = wvls_[i]->value();
-        }
+    for(auto &w : wvls_){
+        double val = w->value();
+        if(higher_ < val) higher_ = val;
+        if(lower_  > val) lower_ = val;
+
+        double wt = w->weight();
+        if(max_weight_ < wt) max_weight_ = wt;
     }
 }
 

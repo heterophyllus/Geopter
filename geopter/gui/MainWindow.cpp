@@ -302,19 +302,20 @@ void MainWindow::showWavefront()
 
 void MainWindow::showFFTPSF()
 {
+    QMessageBox::information(this,tr("Info"), tr("This function is temporally unavailable."));
     //showAnalysisPlot<FFT_PSFDlg>("FFT PSF");
-    QMessageBox::information(this,tr("Info"), tr("This function is currently not available"));
 }
 
 void MainWindow::showGeoMTF()
 {
+    QMessageBox::information(this,tr("Info"), tr("This is a test function.  Be careful for the result"));
     showAnalysisPlot<GeoMtfDlg>("Geometrical MTF");
 }
 
 void MainWindow::showFFTMTF()
 {
+    QMessageBox::information(this,tr("Info"), tr("This function is temporally unavailable."));
     //showAnalysisPlot<FFT_MTFDlg>("FFT MTF");
-    QMessageBox::information(this,tr("Info"), tr("This function is currently not available"));
 }
 
 template<class T>

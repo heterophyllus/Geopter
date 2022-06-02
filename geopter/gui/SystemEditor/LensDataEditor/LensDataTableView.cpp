@@ -43,6 +43,8 @@ LensDataTableView::LensDataTableView(std::shared_ptr<OpticalSystem> opt_sys, QWi
     hHeader->setCellLabel(0, LensDataColumn::SemiDiameter, "Semi Diameter");
     hHeader->setCellLabel(0, LensDataColumn::Aperture,     "Aperture");
 
+    hHeader->setVisible(true);
+
     this->setColumnWidth(LensDataColumn::RadiusSolve, 1);
     this->setColumnWidth(LensDataColumn::ThicknessSolve, 1);
 

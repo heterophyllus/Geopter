@@ -36,7 +36,8 @@ PlotData::PlotData() :
     title_(""),
     x_axis_label_("x"),
     y_axis_label_("y"),
-    plot_style_(0)
+    plot_style_(0),
+    xy_reverse_(false)
 {
     graphs_.clear();
     optional_data_.clear();
@@ -63,13 +64,48 @@ void PlotData::print()
 
 void PlotData::print(std::ostringstream &oss)
 {    
-    oss << title_ << std::endl;
+    constexpr int idx_w = 8;
+    constexpr int val_w = 12;
+    constexpr int prec  = 4;
+
+    oss << std::setw(idx_w) << std::right << title_ << std::endl;
     oss << std::endl;
 
-    // data
-    for(auto &g : graphs_){
-        g->print(oss);
+    if(xy_reverse_){
+        // labels
+        oss << std::setw(idx_w) << std::right << std::fixed << y_axis_label_;
+        for(auto &g : graphs_){
+            oss << std::setw(val_w) << std::right << std::fixed << g->name();
+        }
         oss << std::endl;
-    }
 
+        // data
+        const int num_data = graphs_[0]->data_count();
+        for(int i = 0; i < num_data; i++){
+            oss << std::setw(idx_w) << std::right << std::fixed << std::setprecision(prec) << graphs_[0]->y_data()[i];
+            for(auto &g : graphs_){
+                oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << g->x_data()[i];
+            }
+            oss << std::endl;
+        }
+
+    }else{
+        // labels
+        oss << std::setw(idx_w) << std::right << std::fixed << x_axis_label_;
+        for(auto &g : graphs_){
+            oss << std::setw(val_w) << std::right << std::fixed << g->name();
+        }
+        oss << std::endl;
+
+        // data
+        const int num_data = graphs_[0]->data_count();
+        for(int i = 0; i < num_data; i++){
+            oss << std::setw(idx_w) << std::right << std::fixed << std::setprecision(prec) << graphs_[0]->x_data()[i];
+            for(auto &g : graphs_){
+                oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << g->y_data()[i];
+            }
+            oss << std::endl;
+        }
+    }
+    oss << std::endl;
 }

@@ -64,12 +64,12 @@ std::shared_ptr<PlotData> ChromaticFocusShift::plot(double lower_wvl, double hig
     delete tracer;
 
     auto graph = std::make_shared<Graph2d>(xdata, ydata, rgb_black, Renderer::LineStyle::Solid);
-    graph->set_name("Chromatic focus shift");
+    graph->set_name("focus shift");
 
     auto plot_data = std::make_shared<PlotData>();
-    plot_data->set_title("Chromatic focus shift");
-    plot_data->set_x_axis_label("Wavelength(nm)");
-    plot_data->set_y_axis_label("Focus Shift");
+    plot_data->set_title("Chromatic Focus Shift");
+    plot_data->set_x_axis_label("Wvl(nm)");
+    plot_data->set_y_axis_label("FocusShift");
     plot_data->add_graph(graph);
 
     return plot_data;

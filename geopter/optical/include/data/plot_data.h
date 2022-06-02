@@ -48,6 +48,7 @@ public:
     inline void set_x_axis_label(const std::string& label);
     inline void set_y_axis_label(const std::string& label);
     inline void set_plot_style(int ps);
+    inline void set_xy_reverse(bool xy_reverse);
 
     inline int data_count() const;
 
@@ -69,6 +70,7 @@ private:
     std::string y_axis_label_;
     int plot_style_;
     bool xy_reverse_;
+    bool common_x_label_;
 };
 
 
@@ -100,6 +102,11 @@ void PlotData::set_y_axis_label(const std::string& label)
 void PlotData::set_plot_style(int ps)
 {
     plot_style_ = ps;
+}
+
+void PlotData::set_xy_reverse(bool xy_reverse)
+{
+    xy_reverse_ = xy_reverse;
 }
 
 std::shared_ptr<Graph2d> PlotData::graph(int i) const

@@ -19,7 +19,7 @@ DiffractivePSF::DiffractivePSF(OpticalSystem *opt_sys) :
 {
 
 }
-Eigen::MatrixXd DiffractivePSF::to_matrix()
+Eigen::MatrixXd &DiffractivePSF::to_matrix()
 {
     return psf_;
 }
@@ -75,7 +75,6 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
             pupil(1) = fv[i] * lz/wxp;
 
             if(pupil.norm() <= 1.0){
-                ray->set_status(RayStatus::PassThrough);
                 tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
 
                 if(ray->status() == RayStatus::PassThrough){
@@ -99,14 +98,16 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
     std::complex<double> im(0.0, 1.0);
 
     Eigen::MatrixXcd H = A.array() * ((-k*im*W_).array().exp());
-    coh_ = H;
+    //coh_ = H;
 
-    Eigen::MatrixXcd psf1 = ifftshift(H);
-    Eigen::MatrixXcd psf2 = MatrixTool::fft2(psf1);
-    Eigen::MatrixXcd psf3 = fftshift(psf2);
-    Eigen::MatrixXd psf = psf3.array().abs();
+    //Eigen::MatrixXcd psf1 = ifftshift(H);
+    //Eigen::MatrixXcd psf2 = MatrixTool::fft2(psf1);
+    //Eigen::MatrixXcd psf2 = MatrixTool::fft2(ifftshift(H));
+    //Eigen::MatrixXcd psf3 = fftshift(psf2);
+    //Eigen::MatrixXcd psf3 = fftshift( MatrixTool::fft2(ifftshift(H)).matrix() );
+    //psf_ = psf3.array().abs();
+    psf_ = (fftshift( MatrixTool::fft2(ifftshift(H)).matrix() )).array().abs();
 
-    psf_ = psf;
 }
 
 

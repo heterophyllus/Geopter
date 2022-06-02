@@ -18,11 +18,6 @@ FFT_MTFDlg::FFT_MTFDlg(OpticalSystem* sys, PlotViewDock *parent) :
     ui->samplingCombo->addItems(samplingComboItems);
     ui->samplingCombo->setCurrentIndex(3);
 
-    // image plane side length
-    ui->sideLengthEdit->setValidator(new QDoubleValidator(0.0, 100.0, 4, this));
-    ui->sideLengthEdit->setText("1.0");
-
-
     // max frequency
     ui->maxFreqEdit->setValidator(new QDoubleValidator(0.0, 1000.0, 2, this));
     ui->maxFreqEdit->setText(QString::number(100));
@@ -38,11 +33,10 @@ void FFT_MTFDlg::updateParentDockContent()
     m_opticalSystem->update_model();
 
     int M = 16 * pow(2, ui->samplingCombo->currentIndex());
-    double L = ui->sideLengthEdit->text().toDouble();
     double maxFreq = ui->maxFreqEdit->text().toDouble();
 
     DiffractiveMTF* mtf = new DiffractiveMTF(m_opticalSystem);
-    auto plotData = mtf->plot(m_opticalSystem, M, L);
+    auto plotData = mtf->plot(m_opticalSystem, M);
     delete mtf;
 
     std::ostringstream oss;

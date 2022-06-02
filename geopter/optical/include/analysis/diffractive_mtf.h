@@ -10,9 +10,7 @@ class DiffractiveMTF : WaveAberration
 public:
     DiffractiveMTF(OpticalSystem *opt_sys);
 
-    std::shared_ptr<PlotData> plot(OpticalSystem* opt_sys, int M, double L=1.0);
-
-    Eigen::MatrixXd to_matrix();
+    std::shared_ptr<PlotData> plot(OpticalSystem* opt_sys, int M);
 
 protected:
 

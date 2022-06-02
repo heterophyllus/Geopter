@@ -58,7 +58,8 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
     auto plotdata = std::make_shared<PlotData>();
     plotdata->set_title("Longitudinal Spherical Aberration");
     plotdata->set_x_axis_label("Spherical Aberration");
-    plotdata->set_y_axis_label("Pupil Height");
+    plotdata->set_y_axis_label("Pupil");
+    plotdata->set_xy_reverse(true);
 
     for(int wi = 0; wi < num_wvl_; wi++){
         double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
@@ -109,7 +110,7 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
         */
 
         auto graph = std::make_shared<Graph2d>(lsa, py, color);
-        graph->set_name(std::to_string(wvl) + "nm");
+        graph->set_name("W" + std::to_string(wi));
 
         plotdata->add_graph(graph);
     }

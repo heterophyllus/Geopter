@@ -67,6 +67,9 @@ public:
     /** Returns wavelength weight list */
     std::vector<double> get_weight_list() const;
 
+    /** Returns max weight */
+    inline double max_weight() const;
+
     /** Add a new wavelength */
     void add(double wl, double wt= 1.0, Rgb render_color= rgb_black);
 
@@ -81,12 +84,11 @@ public:
 private:
     void update();
 
-    int reference_index_;
-
     std::vector< std::unique_ptr<Wvl> > wvls_;
-
+    int reference_index_;
     double higher_;
     double lower_;
+    double max_weight_;
 };
 
 
@@ -125,6 +127,12 @@ double WvlSpec::higher_wavelength() const
 {
     return higher_;
 }
+
+double WvlSpec::max_weight() const
+{
+    return max_weight_;
+}
+
 
 } //namespace geopter
 

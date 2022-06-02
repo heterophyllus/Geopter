@@ -13,7 +13,9 @@ public:
 
     void from_opd_trace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L=1.0);
 
-    Eigen::MatrixXd to_matrix();
+    void create_from_spot_data();
+
+    Eigen::MatrixXd &to_matrix();
 
 protected:
 

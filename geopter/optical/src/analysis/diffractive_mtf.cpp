@@ -13,7 +13,7 @@ DiffractiveMTF::DiffractiveMTF(OpticalSystem *opt_sys) :
 
 }
 
-std::shared_ptr<PlotData> DiffractiveMTF::plot(OpticalSystem* opt_sys, int M, double L)
+std::shared_ptr<PlotData> DiffractiveMTF::plot(OpticalSystem* opt_sys, int M)
 {
     const int num_flds = opt_sys->optical_spec()->field_of_view()->field_count();
     const int num_wvls = opt_sys->optical_spec()->spectral_region()->wvl_count();
@@ -22,13 +22,14 @@ std::shared_ptr<PlotData> DiffractiveMTF::plot(OpticalSystem* opt_sys, int M, do
 
     const double sum_wt = std::accumulate(wt_list.begin(), wt_list.end(), 0);
 
-    const double du = L/static_cast<double>(M);
+    const double L = 0.1;
+    //const double du = L/static_cast<double>(M);
 
     std::vector<double> fu;
 
-    for(int i = 0; i < M; i++){
+    for(int i = 0; i < 2*M; i++){
         //fu.push_back( -1.0/(2.0*du) + static_cast<double>(i)*1.0/L );
-        fu.push_back( 0.0 + static_cast<double>(i)*1.0/L );
+        fu.push_back( 0.0 + static_cast<double>(i)*1.0/(2*L) );
     }
 
     auto plot_data = std::make_shared<PlotData>();
@@ -54,26 +55,38 @@ std::shared_ptr<PlotData> DiffractiveMTF::plot(OpticalSystem* opt_sys, int M, do
 
         psf = psf/sum_wt;
 
-        Eigen::MatrixXd psf2 = psf.array().pow(2);
-        Eigen::MatrixXcd psf2_c = psf2.cast<std::complex<double>>();
 
-        Eigen::MatrixXcd temp1 = fftshift(psf2_c);
-        Eigen::MatrixXcd temp2 = MatrixTool::fft2(temp1);
-        Eigen::MatrixXd temp3 = temp2.array().abs();
-        double mtf0 = temp3(0,0);
-        Eigen::MatrixXd mtf = temp3.array()/mtf0;
+        //Eigen::MatrixXd psf2 = psf.array().pow(2);
+        //Eigen::MatrixXcd psf2_c = psf2.cast<std::complex<double>>();
 
-        std::vector<double> mtf_tan = MatrixTool::to_std_vector(mtf.col(0));
-        std::vector<double> mtf_sag = MatrixTool::to_std_vector(mtf.row(0));
+        //Eigen::MatrixXcd psf2_c = (psf.array().pow(2)). template cast<std::complex<double>>();
+
+        Eigen::MatrixXcd temp = Eigen::MatrixXcd::Zero(2*M, 2*M);
+        //temp.block(M, M,M,M) = psf2_c;
+        temp.block(M, M,M,M) = (psf.array().pow(2)). template cast<std::complex<double>>();
+
+        //Eigen::MatrixXcd temp1 = fftshift(temp);
+        //Eigen::MatrixXcd temp2 = MatrixTool::fft2(fftshift(temp));
+        //Eigen::MatrixXd temp3 = temp2.array().abs();
+        //Eigen::MatrixXd temp3 = (MatrixTool::fft2(fftshift(temp))).array().abs();
+        //double mtf0 = temp3(0,0);
+        //Eigen::MatrixXd mtf = temp3.array()/mtf0;
+
+        Eigen::MatrixXd mtf = (MatrixTool::fft2(fftshift(temp))).array().abs();
+        double mtf0 = mtf(0,0);
+        mtf = mtf.array()/mtf0;
+
+        //std::vector<double> mtf_tan = MatrixTool::to_std_vector(mtf.col(0));
+        //std::vector<double> mtf_sag = MatrixTool::to_std_vector(mtf.row(0));
 
         auto graph_sag = std::make_shared<Graph2d>();
-        graph_sag->set_data(fu,mtf_sag);
+        graph_sag->set_data(fu,MatrixTool::to_std_vector(mtf.row(0)));
         graph_sag->set_line_style(Renderer::LineStyle::Solid);
         graph_sag->set_render_color(fld->render_color());
         graph_sag->set_name("MTF_S F" + std::to_string(fi));
 
         auto graph_tan = std::make_shared<Graph2d>();
-        graph_tan->set_data(fu,mtf_tan);
+        graph_tan->set_data(fu,MatrixTool::to_std_vector(mtf.col(0)));
         graph_tan->set_line_style(Renderer::LineStyle::Dots);
         graph_tan->set_render_color(fld->render_color());
         graph_tan->set_name("MTF_T F" + std::to_string(fi));

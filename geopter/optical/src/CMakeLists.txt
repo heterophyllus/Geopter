@@ -69,7 +69,7 @@ set(OPTICAL_SRCS
     sequential/sequential_path.cpp
     sequential/ray.cpp
     sequential/ray_at_surface.cpp
-    #sequential/trace_error.cpp
+    sequential/ray_bundle.cpp
     sequential/sequential_trace.cpp
 
     renderer/renderer.cpp
@@ -80,6 +80,7 @@ set(OPTICAL_SRCS
     data/plot_data.cpp
     data/graph2d.cpp
     data/map_data_3d.cpp
+    data/spot_data.cpp
     #data/grid_array.cpp
 
     common/geopter_error.cpp

@@ -88,8 +88,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     pupil(1) = -1.0 + static_cast<double>(i)*2.0/static_cast<double>(nrd-1);
 
                     if(pupil.norm() <= 1.0){
-
-                        ray->set_status(RayStatus::PassThrough);
+                        //ray->set_status(RayStatus::PassThrough);
                         tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
 
                         if(RayStatus::PassThrough == ray->status()){
@@ -106,7 +105,6 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                         }
                     }
                 }
-
 
             }
 
@@ -145,7 +143,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     pupil(0) = (double)r * 1.0/(half_num_rings) * cos((double)ai*ang_step);
                     pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
 
-                    ray->set_status(RayStatus::PassThrough);
+                    //ray->set_status(RayStatus::PassThrough);
                     tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
 
                     if(RayStatus::PassThrough == ray->status()){

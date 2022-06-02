@@ -47,6 +47,7 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
     plot_data->set_title("Astigmatism");
     plot_data->set_x_axis_label("astigmatism");
     plot_data->set_y_axis_label("field");
+    plot_data->set_xy_reverse(true);
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
     tracer->set_apply_vig(true);
@@ -121,10 +122,10 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
         }
 
         auto graph_sag = std::make_shared<Graph2d>(xfo, fy, color,Renderer::LineStyle::Solid);
-        graph_sag->set_name(std::to_string(wvl) + "nm - S");
+        graph_sag->set_name("W" + std::to_string(wi) + "-Sag");
 
         auto graph_tan = std::make_shared<Graph2d>(yfo, fy, color,Renderer::LineStyle::Dots);
-        graph_tan->set_name(std::to_string(wvl) + "nm - T");
+        graph_tan->set_name("W" + std::to_string(wi)  + "-Tan");
 
         plot_data->add_graph(graph_sag);
         plot_data->add_graph(graph_tan);

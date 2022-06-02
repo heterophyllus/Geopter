@@ -21,10 +21,6 @@ find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Multimedia MultimediaW
 ## ***************************************************************************************
 #set(Python_ADDITIONAL_VERSIONS 3.9)
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
-EXEC_PROGRAM ("${PYTHON_BINARY}"
-      ARGS "-c 'import numpy; print(numpy.get_include())'"
-      OUTPUT_VARIABLE PYTHON_NUMPY_INCLUDE_DIR
-      RETURN_VALUE PYTHON_NUMPY_NOT_FOUND)
 
 message(STATUS "Python_FOUND= ${Python_FOUND}")
 message(STATUS "Python_VERSION= ${Python_VERSION}")

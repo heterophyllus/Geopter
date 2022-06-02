@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "analysis/geometrical_mtf.h"
 #include "analysis/spot_diagram.h"
 #include "renderer/renderer.h"
@@ -66,13 +69,13 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
         graph_tan->set_data(freqs, mtf_tan_list);
         graph_tan->set_line_style(Renderer::LineStyle::Dots);
         graph_tan->set_render_color(fld->render_color());
-        graph_tan->set_name("GeoMTF_T F" + std::to_string(fi));
+        graph_tan->set_name("F" + std::to_string(fi) + "_T");
 
         std::shared_ptr<Graph2d> graph_sag = std::make_shared<Graph2d>();
-        graph_tan->set_line_style(Renderer::LineStyle::Solid);
+        graph_sag->set_line_style(Renderer::LineStyle::Solid);
         graph_sag->set_data(freqs, mtf_sag_list);
         graph_sag->set_render_color(fld->render_color());
-        graph_tan->set_name("GeoMTF_S F" + std::to_string(fi));
+        graph_sag->set_name("F" + std::to_string(fi) + "_S");
 
         plot_data->add_graph(graph_sag);
         plot_data->add_graph(graph_tan);
@@ -96,8 +99,8 @@ double GeometricalMTF::calc_geo_mtf(double s, double t, const std::vector<double
         Rs += sin( 2.0*M_PI*(s*u[i] + t*v[i]) );
     }
 
-    Rc = Rc/static_cast<double>(N);
-    Rs = Rs/static_cast<double>(N);
+    Rc /= static_cast<double>(N);
+    Rs /= static_cast<double>(N);
 
     double mtf = sqrt(Rc*Rc + Rs*Rs);
 
