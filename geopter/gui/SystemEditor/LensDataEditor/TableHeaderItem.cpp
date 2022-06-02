@@ -1,3 +1,6 @@
+//https://stackoverflow.com/questions/46469720/how-to-make-a-qheaderview-multilevel
+//https://github.com/eyllanesc/stackoverflow/tree/master/questions/46469720
+
 #include "TableHeaderItem.h"
 
 TableHeaderItem::TableHeaderItem(TableHeaderItem *parent)

@@ -5,11 +5,11 @@
 ## Introduction
 Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-There have been developed several commercial software for optical design.  They have advanced functionality to be a definitive choice for professional work, but their annual licensing fees are too expensive for private purpose.
+There have been developed several commercial software for optical design nowadays.  They have advanced functionality to deserve a definitive choice for professional work, while their annual licensing fees are too expensive for private purpose.
 
-This is where free software comes in as the first option for those who got an interest in optics. Fortunately, more and more optical design libraries are being developed as open source projects these days. One of their drawbacks, however, is that they require matured programming skills to master how to use and sometimes to construct a complex environment.
+This is why free software becomes the first option for those interested in optics. Fortunately, more and more optical design libraries are being developed as open source projects these days. One of their drawbacks, however, is that they require matured programming skills to master how to use and sometimes require to construct a complex environment.
 
-Geopter aims to be somewhere in between. Geopter is freely available and its whole internal aspects are open to the public, as is common with open source projects. This fundamental feature allows anyone to use, learn, validate and even modify it on their own.  It also features an intuitive graphical interface taking higher priority to make the users concentrate on the design workflow.
+Geopter aims to be somewhere in between. As is common with open source projects,Geopter is freely available and its whole internal aspects are open to the public. This fundamental feature allows anyone to use, learn, validate and even modify it on their own.  It also features an intuitive graphical interface taking higher priority to allow the user to concentrate on the design workflow.
 
 The primary user of Geopter could be a fresh optical engineer or a student who majors in optics.  Geopter wishes to be a starting platform to gain an introductory experience in optical design.
 
@@ -58,7 +58,7 @@ Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, 
 
 
 ## Contact
-- Hiiragi [ e-mail ](<heterophyllus.work@gmail.com>)
+- Hiiragi [ e-mail ](mailto:heterophyllus.work@gmail.com)
 
 
 ## Acknowledgement

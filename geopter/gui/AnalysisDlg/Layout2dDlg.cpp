@@ -19,7 +19,8 @@ Layout2dDlg::Layout2dDlg(OpticalSystem* sys, PlotViewDock *parent) :
     ui->editNumRays->setValidator(new QIntValidator(1, 20, this));
     ui->editNumRays->setText(QString::number(10));
 
-    //QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
+    QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
+    QObject::connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 Layout2dDlg::~Layout2dDlg()
@@ -28,13 +29,13 @@ Layout2dDlg::~Layout2dDlg()
     delete ui;
 }
 
-/*
-void LayoutDialog::onAccept()
+
+void Layout2dDlg::onAccept()
 {
     //updateParentDockContent();
     accept();
 }
-*/
+
 
 void Layout2dDlg::updateParentDockContent()
 {

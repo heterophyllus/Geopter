@@ -1,10 +1,10 @@
+//https://stackoverflow.com/questions/46469720/how-to-make-a-qheaderview-multilevel
+//https://github.com/eyllanesc/stackoverflow/tree/master/questions/46469720
+
 #ifndef GRIDTABLEHEADERVIEW_H
 #define GRIDTABLEHEADERVIEW_H
 
 #include <QHeaderView>
-
-//https://stackoverflow.com/questions/46469720/how-to-make-a-qheaderview-multilevel
-//https://github.com/eyllanesc/stackoverflow/tree/master/questions/46469720
 
 class GridTableHeaderView : public QHeaderView
 {

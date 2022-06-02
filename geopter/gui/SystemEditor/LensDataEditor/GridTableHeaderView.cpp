@@ -1,3 +1,7 @@
+
+//https://stackoverflow.com/questions/46469720/how-to-make-a-qheaderview-multilevel
+//https://github.com/eyllanesc/stackoverflow/tree/master/questions/46469720
+
 #include "GridTableHeaderView.h"
 #include "GridTableHeaderModel.h"
 
@@ -10,7 +14,7 @@ GridTableHeaderView::GridTableHeaderView(Qt::Orientation orientation, int rows,
   QSize baseSectionSize;
   if (orientation == Qt::Horizontal) {
     baseSectionSize.setWidth(defaultSectionSize());
-    baseSectionSize.setHeight(20);
+    baseSectionSize.setHeight(30);
   } else {
     baseSectionSize.setWidth(50);
     baseSectionSize.setHeight(defaultSectionSize());

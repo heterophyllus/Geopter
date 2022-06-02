@@ -308,7 +308,7 @@ void MainWindow::showFFTPSF()
 
 void MainWindow::showGeoMTF()
 {
-    QMessageBox::information(this,tr("Info"), tr("This is a test function.  Be careful for the result"));
+    QMessageBox::information(this,tr("Info"), tr("This is a test function."));
     showAnalysisPlot<GeoMtfDlg>("Geometrical MTF");
 }
 

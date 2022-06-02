@@ -20,7 +20,7 @@ public:
     void updateParentDockContent() override;
 
 private slots:
-    //void onAccept();
+    void onAccept();
 
 private:
     Ui::Layout2dDlg *ui;

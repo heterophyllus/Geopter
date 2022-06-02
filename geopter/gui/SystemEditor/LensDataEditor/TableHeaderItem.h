@@ -1,6 +1,9 @@
 #ifndef TABLEHEADERITEM_H
 #define TABLEHEADERITEM_H
 
+//https://stackoverflow.com/questions/46469720/how-to-make-a-qheaderview-multilevel
+//https://github.com/eyllanesc/stackoverflow/tree/master/questions/46469720
+
 #include <QHash>
 #include <QPair>
 #include <QVariant>

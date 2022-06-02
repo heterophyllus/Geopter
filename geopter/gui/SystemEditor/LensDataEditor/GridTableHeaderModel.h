@@ -1,3 +1,6 @@
+//https://stackoverflow.com/questions/46469720/how-to-make-a-qheaderview-multilevel
+//https://github.com/eyllanesc/stackoverflow/tree/master/questions/46469720
+
 #ifndef GRIDTABLEHEADERMODEL_H
 #define GRIDTABLEHEADERMODEL_H
 
