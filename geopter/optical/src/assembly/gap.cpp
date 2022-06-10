@@ -28,36 +28,24 @@
 
 using namespace geopter;
 
-
-Gap::Gap()
-{
-    thi_ = 0.0;
-    material_ = MaterialLibrary::air();
-}
-
-Gap::Gap(double t, std::shared_ptr<Material> m)
-{
+Gap::Gap(double t, std::shared_ptr<Material> m){
     thi_ = t;
-
     if(m){
         material_ = m;
     }else{
         material_ = MaterialLibrary::air();
     }
-    
 }
 
-
-Gap::~Gap()
-{
-    material_ = nullptr;
+bool Gap::has_solve() const {
+    if(solve_) return true;
+    return false;
 }
 
-void Gap::set_material(std::shared_ptr<Material> m)
-{
-    if(m){
-        material_ = m;
+int Gap::solve_type() const {
+    if(solve_){
+        return solve_->solve_type();
     }else{
-        material_ = MaterialLibrary::air();
+        return -1;
     }
 }

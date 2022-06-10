@@ -30,6 +30,8 @@
 
 using namespace geopter;
 
+int FieldSpec::num_fields_ = 0;
+
 FieldSpec::FieldSpec()
 {
     field_type_ = FieldType::OBJ_ANG;
@@ -78,6 +80,8 @@ void FieldSpec::update()
 {
     assert(!fields_.empty());
 
+    num_fields_ = fields_.size();
+
     double max_fld_sqrd = 0.0;
 
     for(auto& f : fields_)
@@ -102,6 +106,8 @@ void FieldSpec::clear()
         }
         fields_.clear();
     }
+    num_fields_ = 0;
+
     max_field_ = 0.0;
 }
 

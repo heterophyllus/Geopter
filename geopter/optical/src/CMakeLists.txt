@@ -50,7 +50,6 @@ set(OPTICAL_SRCS
     spec/field_spec.cpp
     spec/field.cpp
     spec/wvl_spec.cpp
-    spec/wvl.cpp
 
     material/material_library.cpp
     material/glass_catalog.cpp

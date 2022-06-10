@@ -40,26 +40,28 @@ public:
     WvlSpec();
     ~WvlSpec();
 
+    static int number_of_wavelengths() { return num_wvls_; }
+
     /** Returns Wvl component at the specified index */
-    inline Wvl* wvl(int i) const;
+    Wvl* wvl(int i) const { return wvls_[i].get();}
 
     /** Returns number of wvl */
-    inline int wvl_count() const;
+    int wvl_count() const { return wvls_.size();}
 
     /** Get wavelength value of current reference index */
-    inline double reference_wvl() const;
+    double reference_wvl() const { return wvls_[reference_index_]->value();}
 
     /** Returns current reference wavelength index */
-    inline int reference_index() const;
+    int reference_index() const { return reference_index_;}
 
     /** Set reference index to the given index */
-    inline void set_reference_index(int i);
+    void set_reference_index(int i) { reference_index_ = i;}
 
     /** Returns minimum wavelength value in current spectral region */
-    inline double lower_wavelength() const;
+    double lower_wavelength() const { return lower_;}
 
     /** Returns maximum wavelength value in current spectral region */
-    inline double higher_wavelength() const;
+    double higher_wavelength() const { return higher_;}
 
     /** Returns wavelength value list */
     std::vector<double> get_wavelength_list() const;
@@ -68,7 +70,7 @@ public:
     std::vector<double> get_weight_list() const;
 
     /** Returns max weight */
-    inline double max_weight() const;
+    double max_weight() const {return max_weight_;}
 
     /** Add a new wavelength */
     void add(double wl, double wt= 1.0, Rgb render_color= rgb_black);
@@ -89,49 +91,10 @@ private:
     double higher_;
     double lower_;
     double max_weight_;
+
+    static int num_wvls_;
 };
 
-
-
-Wvl* WvlSpec::wvl(int i) const
-{
-    return wvls_[i].get();
-}
-
-int WvlSpec::wvl_count() const
-{
-    return (int)wvls_.size();
-}
-
-int WvlSpec::reference_index() const
-{
-    return reference_index_;
-}
-
-double WvlSpec::reference_wvl() const
-{
-    return wvls_[reference_index_]->value();
-}
-
-void WvlSpec::set_reference_index(int i)
-{
-    reference_index_ = i;
-}
-
-double WvlSpec::lower_wavelength() const
-{
-    return lower_;
-}
-
-double WvlSpec::higher_wavelength() const
-{
-    return higher_;
-}
-
-double WvlSpec::max_weight() const
-{
-    return max_weight_;
-}
 
 
 } //namespace geopter

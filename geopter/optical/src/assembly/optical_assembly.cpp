@@ -38,6 +38,8 @@
 
 using namespace geopter;
 
+int OpticalAssembly::num_surfs_ = 0;
+
 OpticalAssembly::OpticalAssembly()
 {
 
@@ -54,6 +56,8 @@ void OpticalAssembly::update_model()
     // update transforms
     set_local_transforms();
     set_global_transforms(1);
+
+    num_surfs_ = interfaces_.size();
 }
 
 void OpticalAssembly::clear()
@@ -74,19 +78,7 @@ void OpticalAssembly::clear()
         gaps_.clear();
     }
 
-    auto gs_itr = gap_solves_.begin();
-    while (gs_itr != gap_solves_.end()) {
-        gs_itr->second.reset();
-        gs_itr++;
-    }
-    gap_solves_.clear();
-
-    auto ss_itr = surface_solves_.begin();
-    while (ss_itr != surface_solves_.end()) {
-        ss_itr->second.reset();
-        ss_itr++;
-    }
-    surface_solves_.clear();
+    num_surfs_ = 0;
 }
 
 void OpticalAssembly::create_minimun_assembly()
@@ -121,6 +113,7 @@ void OpticalAssembly::create_minimun_assembly()
 
     current_surface_index_ = 2;
 
+    num_surfs_ = interfaces_.size();
 }
 
 
@@ -134,12 +127,6 @@ Gap* OpticalAssembly::image_space_gap() const
     }
 
 }
-
-void OpticalAssembly::set_stop(int i)
-{
-    stop_index_ = i;
-}
-
 
 void OpticalAssembly::insert(int i)
 {
@@ -196,8 +183,7 @@ void OpticalAssembly::insert(int i, double r, double t, const std::string &mat_n
 
     current_surface_index_ = i;
 
-    //update solve settings
-
+    num_surfs_ = interfaces_.size();
 }
 
 void OpticalAssembly::remove(int i)
@@ -221,6 +207,7 @@ void OpticalAssembly::remove(int i)
             current_surface_index_ -= 1;
         }
     }
+    num_surfs_ = interfaces_.size();
 }
 
 
@@ -233,6 +220,8 @@ void OpticalAssembly::add_surface_and_gap()
     gaps_.push_back(std::move(g));
 
     current_surface_index_ = interfaces_.size() -1;
+
+    num_surfs_ = interfaces_.size();
 }
 
 
@@ -301,10 +290,6 @@ void OpticalAssembly::set_global_transforms(int ref_srf)
     }
 }
 
-void OpticalAssembly::set_gap_solve(int gi, std::unique_ptr<Solve> solve)
-{
-    gap_solves_.emplace(gi, std::move(solve));
-}
 
 double OpticalAssembly::overall_length(int start, int end)
 {
@@ -315,7 +300,7 @@ double OpticalAssembly::overall_length(int start, int end)
         oal += gaps_[si]->thi();
     }
 
-    return oal;;
+    return oal;
 }
 
 void OpticalAssembly::print(std::ostringstream& oss) const

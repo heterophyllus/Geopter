@@ -33,6 +33,8 @@
 
 using namespace geopter;
 
+int WvlSpec::num_wvls_ = 0;
+
 WvlSpec::WvlSpec() :
     reference_index_(0),
     higher_(0.0),
@@ -105,6 +107,8 @@ void WvlSpec::clear()
         }
         wvls_.clear();
     }
+    num_wvls_ = 0;
+
     reference_index_ = 0;
 
     higher_ = 0.0;
@@ -115,6 +119,8 @@ void WvlSpec::clear()
 void WvlSpec::update()
 {
     assert( !wvls_.empty());
+
+    num_wvls_ = wvls_.size();
 
     // update higher/lower values, max weight
     higher_ = wvls_[0]->value();

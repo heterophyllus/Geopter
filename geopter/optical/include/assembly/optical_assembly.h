@@ -50,39 +50,41 @@ public:
     template<typename ... A>
     void setup_from_text(A... args);
 
+    static int number_of_surfaces() { return num_surfs_;}
+
     /** Get surface at the given index */
-    inline Surface* surface(int i) const;
+    Surface* surface(int i) const { return interfaces_[i].get();}
 
     /** Get gap at the given index */
-    inline Gap* gap(int i) const;
+    Gap* gap(int i) const {return gaps_[i].get();}
 
-    inline Surface* current_surface() const;
+    Surface* current_surface() const {return interfaces_[current_surface_index_].get();}
 
-    inline Gap* current_gap() const;
+    Gap* current_gap() const {return gaps_[current_surface_index_].get();}
 
     /** Returns number of surfaces */
-    inline int surface_count() const;
+    int surface_count() const { return interfaces_.size();}
 
     /** Returns number of gaps */
-    inline int gap_count() const;
+    int gap_count() const { return gaps_.size();}
 
     /** Returns current index of the stop */
-    inline int stop_index() const;
+    int stop_index() const { return stop_index_;}
 
     /** Returns surface at the stop index */
-    inline Surface* stop_surface() const;
+    Surface* stop_surface() const { return interfaces_[stop_index_].get();}
 
     /** Returns the index of the image surface */
-    inline int image_index() const;
+    int image_index() const {return interfaces_.size()-1;}
 
     /** Returns image surface pointer */
-    inline Surface* image_surface() const;
+    Surface* image_surface() const {return interfaces_[interfaces_.size()-1].get();}
 
     /** Returns the last gap */
     Gap* image_space_gap() const;
 
     /** Set the given surface as stop */
-    void set_stop(int i);
+    void set_stop(int i) { stop_index_ = i;}
 
     void create_minimun_assembly();
 
@@ -102,8 +104,6 @@ public:
     /** Compute and update forward surface coordinates (r.T, t) for each interface */
     void set_local_transforms();
 
-    void set_gap_solve(int gi, std::unique_ptr<Solve> solve);
-
     void update_model();
 
     /** Returns overall length from start to end */
@@ -121,61 +121,9 @@ private:
     int stop_index_;
     int current_surface_index_;
 
-    std::map<int, std::unique_ptr<Solve> > gap_solves_;
-    std::map<int, std::unique_ptr<Solve> > surface_solves_;
+    static int num_surfs_;
+
 };
-
-
-
-Surface* OpticalAssembly::surface(int i) const
-{
-    return interfaces_[i].get();
-}
-
-Gap* OpticalAssembly::gap(int i) const
-{
-    return gaps_[i].get();
-}
-
-Surface* OpticalAssembly::current_surface() const
-{
-    return interfaces_[current_surface_index_].get();
-}
-
-Gap* OpticalAssembly::current_gap() const
-{
-    return gaps_[current_surface_index_].get();
-}
-
-int OpticalAssembly::surface_count() const
-{
-    return interfaces_.size();
-}
-
-int OpticalAssembly::gap_count() const
-{
-    return gaps_.size() - 1;
-}
-
-int OpticalAssembly::stop_index() const
-{
-    return stop_index_;
-}
-
-int OpticalAssembly::image_index() const
-{
-    return interfaces_.size() - 1;
-}
-
-Surface* OpticalAssembly::image_surface() const
-{
-    return interfaces_.back().get();
-}
-
-Surface* OpticalAssembly::stop_surface() const
-{
-    return interfaces_[stop_index_].get();
-}
 
 template<typename... A>
 void OpticalAssembly::setup_from_text(A... args)

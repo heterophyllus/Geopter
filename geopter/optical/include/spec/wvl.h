@@ -35,27 +35,30 @@ namespace geopter{
 class Wvl
 {
 public:
-    Wvl(double wl=SpectralLine::d, double wt=1.0, Rgb render_color=rgb_black);
-    ~Wvl();
+    Wvl(double wl=SpectralLine::d, double wt=1.0, Rgb render_color=rgb_black) :
+        value_(wl),
+        weight_(wt),
+        render_color_(render_color){}
+
 
     /**
      * @brief Set wavelength value
      * @param val_nm value in nm
      */
-    inline void set_value(double val_nm);
+    void set_value(double val_nm) { value_ = val_nm;}
 
     /** Returns wavelength value in nm */
-    inline double value() const;
+    double value() const {return value_;}
 
-    inline void set_weight(double wt);
+    void set_weight(double wt) { weight_ = wt;}
 
     /** Returns the weight */
-    inline double weight() const;
+    double weight() const { return weight_;}
 
-    inline void set_render_color(const Rgb& color);
+    void set_render_color(const Rgb& color) { render_color_ = color;}
 
     /** Returns render color */
-    inline Rgb render_color() const;
+    Rgb render_color() const {return render_color_;}
 
 private:
     /** wavelength in nm */
@@ -69,36 +72,6 @@ private:
 
 };
 
-
-void Wvl::set_value(double val_nm)
-{
-    value_ = val_nm;
-}
-
-double Wvl::value() const
-{
-    return value_;
-}
-
-void Wvl::set_weight(double wt)
-{
-    weight_ = wt;
-}
-
-double Wvl::weight() const
-{
-    return weight_;
-}
-
-void Wvl::set_render_color(const Rgb& color)
-{
-    render_color_ = color;
-}
-
-Rgb Wvl::render_color() const
-{
-    return render_color_;
-}
 
 
 } //namespace geopter

@@ -51,22 +51,26 @@ namespace geopter {
 class Gap
 {
 public:
-    Gap();
-    Gap(double t, std::shared_ptr<Material> m= nullptr);
-    ~Gap();
+    Gap(){
+        Gap(0.0, MaterialLibrary::air());
+    }
+    Gap(double t, std::shared_ptr<Material> m = MaterialLibrary::air());
+    ~Gap(){
+        material_ = nullptr;
+    }
 
-    inline double thi() const;
-    inline void set_thi(double t);
+    double thi() const { return thi_; }
+    void set_thi(double t) { thi_ = t; }
 
-    inline Material* material() const;
-    void set_material(std::shared_ptr<Material> m);
+    Material* material() const { return material_.get();}
+    void set_material(std::shared_ptr<Material> m) { material_ = m; }
 
-    inline void set_solve(std::unique_ptr<Solve> solve);
-    inline void remove_solve();
-    inline Solve* solve() const;
+    void set_solve(std::unique_ptr<Solve> solve) { solve_ = std::move(solve);}
+    void remove_solve() { solve_.reset(); }
+    Solve* solve() const { return solve_.get();}
 
-    inline bool has_solve() const;
-    inline int solve_type() const;
+    bool has_solve() const;
+    int solve_type() const;
 
 private:
     double thi_;
@@ -74,51 +78,6 @@ private:
     std::unique_ptr<Solve> solve_;
 };
 
-
-double Gap::thi() const
-{
-    return thi_;
-}
-
-void Gap::set_thi(double t)
-{
-    thi_ = t;
-}
-
-Material* Gap::material() const
-{
-    return material_.get();
-}
-
-void Gap::set_solve(std::unique_ptr<Solve> solve)
-{
-    solve_ = std::move(solve);
-}
-
-void Gap::remove_solve()
-{
-    solve_.reset();
-}
-
-Solve* Gap::solve() const
-{
-    return solve_.get();
-}
-
-bool Gap::has_solve() const
-{
-    if(solve_) return true;
-    return false;
-}
-
-int Gap::solve_type() const
-{
-    if(solve_){
-        return solve_->solve_type();
-    }else{
-        return -1;
-    }
-}
 
 } //namespace geopter
 

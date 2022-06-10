@@ -1,0 +1,117 @@
+{
+    "Assembly": {
+        "0": {
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Material": "AIR",
+            "Thickness": 10000000000.0,
+            "Type": "SPH"
+        },
+        "1": {
+            "Curvature": 0.0,
+            "Label": "Stop",
+            "Material": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "2": {
+            "Curvature": 0.13532715339332838,
+            "Label": "",
+            "Material": "1.517000:64.000000",
+            "Thickness": 1.05,
+            "Type": "SPH"
+        },
+        "3": {
+            "Curvature": -0.1931098408774911,
+            "Label": "",
+            "Material": "1.649000:33.000000",
+            "Thickness": 0.4,
+            "Type": "SPH"
+        },
+        "4": {
+            "Curvature": -0.06164278008938203,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 11.3,
+            "Type": "SPH"
+        },
+        "5": {
+            "Curvature": 0.0,
+            "Label": "Img",
+            "Material": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "Stop": 1
+    },
+    "Note": "",
+    "Spec": {
+        "Field": {
+            "Color": [
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ]
+            ],
+            "Type": 0,
+            "VLX": [
+                0.0,
+                0.0
+            ],
+            "VLY": [
+                0.0,
+                0.0
+            ],
+            "VUX": [
+                0.0,
+                0.0
+            ],
+            "VUY": [
+                0.0,
+                0.0
+            ],
+            "Weight": [
+                1.0,
+                1.0
+            ],
+            "X": [
+                0.0,
+                0.0
+            ],
+            "Y": [
+                0.0,
+                3.0
+            ]
+        },
+        "Pupil": {
+            "Type": 0,
+            "Value": 4.0
+        },
+        "Wvl": {
+            "Color": [
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ]
+            ],
+            "RefIndex": 0,
+            "Value": [
+                587.562
+            ],
+            "Weight": [
+                1.0
+            ]
+        }
+    },
+    "Title": ""
+}

@@ -28,6 +28,7 @@
 #define FIELDSPEC_H
 
 #include <vector>
+#include <iterator>
 #include <string>
 #include <memory>
 
@@ -48,17 +49,19 @@ public:
     FieldSpec(int field_type);
     ~FieldSpec();
 
+    static int number_of_fields() { return num_fields_;}
+
     /** Returns current field type */
-    inline int field_type() const;
+    int field_type() const { return field_type_;}
 
     /** Get number of fields */
-    inline int field_count() const;
+    int field_count() const { return fields_.size();}
 
     /** Access to field component */
-    inline Field* field(int i) const;
+    Field* field(int i) const { return fields_[i].get();}
 
     /** Returns the maximum field of view */
-    inline double max_field() const;
+    double max_field() const {return max_field_;}
 
     /**
      * @brief Set field type
@@ -83,28 +86,10 @@ protected:
     int field_type_;
     std::vector< std::unique_ptr<Field> > fields_;
     double max_field_;
+
+    static int num_fields_;
 };
 
-
-int FieldSpec::field_type() const
-{
-    return field_type_;
-}
-
-Field* FieldSpec::field(int i) const
-{
-    return fields_[i].get();
-}
-
-int FieldSpec::field_count() const
-{
-    return (int)fields_.size();
-}
-
-double FieldSpec::max_field() const
-{
-    return max_field_;
-}
 
 } //namespace geopter
 
