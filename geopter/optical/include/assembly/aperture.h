@@ -29,38 +29,33 @@
 
 #include <string>
 #include "Eigen/Core"
+#include "assembly/none_aperture.h"
+#include "assembly/circular.h"
 
 namespace geopter{
 
 
 /** Apertures on surfaces used to define and limit the light beam passing through a lens system */
-class Aperture
+template<class Shape>
+class Aperture : public Shape
 {
 public:
-    enum Shape
-    {
-        Circular,
-        Rectangular
-    };
+    Aperture() : Shape(){}
+    Aperture(double r) : Shape(r){}
+    Aperture(double x, double y) : Shape(x,y){}
 
-    Aperture();
-    virtual ~Aperture();
+    double x_dimension() const{
+        return Shape::x_dimension_;
+    }
+    double y_dimension() const{
+        return Shape::y_dimension_;
+    }
 
-    virtual double x_dimension() const;
-    virtual double y_dimension() const;
-    virtual Eigen::Vector2d dimension() const;
-    virtual double max_dimension() const =0;
-    virtual void set_dimension(double x, double y);
+    Eigen::Vector2d dimension() const{
+        Eigen::Vector2d dim({Shape::x_dimension_, Shape::y_dimension_});
+        return dim;
+    }
 
-    virtual bool point_inside(double x, double y) const =0;
-    virtual std::string shape_name() const =0;
-
-protected:
-    double x_dimension_;
-    double y_dimension_;
-    double x_offset_;
-    double y_offset_;
-    double rotation_;
 };
 
 } //namespace

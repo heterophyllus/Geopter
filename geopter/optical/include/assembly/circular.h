@@ -23,34 +23,74 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   circular.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef CIRCULAR_H
 #define CIRCULAR_H
 
-#include "aperture.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+#include <string>
 
 namespace geopter {
 
 
-class Circular : public Aperture
+class Circular
 {
 public:
-    Circular(double r=1.0);
-    ~Circular();
+    Circular() : x_dimension_(1.0), y_dimension_(1.0), x_offset_(0.0), y_offset_(0.0), rotation_(0.0){
+        radius_ = 1.0;
+    }
 
-    void set_radius(double r);
 
-    std::string shape_name() const override;
-    double max_dimension() const override;
-    void set_dimension(double x, double y) override;
-    bool point_inside(double x, double y) const override;
+    Circular(double r) : x_dimension_(r), y_dimension_(r), x_offset_(0.0), y_offset_(0.0), rotation_(0.0){
+        radius_ = r;
+    }
+
+
+    Circular(double x, double y) : x_offset_(0.0), y_offset_(0.0), rotation_(0.0){
+        radius_ = fabs( std::max(x,y) );
+        x_dimension_ = radius_;
+        y_dimension_ = radius_;
+    }
+
+    void set_radius(double r){
+        radius_ = r;
+    }
+
+    double radius() const{
+        return radius_;
+    }
+
+    std::string shape_name() const{
+        return "Circular";
+    }
+
+    double max_dimension() const{
+        return radius_;
+    }
+
+    void set_dimension(double x, double y){
+        x_dimension_ = x;
+        y_dimension_ = y;
+        radius_ = sqrt(x*x + y*y);
+    }
+
+    bool point_inside(double x, double y) const{
+        if( (x*x + y*y) < radius_*radius_ ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+protected:
+    double x_dimension_;
+    double y_dimension_;
+    double x_offset_;
+    double y_offset_;
+    double rotation_;
 
 private:
     double radius_;

@@ -67,56 +67,34 @@ Surface::Surface(double r)
 
 Surface::~Surface()
 {
-    if(edge_aperture_){
-        edge_aperture_.reset();
-    }
-    if(clear_aperture_){
-        clear_aperture_.reset();
-    }
     solve_.reset();
 }
 
 std::string Surface::aperture_shape() const
 {
-    if(clear_aperture_){
-        return clear_aperture_->shape_name();
-    }else{
-        return "None";
-    }
+    return std::visit([](auto ap){ return ap.shape_name() ;}, clear_aperture_);
 }
 
 double Surface::max_aperture() const
 {
-    if(clear_aperture_) {
-        return clear_aperture_->max_dimension();
-    }else{
-        return semi_diameter_;
-    }
+    double max_ap = std::visit([](auto ap){ return ap.max_dimension() ;}, clear_aperture_);
+    return std::max(max_ap, semi_diameter_);
 }
 
 void Surface::remove_clear_aperture()
 {
-    if(clear_aperture_){
-        clear_aperture_.reset();
-    }
+    clear_aperture_ = Aperture<NoneAperture>();
 }
 
 bool Surface::point_inside(double x, double y) const
 {
-    if(clear_aperture_) {
-        return clear_aperture_->point_inside(x, y);
-    }
-    return true;
+    return std::visit([&](auto ap){ return ap.point_inside(x,y); }, clear_aperture_);
 }
 
 bool Surface::point_inside(const Eigen::Vector2d& pt) const
 {
-    if(clear_aperture_) {
-        return clear_aperture_->point_inside(pt(0), pt(1));
-    }
-    return true;
+    return std::visit([&](auto ap){ return ap.point_inside(pt(0), pt(1)); }, clear_aperture_);
 }
-
 
 
 void Surface::update()

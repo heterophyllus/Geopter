@@ -400,12 +400,12 @@ void OpticalSystem::save_to_file(const std::string &filepath)
             }
         }
 
-        if(s->clear_aperture()){
+        if( ! s->is_aperture<NoneAperture>()){
             std::string aperture_type = s->aperture_shape();
             json_data["Assembly"][cur_idx]["Aperture"]["Type"]  = aperture_type;
 
             if(aperture_type == "Circular"){
-                double cir_ap_r = dynamic_cast<Circular*>(s->clear_aperture())->max_dimension();
+                double cir_ap_r = s->clear_aperture<Circular>()->radius();
                 json_data["Assembly"][cur_idx]["Aperture"]["Radius"] = cir_ap_r;
             }else if(aperture_type == "Rectangular"){
                 // not implemented
@@ -591,7 +591,7 @@ void OpticalSystem::load_file(const std::string &filepath)
             std::string aperture_type = json_data["Assembly"][cur_idx]["Aperture"]["Type"].get<std::string>();
             if(aperture_type == "Circular"){
                 double cir_ap_r = json_data["Assembly"][cur_idx]["Aperture"]["Radius"].get<double>();
-                srf->set_clear_aperture<Aperture::Shape::Circular>(cir_ap_r);
+                srf->set_clear_aperture<Circular>(cir_ap_r, cir_ap_r);
             }
         }
 

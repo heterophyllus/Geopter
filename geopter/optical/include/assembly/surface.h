@@ -52,12 +52,10 @@ public:
     ~Surface();
 
 
-    inline std::string interact_mode() const;
-    inline std::string label() const;
+    std::string interact_mode() const { return interact_mode_;}
+    std::string label() const { return label_;}
     inline DecenterData* decenter() const;
 
-    inline Aperture* clear_aperture() const;
-    inline Aperture* edge_aperture() const;
     inline Solve* solve() const;
 
     std::string profile_name() const{
@@ -101,6 +99,20 @@ public:
         }
     }
 
+    template<class Shape>
+    bool is_aperture(){
+        if(std::get_if< Aperture<Shape> >(&clear_aperture_)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    template<class Shape>
+    auto clear_aperture(){
+        return std::get_if< Aperture<Shape> >(&clear_aperture_);
+    }
+
     /** Return aperture shape name. If no aperture is set, returns "None" */
     std::string aperture_shape() const;
 
@@ -130,13 +142,25 @@ public:
     }
 
 
-    inline void set_label(std::string lbl);
+    void set_label(std::string lbl) { label_ = lbl;}
 
-    template<Aperture::Shape ap_shape>
-    void set_clear_aperture(double x_dimension, double y_dimension=0.0);
+    template<class Shape>
+    void set_clear_aperture(double x_dimension, double y_dimension){
+        if constexpr (std::is_same_v<Shape, NoneAperture>){
+            clear_aperture_ = Aperture<NoneAperture>();
+        }else if(std::is_same_v<Shape, Circular>){
+            clear_aperture_ = Aperture<Circular>(x_dimension, y_dimension);
+        }
+    }
 
-    template<Aperture::Shape ap_shape>
-    void set_edge_aperture(double x_dimension, double y_dimension=0.0);
+    template<class Shape>
+    void set_edge_aperture(double x_dimension, double y_dimension){
+        if constexpr (std::is_same_v<Shape, NoneAperture>){
+            edge_aperture_ = Aperture<NoneAperture>();
+        }else if(std::is_same_v<Shape, Circular>){
+            edge_aperture_ = Aperture<Circular>(x_dimension, y_dimension);
+        }
+    }
 
     /** Remove all clear apertures from the surface */
     void remove_clear_aperture();
@@ -164,8 +188,8 @@ protected:
 
     std::variant<SurfaceProfile<Spherical>, SurfaceProfile<EvenPolynomial>, SurfaceProfile<OddPolynomial> > profile_;
 
-    std::unique_ptr<Aperture> edge_aperture_;
-    std::unique_ptr<Aperture> clear_aperture_;
+    std::variant<Aperture<NoneAperture>, Aperture<Circular>> edge_aperture_;
+    std::variant<Aperture<NoneAperture>, Aperture<Circular>> clear_aperture_;
 
     std::unique_ptr<DecenterData> decenter_;
 
@@ -180,78 +204,15 @@ protected:
 
 
 
-
-
-std::string Surface::interact_mode() const
-{
-    return interact_mode_;
-}
-
-std::string Surface::label() const
-{
-    return label_;
-}
-
 DecenterData* Surface::decenter() const
 {
     return decenter_.get();
 }
 
 
-template <Aperture::Shape ap_shape>
-void Surface::set_clear_aperture(double x_dimension, double /*y_dimension*/)
-{
-    clear_aperture_.reset();
-
-    switch (ap_shape) {
-    case Aperture::Shape::Circular:
-        clear_aperture_ = std::make_unique<Circular>(x_dimension);
-        break;
-    case Aperture::Shape::Rectangular:
-        // not implemented
-        //break;
-    default:
-        clear_aperture_ = std::make_unique<Circular>(x_dimension);
-    }
-}
-
-template <Aperture::Shape ap_shape>
-void Surface::set_edge_aperture(double x_dimension, double /*y_dimension*/)
-{
-    edge_aperture_.reset();
-
-    switch (ap_shape) {
-    case Aperture::Shape::Circular:
-        edge_aperture_ = std::make_unique<Circular>(x_dimension);
-        break;
-    case Aperture::Shape::Rectangular:
-        // not implemented
-        //break;
-    default:
-        edge_aperture_ = std::make_unique<Circular>(x_dimension);
-    }
-}
-
-Aperture* Surface::clear_aperture() const
-{
-    return clear_aperture_.get();
-}
-
-Aperture* Surface::edge_aperture() const
-{
-    return edge_aperture_.get();
-}
-
-
-
 Solve* Surface::solve() const
 {
     return solve_.get();
-}
-
-void Surface::set_label(std::string lbl)
-{
-    label_ = lbl;
 }
 
 

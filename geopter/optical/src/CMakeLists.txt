@@ -22,8 +22,6 @@ set(OPTICAL_SRCS
 
     assembly/optical_assembly.cpp
     assembly/surface.cpp
-    assembly/aperture.cpp
-    assembly/circular.cpp
     assembly/gap.cpp
     assembly/decenter_data.cpp
     assembly/transformation.cpp

@@ -95,7 +95,7 @@ void SurfacePropertyDlg::syncSystemWithUi()
     }
     else if(aperture_type == 1){ // Circular
         double ap_radius = ui->circularRadiusEdit->text().toDouble();
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_clear_aperture<Aperture::Shape::Circular>(ap_radius);
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_clear_aperture<Circular>(ap_radius, ap_radius);
     }
 
     // decenter
@@ -156,9 +156,10 @@ void SurfacePropertyDlg::syncUiWithSystem()
 
     //=====================================================
     // aperture
-    if(opt_sys_->optical_assembly()->surface(surface_index_)->clear_aperture()){
+    if(opt_sys_->optical_assembly()->surface(surface_index_)->is_aperture<Circular>()){ // Circular
+
         ui->apertureTypeCombo->setCurrentIndex(1);
-        double ap_radius = opt_sys_->optical_assembly()->surface(surface_index_)->clear_aperture()->max_dimension();
+        double ap_radius = opt_sys_->optical_assembly()->surface(surface_index_)->clear_aperture<Circular>()->max_dimension();
         ui->circularRadiusEdit->setText(QString::number(ap_radius));
 
     }else{ // None
