@@ -28,6 +28,7 @@
 
 #include <string>
 #include <memory>
+#include <variant>
 
 #include "assembly/transformation.h"
 #include "assembly/aperture.h"
@@ -35,6 +36,7 @@
 #include "assembly/decenter_data.h"
 #include "assembly/solve.h"
 
+#include "profile/surface_profile.h"
 #include "profile/spherical.h"
 #include "profile/even_polynomial.h"
 #include "profile/odd_polynomial.h"
@@ -49,13 +51,55 @@ public:
     Surface(double r);
     ~Surface();
 
+
     inline std::string interact_mode() const;
     inline std::string label() const;
     inline DecenterData* decenter() const;
-    inline SurfaceProfile* profile() const;
+
     inline Aperture* clear_aperture() const;
     inline Aperture* edge_aperture() const;
     inline Solve* solve() const;
+
+    std::string profile_name() const{
+        return std::visit([&](auto p){ return p.name();}, profile_);
+    }
+
+    double cv() const{ return std::visit([](auto &p){ return p.cv();}, profile_);}
+
+    double radius() const {
+        return std::visit([](auto &p){ return p.radius();}, profile_);
+    }
+
+    void set_radius(double r){
+        std::visit([&](auto &p){ p.set_radius(r);}, profile_);
+    }
+
+    bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir){
+        return std::visit([&](auto p){ return p.intersect(pt, distance, p0, dir);}, profile_);
+    }
+
+    Eigen::Vector3d normal(const Eigen::Vector3d& pt) const{
+        return std::visit([&](auto p){ return p.normal(pt);}, profile_);
+    }
+
+
+    double sag(double x, double y){
+        return std::visit([&](auto p){ return p.sag(x,y);}, profile_);
+    }
+
+    template<class P>
+    auto profile(){
+        return std::get_if< SurfaceProfile<P> >(&profile_);
+    }
+
+    template<class P>
+    bool is_profile(){
+        if(std::get_if< SurfaceProfile<P> >(&profile_)){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     /** Return aperture shape name. If no aperture is set, returns "None" */
     std::string aperture_shape() const;
@@ -67,17 +111,24 @@ public:
     double max_aperture() const;
 
     /** Maximum valid semi-diameter where the reference rays pass */
-    inline double semi_diameter() const;
+    double semi_diameter() const { return semi_diameter_;}
 
     /** Returns true if the given point(x,y) is inside of aperture */
     bool point_inside(double x, double y) const;
     bool point_inside(const Eigen::Vector2d& pt) const;
 
-    inline const Transformation& local_transform() const;
-    inline const Transformation& global_transform() const;
+    const Transformation& local_transform() const { return lcl_tfrm_;}
+    const Transformation& global_transform() const { return gbl_tfrm_;}
 
-    template<SurfaceProfile::Type type>
-    void set_profile(double cv, double k= 0.0, const std::vector<double>& coefs=std::vector<double>(10, 0.0));
+    template<class Profile>
+    void set_profile(double cv, double k=0.0, const std::vector<double>& coefs=std::vector<double>(10, 0.0)){
+        if constexpr (std::is_same_v<Profile, Spherical>){
+            profile_ = SurfaceProfile<Spherical>(cv);
+        }else {
+            profile_ = SurfaceProfile<Profile>(cv, k, coefs);
+        }
+    }
+
 
     inline void set_label(std::string lbl);
 
@@ -90,10 +141,10 @@ public:
     /** Remove all clear apertures from the surface */
     void remove_clear_aperture();
 
-    inline void set_semi_diameter(double sd);
+    void set_semi_diameter(double sd){ semi_diameter_ = sd;}
 
-    inline void set_local_transform(const Transformation& tfrm);
-    inline void set_global_transform(const Transformation& tfrm);
+    void set_local_transform(const Transformation& tfrm){ lcl_tfrm_ = tfrm; }
+    void set_global_transform(const Transformation& tfrm) { gbl_tfrm_ = tfrm;}
 
     inline void set_solve(std::unique_ptr<Solve> solve);
     inline void remove_solve();
@@ -111,8 +162,7 @@ protected:
 
     double semi_diameter_;
 
-    /** Shape of the interface */
-    std::unique_ptr<SurfaceProfile> profile_;
+    std::variant<SurfaceProfile<Spherical>, SurfaceProfile<EvenPolynomial>, SurfaceProfile<OddPolynomial> > profile_;
 
     std::unique_ptr<Aperture> edge_aperture_;
     std::unique_ptr<Aperture> clear_aperture_;
@@ -130,25 +180,6 @@ protected:
 
 
 
-template<SurfaceProfile::Type type>
-void Surface::set_profile(double cv, double k, const std::vector<double>& coefs)
-{
-    profile_.reset();
-
-    switch (type) {
-    case SurfaceProfile::Type::Sphere:
-        profile_ = std::make_unique<Spherical>(cv);
-        break;
-    case SurfaceProfile::Type::EvenAsphere:
-        profile_ = std::make_unique<EvenPolynomial>(cv,k,coefs);
-        break;
-    case SurfaceProfile::Type::OddAsphere:
-        profile_ = std::make_unique<OddPolynomial>(cv,k,coefs);
-        break;
-    default:
-        profile_ = std::make_unique<Spherical>(cv);
-    }
-}
 
 
 std::string Surface::interact_mode() const
@@ -166,10 +197,6 @@ DecenterData* Surface::decenter() const
     return decenter_.get();
 }
 
-SurfaceProfile* Surface::profile() const
-{
-    return profile_.get();
-}
 
 template <Aperture::Shape ap_shape>
 void Surface::set_clear_aperture(double x_dimension, double /*y_dimension*/)
@@ -215,20 +242,7 @@ Aperture* Surface::edge_aperture() const
     return edge_aperture_.get();
 }
 
-double Surface::semi_diameter() const
-{
-    return semi_diameter_;
-}
 
-const Transformation& Surface::local_transform() const
-{
-    return lcl_tfrm_;
-}
-
-const Transformation& Surface::global_transform() const
-{
-    return gbl_tfrm_;
-}
 
 Solve* Surface::solve() const
 {
@@ -240,20 +254,7 @@ void Surface::set_label(std::string lbl)
     label_ = lbl;
 }
 
-void Surface::set_local_transform(const Transformation& tfrm)
-{
-    lcl_tfrm_ = tfrm;
-}
 
-void Surface::set_global_transform(const Transformation& tfrm)
-{
-    gbl_tfrm_ = tfrm;
-}
-
-void Surface::set_semi_diameter(double sd)
-{
-    semi_diameter_ = sd;
-}
 
 void Surface::set_solve(std::unique_ptr<Solve> solve)
 {

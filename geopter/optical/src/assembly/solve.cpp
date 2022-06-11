@@ -51,8 +51,8 @@ void EdgeThicknessSolve::apply(OpticalSystem* opt_sys)
 {
     int s1 = gap_index_;
     int s2 = s1+1;
-    double sag1 = opt_sys->optical_assembly()->surface(s1)->profile()->sag(0.0, height_);
-    double sag2 = opt_sys->optical_assembly()->surface(s2)->profile()->sag(0.0, height_);
+    double sag1 = opt_sys->optical_assembly()->surface(s1)->sag(0.0, height_);
+    double sag2 = opt_sys->optical_assembly()->surface(s2)->sag(0.0, height_);
 
     double thi = value_ - ( -sag1 + sag2); //et = -sag1 + thi + sag2;
 
@@ -110,7 +110,7 @@ void ParaxialImageSolve::apply(OpticalSystem* opt_sys)
     double l_prime = 0.0;
 
     for(int i = 1; i < num_srfs - 1; i++) {
-        double c = opt_sys->optical_assembly()->surface(i)->profile()->cv();
+        double c = opt_sys->optical_assembly()->surface(i)->cv();
         double n = opt_sys->optical_assembly()->gap(i-1)->material()->rindex(ref_wvl);
         double n_prime = opt_sys->optical_assembly()->gap(i)->material()->rindex(ref_wvl);
         double phi = (n_prime - n)*c;

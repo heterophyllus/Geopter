@@ -134,11 +134,11 @@ TraceError SequentialTrace::trace_ray_throughout_path(RayPtr ray, const Sequenti
     //double op_delta = 0.0;
     double opl = 0.0;
 
-    constexpr double z_dir = 1.0; // used for reflection, not yet implemented
+    //constexpr double z_dir = 1.0; // used for reflection, not yet implemented
 
 
     // first surface
-    Eigen::Vector3d srf_normal_1st = seq_path.at(0).srf->profile()->normal(pt0);
+    Eigen::Vector3d srf_normal_1st = seq_path.at(0).srf->normal(pt0);
     ray->at(0)->set_data(pt0, srf_normal_1st, dir0, 0.0, 0.0);
 
 
@@ -161,7 +161,7 @@ TraceError SequentialTrace::trace_ray_throughout_path(RayPtr ray, const Sequenti
         Surface* cur_srf = seq_path.at(cur_srf_idx).srf;
         double dist_from_perpendicular_to_intersect_pt; // distance from the foot of perpendicular to the intersect point
 
-        if( ! cur_srf->profile()->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir) ){
+        if( ! cur_srf->intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir) ){
             ray->set_status(RayStatus::MissedSurface);
             ray->set_reached_surface(cur_srf_idx - 1);
             return TRACE_MISSEDSURFACE_ERROR;
@@ -170,7 +170,7 @@ TraceError SequentialTrace::trace_ray_throughout_path(RayPtr ray, const Sequenti
         distance_from_before = dist_from_before_to_perpendicular + dist_from_perpendicular_to_intersect_pt; // distance between before and current intersect point
 
         n_out = seq_path.at(cur_srf_idx).rind;
-        srf_normal = cur_srf->profile()->normal(intersect_pt); // surface normal at the intersect point
+        srf_normal = cur_srf->normal(intersect_pt); // surface normal at the intersect point
         if( ! bend(after_dir ,before_dir, srf_normal, n_in, n_out) ){
             ray->set_status(RayStatus::TotalReflection);
             ray->set_reached_surface(cur_srf_idx);
@@ -258,8 +258,8 @@ bool SequentialTrace::trace_coddington(Eigen::Vector2d &s_t, const std::shared_p
         double sinU = sqrt(1.0 - cosU*cosU);
 
         Surface* surf = path.at(i).srf;
-        if(surf->profile()->name() == "SPH") {
-            double c = surf->profile()->cv();
+        if (surf->is_profile<Spherical>()) {
+            double c = surf->cv();
             obl_pwr_s = c*(n_after*cosI_prime - n_before*cosI);
             obl_pwr_t = obl_pwr_s;
 
@@ -268,7 +268,7 @@ bool SequentialTrace::trace_coddington(Eigen::Vector2d &s_t, const std::shared_p
             double y = ray->at(i)->y();
 
             if(fabs(y) < std::numeric_limits<double>::epsilon()){
-                double cs = surf->profile()->cv();
+                double cs = surf->cv();
                 obl_pwr_s = cs*(n_after*cosI_prime - n_before*cosI);
             }else{
                 double sinI_U = sinI*cosU - cosI*sinU;
@@ -276,7 +276,13 @@ bool SequentialTrace::trace_coddington(Eigen::Vector2d &s_t, const std::shared_p
                 obl_pwr_s = cs*(n_after*cosI_prime - n_before*cosI);
             }
 
-            double d2z_dy2 = surf->profile()->deriv_2nd(y);
+            double d2z_dy2 = 0.0;
+            if(surf->is_profile<EvenPolynomial>()){
+                d2z_dy2 = surf->profile<EvenPolynomial>()->deriv_2nd(y);
+            }else{
+                d2z_dy2 = surf->profile<OddPolynomial>()->deriv_2nd(y);
+            }
+
             double cosI_U = cosI*cosU + sinI*sinU;
             double ct = d2z_dy2 * pow( cosI_U, 3);
             obl_pwr_t = ct*(n_after*cosI_prime - n_before*cosI);
@@ -371,8 +377,8 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
         double sinU = sqrt(1.0 - cosU*cosU);
 
         Surface* surf = path.at(i).srf;
-        if(surf->profile()->name() == "SPH") {
-            double c = surf->profile()->cv();
+        if(surf->is_profile<Spherical>()) {
+            double c = surf->cv();
             obl_pwr_s = c*(n_after*cosI_prime - n_before*cosI);
             obl_pwr_t = obl_pwr_s;
 
@@ -381,7 +387,7 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
             double y = ray->at(i)->y();
 
             if(fabs(y) < std::numeric_limits<double>::epsilon()){
-                double cs = surf->profile()->cv();
+                double cs = surf->cv();
                 obl_pwr_s = cs*(n_after*cosI_prime - n_before*cosI);
             }else{
                 double sinI_U = sinI*cosU - cosI*sinU;
@@ -389,7 +395,12 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
                 obl_pwr_s = cs*(n_after*cosI_prime - n_before*cosI);
             }
 
-            double d2z_dy2 = surf->profile()->deriv_2nd(y);
+            double d2z_dy2 = 0.0;
+            if(surf->is_profile<EvenPolynomial>()){
+                d2z_dy2 = surf->profile<EvenPolynomial>()->deriv_2nd(y);
+            }else{
+                d2z_dy2 = surf->profile<OddPolynomial>()->deriv_2nd(y);
+            }
             double cosI_U = cosI*cosU + sinI*sinU;
             double ct = d2z_dy2 * pow( cosI_U, 3);
             obl_pwr_t = ct*(n_after*cosI_prime - n_before*cosI);
@@ -492,7 +503,7 @@ bool SequentialTrace::aim_chief_ray(Eigen::Vector2d& aim_pt, Eigen::Vector3d& ob
 
 bool SequentialTrace::search_ray_aiming_at_surface(RayPtr ray, Eigen::Vector2d& aim_pt, const Field *fld, int target_srf_idx, const Eigen::Vector2d &xy_target)
 {
-    const int fld_type = opt_sys_->optical_spec()->field_of_view()->field_type();
+    //const int fld_type = opt_sys_->optical_spec()->field_of_view()->field_type();
     double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
 
     double obj_dist = fund_data_.object_distance;

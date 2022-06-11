@@ -32,35 +32,40 @@
 namespace geopter {
 
 /** Standard spherical shape */
-class Spherical : public SurfaceProfile
+class Spherical
 {
 public:
-    Spherical(double c=0.0);
-    ~Spherical();
+    Spherical(){
+        cv_ = 0.0;
+    }
+    Spherical(double c){
+        cv_ = c;
+    }
 
-    inline double f(const Eigen::Vector3d& p) const override;
-    inline Eigen::Vector3d df(const Eigen::Vector3d& p) const override;
-    double sag(double x, double y) const override;
+    std::string name() const{
+        return "SPH";
+    }
 
-    bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir) override;
+    double f(const Eigen::Vector3d& p) const {
+        return p(2) - 0.5*cv_*p.dot(p);
+    }
 
+    Eigen::Vector3d df(const Eigen::Vector3d& p) const{
+        Eigen::Vector3d df({-cv_*p(0), -cv_*p(1), 1.0 - cv_*p(2)} );
+        return df;
+    }
+
+    double sag(double x, double y) const;
+
+    bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
+
+    void print(std::ostringstream& oss){};
+
+protected:
+    double cv_;
 };
 
 
-double Spherical::f(const Eigen::Vector3d& p) const
-{
-    return p(2) - 0.5*cv_*p.dot(p);
-}
-
-
-Eigen::Vector3d Spherical::df(const Eigen::Vector3d& p) const
-{
-    Eigen::Vector3d df({-cv_*p(0),
-                        -cv_*p(1),
-                        1.0 - cv_*p(2)} );
-
-    return df;
-}
 
 
 } //namespace geopter

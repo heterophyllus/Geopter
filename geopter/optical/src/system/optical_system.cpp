@@ -373,8 +373,8 @@ void OpticalSystem::save_to_file(const std::string &filepath)
 
         // ---> surface attributes
         std::string surface_label = s->label();
-        std::string surface_type  = s->profile()->name();
-        double      cv            = s->profile()->cv();
+        std::string surface_type  = s->profile_name();
+        double      cv            = s->cv();
 
 
         json_data["Assembly"][cur_idx]["Label"]     = surface_label;
@@ -384,15 +384,14 @@ void OpticalSystem::save_to_file(const std::string &filepath)
         if(surface_type == "SPH"){
             // do nothing
         }else if(surface_type == "ASP"){
-            EvenPolynomial *prf = dynamic_cast<EvenPolynomial*>(s->profile());
-            if(prf){
-                json_data["Assembly"][cur_idx]["Conic"] = prf->conic();
-                for(int ci = 0; ci < prf->coef_count(); ci++){
-                    json_data["Assembly"][cur_idx]["Coefs"].push_back( prf->coef(ci) );
-                }
+            EvenPolynomial* prf = s->profile<EvenPolynomial>();
+            json_data["Assembly"][cur_idx]["Conic"] = prf->conic();
+            for(int ci = 0; ci < prf->coef_count(); ci++){
+                json_data["Assembly"][cur_idx]["Coefs"].push_back( prf->coef(ci) );
             }
+
         }else if(surface_type == "ODD"){
-            OddPolynomial *prf = dynamic_cast<OddPolynomial*>(s->profile());
+            OddPolynomial *prf = s->profile<OddPolynomial>();
             if(prf){
                 json_data["Assembly"][cur_idx]["Conic"] = prf->conic();
                 for(int ci = 0; ci < prf->coef_count(); ci++){
@@ -571,19 +570,19 @@ void OpticalSystem::load_file(const std::string &filepath)
 
 
         if( surf_type == "SPH" ) {
-            srf->set_profile<SurfaceProfile::Type::Sphere>(cv);
+            srf->set_profile<Spherical>(cv);
         }
         else if( surf_type == "ASP" ) {
             double conic = json_data["Assembly"][cur_idx]["Conic"].get<double>();
             std::vector<double> coefs = json_data["Assembly"][cur_idx]["Coefs"].get< std::vector<double> >();
 
-            srf->set_profile<SurfaceProfile::Type::EvenAsphere>(cv, conic, coefs);
+            srf->set_profile<EvenPolynomial>(cv, conic, coefs);
         }
         else if(surf_type == "ODD") {
             double conic = json_data["Assembly"][cur_idx]["Conic"].get<double>();
             std::vector<double> coefs = json_data["Assembly"][cur_idx]["Coefs"].get< std::vector<double> >();
 
-            srf->set_profile<SurfaceProfile::Type::OddAsphere>(cv, conic, coefs);
+            srf->set_profile<OddPolynomial>(cv, conic, coefs);
         }
 
 

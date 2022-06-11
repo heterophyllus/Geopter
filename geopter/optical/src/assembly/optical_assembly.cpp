@@ -335,7 +335,7 @@ void OpticalAssembly::print(std::ostringstream& oss) const
 
     for(int i = 0; i < num_srf; i++) {
 
-        r             = interfaces_[i]->profile()->radius();
+        r             = interfaces_[i]->radius();
         label         = interfaces_[i]->label();
         sd            = interfaces_[i]->semi_diameter();
         aperture_type = interfaces_[i]->aperture_shape();

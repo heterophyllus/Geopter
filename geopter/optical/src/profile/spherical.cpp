@@ -31,19 +31,6 @@
 
 using namespace geopter;
 
-Spherical::Spherical(double c)
-{
-    name_ = "SPH";
-    cv_ = c;
-}
-
-Spherical::~Spherical()
-{
-
-}
-
-
-
 double Spherical::sag(double x, double y) const
 {
     if(fabs(cv_) < std::numeric_limits<double>::epsilon())

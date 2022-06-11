@@ -69,7 +69,7 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
         if( LensDataColumn::Label == j){
             return QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->label());
         }else if (LensDataColumn::SurfaceType == j){
-            QString surface_type = QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->profile()->name());
+            QString surface_type = QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->profile_name());
             if(surface_type == "SPH"){
                 return tr("Standard");
             }else if(surface_type == "ASP"){
@@ -80,7 +80,7 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
                 return tr("Unknown");
             }
         }else if (LensDataColumn::Radius == j){
-            return m_opt_sys->optical_assembly()->surface(i)->profile()->radius();
+            return m_opt_sys->optical_assembly()->surface(i)->radius();
         }else if (LensDataColumn::Thickness == j){
             return m_opt_sys->optical_assembly()->gap(i)->thi();
         }else if( LensDataColumn::Material == j){
@@ -131,7 +131,7 @@ bool LensDataTableModel::setData(const QModelIndex &index, const QVariant &value
         if(LensDataColumn::Label == j){
             m_opt_sys->optical_assembly()->surface(i)->set_label(value.toString().toStdString());
         }else if(LensDataColumn::Radius == j){
-            m_opt_sys->optical_assembly()->surface(i)->profile()->set_radius(value.toDouble());
+            m_opt_sys->optical_assembly()->surface(i)->set_radius(value.toDouble());
         }else if(LensDataColumn::Thickness == j){
             if( ! m_opt_sys->optical_assembly()->gap(i)->has_solve()){
                 m_opt_sys->optical_assembly()->gap(i)->set_thi(value.toDouble());

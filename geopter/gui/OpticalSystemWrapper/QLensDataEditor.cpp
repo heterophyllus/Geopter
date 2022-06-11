@@ -13,7 +13,7 @@ QLensDataEditor::~QLensDataEditor()
 
 double QLensDataEditor::GetRadiusAt(int i) const
 {
-    return parent_->optical_assembly()->surface(i)->profile()->radius();
+    return parent_->optical_assembly()->surface(i)->radius();
 }
 
 double QLensDataEditor::GetThicknessAt(int i) const
@@ -38,7 +38,7 @@ void QLensDataEditor::InsertNewSurfaceAt(int i)
 
 void QLensDataEditor::SetSurfaceDataAt(int i, double radius, double thick, QString material, QString comment)
 {
-    parent_->optical_assembly()->surface(i)->profile()->set_radius(radius);
+    parent_->optical_assembly()->surface(i)->set_radius(radius);
     parent_->optical_assembly()->gap(i)->set_thi(thick);
     parent_->optical_assembly()->gap(i)->set_material( MaterialLibrary::find(material.toStdString()) );
     parent_->optical_assembly()->surface(i)->set_label(comment.toStdString());
@@ -46,7 +46,7 @@ void QLensDataEditor::SetSurfaceDataAt(int i, double radius, double thick, QStri
 
 void QLensDataEditor::SetRadiusAt(int i, double r)
 {
-    parent_->optical_assembly()->surface(i)->profile()->set_radius(r);
+    parent_->optical_assembly()->surface(i)->set_radius(r);
 }
 
 void QLensDataEditor::SetThicknessAt(int i, double t)

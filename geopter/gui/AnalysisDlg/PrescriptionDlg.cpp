@@ -71,11 +71,11 @@ void PrescriptionDlg::updateParentDockContent()
         const int num_srf = m_opticalSystem->optical_assembly()->surface_count();
         for(int si = 0; si < num_srf; si++){
             Surface* srf = m_opticalSystem->optical_assembly()->surface(si);
-            if(srf->profile()->name() == "SPH"){
+            if(srf->is_profile<Spherical>()){
                 continue;
             }else{
                 oss << "Surface " << si << std::endl;
-                srf->profile()->print(oss);
+                srf->profile<Spherical>()->print(oss);
                 oss << std::endl;
             }
         }

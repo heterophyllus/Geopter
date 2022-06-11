@@ -180,8 +180,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
     double od2 = s2->semi_diameter();
 
     double mech_d = std::max(s1->max_aperture(), s2->max_aperture());
-    double cv1 = s1->profile()->cv();
-    double cv2 = s2->profile()->cv();
+    double cv1 = s1->cv();
+    double cv2 = s2->cv();
 
     Eigen::Vector2d edge_pt1, edge_pt2;
 
@@ -190,8 +190,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
         draw_surface(s1, mech_d, color);
         draw_surface(s2, mech_d, color);
 
-        edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-        edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+        edge_pt1(0) = s1->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+        edge_pt2(0) = s2->sag(0.0, mech_d) + s2->global_transform().transfer(2);
         if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
             edge_pt1(0) = 0.0;
             edge_pt2(0) = 0.0;
@@ -207,8 +207,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
             draw_surface(s1, mech_d,color);
             draw_surface(s2, mech_d,   color);
 
-            edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-            edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+            edge_pt1(0) = s1->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+            edge_pt2(0) = s2->sag(0.0, mech_d) + s2->global_transform().transfer(2);
 
             if(std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0))){
                 edge_pt1(0) = 0.0;
@@ -224,8 +224,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, od2,   color);
                 draw_flat(s2, od2, mech_d, color);
 
-                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-                edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+                edge_pt1(0) = s1->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->sag(0.0, od2) + s2->global_transform().transfer(2);
 
                 if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                     edge_pt1(0) = 0.0;
@@ -240,8 +240,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, mech_d,   color);
                 draw_flat(s1, od1, mech_d, color);
 
-                edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
-                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+                edge_pt1(0) = s1->sag(0.0, od1) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->sag(0.0, mech_d) + s2->global_transform().transfer(2);
 
                 if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                     edge_pt1(0) = 0.0;
@@ -261,8 +261,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
             draw_surface(s1, mech_d,color);
             draw_surface(s2, mech_d,   color);
 
-            edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-            edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+            edge_pt1(0) = s1->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+            edge_pt2(0) = s2->sag(0.0, mech_d) + s2->global_transform().transfer(2);
 
             if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                 edge_pt1(0) = 0.0;
@@ -278,8 +278,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, od2,   color);
                 draw_flat(s2, od2, mech_d, color);
 
-                edge_pt1(0) = s1->profile()->sag(0.0, mech_d) + s1->global_transform().transfer(2);
-                edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+                edge_pt1(0) = s1->sag(0.0, mech_d) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->sag(0.0, od2) + s2->global_transform().transfer(2);
 
                 if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                     edge_pt1(0) = 0.0;
@@ -294,8 +294,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
                 draw_surface(s2, mech_d,   color);
                 draw_flat(s1, od1, mech_d, color);
 
-                edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
-                edge_pt2(0) = s2->profile()->sag(0.0, mech_d) + s2->global_transform().transfer(2);
+                edge_pt1(0) = s1->sag(0.0, od1) + s1->global_transform().transfer(2);
+                edge_pt2(0) = s2->sag(0.0, mech_d) + s2->global_transform().transfer(2);
 
                 if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
                     edge_pt1(0) = 0.0;
@@ -314,8 +314,8 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
         draw_flat(s1, od1, mech_d, color);
         draw_flat(s2, od2, mech_d, color);
 
-        edge_pt1(0) = s1->profile()->sag(0.0, od1) + s1->global_transform().transfer(2);
-        edge_pt2(0) = s2->profile()->sag(0.0, od2) + s2->global_transform().transfer(2);
+        edge_pt1(0) = s1->sag(0.0, od1) + s1->global_transform().transfer(2);
+        edge_pt2(0) = s2->sag(0.0, od2) + s2->global_transform().transfer(2);
 
         if( std::isnan(edge_pt1(0)) || std::isnan(edge_pt2(0)) ){
             edge_pt1(0) = 0.0;
@@ -345,7 +345,7 @@ void Layout::draw_surface(Surface* srf, double max_y, const Rgb& color)
     double delta = 2*max_y/((double)pt_cnt-1);
     for(int i = 0; i < pt_cnt; i++){
         try{
-            pt(0) = srf->profile()->sag(0.0, y);
+            pt(0) = srf->sag(0.0, y);
         }catch(...){
             break;
         }
@@ -389,7 +389,7 @@ void Layout::draw_flat(Surface* srf, double min_y, double max_y, const Rgb& colo
 
     // upper
     try{
-        from_pt(0) = srf->profile()->sag(0.0, min_y) + srf->global_transform().transfer(2);
+        from_pt(0) = srf->sag(0.0, min_y) + srf->global_transform().transfer(2);
         from_pt(1) = min_y;
         to_pt(0) = from_pt(0);
         to_pt(1) = max_y;
@@ -403,7 +403,7 @@ void Layout::draw_flat(Surface* srf, double min_y, double max_y, const Rgb& colo
 
     // lower
     try{
-        from_pt(0) = srf->profile()->sag(0.0, -min_y) + srf->global_transform().transfer(2);
+        from_pt(0) = srf->sag(0.0, -min_y) + srf->global_transform().transfer(2);
         from_pt(1) = -min_y;
         to_pt(0) = from_pt(0);
         to_pt(1) = -max_y;

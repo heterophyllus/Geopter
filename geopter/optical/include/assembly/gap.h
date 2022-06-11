@@ -51,19 +51,15 @@ namespace geopter {
 class Gap
 {
 public:
-    Gap(){
-        Gap(0.0, MaterialLibrary::air());
-    }
-    Gap(double t, std::shared_ptr<Material> m = MaterialLibrary::air());
-    ~Gap(){
-        material_ = nullptr;
-    }
+    Gap();
+    Gap(double t, std::shared_ptr<Material> m =nullptr);
+    ~Gap();
 
     double thi() const { return thi_; }
     void set_thi(double t) { thi_ = t; }
 
     Material* material() const { return material_.get();}
-    void set_material(std::shared_ptr<Material> m) { material_ = m; }
+    void set_material(std::shared_ptr<Material> m);
 
     void set_solve(std::unique_ptr<Solve> solve) { solve_ = std::move(solve);}
     void remove_solve() { solve_.reset(); }

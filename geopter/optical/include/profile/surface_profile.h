@@ -29,84 +29,56 @@
 #include <sstream>
 #include <vector>
 #include "Eigen/Core"
+#include "spherical.h"
+#include "even_polynomial.h"
+#include "odd_polynomial.h"
 
 namespace geopter {
 
-class SurfaceProfile
+template <class Profile>
+class SurfaceProfile : public Profile
 {
 public:
+    SurfaceProfile() : Profile(){}
+    SurfaceProfile(double cv) : Profile(cv){}
+    SurfaceProfile(double cv, double k, const std::vector<double> coefs) : Profile(cv, k, coefs){}
 
-    enum Type
-    {
-        Sphere,
-        EvenAsphere,
-        OddAsphere
-    };
-
-    SurfaceProfile();
-    virtual ~SurfaceProfile();
-
-    inline std::string name() const;
-
-    inline void set_cv(double c);
+    void set_cv(double c) {
+        Profile::cv_ = c;
+    }
 
     /** Returns center curvature */
-    inline double cv() const;
+    double cv() const {
+        return Profile::cv_;
+    }
 
-    void set_radius(double r);
+    void set_radius(double r){
+        if(std::isnan(r)){
+            return;
+        }else if(std::isinf(r)){
+            Profile::cv_ = 0.0;
+        }else if(fabs(r) < std::numeric_limits<double>::epsilon()){
+            Profile::cv_ = std::numeric_limits<double>::infinity();
+        }else{
+            Profile::cv_ = 1.0/r;
+        }
+    }
 
     /** Returns center radius */
-    double radius() const;
+    double radius() const {
+        if(fabs(Profile::cv_) < std::numeric_limits<double>::epsilon()){
+            return std::numeric_limits<double>::infinity();
+        }else{
+            return 1.0/Profile::cv_;
+        }
+    }
 
-    /** Returns the value of the profile function at point @param{p} */
-    virtual double f(const Eigen::Vector3d& p) const;
-
-    /** Returns the gradient of the profile function at point *p* */
-    virtual Eigen::Vector3d df(const Eigen::Vector3d& p) const;
-
-    /** Returns the unit normal of the profile at point *p* */
-    virtual Eigen::Vector3d normal(const Eigen::Vector3d& p) const;
-
-    /** Returns the sagitta (z coordinate) of the surface at x, y */
-    virtual double sag(double x, double y) const;
-
-    virtual double deriv_1st(double h) const;
-    virtual double deriv_2nd(double h) const;
+    Eigen::Vector3d normal(const Eigen::Vector3d& p) const{
+        return Profile::df(p).normalized();
+    }
 
 
-    /**
-     * @brief Intersect a profile, starting from an arbitrary point
-     * @param p0 start point of the ray in the profile's coordinate system
-     * @param dir direction cosine of the ray in the profile's coordinate system
-     */
-    virtual bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
-
-    /**
-     * @brief Print coefficinet data
-     * @param oss
-     */
-    virtual void print(std::ostringstream& oss);
-
-protected:
-    double cv_;
-    std::string name_;
-    double eps_;
 };
-
-std::string SurfaceProfile::name() const
-{
-    return name_;
-}
-
-double SurfaceProfile::cv() const
-{
-    return cv_;
-}
-
-void SurfaceProfile::set_cv(double c)
-{
-    cv_ = c;
-}
 
 
 

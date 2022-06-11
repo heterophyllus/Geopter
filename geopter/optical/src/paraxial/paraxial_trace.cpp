@@ -175,7 +175,7 @@ ParaxialPath ParaxialTrace::forward_paraxial_path(int start, int end, double wvl
     ParaxialPath par_path;
 
     for(int i = start; i <= end; i++) {
-        par_path_comp.c = opt_sys_->optical_assembly()->surface(i)->profile()->cv();
+        par_path_comp.c = opt_sys_->optical_assembly()->surface(i)->cv();
 
         if( i < num_gaps ){
             par_path_comp.t = opt_sys_->optical_assembly()->gap(i)->thi();
@@ -199,7 +199,7 @@ ParaxialPath ParaxialTrace::reverse_paraxial_path(int start, int end, double wvl
     ParaxialPath par_path;
 
     for(int i = start; i >= end; i--) {
-        par_path_comp.c  = - opt_sys_->optical_assembly()->surface(i)->profile()->cv();
+        par_path_comp.c  = - opt_sys_->optical_assembly()->surface(i)->cv();
 
         if( i > 0 ){
             par_path_comp.t = opt_sys_->optical_assembly()->gap(i-1)->thi();

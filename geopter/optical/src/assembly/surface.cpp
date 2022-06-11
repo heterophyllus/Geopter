@@ -40,7 +40,7 @@ Surface::Surface(std::string lbl)
     gbl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
     gbl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
 
-    profile_ = std::make_unique<Spherical>(0.0);
+    profile_ = SurfaceProfile<Spherical>(0.0);
 
     solve_ = nullptr;
 
@@ -51,8 +51,9 @@ Surface::Surface(double r)
 {
     label_ = "";
     interact_mode_ = "Transmit";
-    profile_ = std::make_unique<Spherical>();
-    profile_->set_radius(r);
+
+    profile_ = SurfaceProfile<Spherical>(r);
+
     lcl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
     lcl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
 
@@ -66,7 +67,6 @@ Surface::Surface(double r)
 
 Surface::~Surface()
 {
-    profile_.reset();
     if(edge_aperture_){
         edge_aperture_.reset();
     }
@@ -137,6 +137,6 @@ void Surface::print()
 void Surface::print(std::ostringstream& oss)
 {
     oss << label_ << ": ";
-    oss << profile_->cv() << ", ";
+    oss << this->cv() << ", ";
     oss << max_aperture();
 }

@@ -23,60 +23,64 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   even_polynomial.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef EVENPOLYNOMIAL_H
 #define EVENPOLYNOMIAL_H
 
 #include <vector>
-
-#include "surface_profile.h"
-
+#include <string>
+#include "Eigen/Core"
 
 namespace geopter {
 
 /** Even polynomial aspherical shape */
-class EvenPolynomial : public SurfaceProfile
+class EvenPolynomial
 {
 public:
-    EvenPolynomial(double cv= 0.0);
-    EvenPolynomial(double cv, double conic, const std::vector<double>& coefs);
+
+    EvenPolynomial();
+    EvenPolynomial(double cv, double conic = 0.0, const std::vector<double>& coefs = std::vector<double>(10, 0.0));
     ~EvenPolynomial();
 
+    std::string name() const{
+        return "ASP";
+    }
+
     /** Returns the conic factor */
-    double conic() const;
+    double conic() const {
+        return conic_;
+    }
 
     /** Returns aspherical coefficient at the specified index */
     double coef(int i) const;
 
     /** Returns number of coefficients */
-    int coef_count() const;
+    int coef_count() const {
+        return coefs_.size();
+    }
 
-    double sag(double x, double y) const override;
-    double f(const Eigen::Vector3d& p) const override;
-    Eigen::Vector3d df(const Eigen::Vector3d& p) const override;
-    double deriv_1st(double h) const override;
-    double deriv_2nd(double h) const override;
+    double sag(double x, double y) const;
+    double f(const Eigen::Vector3d& p) const;
+    Eigen::Vector3d df(const Eigen::Vector3d& p) const;
+    double deriv_1st(double h) const;
+    double deriv_2nd(double h) const;
 
-    void set_conic(double cc);
+    void set_conic(double cc) {  conic_ = cc;}
     void set_coef(int i, double val);
     void set_coef(const std::vector<double>& coefs);
 
-    void print(std::ostringstream& oss) override;
+    bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
 
-private:
+    void print(std::ostringstream& oss);
+
+protected:
     void update_max_nonzero_index();
 
+    double cv_;
+    double eps_;
     double conic_;
     int max_nonzero_index_;
     std::vector<double> coefs_;
-    const int num_coefs_;
+    int num_coefs_;
 };
 
 } //namespace

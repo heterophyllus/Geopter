@@ -29,14 +29,13 @@
 
 using namespace geopter;
 
-OddPolynomial::OddPolynomial(double cv) :
+OddPolynomial::OddPolynomial() :
     conic_(0.0),
     max_nonzero_index_(0),
     num_coefs_(10)
 {
-    name_ = "ODD";
-    cv_ = cv;
-    coefs_ = std::vector<double>(num_coefs_, 0.0);
+    cv_ = 0.0;
+    eps_ = 1.0e-5;
 }
 
 OddPolynomial::OddPolynomial(double cv, double conic, const std::vector<double>& coefs) :
@@ -44,20 +43,50 @@ OddPolynomial::OddPolynomial(double cv, double conic, const std::vector<double>&
     max_nonzero_index_(0),
     num_coefs_(10)
 {
-    name_ = "ODD";
     cv_ = cv;
     this->set_coef(coefs);
+    eps_ = 1.0e-5;
 }
+
 
 OddPolynomial::~OddPolynomial()
 {
     coefs_.clear();
 }
 
-void OddPolynomial::set_conic(double k)
+
+bool OddPolynomial::intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
 {
-    conic_ = k;
+    // Spencer's method
+
+    Eigen::Vector3d p = p0;
+    double s1 = -f(p)/dir.dot(df(p));
+    double s2;
+    double delta = fabs(s1);
+    constexpr int max_iter = 30;
+    int iter = 0;
+
+    while(delta > eps_)
+    {
+        p = p0 + s1*dir;
+        s2 = s1 - f(p)/dir.dot(df(p));
+        delta = fabs(s2-s1);
+        s1 = s2;
+        iter++;
+
+        if(iter > max_iter){
+            pt = p;
+            distance = s1;
+            return false;
+        }
+    }
+
+    pt = p;
+    distance = s1;
+
+    return true;
 }
+
 
 void OddPolynomial::set_coef(int i, double val)
 {
@@ -79,11 +108,6 @@ void OddPolynomial::set_coef(const std::vector<double>& coefs)
 }
 
 
-double OddPolynomial::conic() const
-{
-    return conic_;
-}
-
 double OddPolynomial::coef(int i) const
 {
     if(i < num_coefs_){
@@ -93,10 +117,6 @@ double OddPolynomial::coef(int i) const
     }
 }
 
-int OddPolynomial::coef_count() const
-{
-    return coefs_.size();
-}
 
 void OddPolynomial::update_max_nonzero_index()
 {
@@ -235,7 +255,7 @@ void OddPolynomial::print(std::ostringstream &oss)
     oss << std::setw(label_w) << std::right << std::fixed << "Even Polynomial" << std::endl;
 
     oss << std::setw(label_w) << std::left << "R";
-    oss << std::setw(label_w) << std::right << std::fixed << std::setprecision(prec) << this->radius() << std::endl;
+    oss << std::setw(label_w) << std::right << std::fixed << std::setprecision(prec) << (1.0/cv_) << std::endl;
 
     oss << std::setw(label_w) << std::left << "k";
     oss << std::setw(label_w) << std::right << std::fixed << std::setprecision(prec) << conic_ << std::endl;

@@ -54,15 +54,15 @@ void SurfacePropertyDlg::onAccept()
 void SurfacePropertyDlg::syncSystemWithUi()
 {
     //-----> surface profile
-    int surface_type = ui->surfaceProfileTypeCombo->currentIndex();
+    QString surface_type = ui->surfaceProfileTypeCombo->currentText();
 
-    if( surface_type == SurfaceProfile::Type::Sphere ){ // Sphere
+    if( surface_type == "Sphere" ){ // Sphere
         double r = ui->sphericalRadiusEdit->text().toDouble();
         double cv = 1.0/r;
         //opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<Spherical>(cv));
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceProfile::Type::Sphere>(cv);
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<Spherical>(cv);
     }
-    else if(surface_type == SurfaceProfile::Type::EvenAsphere){ // Even Asphere
+    else if(surface_type == "EvenAsphere"){ // Even Asphere
         double r = ui->evenAsphereDataTable->item(0,0)->text().toDouble();
         double cv = 1.0/r;
         double k = ui->evenAsphereDataTable->item(1,0)->text().toDouble();
@@ -72,9 +72,9 @@ void SurfacePropertyDlg::syncSystemWithUi()
             coefs[i] = ui->evenAsphereDataTable->item(i+2, 0)->text().toDouble();
         }
 
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceProfile::Type::EvenAsphere>(cv,k,coefs);
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<EvenPolynomial>(cv,k,coefs);
     }
-    else if(surface_type == SurfaceProfile::Type::OddAsphere){
+    else if(surface_type == "OddAsphere"){
         double r = ui->oddAsphereDataTable->item(0,0)->text().toDouble();
         double cv = 1.0/r;
         double k = ui->oddAsphereDataTable->item(1,0)->text().toDouble();
@@ -84,7 +84,7 @@ void SurfacePropertyDlg::syncSystemWithUi()
             coefs[i] = ui->oddAsphereDataTable->item(i+2, 0)->text().toDouble();
         }
 
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<SurfaceProfile::Type::OddAsphere>(cv,k,coefs);
+        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<OddPolynomial>(cv,k,coefs);
     }
 
     //-----> aperture
@@ -107,14 +107,14 @@ void SurfacePropertyDlg::syncUiWithSystem()
 {
     //==================================
     // surface profile
-    std::string surface_type_name = opt_sys_->optical_assembly()->surface(surface_index_)->profile()->name();
+    std::string surface_type_name = opt_sys_->optical_assembly()->surface(surface_index_)->profile_name();
 
     if(surface_type_name == "SPH"){
         ui->surfaceProfileTypeCombo->setCurrentIndex(0);
         ui->surfaceProfileStack->setCurrentIndex(0);
         ui->surfaceProfileStack->show();
 
-        double r = opt_sys_->optical_assembly()->surface(surface_index_)->profile()->radius();
+        double r = opt_sys_->optical_assembly()->surface(surface_index_)->radius();
         ui->sphericalRadiusEdit->setText(QString::number(r));
         setValueToCell(ui->evenAsphereDataTable, 0, 0, r);
 
@@ -124,13 +124,13 @@ void SurfacePropertyDlg::syncUiWithSystem()
         ui->surfaceProfileStack->show();
         initializeEvenAsphereDataTable();
 
-        double r = opt_sys_->optical_assembly()->surface(surface_index_)->profile()->radius();
-        double k = dynamic_cast<EvenPolynomial*>(opt_sys_->optical_assembly()->surface(surface_index_)->profile())->conic();
+        double r = opt_sys_->optical_assembly()->surface(surface_index_)->radius();
+        double k = opt_sys_->optical_assembly()->surface(surface_index_)->profile<EvenPolynomial>()->conic();
         setValueToCell(ui->evenAsphereDataTable, 0, 0, r);
         setValueToCell(ui->evenAsphereDataTable, 1, 0, k);
 
         for(int i = 0; i < 10; i++){
-            double coef = dynamic_cast<EvenPolynomial*>(opt_sys_->optical_assembly()->surface(surface_index_)->profile())->coef(i);
+            double coef = opt_sys_->optical_assembly()->surface(surface_index_)->profile<EvenPolynomial>()->coef(i);
             setValueToCell(ui->evenAsphereDataTable, i+2, 0, coef);
         }
         ui->sphericalRadiusEdit->setText(QString::number(r));
@@ -141,13 +141,13 @@ void SurfacePropertyDlg::syncUiWithSystem()
         ui->surfaceProfileStack->show();
         initializeOddAsphereDataTable();
 
-        double r = opt_sys_->optical_assembly()->surface(surface_index_)->profile()->radius();
-        double k = dynamic_cast<OddPolynomial*>(opt_sys_->optical_assembly()->surface(surface_index_)->profile())->conic();
+        double r = opt_sys_->optical_assembly()->surface(surface_index_)->profile<OddPolynomial>()->radius();
+        double k = opt_sys_->optical_assembly()->surface(surface_index_)->profile<OddPolynomial>()->conic();
         setValueToCell(ui->oddAsphereDataTable, 0, 0, r);
         setValueToCell(ui->oddAsphereDataTable, 1, 0, k);
 
         for(int i = 0; i < 10; i++){
-            double coef = dynamic_cast<OddPolynomial*>(opt_sys_->optical_assembly()->surface(surface_index_)->profile())->coef(i);
+            double coef = opt_sys_->optical_assembly()->surface(surface_index_)->profile<OddPolynomial>()->coef(i);
             setValueToCell(ui->oddAsphereDataTable, i+2, 0, coef);
         }
         ui->sphericalRadiusEdit->setText(QString::number(r));

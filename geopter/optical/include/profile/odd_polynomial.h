@@ -27,43 +27,56 @@
 #define ODDPOLYNOMIAL_H
 
 #include <vector>
-#include "surface_profile.h"
+#include <string>
+#include "Eigen/Core"
 
 namespace geopter {
 
-class OddPolynomial : public SurfaceProfile
+class OddPolynomial
 {
 public:
-    OddPolynomial(double cv = 0.0);
-    OddPolynomial(double cv, double k, const std::vector<double>& coefs);
+    OddPolynomial();
+    OddPolynomial(double cv, double k=0.0, const std::vector<double>& coefs=std::vector<double>(10, 0.0));
     ~OddPolynomial();
 
+    std::string name() const{ return "ODD";}
+
     /** Returns the conic factor */
-    double conic() const;
+    double conic() const{
+        return conic_;
+    }
 
     /** Returns aspherical coefficient at the specified index */
     double coef(int i) const;
 
-    int coef_count() const;
-    double sag(double x, double y) const override;
-    double f(const Eigen::Vector3d& p) const override;
-    Eigen::Vector3d df(const Eigen::Vector3d& p) const override;
-    double deriv_1st(double h) const override;
-    double deriv_2nd(double h) const override;
+    int coef_count() const{
+        return coefs_.size();
+    }
+    double sag(double x, double y) const;
+    double f(const Eigen::Vector3d& p) const;
+    Eigen::Vector3d df(const Eigen::Vector3d& p) const;
+    double deriv_1st(double h) const;
+    double deriv_2nd(double h) const;
 
-    void set_conic(double k);
+    void set_conic(double k){
+        conic_ = k;
+    }
     void set_coef(int i, double val);
     void set_coef(const std::vector<double>& coefs);
 
-    void print(std::ostringstream& oss) override;
+    bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
 
-private:
+    void print(std::ostringstream& oss);
+
+protected:
     void update_max_nonzero_index();
 
+    double cv_;
+    double eps_;
     double conic_;
     int max_nonzero_index_;
     std::vector<double> coefs_;
-    const int num_coefs_;
+    int num_coefs_;
 };
 
 }
