@@ -40,12 +40,14 @@ void FieldTableView::init()
 
 void FieldTableView::insertRow()
 {
+    if(this->selectedIndexes().empty()) return;
     const int row = this->selectedIndexes().at(0).row();
     dynamic_cast<FieldTableModel*>(this->model())->insertRows(row, 1);
 }
 
 void FieldTableView::removeRow()
 {
+    if(this->selectedIndexes().empty()) return;
     const int row = this->selectedIndexes().at(0).row();
     dynamic_cast<FieldTableModel*>(this->model())->removeRows(row, 1);
 }

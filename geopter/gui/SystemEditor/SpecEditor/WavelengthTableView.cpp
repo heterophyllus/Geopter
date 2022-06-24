@@ -22,6 +22,7 @@ WavelengthTableView::WavelengthTableView(QWidget* parent) :
 
 void WavelengthTableView::insertRow()
 {
+    if(this->selectedIndexes().empty()) return;
     const int row = this->selectedIndexes().at(0).row();
     dynamic_cast<WavelengthTableModel*>(this->model())->insertRows(row, 1);
     emit valueEdited();
@@ -29,6 +30,7 @@ void WavelengthTableView::insertRow()
 
 void WavelengthTableView::removeRow()
 {
+    if(this->selectedIndexes().empty()) return;
     const int row = this->selectedIndexes().at(0).row();
     dynamic_cast<WavelengthTableModel*>(this->model())->removeRows(row, 1);
     emit valueEdited();
