@@ -13,7 +13,7 @@ struct FieldData
         vuy = 0.0;
         vlx = 0.0;
         vly = 0.0;
-        color = QColor(255,255,255);
+        color = Qt::black;
     }
 
     double x;

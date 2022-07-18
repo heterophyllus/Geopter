@@ -40,7 +40,7 @@ public:
     {
         EdgeThickness,
         OverallLength,
-        ParaxialImageDistance
+        MarginalHeight
     };
 
     Solve(){solve_type_ = -1;}
@@ -86,16 +86,18 @@ private:
     double value_;
 };
 
-class ParaxialImageSolve : public Solve
+class MarginalHeightSolve : public Solve
 {
-    // image space gap
+
 public:
-    ParaxialImageSolve(int gi);
+    MarginalHeightSolve(int gi, double value, double zone);
     bool check(const OpticalSystem* opt_sys) override;
     void apply(OpticalSystem* opt_sys) override;
 
 private:
     int gap_index_;
+    double height_;
+    double pupil_zone_;
 };
 
 

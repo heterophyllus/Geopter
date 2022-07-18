@@ -61,6 +61,7 @@ set(GEOPTER_GUI_HEADERS
     SystemEditor/SolveDlg/SolveSelectionDlg.h
     SystemEditor/SolveDlg/EdgeThicknessSolveDlg.h
     SystemEditor/SolveDlg/OverallLengthSolveDlg.h
+    SystemEditor/SolveDlg/MarginalHeightSolveDlg.h
 
     SystemEditor/Delegate/FloatDelegate.h
     SystemEditor/Delegate/OneByteDelegate.h

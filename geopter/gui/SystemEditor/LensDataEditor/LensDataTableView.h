@@ -20,11 +20,14 @@ public:
 
     LensDataTableModel* lensDataModel();
 
+
+
 private slots:
     void onDoubleClick(const QModelIndex &index);
     void showContextMenuOnHeader();
     void showContextMenuOnCell();
     void insertRow();
+    void insertMultipleRows();
     void removeRow();
     void setStop();
     void showSurfacePropertyDlg();

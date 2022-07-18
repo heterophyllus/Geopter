@@ -1,0 +1,286 @@
+{
+    "Assembly": {
+        "0": {
+            "Curvature": 0.0,
+            "Label": "Obj",
+            "Material": "AIR",
+            "Thickness": 10000000000.0,
+            "Type": "SPH"
+        },
+        "1": {
+            "Curvature": 0.012014898474107893,
+            "Label": "1230",
+            "Material": "NICF-A_NIKON-HIKARI",
+            "Thickness": 6.5,
+            "Type": "SPH"
+        },
+        "10": {
+            "Curvature": 0.06365372374283895,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 4.0,
+            "Type": "SPH"
+        },
+        "11": {
+            "Curvature": 0.06361323155216285,
+            "Label": "Stop",
+            "Material": "AIR",
+            "Thickness": 4.0,
+            "Type": "SPH"
+        },
+        "12": {
+            "Curvature": -0.06377551020408163,
+            "Label": "1235",
+            "Material": "NIFS-A_NIKON-HIKARI",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "13": {
+            "Curvature": 0.044444444444444446,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.43,
+            "Type": "SPH"
+        },
+        "14": {
+            "Curvature": 0.041640641265875494,
+            "Label": "1236",
+            "Material": "NICF-A_NIKON-HIKARI",
+            "Thickness": 6.5,
+            "Type": "SPH"
+        },
+        "15": {
+            "Curvature": -0.0536480686695279,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.4,
+            "Type": "SPH"
+        },
+        "16": {
+            "Curvature": 0.01689189189189189,
+            "Label": "1237",
+            "Material": "BAF2_INFRARED",
+            "Thickness": 2.0,
+            "Type": "SPH"
+        },
+        "17": {
+            "Curvature": 0.0536480686695279,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.55,
+            "Type": "SPH"
+        },
+        "18": {
+            "Curvature": 0.053447354355959376,
+            "Label": "1238",
+            "Material": "NICF-A_NIKON-HIKARI",
+            "Thickness": 6.0,
+            "Type": "SPH"
+        },
+        "19": {
+            "Curvature": -0.02114611968703743,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "2": {
+            "Curvature": -0.031181789834736514,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.38,
+            "Type": "SPH"
+        },
+        "20": {
+            "Curvature": 0.0,
+            "Label": "1239",
+            "Material": "NIFS-A_NIKON-HIKARI",
+            "Thickness": 3.18,
+            "Type": "SPH"
+        },
+        "21": {
+            "Curvature": 0.0,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 27.97,
+            "Type": "SPH"
+        },
+        "22": {
+            "Curvature": 0.0,
+            "Label": "Img",
+            "Material": "AIR",
+            "Thickness": 0.0,
+            "Type": "SPH"
+        },
+        "3": {
+            "Curvature": -0.03388681802778719,
+            "Label": "1231",
+            "Material": "NIFS-A_NIKON-HIKARI",
+            "Thickness": 2.0,
+            "Type": "SPH"
+        },
+        "4": {
+            "Curvature": 0.0027830346209506847,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.38,
+            "Type": "SPH"
+        },
+        "5": {
+            "Curvature": 0.027374760470845878,
+            "Label": "1232",
+            "Material": "NICF-A_NIKON-HIKARI",
+            "Thickness": 5.0,
+            "Type": "SPH"
+        },
+        "6": {
+            "Curvature": -0.006165228113440197,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.5,
+            "Type": "SPH"
+        },
+        "7": {
+            "Curvature": 0.044444444444444446,
+            "Label": "1233",
+            "Material": "NICF-A_NIKON-HIKARI",
+            "Thickness": 6.0,
+            "Type": "SPH"
+        },
+        "8": {
+            "Curvature": -0.018358729575913346,
+            "Label": "",
+            "Material": "AIR",
+            "Thickness": 0.4,
+            "Type": "SPH"
+        },
+        "9": {
+            "Curvature": -0.013713658804168952,
+            "Label": "1234",
+            "Material": "BAF2_INFRARED",
+            "Thickness": 1.5,
+            "Type": "SPH"
+        },
+        "Stop": 11
+    },
+    "Note": "USB5305138\nex1\n",
+    "Spec": {
+        "Field": {
+            "Color": [
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.3333333333333333,
+                    1.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "Type": 0,
+            "VLX": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "VLY": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "VUX": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "VUY": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "X": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Y": [
+                0.0,
+                0.5,
+                1.0,
+                1.5
+            ]
+        },
+        "Pupil": {
+            "Type": 0,
+            "Value": 24.0
+        },
+        "Wvl": {
+            "Color": [
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    0.3333333333333333,
+                    1.0,
+                    0.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    0.0,
+                    1.0,
+                    1.0
+                ]
+            ],
+            "RefIndex": 1,
+            "Value": [
+                632.8,
+                546.1,
+                486.0,
+                308.0
+            ],
+            "Weight": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ]
+        }
+    },
+    "Title": "SUPERCHROMATIC UV AND VISIBLE FOCUSING OBJECTIVE LENS"
+}

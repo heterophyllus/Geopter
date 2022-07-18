@@ -52,7 +52,7 @@ Surface::Surface(double r)
     label_ = "";
     interact_mode_ = "Transmit";
 
-    profile_ = SurfaceProfile<Spherical>(r);
+    profile_ = SurfaceProfile<Spherical>(1/r);
 
     lcl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
     lcl_tfrm_.transfer = Eigen::Vector3d::Zero(3);

@@ -12,12 +12,11 @@ class SolveSelectionDlg : public QDialog
 {
     Q_OBJECT
 public:
-    SolveSelectionDlg(int defaultIndex= 0, bool isLastSurface= false, QWidget* parent = nullptr) : QDialog(parent)
+    SolveSelectionDlg(int defaultIndex= 0, QWidget* parent = nullptr) : QDialog(parent)
     {
         setWindowTitle("Solve");
 
-        QStringList items({"Edge Thickness", "Overall Length"});
-        if(isLastSurface) items << "Paraxial Image";
+        QStringList items({"Edge Thickness", "Overall Length", "Marginal Height"});
 
         m_combo = new QComboBox;
         m_combo->addItems(items);

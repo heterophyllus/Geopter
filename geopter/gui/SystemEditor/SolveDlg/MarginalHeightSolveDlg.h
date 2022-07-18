@@ -1,5 +1,5 @@
-#ifndef EDGE_THICKNESS_SOLVE_DLG_H
-#define EDGE_THICKNESS_SOLVE_DLG_H
+#ifndef MARGINAL_HEIGHT_SOLVE_DLG_H
+#define MARGINAL_HEIGHT_SOLVE_DLG_H
 
 #include <QDialog>
 #include <QLayout>
@@ -8,21 +8,21 @@
 #include <QValidator>
 #include <QDialogButtonBox>
 
-class EdgeThicknessSolveDlg : public QDialog
+class MarginalHeightSolveDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    EdgeThicknessSolveDlg(QWidget* parent = nullptr) : QDialog(parent){
+    MarginalHeightSolveDlg(QWidget* parent = nullptr) : QDialog(parent){
         //setAttribute(Qt::WA_DeleteOnClose, true);
-        setWindowTitle("Edge Thickness Solve");
+        setWindowTitle("Marginal Height Solve");
 
         QLabel *valueLabel = new QLabel("Value");
-        QLabel *heightLabel = new QLabel("Height");
+        QLabel *zoneLabel = new QLabel("Zone");
         m_valueEdit = new QLineEdit;
         m_valueEdit->setValidator(new QDoubleValidator(0, 1000, 4, this));
-        m_heightEdit = new QLineEdit;
-        m_heightEdit->setValidator(new QDoubleValidator(0, 1000, 4, this));
+        m_zoneEdit = new QLineEdit;
+        m_zoneEdit->setValidator(new QDoubleValidator(0, 1000, 4, this));
 
         m_buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         connect(m_buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
@@ -30,9 +30,9 @@ public:
 
         QGridLayout *layout = new QGridLayout;
         layout->addWidget(valueLabel,   0, 0);
-        layout->addWidget(heightLabel,  1, 0);
+        layout->addWidget(zoneLabel,  1, 0);
         layout->addWidget(m_valueEdit,  0, 1);
-        layout->addWidget(m_heightEdit, 1, 1);
+        layout->addWidget(m_zoneEdit, 1, 1);
         layout->addWidget(m_buttonBox,  2, 0, 1, 2);
 
         this->setLayout(layout);
@@ -41,13 +41,14 @@ public:
     double value(){
         return m_valueEdit->text().toDouble();
     };
-    double height(){
-        return m_heightEdit->text().toDouble();
+    double zone(){
+        return m_zoneEdit->text().toDouble();
     };
 
+
 private:
+    QLineEdit* m_zoneEdit;
     QLineEdit* m_valueEdit;
-    QLineEdit* m_heightEdit;
     QDialogButtonBox* m_buttonBox;
 };
 

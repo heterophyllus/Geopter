@@ -73,10 +73,16 @@ void PrescriptionDlg::updateParentDockContent()
             Surface* srf = m_opticalSystem->optical_assembly()->surface(si);
             if(srf->is_profile<Spherical>()){
                 continue;
-            }else{
+            }else if(srf->is_profile<EvenPolynomial>()){
                 oss << "Surface " << si << std::endl;
-                srf->profile<Spherical>()->print(oss);
+                srf->profile<EvenPolynomial>()->print(oss);
                 oss << std::endl;
+            }else if(srf->is_profile<OddPolynomial>()){
+                oss << "Surface " << si << std::endl;
+                srf->profile<OddPolynomial>()->print(oss);
+                oss << std::endl;
+            }else{
+                qDebug() << "Unknown Surface Profile";
             }
         }
     }

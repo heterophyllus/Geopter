@@ -10,6 +10,7 @@
 #include "SystemEditor/SolveDlg/SolveSelectionDlg.h"
 #include "SystemEditor/SolveDlg/EdgeThicknessSolveDlg.h"
 #include "SystemEditor/SolveDlg/OverallLengthSolveDlg.h"
+#include "SystemEditor/SolveDlg/MarginalHeightSolveDlg.h"
 
 LensDataTableView::LensDataTableView(std::shared_ptr<OpticalSystem> opt_sys, QWidget *parent) :
     QTableView(parent),
@@ -138,7 +139,9 @@ void LensDataTableView::showContextMenuOnHeader()
     }else if(row == this->model()->rowCount()-1){ // image surface
         QMenu contextMenu;
         QAction *action1 = contextMenu.addAction("Insert");
+        QAction *action2 = contextMenu.addAction("Insert Multi");
         QObject::connect(action1, SIGNAL(triggered()), this, SLOT(insertRow()));
+        QObject::connect(action2, SIGNAL(triggered()), this, SLOT(insertMultipleRows()));
         contextMenu.exec(QCursor::pos());
     }else{
         QMenu contextMenu;
@@ -146,14 +149,17 @@ void LensDataTableView::showContextMenuOnHeader()
         QAction *action1 = contextMenu.addAction("Insert");
         QObject::connect(action1, SIGNAL(triggered()), this, SLOT(insertRow()));
 
-        QAction *action2 = contextMenu.addAction("Remove");
-        QObject::connect(action2, SIGNAL(triggered()), this, SLOT(removeRow()));
+        QAction *action2 = contextMenu.addAction("Insert Multi");
+        QObject::connect(action2, SIGNAL(triggered()), this, SLOT(insertMultipleRows()));
 
-        QAction *action3 = contextMenu.addAction("Set stop");
-        QObject::connect(action3, SIGNAL(triggered()), this, SLOT(setStop()));
+        QAction *action3 = contextMenu.addAction("Remove");
+        QObject::connect(action3, SIGNAL(triggered()), this, SLOT(removeRow()));
 
-        QAction *action4 = contextMenu.addAction("Property");
-        QObject::connect(action4, SIGNAL(triggered()), this, SLOT(showSurfacePropertyDlg()));
+        QAction *action4 = contextMenu.addAction("Set stop");
+        QObject::connect(action4, SIGNAL(triggered()), this, SLOT(setStop()));
+
+        QAction *action5 = contextMenu.addAction("Property");
+        QObject::connect(action5, SIGNAL(triggered()), this, SLOT(showSurfacePropertyDlg()));
 
         contextMenu.exec(QCursor::pos());
     }
@@ -174,6 +180,15 @@ void LensDataTableView::insertRow()
 {
     const int row = this->selectedIndexes().at(0).row();
     this->lensDataModel()->insertRows(row, 1);
+}
+
+void LensDataTableView::insertMultipleRows()
+{
+    const int row = this->selectedIndexes().at(0).row();
+
+    int n = QInputDialog::getInt(this, tr("Input"), tr("Rows"), 1, 0, 100, 1);
+
+    this->lensDataModel()->insertRows(row, n);
 }
 
 void LensDataTableView::removeRow()
@@ -206,16 +221,11 @@ void LensDataTableView::showSurfacePropertyDlg()
 
 void LensDataTableView::showSolveSelectionDlg(int si)
 {
-    bool isLastSurface = false;
-    if(si == m_opt_sys->optical_assembly()->gap_count()-1){
-        isLastSurface = true;
-    }
-
     int currentSolveIndex = m_opt_sys->optical_assembly()->gap(si)->solve_type();
     if(currentSolveIndex < 0){
         currentSolveIndex = 0;
     }
-    SolveSelectionDlg solveDlg(currentSolveIndex, isLastSurface, this);
+    SolveSelectionDlg solveDlg(currentSolveIndex, this);
 
     if(solveDlg.exec() == QDialog::Accepted){
         int selectedIndex = solveDlg.selectedIndex();
@@ -242,13 +252,16 @@ void LensDataTableView::showSolveSelectionDlg(int si)
                 }
             }
             delete dlg;
-        }else if(selectedIndex == Solve::ParaxialImageDistance){
-            // no dialog
-            auto solve = std::make_unique<ParaxialImageSolve>(si);
-            if(solve->check(m_opt_sys.get())){
-                m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
-                m_opt_sys->update_model();
+        }else if(selectedIndex == Solve::MarginalHeight){
+            MarginalHeightSolveDlg *dlg = new MarginalHeightSolveDlg();
+            if(dlg->exec() == QDialog::Accepted){
+                auto solve = std::make_unique<MarginalHeightSolve>(si, dlg->value(), dlg->zone());
+                if(solve->check(m_opt_sys.get())){
+                    m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
+                    m_opt_sys->update_model();
+                }
             }
+            delete dlg;
         }
     }
 

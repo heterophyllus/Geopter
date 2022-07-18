@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QComboBox>
 #include <QTextEdit>
+#include <QShortcut>
 #include <QDebug>
 
 #include "MainWindow.h"
@@ -72,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
 
+    // keyboard shortcut
 
     CDockManager::setConfigFlag(CDockManager::OpaqueSplitterResize, true);
     CDockManager::setConfigFlag(CDockManager::XmlCompressionEnabled, false);

@@ -25,6 +25,7 @@
 
 #include "assembly/solve.h"
 #include "system/optical_system.h"
+#include "paraxial/paraxial_trace.h"
 
 using namespace geopter;
 
@@ -87,41 +88,42 @@ void OverallLengthSolve::apply(OpticalSystem *opt_sys)
 }
 
 
-ParaxialImageSolve::ParaxialImageSolve(int gi) :
+MarginalHeightSolve::MarginalHeightSolve(int gi, double value, double zone) :
     Solve()
 {
-    solve_type_ = SolveType::ParaxialImageDistance;
+    solve_type_ = SolveType::MarginalHeight;
     gap_index_ = gi;
+    height_ = value;
+    pupil_zone_ = zone;
 }
 
-bool ParaxialImageSolve::check(const OpticalSystem *opt_sys)
+bool MarginalHeightSolve::check(const OpticalSystem * /*opt_sys*/)
 {
-    if(gap_index_ == opt_sys->optical_assembly()->gap_count() -1) return true;
-    return false;
+    return true;
 }
 
-void ParaxialImageSolve::apply(OpticalSystem* opt_sys)
+void MarginalHeightSolve::apply(OpticalSystem* opt_sys)
 {
-    // l-l' method
-    const int num_srfs = opt_sys->optical_assembly()->surface_count();
     const double ref_wvl = opt_sys->optical_spec()->spectral_region()->reference_wvl();
+    const int surface_index = gap_index_;
 
-    double l = - opt_sys->optical_assembly()->gap(0)->thi();
-    double l_prime = 0.0;
+    ParaxialTrace* tracer = new ParaxialTrace(opt_sys);
 
-    for(int i = 1; i < num_srfs - 1; i++) {
-        double c = opt_sys->optical_assembly()->surface(i)->cv();
-        double n = opt_sys->optical_assembly()->gap(i-1)->material()->rindex(ref_wvl);
-        double n_prime = opt_sys->optical_assembly()->gap(i)->material()->rindex(ref_wvl);
-        double phi = (n_prime - n)*c;
-        double d = opt_sys->optical_assembly()->gap(i)->thi();
+    double y0, u0, ybar0, ubar0;
+    tracer->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
 
-        l_prime = n_prime/(phi + n/l);
+    u0 *= pupil_zone_;
 
-        l = l_prime - d;
-    }
+    auto ax_ray = tracer->trace_paraxial_ray_from_object(y0, u0, ref_wvl);
+
+    double u_prime = ax_ray->at(surface_index)->u_prime();
+    double y       = ax_ray->at(surface_index)->y();
+
+    double t = (height_ - y)/u_prime;
+
+    delete tracer;
 
     // set value
-    opt_sys->optical_assembly()->image_space_gap()->set_thi(l_prime);
+    opt_sys->optical_assembly()->gap(gap_index_)->set_thi(t);
 
 }

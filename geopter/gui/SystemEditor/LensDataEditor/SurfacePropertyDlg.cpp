@@ -54,15 +54,15 @@ void SurfacePropertyDlg::onAccept()
 void SurfacePropertyDlg::syncSystemWithUi()
 {
     //-----> surface profile
-    QString surface_type = ui->surfaceProfileTypeCombo->currentText();
+    int surface_type = ui->surfaceProfileTypeCombo->currentIndex();
 
-    if( surface_type == "Sphere" ){ // Sphere
+    if( surface_type == 0 ){ // Sphere
         double r = ui->sphericalRadiusEdit->text().toDouble();
         double cv = 1.0/r;
         //opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<Spherical>(cv));
         opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<Spherical>(cv);
     }
-    else if(surface_type == "EvenAsphere"){ // Even Asphere
+    else if(surface_type == 1){ // Even Asphere
         double r = ui->evenAsphereDataTable->item(0,0)->text().toDouble();
         double cv = 1.0/r;
         double k = ui->evenAsphereDataTable->item(1,0)->text().toDouble();
@@ -74,7 +74,7 @@ void SurfacePropertyDlg::syncSystemWithUi()
 
         opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<EvenPolynomial>(cv,k,coefs);
     }
-    else if(surface_type == "OddAsphere"){
+    else if(surface_type == 2){
         double r = ui->oddAsphereDataTable->item(0,0)->text().toDouble();
         double cv = 1.0/r;
         double k = ui->oddAsphereDataTable->item(1,0)->text().toDouble();
