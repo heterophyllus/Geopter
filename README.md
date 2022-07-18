@@ -5,11 +5,11 @@
 ## Introduction
 Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-There have been developed several commercial software for optical design nowadays.  They have advanced functionality to deserve a definitive choice for professional work, while their annual licensing fees are too expensive for private purpose.
+Nowadays there have been developed several commercial software for optical design.  Their advanced functionality deserves a definitive choice for professional work, while their expensive licensing fees discourages trying for private purpose.
 
-This is why free software becomes the first option for those interested in optics. Fortunately, more and more optical design libraries are being developed as open source projects these days. One of their drawbacks, however, is that they require matured programming skills to master how to use and sometimes require to construct a complex environment.
+This is why free software becomes the first choice for starters in optics. Fortunately, an increasing number of optical design libraries are being developed as open source projects these days. One of their drawbacks, however, is that they require matured programming skills to master or even to get touch with.
 
-Geopter aims to be somewhere in between. As is common with open source projects,Geopter is freely available and its whole internal aspects are open to the public. This fundamental feature allows anyone to use, learn, validate and even modify it on their own.  It also features an intuitive graphical interface taking higher priority to allow the user to concentrate on the design workflow.
+Geopter aims to be somewhere in between. As is common with open source projects, Geopter is freely available and its whole internal aspects are open to the public. This fundamental feature allows anyone to use, learn, validate and even modify it on their own.  It also features an intuitive graphical interface putting higher priority to let the user concentrate on the design workflow.
 
 The primary user of Geopter could be a fresh optical engineer or a student who majors in optics.  Geopter wishes to be a starting platform to gain an introductory experience in optical design.
 
@@ -44,8 +44,9 @@ In Geopter, the array indexes(fields, wavelengths, etc) start at 0 because of th
 
 
 ### Building from Source
-All of the dependencies except Qt itself have been included in this repository.
-This application is built with Qt5 and Qt6 is currently not supported.
+All of the dependencies except Qt itself have been included in this repository.  Use cmake to generate Visual Studio solution.
+
+Note that this application is built with Qt5 and Qt6 is currently not supported.
 
 
 ## License
@@ -62,11 +63,11 @@ Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, 
 
 
 ## Acknowledgement
-The author would like to express respect and gratitude to the following excellent projects for their reference implementation of optical calculation.
+The author would like to express the heartfelt respect and gratitude to the following excellent projects for their reference implementation of optical calculation.
 
-- [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Highly matured python module for geometrical optical simulation.  Most of Geopter's optics calculation is based on this implementation.
+- [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Highly matured python module for geometrical optical simulation developed by the engineer who worked at Synopsys and ORA.
 - [quartiq/rayopt](https://github.com/quartiq/rayopt) : Another python optical design library with more advanced features.
 - [Goptical](https://www.gnu.org/software/goptical/) : C++ implemenation of optical simulation with great deal of functionalities. Though this original project has not been updated since 2012.
-- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A modified fork of Goptical which has been maintained with greatest effort. This project features to analyze many lens data from patent documents.
+- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A modified fork of Goptical which has been maintained with greatest effort. This project features to analyze many lens data obtained from patent documents.
 
 
