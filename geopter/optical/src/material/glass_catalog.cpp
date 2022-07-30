@@ -140,7 +140,7 @@ bool GlassCatalog::load_agf(std::string agf_path)
         else if(StringTool::starts_with(line_str, "TD"))
         {
             std::vector<std::string> line_parts = StringTool::split(line_str,' ');
-            if(line_parts.size() == 8){
+            if(line_parts.size() >= 8){
                 double D0 = std::stod(line_parts[1]);
                 double D1 = std::stod(line_parts[2]);
                 double D2 = std::stod(line_parts[3]);
