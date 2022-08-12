@@ -51,7 +51,7 @@ OpticalSystem::OpticalSystem() :
     opt_spec_     = std::make_unique<OpticalSpec>();
     opt_assembly_ = std::make_unique<OpticalAssembly>();
     material_lib_ = std::make_unique<MaterialLibrary>();
-    parax_data_   = std::make_unique<ParaxialData>();
+    fod_   = std::make_unique<FirstOrderData>();
 }
 
 OpticalSystem::~OpticalSystem()
@@ -59,7 +59,7 @@ OpticalSystem::~OpticalSystem()
     opt_assembly_.reset();
     opt_spec_.reset();
     material_lib_.reset();
-    parax_data_.reset();
+    fod_.reset();
 }
 
 void OpticalSystem::clear()
@@ -122,10 +122,9 @@ void OpticalSystem::update_fundamental_data()
     fund_data_.reference_wvl_index   = opt_spec_->spectral_region()->reference_index();
     fund_data_.reference_wvl_value   = opt_spec_->spectral_region()->reference_wvl();
 
-    fund_data_.enp_distance = parax_data_->entrance_pupil_distance();
-    fund_data_.enp_radius   = parax_data_->entrance_pupil_radius();
-    fund_data_.exp_distance = parax_data_->exit_pupil_distance();
-    fund_data_.exp_radius   = parax_data_->exit_pupil_radius();
+    fund_data_.enp_distance = fod_->enp_dist;
+    fund_data_.enp_radius   = fod_->enp_radius;
+    fund_data_.exp_distance = fod_->exp_radius;
 
     fund_data_.number_of_surfaces  = opt_assembly_->surface_count();
     fund_data_.image_surface_index = opt_assembly_->image_index();
@@ -157,7 +156,7 @@ void OpticalSystem::update_optical_spec()
             dir_tan(1) = tan(ang_dg(1) * M_PI/180.0);
             dir_tan(2) = tan(ang_dg(2) * M_PI/180.0);
             //obj_pt = -dir_tan*(fod_.obj_dist + fod_.enp_dist);
-            obj_pt = -dir_tan*(parax_data_->object_distance() + parax_data_->entrance_pupil_distance());
+            obj_pt = -dir_tan*(fod_->obj_dist + fod_->enp_dist);
             break;
 
         case FieldType::OBJ_HT:
@@ -169,7 +168,7 @@ void OpticalSystem::update_optical_spec()
         case FieldType::IMG_HT:
             img_pt = Eigen::Vector3d({fld_x, fld_y, 0.0});
             //obj_pt = fod_.red*img_pt;
-            obj_pt = parax_data_->reduction_rate()*img_pt;
+            obj_pt = fod_->red*img_pt;
             break;
 
         default:
@@ -207,7 +206,9 @@ void OpticalSystem::update_optical_spec()
 
 void OpticalSystem::update_paraxial_data()
 {
-    parax_data_->update(this);
+    ParaxialTrace *tracer = new ParaxialTrace(this);
+    tracer->compute_first_order_data(fod_.get(), fund_data_.reference_wvl_value);
+    delete tracer;
 }
 
 void OpticalSystem::update_semi_diameters()
@@ -629,7 +630,7 @@ void OpticalSystem::print(std::ostringstream &oss)
     opt_spec_->print(oss);
 
     oss << "FIRST ORDER DATA..." << std::endl;
-    this->paraxial_data()->print(oss);
+    fod_->print(oss);
     oss << std::endl;
 
     oss << "LENS DATA..." << std::endl;

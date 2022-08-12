@@ -56,7 +56,7 @@ void PrescriptionDlg::updateParentDockContent()
 
     if(doFirstOrderData) {
         oss << "FIRST ORDER DATA..." << std::endl;
-        m_opticalSystem->paraxial_data()->print(oss);
+        m_opticalSystem->first_order_data()->print(oss);
         oss << std::endl;
     }
 

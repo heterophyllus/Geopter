@@ -57,7 +57,6 @@ std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_ray_from_object(doubl
         return par_ray; // empty
     }
 
-
     // object surface
     double c0 = par_path.at(0).c;
     double u0_prime = u0;
@@ -100,60 +99,15 @@ std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_ray_from_object(doubl
     return par_ray;
 }
 
-std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_ray_parallel_to_axis_at_s1()
+
+std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_axis_ray(double wvl)
 {
-    const double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
-    const int img = opt_sys_->optical_assembly()->image_index();
-
-    ParaxialPath par_path = paraxial_path(0, img, ref_wvl);
-
-    constexpr double y1 = 1.0;
-    constexpr double u1 = 0.0;
-
-    auto par_ray = std::make_shared<ParaxialRay>();
-
-    // at object
-    double t0 = par_path.at(0).t;
-    double y0 = y1 - t0*u1;
-    double u0_prime = u1;
-    double u0 = u0_prime;
-    //double c0 = par_path.at(0).c;
-    //double i0 = u0 + y0*c0;
-    //double n0 = par_path.at(0).n;
-
-    par_ray = trace_paraxial_ray_from_object(y0, u0, ref_wvl);
-
-    return par_ray;
-
+    return trace_paraxial_ray_from_object(ref_y0_, ref_u0_, wvl);
 }
 
-std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_ray_with_slope_at_s1()
+std::shared_ptr<ParaxialRay> ParaxialTrace::trace_paraxial_chief_ray(double wvl)
 {
-    const int img = opt_sys_->optical_assembly()->image_index();
-
-    const double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
-    
-    double n0 = opt_sys_->optical_assembly()->gap(0)->material()->rindex(ref_wvl);
-    double uq0 = 1.0/n0;
-    
-    ParaxialPath par_path = paraxial_path(0, img, ref_wvl);
-
-    auto p_ray_bar = std::make_shared<ParaxialRay>();
-
-    double ybar1 = 0.0;
-    double ubar1 = uq0;
-
-    // at object
-    double ubar0_prime = ubar1;
-    double ubar0 = ubar0_prime;
-    double t0 = par_path.at(0).t;
-    double ybar0 = ybar1 - t0*ubar0_prime;
-    //double c0 = par_path.at(0).c;
-    //double i0 = ubar0 + ybar0*c0;
-    
-    p_ray_bar = trace_paraxial_ray_from_object(ybar0, ubar0, ref_wvl);
-    
-    return p_ray_bar;
+    return trace_paraxial_ray_from_object(ref_ybar0_, ref_ubar0_, wvl);
 }
 
 ParaxialPath ParaxialTrace::paraxial_path(int start, int end, double wvl) const
@@ -219,11 +173,29 @@ ParaxialPath ParaxialTrace::reverse_paraxial_path(int start, int end, double wvl
 void ParaxialTrace::compute_starting_data()
 {
     double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+    double n_0     = opt_sys_->optical_assembly()->gap(0)->material()->rindex(ref_wvl);
+    double n_k     = opt_sys_->optical_assembly()->image_space_gap()->material()->rindex(ref_wvl);
+    int stop       = opt_sys_->optical_assembly()->stop_index();
+    int last_surf  = opt_sys_->optical_assembly()->image_index() -1;
 
-    double n_0 = opt_sys_->optical_assembly()->gap(0)->material()->rindex(ref_wvl);
-    double n_k = opt_sys_->optical_assembly()->image_space_gap()->material()->rindex(ref_wvl);
+    Eigen::Vector2d y1_nu1;
+    Eigen::Vector2d yk_nuk;
+    Eigen::Matrix2d ABCD = this->system_matrix(1,last_surf, ref_wvl);
 
 
+    // parallel to axis
+    y1_nu1(0) = 1.0;
+    y1_nu1(1) = 0.0;
+    yk_nuk = ABCD*y1_nu1;
+    double ck1 = yk_nuk(1);
+
+
+    y1_nu1(0) = 0.0;
+    y1_nu1(1) = 1/n_0;
+    yk_nuk = ABCD*y1_nu1;
+    double dk1 = yk_nuk(1);
+
+    /*
     auto p_ray = trace_paraxial_ray_parallel_to_axis_at_s1();
     auto q_ray = trace_paraxial_ray_with_slope_at_s1();
 
@@ -231,14 +203,28 @@ void ParaxialTrace::compute_starting_data()
     //double bk1 = q_ray->back()->y();
     double ck1 = n_k*p_ray->back()->u_prime();
     double dk1 = n_k*q_ray->back()->u_prime();
+    */
 
-    int stop = opt_sys_->optical_assembly()->stop_index();
+    Eigen::Matrix2d ABCDs = this->system_matrix(1,stop, ref_wvl);
+    Eigen::Vector2d ys_nus;
+    y1_nu1(0) = 1.0;
+    y1_nu1(1) = 0.0;
+    ys_nus = ABCDs*y1_nu1;
+    double as1 = ys_nus(0);
 
+    y1_nu1(0) = 0.0;
+    y1_nu1(1) = 1/n_0;
+    ys_nus = ABCD*y1_nu1;
+    double bs1 = ys_nus(0);
+
+    /*
     //double n_s = opt_sys_->optical_assembly()->gap(stop)->material()->rindex(ref_wvl);
     double as1 = p_ray->at(stop)->y();
     double bs1 = q_ray->at(stop)->y();
     //double cs1 = n_s*p_ray->at(stop)->u_prime();
     //double ds1 = n_s*q_ray->at(stop)->u_prime();
+
+    */
 
     double ybar1 = -bs1;
     double ubar1 = as1;
@@ -319,15 +305,13 @@ void ParaxialTrace::get_starting_coords(double *y0, double *u0, double *ybar0, d
     *ubar0 = ref_ubar0_;
 }
 
-Eigen::Matrix2d ParaxialTrace::system_matrix(int s1, int s2, int wi) const
+Eigen::Matrix2d ParaxialTrace::system_matrix(int s1, int s2, double wvl) const
 {
     /*
      *  |y'| =  |A B|  |y|
      *  |nu'|   |C D|  |nu|
      *
      */
-
-    const double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
 
     Eigen::Matrix2d M = Eigen::Matrix2d::Identity(2,2); // system matrix
     Eigen::Matrix2d T = Eigen::Matrix2d::Identity(2,2); // transfer
@@ -365,3 +349,92 @@ Eigen::Matrix2d ParaxialTrace::system_matrix(int s1, int s2, int wi) const
 
     return M;
 }
+
+void ParaxialTrace::compute_first_order_data(FirstOrderData* fod, double wvl)
+{
+
+    // starting coords are computed with reference wavelength and are common for all wavelength
+    double y0, u0, ybar0, ubar0;
+    this->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
+
+    const int img = opt_sys_->optical_assembly()->image_index();
+    const int last_surf = opt_sys_->optical_assembly()->image_index() -1;
+    const int stop = opt_sys_->optical_assembly()->stop_index();
+    const double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+
+    const double n_0 = opt_sys_->optical_assembly()->gap(0)->material()->rindex(ref_wvl_val);
+    const double n_k = opt_sys_->optical_assembly()->image_space_gap()->material()->rindex(ref_wvl_val);
+
+    auto ax_ray = trace_paraxial_ray_from_object(y0, u0, wvl);
+    auto pr_ray = trace_paraxial_ray_from_object(ybar0, ubar0, wvl);
+
+    Eigen::Vector2d y_nu1_p(1.0, 0.0);
+    Eigen::Vector2d y_nu1_q(0.0, 1.0/n_0);
+    Eigen::Vector2d y_nuk_p;
+    Eigen::Vector2d y_nuk_q;
+    Eigen::Matrix2d Mk = this->system_matrix(1,last_surf, wvl);
+    Eigen::Matrix2d Ms = system_matrix(1, stop, wvl);
+
+    y_nuk_p = Mk*y_nu1_p;
+    y_nuk_q = Mk*y_nu1_q;
+
+    double ck1 = y_nuk_p(1);
+    double dk1 = y_nuk_q(1);
+
+    /*
+    //double ak1 = p_ray->at(img)->y();
+    //double bk1 = q_ray->at(img)->y();
+    double ck1 = n_k*p_ray->at(img)->u_prime();
+    double dk1 = n_k*q_ray->at(img)->u_prime();
+    */
+
+    double y1 = ax_ray->at(1)->y();
+    double ubar0_prime = pr_ray->at(0)->u_prime();
+    double ybar1 = pr_ray->at(1)->y();
+    double u0_prime = ax_ray->at(0)->u_prime();
+
+    fod->opt_inv = n_0 * ( y1*ubar0_prime - ybar1*u0_prime );
+    fod->efl = -1.0/ck1;
+    fod->fno = -1.0/(2.0*n_k*ax_ray->at(img)->u_prime());
+
+    fod->obj_dist = opt_sys_->optical_assembly()->gap(0)->thi();
+    fod->img_dist = opt_sys_->optical_assembly()->image_space_gap()->thi();
+
+    fod->red = dk1 + ck1*fod->obj_dist;
+
+    fod->pp1 = (dk1 - 1.0)*(n_0/ck1);
+    //fod->ppk = (p_ray->at(img-1)->y() - 1.0)*(n_k/ck1);
+    fod->ppk = (y_nuk_p(0)-1.0)*(n_k/ck1);
+    fod->ffl = fod->pp1 - fod->efl;
+    fod->bfl = fod->efl - fod->ppk;
+
+    fod->n_obj = n_0;
+    fod->n_img = n_k;
+
+    fod->img_ht = -fod->opt_inv/(n_k*ax_ray->at(img)->u_prime());
+    fod->obj_ang = atan(pr_ray->at(0)->u_prime()) * 180.0/M_PI;
+
+    double nu_pr0 = n_0*pr_ray->at(0)->u_prime();
+    fod->enp_dist = -ybar1/nu_pr0;
+    fod->enp_radius = fabs(fod->opt_inv/nu_pr0);
+    if(std::isnan(fod->enp_dist)){
+        fod->enp_dist = 1.0e+10;
+    }
+    if(std::isnan(fod->enp_radius)){
+        fod->enp_radius = 1.0e+10;
+    }
+
+    fod->exp_dist = -(pr_ray->at(img)->y()/pr_ray->at(img)->u_prime() - fod->img_dist);
+    fod->exp_radius = fabs( fod->opt_inv/(n_k*pr_ray->at(img)->u_prime()) );
+    if(std::isnan(fod->exp_dist)){
+        fod->exp_dist = -1.0e+10;
+    }
+    if(std::isnan(fod->exp_radius)){
+        fod->exp_radius = -1.0e+10;
+    }
+
+    fod->obj_na = n_0*sin( atan(ax_ray->at(0)->u_prime()) );
+    fod->img_na = n_k*sin( atan(ax_ray->at(img)->u_prime()) );
+
+}
+

@@ -636,7 +636,7 @@ Eigen::Vector3d SequentialTrace::get_default_object_pt(const Field* fld)
     Eigen::Vector3d img_pt;
     Eigen::Vector3d dir_tan;
 
-    auto parax_data = opt_sys_->paraxial_data();
+    auto fod = opt_sys_->first_order_data();
 
     int field_type = opt_sys_->optical_spec()->field_of_view()->field_type();
     double fld_x = fld->x();
@@ -649,7 +649,7 @@ Eigen::Vector3d SequentialTrace::get_default_object_pt(const Field* fld)
         dir_tan(0) = tan(ang_dg(0) * M_PI/180.0);
         dir_tan(1) = tan(ang_dg(1) * M_PI/180.0);
         dir_tan(2) = tan(ang_dg(2) * M_PI/180.0);
-        obj_pt = -dir_tan*(parax_data->object_distance() + parax_data->entrance_pupil_distance());
+        obj_pt = -dir_tan*(fod->obj_dist + fod->enp_dist);
         break;
 
     case FieldType::OBJ_HT:
@@ -660,7 +660,7 @@ Eigen::Vector3d SequentialTrace::get_default_object_pt(const Field* fld)
 
     case FieldType::IMG_HT:
         img_pt = Eigen::Vector3d({fld_x, fld_y, 0.0});
-        obj_pt = parax_data->reduction_rate()*img_pt;
+        obj_pt = fod->red*img_pt;
         break;
 
     default:

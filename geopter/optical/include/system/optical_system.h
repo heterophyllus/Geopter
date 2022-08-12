@@ -38,10 +38,9 @@
 #include "spec/optical_spec.h"
 #include "assembly/optical_assembly.h"
 #include "material/material_library.h"
-#include "system/paraxial_data.h"
 #include "system/fundamental_data.h"
 #include "sequential/ray_at_surface.h"
-
+#include "paraxial/first_order_data.h"
 
 namespace geopter {
 
@@ -75,7 +74,7 @@ public:
 
     inline MaterialLibrary* material_lib() const;
 
-    inline ParaxialData* paraxial_data() const;
+    inline FirstOrderData* first_order_data() const;
 
     inline FundamentalData fundamental_data() const;
 
@@ -86,6 +85,8 @@ public:
     void set_note(std::string text);
 
     void set_vignetting_factors();
+
+    void get_object_coord();
 
     void update_model();
 
@@ -105,7 +106,7 @@ protected:
 
     std::unique_ptr<OpticalAssembly> opt_assembly_;
     std::unique_ptr<OpticalSpec> opt_spec_;
-    std::unique_ptr<ParaxialData> parax_data_;
+    std::unique_ptr<FirstOrderData> fod_;
     std::unique_ptr<MaterialLibrary> material_lib_;
 
     std::string title_;
@@ -126,9 +127,9 @@ OpticalAssembly* OpticalSystem::optical_assembly() const
     return opt_assembly_.get();
 }
 
-ParaxialData* OpticalSystem::paraxial_data() const
+FirstOrderData* OpticalSystem::first_order_data() const
 {
-    return parax_data_.get();
+    return fod_.get();
 }
 
 

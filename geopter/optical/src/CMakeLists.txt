@@ -57,7 +57,6 @@ set(OPTICAL_SRCS
     material/glass.cpp
 
     system/optical_system.cpp
-    system/paraxial_data.cpp
 
     paraxial/paraxial_ray.cpp
     paraxial/paraxial_path.cpp

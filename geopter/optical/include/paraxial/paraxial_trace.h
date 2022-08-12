@@ -28,7 +28,6 @@
 
 #include "paraxial_path.h"
 #include "paraxial_ray.h"
-
 #include "system/optical_system.h"
 
 namespace geopter {
@@ -48,13 +47,10 @@ public:
      */
     std::shared_ptr<ParaxialRay> trace_paraxial_ray_from_object(double y0, double u0, double wvl);
 
-    std::shared_ptr<ParaxialRay> trace_paraxial_ray_aiming_at_surface(int target_srf, double y_target, double u_prime_target ,double wvl);
+    std::shared_ptr<ParaxialRay> trace_paraxial_axis_ray(double wvl);
 
-    /** trace [y1,u1] = [1.0, 0.0] */
-    std::shared_ptr<ParaxialRay> trace_paraxial_ray_parallel_to_axis_at_s1();
+    std::shared_ptr<ParaxialRay> trace_paraxial_chief_ray(double wvl);
 
-    /** trace [y1,u1] = [0.0, uq0] */
-    std::shared_ptr<ParaxialRay> trace_paraxial_ray_with_slope_at_s1();
     /**
      * @brief Generate the paraxial path 
      * 
@@ -67,7 +63,9 @@ public:
 
     void get_starting_coords(double *y0, double *u0, double *ybar0, double *ubar0) const;
 
-    Eigen::Matrix2d system_matrix(int s1, int s2, int wi) const;
+    Eigen::Matrix2d system_matrix(int s1, int s2, double wvl) const;
+
+    void compute_first_order_data(FirstOrderData* fod, double wvl);
 
 private:
     ParaxialPath forward_paraxial_path(int start, int end, double wvl) const;

@@ -119,7 +119,7 @@ ReferenceSphere WaveAberration::setup_reference_sphere(const std::shared_ptr<Ray
     Eigen::Vector3d image_pt = Eigen::Vector3d({image_pt_2d(0), image_pt_2d(1), foc});
 
     Eigen::Vector3d img_pt = image_pt;
-    img_pt(2) += opt_sys_->paraxial_data()->image_distance();
+    img_pt(2) += opt_sys_->first_order_data()->img_dist;
 
     Eigen::Vector3d ref_sphere_vec = img_pt - cr_exp_pt;
     double ref_sphere_radius = ref_sphere_vec.norm();
@@ -137,7 +137,7 @@ ReferenceSphere WaveAberration::setup_reference_sphere(const std::shared_ptr<Ray
     //Eigen::Vector3d image_pt = Eigen::Vector3d({image_pt_2d(0), image_pt_2d(1), foc});
 
     Eigen::Vector3d img_pt = image_pt;
-    img_pt(2) += opt_sys_->paraxial_data()->image_distance();
+    img_pt(2) += opt_sys_->first_order_data()->img_dist;
 
     Eigen::Vector3d ref_sphere_vec = img_pt - cr_exp_pt;
     double ref_sphere_radius = ref_sphere_vec.norm();
@@ -150,7 +150,7 @@ void WaveAberration::get_chief_ray_exp_segment(Eigen::Vector3d& cr_exp_pt, doubl
 {
     int k = opt_sys_->optical_assembly()->image_index() - 1;
     Surface* srf = opt_sys_->optical_assembly()->surface(k);
-    double exp_dist_parax = opt_sys_->paraxial_data()->exit_pupil_distance();
+    double exp_dist_parax = opt_sys_->first_order_data()->exp_dist;
 
     Eigen::Vector3d cr_inc_pt_before_img;
     Eigen::Vector3d cr_dir_before_img;

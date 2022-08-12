@@ -44,11 +44,11 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
 
     double du = L/static_cast<double>(M);
     double img_ht = chief_ray->back()->height();
-    double img_dist = opt_sys->paraxial_data()->image_distance();
-    double exp_dist = opt_sys->paraxial_data()->exit_pupil_distance();
+    double img_dist = opt_sys->first_order_data()->img_dist;
+    double exp_dist = opt_sys->first_order_data()->exp_dist;
     double zxp = img_dist - exp_dist;
     double dxp = sqrt(zxp*zxp + img_ht*img_ht);
-    double wxp = opt_sys->paraxial_data()->exit_pupil_radius();
+    double wxp = opt_sys->first_order_data()->exp_radius;
     double lambda = wvl*1.0e-6;
     double lz = lambda*dxp;
     double k = 2.0*M_PI/lambda;

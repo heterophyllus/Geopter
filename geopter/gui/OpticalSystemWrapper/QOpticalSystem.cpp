@@ -33,22 +33,22 @@ QString QOpticalSystem::GetNote() const
 
 double QOpticalSystem::EntrancePupilDiameter() const
 {
-    return parax_data_->entrance_pupil_radius()*2.0;
+    return fod_->enp_radius*2.0;
 }
 
 double QOpticalSystem::EntrancePupilDistance() const
 {
-    return parax_data_->entrance_pupil_distance();
+    return fod_->enp_dist;
 }
 
 double QOpticalSystem::ExitPupilDiameter() const
 {
-    return parax_data_->exit_pupil_radius()*2.0;
+    return fod_->exp_radius*2.0;
 }
 
 double QOpticalSystem::ExitPupilDistance() const
 {
-    return parax_data_->exit_pupil_distance();
+    return fod_->exp_dist;
 }
 
 int QOpticalSystem::NumberOfFields() const

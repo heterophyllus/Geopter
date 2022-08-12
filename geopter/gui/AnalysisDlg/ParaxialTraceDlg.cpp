@@ -43,12 +43,16 @@ void ParaxialTraceDlg::updateParentDockContent()
     oss << "Wavelength: " << wvl << std::endl;
     oss << std::endl;
 
+    ParaxialTrace* tracer = new ParaxialTrace(m_opticalSystem);
+    auto ax_ray = tracer->trace_paraxial_axis_ray(wvl);
+
     oss << "Axial Ray..." << std::endl;
-    m_opticalSystem->paraxial_data()->axial_ray(wi)->print(oss);
+    ax_ray->print(oss);
     oss << std::endl;
 
+    auto pr_ray = tracer->trace_paraxial_chief_ray(wvl);
     oss << "Principle Ray..." << std::endl;
-    m_opticalSystem->paraxial_data()->principle_ray(wi)->print(oss);
+    pr_ray->print(oss);
     oss << std::endl;
 
     m_parentDock->setStringStreamToText(oss);

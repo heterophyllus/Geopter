@@ -27,6 +27,7 @@
 #include "analysis/spherochromatism.h"
 #include "sequential/sequential_trace.h"
 #include "sequential/trace_error.h"
+#include "paraxial/paraxial_trace.h"
 
 using namespace geopter;
 
@@ -43,8 +44,15 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
 
     // collect l_prime for on-axial data
     std::vector<double> l_primes;
+
+    double y0, u0, ybar0, ubar0;
+    ParaxialTrace *prx_tracer = new ParaxialTrace(opt_sys_);
+    prx_tracer->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
+
     for(int wi = 0; wi < num_wvl_; wi++){
-        std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->paraxial_data()->axial_ray(wi);
+        //std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->paraxial_data()->axial_ray(wi);
+        double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
+        std::shared_ptr<ParaxialRay> ax_ray = prx_tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
         double l_prime = ax_ray->back()->l_prime();
         l_primes.push_back(l_prime);
     }
