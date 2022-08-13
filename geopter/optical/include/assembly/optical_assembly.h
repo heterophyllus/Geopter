@@ -30,6 +30,7 @@
 #include <vector>
 #include <iostream>
 #include <map>
+
 #include "assembly/surface.h"
 #include "assembly/gap.h"
 #include "assembly/solve.h"
@@ -37,12 +38,13 @@
 
 namespace geopter {
 
+class OpticalSystem;
 
 /** Class to contain the optical components of the optical system */
 class OpticalAssembly
 {
 public:
-    OpticalAssembly();
+    OpticalAssembly(OpticalSystem* opt_sys);
     ~OpticalAssembly();
 
     void clear();
@@ -88,8 +90,6 @@ public:
 
     void create_minimun_assembly();
 
-    void add_surface_and_gap();
-
     /** insert a dummy surface */
     void insert(int i);
 
@@ -104,7 +104,11 @@ public:
     /** Compute and update forward surface coordinates (r.T, t) for each interface */
     void set_local_transforms();
 
-    void update_model();
+    void update_transforms();
+
+    void update_solve();
+
+    void update_semi_diameters();
 
     /** Returns overall length from start to end */
     double overall_length(int start, int end);
@@ -115,6 +119,8 @@ public:
     void print() const;
 
 private:
+    OpticalSystem* parent_;
+
     std::vector< std::unique_ptr<Surface> > interfaces_;
     std::vector< std::unique_ptr<Gap> > gaps_;
 

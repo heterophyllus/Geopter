@@ -23,9 +23,10 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-
 #define _USE_MATH_DEFINES
 #include <cmath>
+
+#include "system/optical_system.h"
 
 #include <iostream>
 #include <fstream>
@@ -33,25 +34,24 @@
 #include <iomanip>
 
 #include "Eigen/Dense"
-
-#include "system/optical_system.h"
+#include "nlohmann/json.hpp"
 
 #include "paraxial/paraxial_trace.h"
 #include "sequential/sequential_trace.h"
 #include "sequential/trace_error.h"
 
-#include "nlohmann/json.hpp"
 
 using namespace geopter;
+
 
 OpticalSystem::OpticalSystem() :
     title_(""),
     note_("")
 {
-    opt_spec_     = std::make_unique<OpticalSpec>();
-    opt_assembly_ = std::make_unique<OpticalAssembly>();
+    opt_spec_     = std::make_unique<OpticalSpec>(this);
+    opt_assembly_ = std::make_unique<OpticalAssembly>(this);
     material_lib_ = std::make_unique<MaterialLibrary>();
-    fod_   = std::make_unique<FirstOrderData>();
+    fod_   = std::make_unique<FirstOrderData>(this);
 }
 
 OpticalSystem::~OpticalSystem()
@@ -70,26 +70,6 @@ void OpticalSystem::clear()
     opt_spec_->clear();
 }
 
-std::string OpticalSystem::title() const
-{
-    return title_;
-}
-
-void OpticalSystem::set_title(std::string title)
-{
-    title_ = title;
-}
-
-std::string OpticalSystem::note() const
-{
-    return note_;
-}
-
-void OpticalSystem::set_note(std::string note)
-{
-    note_ = note;
-}
-
 
 void OpticalSystem::initialize()
 {
@@ -102,200 +82,21 @@ void OpticalSystem::initialize()
 
 void OpticalSystem::update_model()
 {
-    opt_assembly_->update_model();
-
-    update_fundamental_data();
-
     // be carefull to the updating order
-    update_solve();
-    update_paraxial_data();
-    update_fundamental_data();
-    update_optical_spec();
-    update_semi_diameters();
-}
-
-
-void OpticalSystem::update_fundamental_data()
-{
-    fund_data_.number_of_fields      = opt_spec_->field_of_view()->field_count();
-    fund_data_.number_of_wavelengths = opt_spec_->spectral_region()->wvl_count();
-    fund_data_.reference_wvl_index   = opt_spec_->spectral_region()->reference_index();
-    fund_data_.reference_wvl_value   = opt_spec_->spectral_region()->reference_wvl();
-
-    fund_data_.enp_distance = fod_->enp_dist;
-    fund_data_.enp_radius   = fod_->enp_radius;
-    fund_data_.exp_distance = fod_->exp_radius;
-
-    fund_data_.number_of_surfaces  = opt_assembly_->surface_count();
-    fund_data_.image_surface_index = opt_assembly_->image_index();
-    fund_data_.object_distance     = opt_assembly_->gap(0)->thi();
-    fund_data_.image_distance      = opt_assembly_->image_space_gap()->thi();
-}
-
-void OpticalSystem::update_optical_spec()
-{
-    // update object coords
-    Eigen::Vector3d obj_pt;
-
-    Eigen::Vector3d ang_dg;
-    Eigen::Vector3d img_pt;
-    Eigen::Vector3d dir_tan;
-
-    const int field_type = opt_spec_->field_of_view()->field_type();
-
-    for(int fi = 0; fi < fund_data_.number_of_fields; fi++){
-        Field* fld = opt_spec_->field_of_view()->field(fi);
-        double fld_x = fld->x();
-        double fld_y = fld->y();
-
-        switch (field_type)
-        {
-        case FieldType::OBJ_ANG:
-            ang_dg = Eigen::Vector3d({fld_x, fld_y, 0.0});
-            dir_tan(0) = tan(ang_dg(0) * M_PI/180.0);
-            dir_tan(1) = tan(ang_dg(1) * M_PI/180.0);
-            dir_tan(2) = tan(ang_dg(2) * M_PI/180.0);
-            //obj_pt = -dir_tan*(fod_.obj_dist + fod_.enp_dist);
-            obj_pt = -dir_tan*(fod_->obj_dist + fod_->enp_dist);
-            break;
-
-        case FieldType::OBJ_HT:
-            obj_pt(0) = fld_x;
-            obj_pt(1) = fld_y;
-            obj_pt(2) = 0.0;
-            break;
-
-        case FieldType::IMG_HT:
-            img_pt = Eigen::Vector3d({fld_x, fld_y, 0.0});
-            //obj_pt = fod_.red*img_pt;
-            obj_pt = fod_->red*img_pt;
-            break;
-
-        default:
-            obj_pt = Eigen::Vector3d::Zero(3);
-        }
-
-        fld->set_object_pt(obj_pt);
-    }
-
-    // update aim pt
-    if(opt_assembly_->surface_count() > 2)
-    {
-        SequentialTrace *tracer = new SequentialTrace(this);
-        tracer->set_apply_vig(true);
-        tracer->set_aperture_check(false);
-
-        Eigen::Vector2d aim_pt;
-        Eigen::Vector3d obj_pt;
-        for(int fi = 0; fi < fund_data_.number_of_fields; fi++){
-            Field* fld = opt_spec_->field_of_view()->field(fi);
-
-            if(tracer->aim_chief_ray(aim_pt, obj_pt, fld, fund_data_.reference_wvl_value)){
-                opt_spec_->field_of_view()->field(fi)->set_aim_pt(aim_pt);
-                opt_spec_->field_of_view()->field(fi)->set_object_pt(obj_pt);
-            }else{
-                std::cerr << "Ray aiming failed at field " << fi << std::endl;
-                continue;
-            }
-        }
-
-        delete tracer;
-    }
-}
-
-
-void OpticalSystem::update_paraxial_data()
-{
-    ParaxialTrace *tracer = new ParaxialTrace(this);
-    tracer->compute_first_order_data(fod_.get(), fund_data_.reference_wvl_value);
-    delete tracer;
-}
-
-void OpticalSystem::update_semi_diameters()
-{
-    SequentialTrace *tracer = new SequentialTrace(this);
-
-    const int num_srf = opt_assembly_->surface_count();
-    constexpr int num_ref_rays = 5;
-
-    // initialize all surface
-    for(int si = 0; si < num_srf; si++) {
-        opt_assembly_->surface(si)->set_semi_diameter(0.0);
-    }
-
-    // update semi diameter
-    std::vector< std::shared_ptr<Ray> > ref_rays;
-
-
-    for(int fi = 0; fi < fund_data_.number_of_fields; fi++)
-    {
-        Field* fld = opt_spec_->field_of_view()->field(fi);
-
-        if(!tracer->trace_reference_rays(ref_rays, fld, fund_data_.reference_wvl_value) ){
-            std::cerr << "Failed to trace reference rays:" << "f" << fi << std::endl;
-            continue;
-        }
-
-        std::vector<double> ray_size_list;
-        for(int ri = 0; ri < num_ref_rays; ri++){
-            ray_size_list.push_back(ref_rays[ri]->size());
-        }
-        int ray_size = *std::min_element(ray_size_list.begin(), ray_size_list.end());
-
-        for(int si = 0; si < ray_size; si++) {
-
-            std::vector<double> ray_ht_list({0.0, 0.0, 0.0, 0.0, 0.0});
-
-            try{
-                for(int ri = 0; ri < num_ref_rays; ri++){
-                    ray_ht_list[ri] = ref_rays[ri]->at(si)->height();
-                }
-            }
-            catch(std::out_of_range &e){
-                std::cerr << e.what() << std::endl;
-                std::cerr << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
-                break;
-            }
-            catch(...){
-                std::cerr << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
-                break;
-            }
-
-            double ray_ht_for_cur_fld = *std::max_element(ray_ht_list.begin(), ray_ht_list.end());
-
-            double current_sd = opt_assembly_->surface(si)->semi_diameter();
-
-            if(current_sd < ray_ht_for_cur_fld) {
-                opt_assembly_->surface(si)->set_semi_diameter(ray_ht_for_cur_fld);
-            }
-
-        }
-
-    }
-
-    delete tracer;
-}
-
-void OpticalSystem::update_solve()
-{
-    const int num_srfs = opt_assembly_->surface_count();
-    for(int i = 0; i < num_srfs; i++){
-        if(opt_assembly_->surface(i)->has_solve()){
-            opt_assembly_->surface(i)->solve()->apply(this);
-        }
-        if(opt_assembly_->gap(i)->has_solve()){
-            opt_assembly_->gap(i)->solve()->apply(this);
-        }
-    }
-
+    opt_assembly_->update_transforms();
+    opt_assembly_->update_solve();
+    fod_->update();
+    opt_spec_->update();
+    opt_assembly_->update_semi_diameters();
 }
 
 
 void OpticalSystem::set_vignetting_factors()
 {
     SequentialTrace *tracer = new SequentialTrace(this);
+    const int num_flds = FieldSpec::number_of_fields();
 
-    for(int fi = 0; fi < fund_data_.number_of_fields; fi++){
+    for(int fi = 0; fi < num_flds; fi++){
         Field* fld = opt_spec_->field_of_view()->field(fi);
         std::vector<double> vig_factors = tracer->compute_vignetting_factors(*fld);
         double vuy = vig_factors[0];
@@ -550,7 +351,8 @@ void OpticalSystem::load_file(const std::string &filepath)
             break;
         }
 
-        opt_assembly_->add_surface_and_gap();
+        //opt_assembly_->add_surface_and_gap();
+        opt_assembly_->insert(-1);
 
         // surface attributes
         auto srf = opt_assembly_->current_surface();

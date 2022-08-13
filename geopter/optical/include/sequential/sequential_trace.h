@@ -89,7 +89,6 @@ private:
     void pupil_coord_to_obj(Eigen::Vector3d& pt0, Eigen::Vector3d& dir0, const Eigen::Vector2d& pupil_crd, const Field* fld);
     
     OpticalSystem *opt_sys_;
-    FundamentalData fund_data_;
 
     bool do_aperture_check_;
     bool do_apply_vig_;

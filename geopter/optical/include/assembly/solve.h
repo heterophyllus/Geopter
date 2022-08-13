@@ -44,6 +44,7 @@ public:
     };
 
     Solve(){solve_type_ = -1;}
+    virtual ~Solve(){};
 
     /** Check parameters */
     virtual bool check(const OpticalSystem* /*opt_sys*/){ return true; }

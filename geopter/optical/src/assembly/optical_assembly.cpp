@@ -23,24 +23,24 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-
 #define _USE_MATH_DEFINES
 #include <math.h>
+
+#include "assembly/optical_assembly.h"
 
 #include <iostream>
 #include <algorithm>
 #include <iomanip>
 
-#include "assembly/optical_assembly.h"
-#include "material/material_library.h"
-#include "spec/spectral_line.h"
-#include "spec/optical_spec.h"
+#include "system/optical_system.h"
+#include "sequential/sequential_trace.h"
 
 using namespace geopter;
 
 int OpticalAssembly::num_surfs_ = 0;
 
-OpticalAssembly::OpticalAssembly()
+OpticalAssembly::OpticalAssembly(OpticalSystem* opt_sys) :
+    parent_(opt_sys)
 {
 
 }
@@ -51,13 +51,95 @@ OpticalAssembly::~OpticalAssembly()
 }
 
 
-void OpticalAssembly::update_model()
+void OpticalAssembly::update_transforms()
 {
     // update transforms
     set_local_transforms();
     set_global_transforms(1);
 
     num_surfs_ = interfaces_.size();
+}
+
+
+void OpticalAssembly::update_solve()
+{
+    const int num_srfs = this->surface_count();
+    for(int i = 0; i < num_srfs; i++){
+        if(this->surface(i)->has_solve()){
+            this->surface(i)->solve()->apply(parent_);
+        }
+        if(this->gap(i)->has_solve()){
+            this->gap(i)->solve()->apply(parent_);
+        }
+    }
+}
+
+void OpticalAssembly::update_semi_diameters()
+{
+    SequentialTrace *tracer = new SequentialTrace(parent_);
+
+    const int num_srf = this->surface_count();
+    const int num_flds = FieldSpec::number_of_fields();
+    const double ref_wvl = parent_->optical_spec()->spectral_region()->reference_wvl();
+    constexpr int num_ref_rays = 5;
+
+
+    // initialize all surface
+    for(int si = 0; si < num_srf; si++) {
+        this->surface(si)->set_semi_diameter(0.0);
+    }
+
+    // update semi diameter
+    std::vector< std::shared_ptr<Ray> > ref_rays;
+
+
+    for(int fi = 0; fi < num_flds; fi++)
+    {
+        Field* fld = parent_->optical_spec()->field_of_view()->field(fi);
+
+        if(!tracer->trace_reference_rays(ref_rays, fld, ref_wvl) ){
+            std::cerr << "Failed to trace reference rays:" << "f" << fi << std::endl;
+            continue;
+        }
+
+        std::vector<double> ray_size_list;
+        for(int ri = 0; ri < num_ref_rays; ri++){
+            ray_size_list.push_back(ref_rays[ri]->size());
+        }
+        int ray_size = *std::min_element(ray_size_list.begin(), ray_size_list.end());
+
+        for(int si = 0; si < ray_size; si++) {
+
+            std::vector<double> ray_ht_list({0.0, 0.0, 0.0, 0.0, 0.0});
+
+            try{
+                for(int ri = 0; ri < num_ref_rays; ri++){
+                    ray_ht_list[ri] = ref_rays[ri]->at(si)->height();
+                }
+            }
+            catch(std::out_of_range &e){
+                std::cerr << e.what() << std::endl;
+                std::cerr << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
+                break;
+            }
+            catch(...){
+                std::cerr << "Ray out of range: OpticalSystem::update_semi_diameters()" << std::endl;
+                break;
+            }
+
+            double ray_ht_for_cur_fld = *std::max_element(ray_ht_list.begin(), ray_ht_list.end());
+
+            double current_sd = this->surface(si)->semi_diameter();
+
+            if(current_sd < ray_ht_for_cur_fld) {
+                this->surface(si)->set_semi_diameter(ray_ht_for_cur_fld);
+            }
+
+        }
+
+    }
+
+    delete tracer;
 }
 
 void OpticalAssembly::clear()
@@ -130,7 +212,20 @@ Gap* OpticalAssembly::image_space_gap() const
 
 void OpticalAssembly::insert(int i)
 {
-    this->insert(i, std::numeric_limits<double>::infinity(), 0.0, "AIR");
+    if( i < 0){ //append
+        auto s = std::make_unique<Surface>();
+        interfaces_.push_back(std::move(s));
+
+        auto g = std::make_unique<Gap>();
+        gaps_.push_back(std::move(g));
+
+        current_surface_index_ = interfaces_.size() -1;
+
+        num_surfs_ = interfaces_.size();
+
+    }else{
+        this->insert(i, std::numeric_limits<double>::infinity(), 0.0, "AIR");
+    }
 }
 
 void OpticalAssembly::insert(int i, double r, double t, const std::string &mat_name)
@@ -211,18 +306,7 @@ void OpticalAssembly::remove(int i)
 }
 
 
-void OpticalAssembly::add_surface_and_gap()
-{
-    auto s = std::make_unique<Surface>();
-    interfaces_.push_back(std::move(s));
 
-    auto g = std::make_unique<Gap>();
-    gaps_.push_back(std::move(g));
-
-    current_surface_index_ = interfaces_.size() -1;
-
-    num_surfs_ = interfaces_.size();
-}
 
 
 

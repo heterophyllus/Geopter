@@ -13,7 +13,7 @@ SpotDiagram::SpotDiagram(OpticalSystem* opt_sys):
 {
     // weight list
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
-    const int num_wvls = opt_sys_->fundamental_data().number_of_wavelengths;
+    const int num_wvls = WvlSpec::number_of_wavelengths();
     wvl_weights_.reserve(num_wvls);
     for(int wi = 0; wi < num_wvls; wi++){
         wvl_weights_.push_back( opt_sys_->optical_spec()->spectral_region()->wvl(wi)->weight() );

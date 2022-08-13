@@ -38,7 +38,6 @@
 #include "spec/optical_spec.h"
 #include "assembly/optical_assembly.h"
 #include "material/material_library.h"
-#include "system/fundamental_data.h"
 #include "sequential/ray_at_surface.h"
 #include "paraxial/first_order_data.h"
 
@@ -61,28 +60,26 @@ public:
     void initialize();
 
     /** Returns the title of the system */
-    std::string title() const;
+    std::string title() const { return title_; }
 
     /** Returns note attached to the system */
-    std::string note() const;
+    std::string note() const { return note_; }
 
     /** Optical specifications; pupil, field, wavelength */
-    inline OpticalSpec* optical_spec() const;
+    OpticalSpec* optical_spec() const { return opt_spec_.get(); }
 
     /** sequential assembly of surfaces and gaps filled with material */
-    inline OpticalAssembly* optical_assembly() const;
+    OpticalAssembly* optical_assembly() const { return opt_assembly_.get(); }
 
-    inline MaterialLibrary* material_lib() const;
+    MaterialLibrary* material_lib() const { return material_lib_.get(); }
 
-    inline FirstOrderData* first_order_data() const;
-
-    inline FundamentalData fundamental_data() const;
+    FirstOrderData* first_order_data() const { return fod_.get(); }
 
     void load_file(const std::string& filepath);
     void save_to_file(const std::string& filepath);
 
-    void set_title(std::string title);
-    void set_note(std::string text);
+    void set_title(std::string title) { title_ = title; }
+    void set_note(std::string note) { note_ = note;}
 
     void set_vignetting_factors();
 
@@ -96,14 +93,6 @@ public:
 
 
 protected:
-    void update_optical_spec();
-    void update_paraxial_data();
-    void update_semi_diameters();
-    void update_fundamental_data();
-    void update_solve();
-
-    void transfer_to_exit_pupil(Surface* srf, const RayAtSurface* ray_seg, double exp_dist_parax);
-
     std::unique_ptr<OpticalAssembly> opt_assembly_;
     std::unique_ptr<OpticalSpec> opt_spec_;
     std::unique_ptr<FirstOrderData> fod_;
@@ -111,37 +100,8 @@ protected:
 
     std::string title_;
     std::string note_;
-
-    // frequently used fundamental data
-    FundamentalData fund_data_;
 };
 
-
-OpticalSpec* OpticalSystem::optical_spec() const
-{
-    return opt_spec_.get();
-}
-
-OpticalAssembly* OpticalSystem::optical_assembly() const
-{
-    return opt_assembly_.get();
-}
-
-FirstOrderData* OpticalSystem::first_order_data() const
-{
-    return fod_.get();
-}
-
-
-MaterialLibrary* OpticalSystem::material_lib() const
-{
-    return material_lib_.get();
-}
-
-FundamentalData OpticalSystem::fundamental_data() const
-{
-    return fund_data_;
-}
 
 
 } //namespace geopter

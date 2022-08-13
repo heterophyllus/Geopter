@@ -34,45 +34,33 @@
 
 namespace geopter {
 
+class OpticalSystem;
 
 class OpticalSpec
 {
 public:
-    OpticalSpec();
+    OpticalSpec(OpticalSystem* opt_sys);
     ~OpticalSpec();
 
-    inline PupilSpec* pupil_spec();
-    inline WvlSpec* spectral_region();
-    inline FieldSpec* field_of_view();
+    PupilSpec* pupil_spec() { return pupil_.get(); }
+    WvlSpec* spectral_region() { return spectral_region_.get(); }
+    FieldSpec* field_of_view() { return field_of_view_.get(); }
 
     void clear();
 
     void create_minimum_spec();
 
+    void update();
+
     void print(std::ostringstream& oss);
 
 private:
+    OpticalSystem* parent_;
     std::unique_ptr<WvlSpec> spectral_region_;
     std::unique_ptr<PupilSpec> pupil_;
     std::unique_ptr<FieldSpec> field_of_view_;
 };
 
-
-
-PupilSpec* OpticalSpec::pupil_spec()
-{
-    return pupil_.get();
-}
-
-WvlSpec* OpticalSpec::spectral_region()
-{
-    return spectral_region_.get();
-}
-
-FieldSpec* OpticalSpec::field_of_view()
-{
-    return field_of_view_.get();
-}
 
 
 } //namespace geopter

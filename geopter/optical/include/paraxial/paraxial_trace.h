@@ -61,24 +61,15 @@ public:
      */
     ParaxialPath paraxial_path(int start, int end, double wvl) const;
 
-    void get_starting_coords(double *y0, double *u0, double *ybar0, double *ubar0) const;
-
     Eigen::Matrix2d system_matrix(int s1, int s2, double wvl) const;
 
-    void compute_first_order_data(FirstOrderData* fod, double wvl);
+    static Eigen::Matrix2d system_matrix(OpticalSystem* opt_sys, int s1, int s2, double wvl);
 
 private:
     ParaxialPath forward_paraxial_path(int start, int end, double wvl) const;
     ParaxialPath reverse_paraxial_path(int start, int end, double wvl) const;
 
-    void compute_starting_data();
-
     const OpticalSystem* opt_sys_;
-
-    double ref_u0_;
-    double ref_y0_;
-    double ref_ubar0_;
-    double ref_ybar0_;
 };
 
 } // namespace geopter

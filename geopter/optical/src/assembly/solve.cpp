@@ -109,8 +109,8 @@ void MarginalHeightSolve::apply(OpticalSystem* opt_sys)
 
     ParaxialTrace* tracer = new ParaxialTrace(opt_sys);
 
-    double y0, u0, ybar0, ubar0;
-    tracer->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
+    double y0 = opt_sys->first_order_data()->ref_y0;
+    double u0 = opt_sys->first_order_data()->ref_u0;
 
     u0 *= pupil_zone_;
 

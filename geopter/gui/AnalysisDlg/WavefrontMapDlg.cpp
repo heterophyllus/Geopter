@@ -19,7 +19,7 @@ WavefrontMapDlg::WavefrontMapDlg(OpticalSystem* sys, PlotViewDock *parent) :
 
     //field combo
     QStringList fieldComboItems;
-    int fieldCount = m_opticalSystem->fundamental_data().number_of_fields;
+    int fieldCount = FieldSpec::number_of_fields();
     for(int fi = 0; fi < fieldCount; fi++){
         fieldComboItems.append( QString::number(fi) );
     }
@@ -28,7 +28,7 @@ WavefrontMapDlg::WavefrontMapDlg(OpticalSystem* sys, PlotViewDock *parent) :
 
     //wvl combo
     QStringList wvlComboItems;
-    int wvlCount = m_opticalSystem->fundamental_data().number_of_wavelengths;
+    int wvlCount = WvlSpec::number_of_wavelengths();
     for(int wi = 0; wi < wvlCount; wi++){
         double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
         wvlComboItems.append( "W" + QString::number(wi) + ": " +  QString::number(wvl));

@@ -27,12 +27,12 @@
 #ifndef FIELDSPEC_H
 #define FIELDSPEC_H
 
+#include "spec/field.h"
+
 #include <vector>
 #include <iterator>
 #include <string>
 #include <memory>
-
-#include "spec/field.h"
 
 namespace geopter {
 

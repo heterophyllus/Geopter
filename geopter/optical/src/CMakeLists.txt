@@ -61,6 +61,7 @@ set(OPTICAL_SRCS
     paraxial/paraxial_ray.cpp
     paraxial/paraxial_path.cpp
     paraxial/paraxial_trace.cpp
+    paraxial/first_order_data.cpp
 
     sequential/sequential_path.cpp
     sequential/ray.cpp

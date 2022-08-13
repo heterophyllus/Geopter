@@ -37,8 +37,6 @@ using namespace geopter;
 SequentialTrace::SequentialTrace(OpticalSystem* sys):
     opt_sys_(sys)
 {
-    fund_data_ = opt_sys_->fundamental_data();
-
     do_aperture_check_ = false;
     do_apply_vig_ = true;
 }
@@ -56,11 +54,11 @@ void SequentialTrace::pupil_coord_to_obj(Eigen::Vector3d& pt0, Eigen::Vector3d& 
         vig_pupil = fld->apply_vignetting(pupil_crd);
     }
 
-    double eprad = fund_data_.enp_radius;
+    double eprad = opt_sys_->first_order_data()->enp_radius;
     Eigen::Vector2d aim_pt = fld->aim_pt();
 
-    double obj_dist = fund_data_.object_distance;
-    double enp_dist = fund_data_.enp_distance;
+    double obj_dist = opt_sys_->optical_assembly()->gap(0)->thi();
+    double enp_dist = opt_sys_->first_order_data()->enp_dist;
 
     pt0 = this->get_default_object_pt(fld);
 
@@ -352,8 +350,7 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
     }else{
         auto dir0 = ray->at(0)->after_dir();
         double cosUpr = dir0(2);
-        //double B = opt_sys_->optical_assembly()->gap(0)->thi();
-        double B = fund_data_.object_distance;
+        double B = opt_sys_->optical_assembly()->gap(0)->thi();
         double Zpr = ray->at(1)->z();
 
         s_before = (B - Zpr)/cosUpr;
@@ -442,18 +439,21 @@ Eigen::Vector2d SequentialTrace::trace_coddington(const Field *fld, double wvl)
 
 SequentialPath SequentialTrace::sequential_path(double wvl)
 {
-    return sequential_path(0, fund_data_.image_surface_index, wvl);
+    const int img = opt_sys_->optical_assembly()->image_index();
+    return sequential_path(0, img, wvl);
 }
 
 SequentialPath SequentialTrace::sequential_path(int start, int end, double wvl)
 {
-    assert(end <= fund_data_.image_surface_index);
+    const int img = opt_sys_->optical_assembly()->image_index();
+
+    assert(end <= img);
 
     SequentialPath path;
     SequentialPathComponent path_comp;
 
-    const int num_srf = fund_data_.number_of_surfaces;
-    const int num_gap = fund_data_.number_of_surfaces -1;
+    const int num_srf = OpticalAssembly::number_of_surfaces();
+    const int num_gap = num_srf -1;
 
     for(int i = start; i <= end; i++)
     {
@@ -506,8 +506,8 @@ bool SequentialTrace::search_ray_aiming_at_surface(RayPtr ray, Eigen::Vector2d& 
     //const int fld_type = opt_sys_->optical_spec()->field_of_view()->field_type();
     double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
 
-    double obj_dist = fund_data_.object_distance;
-    double enp_dist = fund_data_.enp_distance;
+    double obj_dist = opt_sys_->optical_assembly()->gap(0)->thi();
+    double enp_dist = opt_sys_->first_order_data()->enp_dist;
 
     SequentialPath seq_path = sequential_path(ref_wvl);
 
@@ -718,7 +718,8 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     const int stop_index = opt_sys_->optical_assembly()->stop_index();
     const double stop_radius = opt_sys_->optical_assembly()->surface(stop_index)->max_aperture();
 
-    SequentialPath path = sequential_path(opt_sys_->optical_spec()->spectral_region()->reference_wvl());
+    const double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+    SequentialPath path = sequential_path(ref_wvl);
 
     Eigen::Vector2d vig_pupil = full_pupil;
 
@@ -730,7 +731,7 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     vig_pupil(0) = full_pupil(0)*(1.0 - a);
     vig_pupil(1) = full_pupil(1)*(1.0 - a);
     std::shared_ptr<Ray> ray_full_marginal = std::make_shared<Ray>(path.size());
-    int trace_result = trace_pupil_ray(ray_full_marginal, path, vig_pupil, &fld, fund_data_.reference_wvl_value);
+    int trace_result = trace_pupil_ray(ray_full_marginal, path, vig_pupil, &fld, ref_wvl);
 
     if(TRACE_BLOCKED_ERROR == trace_result){
 
@@ -764,7 +765,7 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
         vig_pupil(0) = full_pupil(0)*(1.0 - m);
         vig_pupil(1) = full_pupil(1)*(1.0 - m);
 
-        trace_result = trace_pupil_ray(ray_m, path, vig_pupil, &fld, fund_data_.reference_wvl_value);
+        trace_result = trace_pupil_ray(ray_m, path, vig_pupil, &fld, ref_wvl);
 
         if(TRACE_BLOCKED_ERROR == trace_result){
             a = m;

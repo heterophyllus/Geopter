@@ -21,8 +21,8 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
      *
      */
 
-    const int num_flds = opt_sys->fundamental_data().number_of_fields;
-    const int num_wvls = opt_sys->fundamental_data().number_of_wavelengths;
+    const int num_flds = FieldSpec::number_of_fields();
+    const int num_wvls = WvlSpec::number_of_wavelengths();
 
     std::vector<double> freqs;
     {

@@ -40,10 +40,10 @@ std::shared_ptr<PlotData> ChromaticFocusShift::plot(double lower_wvl, double hig
     constexpr int num_data = 100;
     double wvl_step = (higher_wvl-lower_wvl)/(double)(num_data-1);
 
-    double u0, y0, ubar0, ybar0;
+    double y0 = opt_sys_->first_order_data()->ref_y0;
+    double u0 = opt_sys_->first_order_data()->ref_u0;
 
     ParaxialTrace *tracer = new ParaxialTrace(opt_sys_);
-    tracer->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
 
     auto ref_prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, ref_wvl_val_);
     double ref_l_prime = ref_prx_ray->back()->l_prime();

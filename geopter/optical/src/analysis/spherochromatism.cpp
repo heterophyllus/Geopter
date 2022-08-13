@@ -45,9 +45,10 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
     // collect l_prime for on-axial data
     std::vector<double> l_primes;
 
-    double y0, u0, ybar0, ubar0;
+    double y0 = opt_sys_->first_order_data()->ref_y0;
+    double u0 = opt_sys_->first_order_data()->ref_u0;
+
     ParaxialTrace *prx_tracer = new ParaxialTrace(opt_sys_);
-    prx_tracer->get_starting_coords(&y0, &u0, &ybar0, &ubar0);
 
     for(int wi = 0; wi < num_wvl_; wi++){
         //std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->paraxial_data()->axial_ray(wi);
@@ -56,6 +57,8 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
         double l_prime = ax_ray->back()->l_prime();
         l_primes.push_back(l_prime);
     }
+
+    delete prx_tracer;
 
 
     // collect zonal data
