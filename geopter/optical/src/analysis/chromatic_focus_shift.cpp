@@ -46,7 +46,7 @@ std::shared_ptr<PlotData> ChromaticFocusShift::plot(double lower_wvl, double hig
     ParaxialTrace *tracer = new ParaxialTrace(opt_sys_);
 
     auto ref_prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, ref_wvl_val_);
-    double ref_l_prime = ref_prx_ray->back()->l_prime();
+    double ref_l_prime = ref_prx_ray->back().l_prime();
 
     std::vector<double> xdata, ydata;
     xdata.reserve(num_data);
@@ -55,7 +55,7 @@ std::shared_ptr<PlotData> ChromaticFocusShift::plot(double lower_wvl, double hig
     for(int i = 0; i < num_data; i++) {
         double wvl = lower_wvl + (double)i*wvl_step;
         auto prx_ray = tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
-        double l_prime = prx_ray->back()->l_prime();
+        double l_prime = prx_ray->back().l_prime();
 
         xdata.push_back(wvl);
         ydata.push_back(l_prime - ref_l_prime);

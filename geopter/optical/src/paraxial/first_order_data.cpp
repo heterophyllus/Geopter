@@ -127,14 +127,14 @@ void FirstOrderData::update()
     auto ax_ray = tracer.trace_paraxial_ray_from_object(y0, u0, ref_wvl);
     auto pr_ray = tracer.trace_paraxial_ray_from_object(ybar0, ubar0, ref_wvl);
 
-    double y1 = ax_ray->at(1)->y();
-    double ubar0_prime = pr_ray->at(0)->u_prime();
-    ybar1 = pr_ray->at(1)->y();
-    double u0_prime = ax_ray->at(0)->u_prime();
+    double y1 = ax_ray->at(1).y();
+    double ubar0_prime = pr_ray->at(0).u_prime();
+    ybar1 = pr_ray->at(1).y();
+    double u0_prime = ax_ray->at(0).u_prime();
 
     opt_inv = n_0 * ( y1*ubar0_prime - ybar1*u0_prime );
     efl = -1.0/ck1;
-    fno = -1.0/(2.0*n_k*ax_ray->at(img)->u_prime());
+    fno = -1.0/(2.0*n_k*ax_ray->at(img).u_prime());
 
     //obj_dist = parent_->optical_assembly()->gap(0)->thi();
     img_dist = parent_->optical_assembly()->image_space_gap()->thi();
@@ -150,10 +150,10 @@ void FirstOrderData::update()
     n_obj = n_0;
     n_img = n_k;
 
-    img_ht = -opt_inv/(n_k*ax_ray->at(img)->u_prime());
-    obj_ang = atan(pr_ray->at(0)->u_prime()) * 180.0/M_PI;
+    img_ht = -opt_inv/(n_k*ax_ray->at(img).u_prime());
+    obj_ang = atan(pr_ray->at(0).u_prime()) * 180.0/M_PI;
 
-    double nu_pr0 = n_0*pr_ray->at(0)->u_prime();
+    double nu_pr0 = n_0*pr_ray->at(0).u_prime();
     enp_dist = -ybar1/nu_pr0;
     enp_radius = fabs(opt_inv/nu_pr0);
     if(std::isnan(enp_dist)){
@@ -163,8 +163,8 @@ void FirstOrderData::update()
         enp_radius = 1.0e+10;
     }
 
-    exp_dist = -(pr_ray->at(img)->y()/pr_ray->at(img)->u_prime() - img_dist);
-    exp_radius = fabs( opt_inv/(n_k*pr_ray->at(img)->u_prime()) );
+    exp_dist = -(pr_ray->at(img).y()/pr_ray->at(img).u_prime() - img_dist);
+    exp_radius = fabs( opt_inv/(n_k*pr_ray->at(img).u_prime()) );
     if(std::isnan(exp_dist)){
         exp_dist = -1.0e+10;
     }
@@ -172,8 +172,8 @@ void FirstOrderData::update()
         exp_radius = -1.0e+10;
     }
 
-    obj_na = n_0*sin( atan(ax_ray->at(0)->u_prime()) );
-    img_na = n_k*sin( atan(ax_ray->at(img)->u_prime()) );
+    obj_na = n_0*sin( atan(ax_ray->at(0).u_prime()) );
+    img_na = n_k*sin( atan(ax_ray->at(img).u_prime()) );
 
 }
 

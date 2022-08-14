@@ -38,14 +38,14 @@ SingleRayTraceDlg::SingleRayTraceDlg(OpticalSystem *sys, TextViewDock *parent) :
     // field select combo
     const int num_flds = m_opticalSystem->optical_spec()->field_of_view()->field_count();
     for(int i = 0; i < num_flds; i++){
-        QString field_item = "F" + QString::number(i+1); //F1,F2...
+        QString field_item = "F" + QString::number(i);
         ui->fieldCombo->addItem(field_item);
     }
 
     //wvl combo
     const int num_wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl_count();
     for(int i = 0; i < num_wvl; i++){
-        QString wvl_item = "W" + QString::number(i+1) + ": " + QString::number(m_opticalSystem->optical_spec()->spectral_region()->wvl(i)->value());
+        QString wvl_item = "W" + QString::number(i) + ": " + QString::number(m_opticalSystem->optical_spec()->spectral_region()->wvl(i)->value());
         ui->wvlForPupilCombo->addItem(wvl_item);
         ui->wvlForObjectCombo->addItem(wvl_item);
     }

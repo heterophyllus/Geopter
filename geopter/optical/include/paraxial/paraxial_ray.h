@@ -23,14 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   paraxial_ray.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
 #ifndef PARAXIALRAY_H
 #define PARAXIALRAY_H
 
@@ -38,7 +30,7 @@
 #include <string>
 #include <sstream>
 
-#include "paraxial_ray_at_surface.h"
+#include "paraxial_ray_segment.h"
 
 namespace geopter {
 
@@ -48,33 +40,39 @@ class ParaxialRay
 {
 public:
     ParaxialRay();
+    ParaxialRay(int n);
     ~ParaxialRay();
 
-    void prepend(std::shared_ptr<ParaxialRayAtSurface> par_ray_at_srf);
+    void prepend(const ParaxialRaySegment& segment);
     void prepend(double y, double u_prime, double i= 0, double n_prime = 1.0);
     
-    void append(std::shared_ptr<ParaxialRayAtSurface> par_ray_at_srf);
+    void append(const ParaxialRaySegment& segment);
     void append(double y, double u_prime, double i= 0, double n_prime = 1.0);
 
     void clear();
 
-    std::string name() const;
-    void set_name(std::string name);
+    std::string name() const { return name_; }
+    void set_name(std::string name) { name_ = name; }
 
     /** Return number of components, usually equal to number of surfaces. */
-    int size() const;
+    int number_of_segments() const {
+        return (int)prx_ray_segments_.size();
+    }
 
     /** Access to data at the given index */
-    std::shared_ptr<ParaxialRayAtSurface> at(int i) const;
+    ParaxialRaySegment& at(int i) { return prx_ray_segments_[i]; }
 
     /** Returns the data at the beginning */
-    std::shared_ptr<ParaxialRayAtSurface> front() const;
+    ParaxialRaySegment& front() { return prx_ray_segments_.front();}
 
     /** Return the data at the last surface */
-    std::shared_ptr<ParaxialRayAtSurface> back() const;
+    ParaxialRaySegment& back() { return prx_ray_segments_.back();}
 
     /** Access to the data at the surface just before the image */
-    std::shared_ptr<ParaxialRayAtSurface> at_before_image() const;
+    ParaxialRaySegment& at_before_image(){
+        int img_idx = prx_ray_segments_.size() - 1;
+        return prx_ray_segments_[img_idx - 1];
+    }
 
     /** Write ray data to standard output */
     void print() const;
@@ -83,7 +81,7 @@ public:
     void print(std::ostringstream& oss) const;
 
 private:
-    std::vector< std::shared_ptr<ParaxialRayAtSurface> > par_ray_at_srfs_;
+    std::vector< ParaxialRaySegment > prx_ray_segments_;
     std::string name_;
 };
 

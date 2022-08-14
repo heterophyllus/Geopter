@@ -54,7 +54,7 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
         //std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->paraxial_data()->axial_ray(wi);
         double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
         std::shared_ptr<ParaxialRay> ax_ray = prx_tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
-        double l_prime = ax_ray->back()->l_prime();
+        double l_prime = ax_ray->back().l_prime();
         l_primes.push_back(l_prime);
     }
 

@@ -31,8 +31,7 @@
 #include "sequential/sequential_path.h"
 #include "sequential/ray.h"
 #include "sequential/trace_error.h"
-#include "data/grid_array.h"
-#include "data/hexapolar_array.h"
+
 
 namespace geopter {
 

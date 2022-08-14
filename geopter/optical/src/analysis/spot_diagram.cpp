@@ -5,6 +5,7 @@
 #include "sequential/sequential_trace.h"
 #include "sequential/trace_error.h"
 #include "renderer/renderer.h"
+#include "data/hexapolar_array.h"
 
 using namespace geopter;
 

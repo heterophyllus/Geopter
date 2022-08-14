@@ -116,8 +116,8 @@ void MarginalHeightSolve::apply(OpticalSystem* opt_sys)
 
     auto ax_ray = tracer->trace_paraxial_ray_from_object(y0, u0, ref_wvl);
 
-    double u_prime = ax_ray->at(surface_index)->u_prime();
-    double y       = ax_ray->at(surface_index)->y();
+    double u_prime = ax_ray->at(surface_index).u_prime();
+    double y       = ax_ray->at(surface_index).y();
 
     double t = (height_ - y)/u_prime;
 
