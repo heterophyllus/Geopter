@@ -5,7 +5,7 @@
 #include <QValidator>
 #include "renderer_qcp.h"
 
-TransverseRayFanDlg::TransverseRayFanDlg(OpticalSystem* sys, PlotViewDock *parent) :
+TransverseRayFanDlg::TransverseRayFanDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::TransverseRayFanDlg),
     m_parentDock(parent)
@@ -43,6 +43,8 @@ void TransverseRayFanDlg::updateParentDockContent()
     m_renderer->clear();
     m_renderer->set_grid_layout(fieldCount, 1);
 
+    std::ostringstream oss;
+
     TransverseRayFan *ray_fan = new TransverseRayFan(m_opticalSystem);
 
     for(int fi = 0; fi < fieldCount; fi++){
@@ -50,7 +52,7 @@ void TransverseRayFanDlg::updateParentDockContent()
 
         Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
         auto plotData = ray_fan->plot(nrd, fld, ray_direction, abr_direction);
-        plotData->print();
+        plotData->print(oss);
 
         m_renderer->draw_plot(plotData);
         m_renderer->set_x_axis_range(-stopRadius, stopRadius);
@@ -63,7 +65,9 @@ void TransverseRayFanDlg::updateParentDockContent()
 
     delete ray_fan;
 
-
+    m_parentDock->setText(oss);
 
     m_renderer->update();
+
+    m_parentDock->setCurrentTab(1);
 }

@@ -1,7 +1,7 @@
 #include "WavefrontMapDlg.h"
 #include "ui_WavefrontMapDlg.h"
 
-WavefrontMapDlg::WavefrontMapDlg(OpticalSystem* sys, PlotViewDock *parent) :
+WavefrontMapDlg::WavefrontMapDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::WavefrontMapDlg),
     m_parentDock(parent)
@@ -61,11 +61,14 @@ void WavefrontMapDlg::updateParentDockContent()
 
     m_renderer->draw_hist2d(wf->to_matrix(), 0, 1);
 
-    std::cout << "Wavefront:" << std::endl;
-    std::cout << wf->to_matrix() << std::endl;
+    std::ostringstream oss;
+    oss << wf->to_matrix() << std::endl;
+
 
     delete wf;
 
     m_renderer->update();
 
+    m_parentDock->setText(oss);
+    m_parentDock->setCurrentTab(1);
 }

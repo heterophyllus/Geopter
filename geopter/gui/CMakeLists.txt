@@ -40,6 +40,7 @@ set(GEOPTER_GUI_HEADERS
 
     Dock/TextViewDock.h
     Dock/PlotViewDock.h
+    Dock/AnalysisViewDock.h
 
     renderer_qcp.h
 
@@ -106,6 +107,7 @@ set(GEOPTER_GUI_SOURCES
 
     Dock/TextViewDock.cpp
     Dock/PlotViewDock.cpp
+    Dock/AnalysisViewDock.cpp
 
     renderer_qcp.cpp
 

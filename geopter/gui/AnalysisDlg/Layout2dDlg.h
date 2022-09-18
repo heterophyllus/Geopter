@@ -2,7 +2,7 @@
 #define LAYOUT_DIALOG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "Dock/PlotViewDock.h"
+#include "Dock/AnalysisViewDock.h"
 #include "renderer_qcp.h"
 
 namespace Ui {
@@ -14,7 +14,7 @@ class Layout2dDlg : public AnalysisSettingDlg
     Q_OBJECT
 
 public:
-    explicit Layout2dDlg(OpticalSystem* sys, PlotViewDock *parent = nullptr);
+    explicit Layout2dDlg(OpticalSystem* sys, AnalysisViewDock *parent = nullptr);
     ~Layout2dDlg();
 
     void updateParentDockContent() override;
@@ -25,7 +25,7 @@ private slots:
 private:
     Ui::Layout2dDlg *ui;
     RendererQCP *m_renderer;
-    PlotViewDock* m_parentDock;
+    AnalysisViewDock* m_parentDock;
 };
 
 #endif // LAYOUT_DIALOG_H

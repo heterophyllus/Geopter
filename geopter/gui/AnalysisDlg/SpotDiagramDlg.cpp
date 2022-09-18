@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QValidator>
 
-SpotDiagramDlg::SpotDiagramDlg(OpticalSystem* sys, PlotViewDock *parent) :
+SpotDiagramDlg::SpotDiagramDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys,parent),
     ui(new Ui::SpotDiagramDlg),
     m_parentDock(parent)
@@ -44,6 +44,8 @@ void SpotDiagramDlg::updateParentDockContent()
     m_renderer->clear();
     m_renderer->set_grid_layout(fieldCount, 1);
 
+    std::ostringstream oss;
+
     SpotDiagram *spot = new SpotDiagram(m_opticalSystem);
 
     for(int fi = 0; fi < fieldCount; fi++) {
@@ -61,6 +63,7 @@ void SpotDiagramDlg::updateParentDockContent()
         m_renderer->draw_x_axis();
         m_renderer->draw_y_axis();
 
+        plotData->print(oss);
     }
 
     delete spot;

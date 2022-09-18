@@ -19,6 +19,8 @@
 
 #include "SystemEditor/SystemDataConstant.h"
 
+#include "Dock/TextViewDock.h"
+
 #include "AnalysisDlg/AnalysisSettingDlg.h"
 #include "AnalysisDlg/Layout2dDlg.h"
 #include "AnalysisDlg/TransverseRayFanDlg.h"
@@ -249,57 +251,58 @@ void MainWindow::setVignettingFactors()
  * ********************************************************************************************************************************/
 void MainWindow::showPrescription()
 {    
-    showAnalysisText<PrescriptionDlg>("Prescription");
+    constexpr bool textOnly = true;
+    showAnalysisResult<PrescriptionDlg>("Prescription", textOnly);
 }
 
 void MainWindow::showLayout()
 {    
-    showAnalysisPlot<Layout2dDlg>("2D Layout");
+    showAnalysisResult<Layout2dDlg>("2D Layout");
 }
 
 void MainWindow::showParaxialRayTrace()
 {
-    showAnalysisText<ParaxialTraceDlg>("Paraxial Ray Trace");
+    showAnalysisResult<ParaxialTraceDlg>("Paraxial Ray Trace");
 }
 
 void MainWindow::showSingleRayTrace()
 {
-    showAnalysisText<SingleRayTraceDlg>("Single Ray Trace");
+    showAnalysisResult<SingleRayTraceDlg>("Single Ray Trace");
 }
 
 void MainWindow::showSpotDiagram()
 {
-    showAnalysisPlot<SpotDiagramDlg>("Spot Diagram");
+    showAnalysisResult<SpotDiagramDlg>("Spot Diagram");
 }
 
 void MainWindow::showTransverseRayFan()
 {
-    showAnalysisPlot<TransverseRayFanDlg>("Transverse Aberration");
+    showAnalysisResult<TransverseRayFanDlg>("Transverse Aberration");
 }
 
 void MainWindow::showOpdFan()
 {
-    showAnalysisPlot<OpdFanDlg>("OPD Fan");
+    showAnalysisResult<OpdFanDlg>("OPD Fan");
 }
 
 void MainWindow::showLongitudinal()
 {    
-    showAnalysisPlot<LongitudinalDlg>("Longitudinal Aberration");
+    showAnalysisResult<LongitudinalDlg>("Longitudinal Aberration");
 }
 
 void MainWindow::showFieldCurvature()
 {
-    showAnalysisPlot<FieldCurvatureDlg>("Field Curvature");
+    showAnalysisResult<FieldCurvatureDlg>("Field Curvature");
 }
 
 void MainWindow::showChromaticFocusShift()
 {
-    showAnalysisPlot<ChromaticFocusShiftDlg>("Chromatic Focus Shift");
+    showAnalysisResult<ChromaticFocusShiftDlg>("Chromatic Focus Shift");
 }
 
 void MainWindow::showWavefront()
 {
-    showAnalysisPlot<WavefrontMapDlg>("Wavefront Map");
+    showAnalysisResult<WavefrontMapDlg>("Wavefront Map");
 }
 
 void MainWindow::showFFTPSF()
@@ -311,7 +314,7 @@ void MainWindow::showFFTPSF()
 void MainWindow::showGeoMTF()
 {
     QMessageBox::information(this,tr("Info"), tr("This is a test function."));
-    showAnalysisPlot<GeoMtfDlg>("Geometrical MTF");
+    showAnalysisResult<GeoMtfDlg>("Geometrical MTF");
 }
 
 void MainWindow::showFFTMTF()
@@ -338,6 +341,18 @@ void MainWindow::showAnalysisText(QString dockTitleBase)
 {
     QString dockTitleWithNumber = createDockTitleWithNumber(dockTitleBase);
     TextViewDock *dock = new TextViewDock(dockTitleWithNumber, opt_sys_.get());
+    dock->createSettingDialog<T>();
+    m_dockManager->addDockWidgetFloating(dock);
+    ui->menuView->addAction(dock->toggleViewAction());
+    //dock->resize(300,200);
+    dock->updateContent();
+}
+
+template <class T>
+void MainWindow::showAnalysisResult(QString dockTitleBase, bool textOnly)
+{
+    QString dockTitleWithNumber = createDockTitleWithNumber(dockTitleBase);
+    AnalysisViewDock *dock = new AnalysisViewDock(dockTitleWithNumber, opt_sys_.get(), textOnly);
     dock->createSettingDialog<T>();
     m_dockManager->addDockWidgetFloating(dock);
     ui->menuView->addAction(dock->toggleViewAction());

@@ -5,7 +5,7 @@
 #include "PrescriptionDlg.h"
 #include "ui_prescriptiondlg.h"
 
-PrescriptionDlg::PrescriptionDlg(OpticalSystem* sys, TextViewDock *parent) :
+PrescriptionDlg::PrescriptionDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::PrescriptionDlg),
     m_parentDock(parent)
@@ -88,7 +88,7 @@ void PrescriptionDlg::updateParentDockContent()
     }
 
 
-    m_parentDock->setStringStreamToText(oss);
+    m_parentDock->setText(oss);
 
 }
 

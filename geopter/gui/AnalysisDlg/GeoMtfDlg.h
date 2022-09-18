@@ -2,7 +2,7 @@
 #define GEOMTFDLG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "Dock/PlotViewDock.h"
+#include "Dock/AnalysisViewDock.h"
 #include "renderer_qcp.h"
 
 namespace Ui {
@@ -14,14 +14,14 @@ class GeoMtfDlg : public AnalysisSettingDlg
     Q_OBJECT
 
 public:
-    explicit GeoMtfDlg(OpticalSystem* sys, PlotViewDock *parent = nullptr);
+    explicit GeoMtfDlg(OpticalSystem* sys, AnalysisViewDock *parent = nullptr);
     ~GeoMtfDlg();
 
     void updateParentDockContent() override;
 
 private:
     Ui::GeoMtfDlg *ui;
-    PlotViewDock* m_parentDock;
+    AnalysisViewDock* m_parentDock;
     RendererQCP *m_renderer;
 };
 

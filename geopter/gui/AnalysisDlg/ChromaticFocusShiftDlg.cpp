@@ -1,7 +1,10 @@
 #include "ChromaticFocusShiftDlg.h"
+
+#include <ostream>
+
 #include "ui_chromaticfocusshiftdlg.h"
 
-ChromaticFocusShiftDlg::ChromaticFocusShiftDlg(OpticalSystem* sys, PlotViewDock *parent) :
+ChromaticFocusShiftDlg::ChromaticFocusShiftDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::ChromaticFocusShiftDlg),
     m_parentDock(parent)
@@ -34,8 +37,11 @@ void ChromaticFocusShiftDlg::updateParentDockContent()
     double higher = ui->maxWvlEdit->text().toDouble();
 
     ChromaticFocusShift *chrom = new ChromaticFocusShift(m_opticalSystem);
+    std::ostringstream oss;
     auto plotData = chrom->plot(lower, higher);
-    plotData->print();
+    plotData->print(oss);
+    m_parentDock->setText(oss);
+
 
     double lower_y, higher_y;
     plotData->graph(0)->get_y_range(&lower_y, &higher_y);
@@ -51,4 +57,7 @@ void ChromaticFocusShiftDlg::updateParentDockContent()
     m_renderer->update();
 
     delete chrom;
+
+    m_parentDock->setCurrentTab(1);
+
 }

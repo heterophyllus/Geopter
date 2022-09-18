@@ -13,7 +13,7 @@
 #include "gui/PythonQtScriptingConsole.h"
 
 #include "SystemEditor/SystemEditorDock.h"
-
+#include "Dock/AnalysisViewDock.h"
 #include "qdebugstream.h"
 
 #include "OpticalSystemWrapper/QOpticalSystem.h"
@@ -88,6 +88,9 @@ private:
 
     template<class T>
     void showAnalysisText(QString dockTitleBase);
+
+    template<class T>
+    void showAnalysisResult(QString dockTitleBase, bool textOnly = false);
 
     QString createDockTitleWithNumber(QString dockTitleBase);
     void loadAgfsFromDir(QString agfDir);

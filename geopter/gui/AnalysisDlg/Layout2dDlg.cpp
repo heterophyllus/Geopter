@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QValidator>
 
-Layout2dDlg::Layout2dDlg(OpticalSystem* sys, PlotViewDock *parent) :
+Layout2dDlg::Layout2dDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::Layout2dDlg),
     m_parentDock(parent)
@@ -56,6 +56,7 @@ void Layout2dDlg::updateParentDockContent()
         layout->draw_fan_rays(nrd);
     }
 
+    m_parentDock->setCurrentTab(1);
     layout->update();
 
     delete layout;

@@ -6,7 +6,7 @@
 #include "ui_paraxialtracedlg.h"
 
 
-ParaxialTraceDlg::ParaxialTraceDlg(OpticalSystem* sys, TextViewDock *parent) :
+ParaxialTraceDlg::ParaxialTraceDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::ParaxialTraceDlg),
     m_parentDock(parent)
@@ -55,5 +55,5 @@ void ParaxialTraceDlg::updateParentDockContent()
     pr_ray->print(oss);
     oss << std::endl;
 
-    m_parentDock->setStringStreamToText(oss);
+    m_parentDock->setText(oss);
 }

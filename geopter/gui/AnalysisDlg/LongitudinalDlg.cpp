@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QValidator>
 
-LongitudinalDlg::LongitudinalDlg(OpticalSystem* sys, PlotViewDock *parent) :
+LongitudinalDlg::LongitudinalDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::LongitudinalDlg),
     m_parentDock(parent)

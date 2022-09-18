@@ -2,7 +2,7 @@
 #define TRANSVERSE_RAY_FAN_DIALOG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "Dock/PlotViewDock.h"
+#include "Dock/AnalysisViewDock.h"
 #include "renderer_qcp.h"
 
 namespace Ui {
@@ -14,14 +14,14 @@ class TransverseRayFanDlg : public AnalysisSettingDlg
     Q_OBJECT
 
 public:
-    explicit TransverseRayFanDlg(OpticalSystem* sys, PlotViewDock *parent = nullptr);
+    explicit TransverseRayFanDlg(OpticalSystem* sys, AnalysisViewDock *parent = nullptr);
     ~TransverseRayFanDlg();
 
     void updateParentDockContent() override;
 
 private:
     Ui::TransverseRayFanDlg *ui;
-    PlotViewDock* m_parentDock;
+    AnalysisViewDock* m_parentDock;
     RendererQCP *m_renderer;
 };
 

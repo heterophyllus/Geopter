@@ -6,7 +6,7 @@
 #include <QLineEdit>
 #include <QValidator>
 
-FieldCurvatureDlg::FieldCurvatureDlg(OpticalSystem* sys, PlotViewDock *parent) :
+FieldCurvatureDlg::FieldCurvatureDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::FieldCurvatureDlg),
     m_parentDock(parent)
@@ -41,7 +41,9 @@ void FieldCurvatureDlg::updateParentDockContent()
 
     Astigmatism *ast = new Astigmatism(m_opticalSystem);
     auto plotData = ast->plot(numRays);
-    plotData->print();
+
+    std::ostringstream oss;
+    plotData->print(oss);
 
     m_renderer->clear();
     m_renderer->draw_plot(plotData);
@@ -54,4 +56,6 @@ void FieldCurvatureDlg::updateParentDockContent()
     m_renderer->update();
 
     delete ast;
+
+    m_parentDock->setText(oss);
 }

@@ -6,7 +6,7 @@
 #include <sstream>
 
 
-SingleRayTraceDlg::SingleRayTraceDlg(OpticalSystem *sys, TextViewDock *parent) :
+SingleRayTraceDlg::SingleRayTraceDlg(OpticalSystem *sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::SingleRayTraceDlg),
     m_parentDock(parent)
@@ -116,7 +116,7 @@ void SingleRayTraceDlg::doPupilRayTrace()
     oss << std::endl;
 
     // write to textview dock
-    m_parentDock->setStringStreamToText(oss);
+    m_parentDock->setText(oss);
 
 
 }
@@ -153,6 +153,6 @@ void SingleRayTraceDlg::doObjectRayTrace()
     ray_trace_result->print(oss);
     oss << std::endl;
 
-    m_parentDock->setStringStreamToText(oss);
+    m_parentDock->setText(oss);
 }
 

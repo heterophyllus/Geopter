@@ -2,7 +2,7 @@
 #define OPDFANDLG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "Dock/PlotViewDock.h"
+#include "Dock/AnalysisViewDock.h"
 #include "renderer_qcp.h"
 
 namespace Ui {
@@ -14,14 +14,14 @@ class OpdFanDlg : public AnalysisSettingDlg
     Q_OBJECT
 
 public:
-    explicit OpdFanDlg(OpticalSystem* sys, PlotViewDock *parent = nullptr);
+    explicit OpdFanDlg(OpticalSystem* sys, AnalysisViewDock *parent = nullptr);
     ~OpdFanDlg();
 
     void updateParentDockContent() override;
 
 private:
     Ui::OpdFanDlg *ui;
-    PlotViewDock* m_parentDock;
+    AnalysisViewDock* m_parentDock;
     RendererQCP *m_renderer;
 };
 

@@ -1,7 +1,7 @@
 #include "GeoMtfDlg.h"
 #include "ui_GeoMtfDlg.h"
 
-GeoMtfDlg::GeoMtfDlg(OpticalSystem* sys, PlotViewDock *parent) :
+GeoMtfDlg::GeoMtfDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::GeoMtfDlg),
     m_parentDock(parent)
@@ -37,9 +37,11 @@ void GeoMtfDlg::updateParentDockContent()
     double maxFreq = ui->maxFreqEdit->text().toDouble();
     double step = 1.0;
 
+    std::ostringstream oss;
+
     GeometricalMTF* geoMTF = new GeometricalMTF;
     auto plotData = geoMTF->plot(m_opticalSystem, nrd, maxFreq, step);
-    plotData->print();
+    plotData->print(oss);
     delete geoMTF;
 
     m_renderer->clear();
@@ -54,6 +56,9 @@ void GeoMtfDlg::updateParentDockContent()
 
     m_renderer->update();
 
+    m_parentDock->setText(oss);
+
+    m_parentDock->setCurrentTab(1);
 
 
 }

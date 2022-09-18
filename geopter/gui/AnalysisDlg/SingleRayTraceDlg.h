@@ -2,7 +2,7 @@
 #define SINGLE_RAY_TRACE_DIALOG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "Dock/TextViewDock.h"
+#include "Dock/AnalysisViewDock.h"
 
 namespace Ui {
 class SingleRayTraceDlg;
@@ -15,7 +15,7 @@ class SingleRayTraceDlg : public AnalysisSettingDlg
     Q_OBJECT
 
 public:
-    explicit SingleRayTraceDlg(OpticalSystem *sys, TextViewDock *parent = nullptr);
+    explicit SingleRayTraceDlg(OpticalSystem *sys, AnalysisViewDock *parent = nullptr);
     ~SingleRayTraceDlg();
 
     void updateParentDockContent() override;
@@ -28,7 +28,7 @@ private:
     void doObjectRayTrace();
 
     Ui::SingleRayTraceDlg *ui;
-    TextViewDock *m_parentDock;
+    AnalysisViewDock *m_parentDock;
 
 };
 

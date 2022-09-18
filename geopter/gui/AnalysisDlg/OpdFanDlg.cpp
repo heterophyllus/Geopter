@@ -1,7 +1,7 @@
 #include "OpdFanDlg.h"
 #include "ui_OpdFanDlg.h"
 
-OpdFanDlg::OpdFanDlg(OpticalSystem* sys, PlotViewDock *parent) :
+OpdFanDlg::OpdFanDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),
     ui(new Ui::OpdFanDlg),
     m_parentDock(parent)
@@ -31,6 +31,8 @@ void OpdFanDlg::updateParentDockContent()
     m_renderer->clear();
     m_renderer->set_grid_layout(fieldCount, 1);
 
+    std::ostringstream oss;
+
     OpdFan *opd_fan = new OpdFan(m_opticalSystem);
 
     for(int fi = 0; fi < fieldCount; fi++){
@@ -38,6 +40,8 @@ void OpdFanDlg::updateParentDockContent()
 
         Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
         auto plotData = opd_fan->plot(fld, nrd);
+
+        plotData->print(oss);
 
         m_renderer->draw_plot(plotData);
         m_renderer->set_x_axis_range(-1.0, 1.0);
@@ -51,4 +55,8 @@ void OpdFanDlg::updateParentDockContent()
     delete opd_fan;
 
     m_renderer->update();
+
+    m_parentDock->setText(oss);
+    m_parentDock->setCurrentTab(1);
+
 }

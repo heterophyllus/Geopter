@@ -2,7 +2,7 @@
 #define SPOT_DIAGRAM_SETTING_DIALOG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "Dock/PlotViewDock.h"
+#include "Dock/AnalysisViewDock.h"
 #include "renderer_qcp.h"
 
 namespace Ui {
@@ -14,14 +14,14 @@ class SpotDiagramDlg : public AnalysisSettingDlg
     Q_OBJECT
 
 public:
-    explicit SpotDiagramDlg(OpticalSystem* sys, PlotViewDock *parent = nullptr);
+    explicit SpotDiagramDlg(OpticalSystem* sys, AnalysisViewDock *parent = nullptr);
     ~SpotDiagramDlg();
 
     void updateParentDockContent() override;
 
 private:
     Ui::SpotDiagramDlg *ui;
-    PlotViewDock* m_parentDock;
+    AnalysisViewDock* m_parentDock;
     RendererQCP *m_renderer;
 };
 
