@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -14,7 +14,7 @@
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** Lesser General Public License for more details.
 ** 
-** You should have received a copy of the GNU Lesser General Public
+** You should have received a copy of the GNU General Public
 ** License along with this library; If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************************
 **           Author: Hiiragi                                   
@@ -23,12 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   glass.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
 #ifndef GLASS_H
 #define GLASS_H
@@ -69,12 +63,13 @@ public:
 
     void set_thermal_data(double D0, double D1, double D2, double E0, double E1, double Ltk, double Tref);
     double dn_dt_abs(double wvl_micron, double t) const;
+    double delta_n_abs(double wvl_micron, double t) const;
 
     void print();
     void print(std::ostringstream& oss);
 
 private:
-
+    double relative_wavelength(double lambdainput, double T, double P = 101325.0) const;
     double refractive_index_abs_Tref(double wvl_micron) const;
     double refractive_index_rel_Tref(double wvl_micron) const;
 
@@ -101,7 +96,7 @@ private:
     /** reference temperature of the glass */
     double Tref_;
 
-
+    double Pref_;
 };
 
 } //namespace geopter

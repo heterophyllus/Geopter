@@ -132,7 +132,7 @@ set(GEOPTER_GUI_SOURCES
     SystemEditor/SpecEditor/WavelengthTableView.cpp
     SystemEditor/SpecEditor/WavelengthTableModel.cpp
     
-    AnalysisDlg/AnalysisSettingDlg.cpp
+    #AnalysisDlg/AnalysisSettingDlg.cpp
     AnalysisDlg/PrescriptionDlg.cpp
     AnalysisDlg/Layout2dDlg.cpp
     AnalysisDlg/SingleRayTraceDlg.cpp

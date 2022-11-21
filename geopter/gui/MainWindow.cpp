@@ -93,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
     CentralDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
     // create python console
+    /*
     QTabWidget *consoleTab = new QTabWidget;
     m_pyConsole = new PythonQtScriptingConsole(NULL, PythonQt::self()->getMainModule());
     QTextEdit* stdoutText = new QTextEdit;
@@ -118,20 +119,21 @@ MainWindow::MainWindow(QWidget *parent)
     PythonQt::self()->getMainModule().evalScript("import sys");
     PythonQt::self()->getMainModule().evalScript("sys.path.append(\"" + scriptDirPath +"\" )");
 
+    PythonQt::self()->getMainModule().addObject("osys",opt_sys_.get());
+    PythonQt::self()->getMainModule().addObject("lde",opt_sys_->LensDataEditor());
+
+    */
+
     // load glass catalogs
     QString agfDir = QApplication::applicationDirPath() + "/AGF";
     loadAgfsFromDir(agfDir);
-
-    PythonQt::self()->getMainModule().addObject("osys",opt_sys_.get());
-    PythonQt::self()->getMainModule().addObject("lde",opt_sys_->LensDataEditor());
 
 }
 
 MainWindow::~MainWindow()
 {
     opt_sys_.reset();
-    delete m_qout;
-    delete m_qerr;
+
 
     delete ui;
 }

@@ -23,16 +23,11 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   environment.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H
+
+namespace geopter{
 
 
 class Environment
@@ -60,5 +55,7 @@ private:
     static double temperature_;
     static double pressure_;
 };
+
+}
 
 #endif // ENVIRONMENT_H

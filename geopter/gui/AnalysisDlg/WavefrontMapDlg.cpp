@@ -54,15 +54,16 @@ void WavefrontMapDlg::updateParentDockContent()
     m_renderer->set_x_axis_range(0, nrd);
     m_renderer->set_y_axis_range(0, nrd);
 
-    Wavefront *wf = new Wavefront(m_opticalSystem);
+    WavefrontMap *wf = new WavefrontMap(m_opticalSystem);
     Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fieldIndex);
     double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wvlIndex)->value();
-    wf->from_opd_trace(m_opticalSystem, fld, wvl, nrd);
+    auto data_grid = wf->create(fld, wvl, nrd);
 
-    m_renderer->draw_hist2d(wf->to_matrix(), 0, 1);
+    m_renderer->draw_hist2d(data_grid->value_data(), 0, 1);
 
+    Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     std::ostringstream oss;
-    oss << wf->to_matrix() << std::endl;
+    oss << data_grid->value_data().format(CleanFmt) << std::endl;
 
 
     delete wf;

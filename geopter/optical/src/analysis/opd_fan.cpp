@@ -83,7 +83,7 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
                 break;
             }
 
-            if(ray->status() == RayStatus::PassThrough){
+            if(ray->status() == TRACE_SUCCESS){
                 //double opd = wave_abr_full_calc(fld, wvl, ray, cr_pkg, ref_sphere);
                 double opd = wave_abr_full_calc(ray, chief_ray);
                 opd *= convert_to_waves;

@@ -31,7 +31,7 @@
 
 #include "material/material.h"
 #include "material/material_library.h"
-#include "assembly/solve.h"
+#include "solve/solve.h"
 
 namespace geopter {
 

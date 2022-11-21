@@ -23,10 +23,12 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
+#include "profile/even_polynomial.h"
+
 #include <iostream>
 #include <iomanip>
-#include "profile/even_polynomial.h"
-#include "sequential/trace_error.h"
+
+//#include "sequential/trace_error.h"
 
 using namespace geopter;
 
@@ -37,7 +39,7 @@ EvenPolynomial::EvenPolynomial() :
 {
     cv_ = 0.0;
     coefs_ = std::vector<double>(num_coefs_, 0.0);
-    eps_ = 1.0e-5;
+    eps_ = 1.0e-8;
 }
 
 EvenPolynomial::EvenPolynomial(double cv, double conic, const std::vector<double>& coefs) :
@@ -48,7 +50,7 @@ EvenPolynomial::EvenPolynomial(double cv, double conic, const std::vector<double
     cv_ = cv;
     coefs_ = std::vector<double>(num_coefs_, 0.0);
     this->set_coef(coefs);
-    eps_ = 1.0e-5;
+    eps_ = 1.0e-8;
 }
 
 
@@ -66,7 +68,7 @@ bool EvenPolynomial::intersect(Eigen::Vector3d& pt, double& distance, const Eige
     double s1 = -f(p)/dir.dot(df(p));
     double s2;
     double delta = fabs(s1);
-    constexpr int max_iter = 30;
+    constexpr int max_iter = 50;
     int iter = 0;
 
     while(delta > eps_)

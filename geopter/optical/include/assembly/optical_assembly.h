@@ -33,7 +33,7 @@
 
 #include "assembly/surface.h"
 #include "assembly/gap.h"
-#include "assembly/solve.h"
+#include "solve/solve.h"
 #include "common/string_tool.h"
 
 namespace geopter {

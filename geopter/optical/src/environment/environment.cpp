@@ -23,14 +23,11 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   environment.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 #include "environment/environment.h"
+#include "material/air.h"
+
+
+using namespace geopter;
 
 double Environment::temperature_ = 25;
 double Environment::pressure_ = 101325.0;
@@ -60,3 +57,4 @@ double Environment::air_pressure()
 {
     return pressure_;
 }
+

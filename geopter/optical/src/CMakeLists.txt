@@ -25,7 +25,11 @@ set(OPTICAL_SRCS
     assembly/gap.cpp
     assembly/decenter_data.cpp
     assembly/transformation.cpp
-    assembly/solve.cpp
+
+    solve/solve.cpp
+    solve/marginal_ray_height_solve.cpp
+    solve/edge_thickness_solve.cpp
+    solve/overall_length_solve.cpp
 
     profile/surface_profile.cpp
     profile/spherical.cpp
@@ -65,7 +69,7 @@ set(OPTICAL_SRCS
 
     sequential/sequential_path.cpp
     sequential/ray.cpp
-    sequential/ray_at_surface.cpp
+    sequential/ray_segment.cpp
     sequential/sequential_trace.cpp
 
     renderer/renderer.cpp
@@ -76,6 +80,9 @@ set(OPTICAL_SRCS
     data/plot_data.cpp
     data/graph2d.cpp
     data/map_data_3d.cpp
+    data/spot_data.cpp
+    data/scatter2d.cpp
+    data/data_grid.cpp
 
     common/geopter_error.cpp
     common/matrix_tool.cpp

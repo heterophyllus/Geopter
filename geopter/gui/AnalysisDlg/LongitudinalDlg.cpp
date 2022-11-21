@@ -38,7 +38,10 @@ void LongitudinalDlg::updateParentDockContent()
     auto plotData = sph->plot(numRays);
     delete sph;
 
-    plotData->print();
+    std::ostringstream oss;
+    plotData->print(oss);
+
+    m_parentDock->setText(oss);
 
     m_renderer->clear();
     m_renderer->draw_plot(plotData);

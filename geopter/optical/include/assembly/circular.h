@@ -77,7 +77,8 @@ public:
     }
 
     bool point_inside(double x, double y) const{
-        if( (x*x + y*y) < radius_*radius_ ){
+        //constexpr double eps = 1.0e-5;
+        if( (x*x + y*y) <= (radius_*radius_) ){
             return true;
         }else{
             return false;

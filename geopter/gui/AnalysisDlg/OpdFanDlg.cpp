@@ -26,7 +26,7 @@ void OpdFanDlg::updateParentDockContent()
     int fieldCount = m_opticalSystem->optical_spec()->field_of_view()->field_count();
 
     double scale = ui->scaleEdit->text().toDouble();
-    int nrd = 21;
+    int nrd = 65;
 
     m_renderer->clear();
     m_renderer->set_grid_layout(fieldCount, 1);

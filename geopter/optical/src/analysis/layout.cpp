@@ -337,7 +337,7 @@ void Layout::draw_lens(Lens* lens, const Rgb& color)
 
 void Layout::draw_surface(Surface* srf, double max_y, const Rgb& color)
 {
-    const int pt_cnt = 100;
+    const int pt_cnt = 1000;
     std::vector<Eigen::Vector2d> pts;
     Eigen::Vector2d pt;
 

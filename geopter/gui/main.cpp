@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
 
     // set the stylesheet
-    QFile styleSheetFile("data/QSS/Medize/Medize.qss");
+    QFile styleSheetFile("data/QSS/Diffnes/Diffnes.qss");
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     a.setStyleSheet(styleSheet);

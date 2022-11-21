@@ -28,6 +28,7 @@
 
 #include "analysis/wave_aberration.h"
 #include "data/map_data_3d.h"
+#include "data/data_grid.h"
 
 namespace geopter{
 
@@ -35,26 +36,15 @@ namespace geopter{
  *
  *  Wavefront is a grid array of optical path differences of the rays that is referenced to the chief ray on the exit pupil
  */
-class Wavefront : public WaveAberration
+class WavefrontMap : public WaveAberration
 {
 public:
-    Wavefront(OpticalSystem *opt_sys);
+    WavefrontMap(OpticalSystem *opt_sys);
 
     /** create by tracing multiple rays */
-    void from_opd_trace(OpticalSystem *opt_sys, const Field* fld, double wvl, int ndim);
-
-    Eigen::MatrixXd to_matrix();
-
-    int ndim(){return ndim_;}
-
-    double wvl() const {return wvl_;}
+    std::shared_ptr<DataGrid> create(const Field* fld, double wvl, int ndim);
 
 protected:
-    inline int to_index(int row, int col){
-        return ndim_*row + col;
-    };
-
-    std::vector<double> data_;
     int ndim_;
     double wvl_;
 };

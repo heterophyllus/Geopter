@@ -36,6 +36,8 @@ namespace geopter {
 class Field
 {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
     Field();
     Field(double x, double y, const Rgb& color);
     Field(double x, double y, double wt, const Rgb& color, double vuy, double vly, double vux, double vlx);
@@ -65,7 +67,7 @@ public:
 
     Eigen::Vector2d apply_vignetting(const Eigen::Vector2d& pupil) const;
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 
 private:
     double x_;

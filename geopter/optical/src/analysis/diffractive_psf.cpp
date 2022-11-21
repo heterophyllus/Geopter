@@ -77,7 +77,7 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
             if(pupil.norm() <= 1.0){
                 tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
 
-                if(ray->status() == RayStatus::PassThrough){
+                if(ray->status() == TRACE_SUCCESS){
                     double opd = wave_abr_full_calc(ray, chief_ray);
                     W_(i,j) = opd;
                     A(i,j) = 1.0;

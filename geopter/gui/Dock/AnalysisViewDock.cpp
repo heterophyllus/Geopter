@@ -29,6 +29,7 @@ AnalysisViewDock::AnalysisViewDock(QString label, OpticalSystem* sys, bool texto
         m_textEdit   = new QTextEdit;
         m_tabWidget->addTab(m_textEdit, "Text");
         m_tabWidget->addTab(m_customPlot, "Plot");
+        m_tabWidget->setCurrentIndex(1);
     }
 
     m_textEdit->setWordWrapMode(QTextOption::NoWrap);

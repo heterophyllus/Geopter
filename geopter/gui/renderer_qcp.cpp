@@ -91,7 +91,7 @@ void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int cmap)
           }
 
           if(type == 0){ // linear
-
+              //z = z;
           }
           else if(type == 1){ //logarithmic
               z = std::log10(z);

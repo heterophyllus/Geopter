@@ -34,7 +34,7 @@
 #include "assembly/aperture.h"
 #include "assembly/circular.h"
 #include "assembly/decenter_data.h"
-#include "assembly/solve.h"
+#include "solve/solve.h"
 
 #include "profile/surface_profile.h"
 #include "profile/spherical.h"

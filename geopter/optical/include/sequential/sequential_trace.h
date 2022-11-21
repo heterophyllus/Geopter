@@ -31,7 +31,7 @@
 #include "sequential/sequential_path.h"
 #include "sequential/ray.h"
 #include "sequential/trace_error.h"
-
+#include "data/spot_data.h"
 
 namespace geopter {
 
@@ -44,17 +44,23 @@ public:
     /** Base function for ray tracing. Trace a ray throughout the given sequantial path */
     TraceError trace_ray_throughout_path(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
 
-
     /** Trace a single ray at the given pupil coordinate */
     TraceError trace_pupil_ray(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
+
+    RayPtr create_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
 
     /** Trace reference rays(chief, meridional upper/lower, sagittal upper/lower */
     bool trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
 
+    void trace_ray_bundle(SpotData& spot, int nrd, const Field* fld, double wvl);
 
-    /** Trace chief ray and returns x/y focus shift */
-    Eigen::Vector2d trace_coddington(const Field* fld, double wvl);
-
+    /**
+     * @brief Trace chief ray using Coddington equation
+     * @param s_t x/y focus shift
+     * @param ray chief ray
+     * @param path sequential path
+     * @return true if no error
+     */
     bool trace_coddington(Eigen::Vector2d& s_t, const std::shared_ptr<Ray> ray, const SequentialPath& path);
 
     bool search_ray_aiming_at_surface(RayPtr ray, Eigen::Vector2d& aim_pt, const Field* fld, int target_srf_idx, const Eigen::Vector2d& xy_target);

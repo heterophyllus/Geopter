@@ -233,7 +233,7 @@ void LensDataTableView::showSolveSelectionDlg(int si)
         if(selectedIndex == Solve::EdgeThickness){
             EdgeThicknessSolveDlg *edgeDlg = new EdgeThicknessSolveDlg();
             if(edgeDlg->exec() == QDialog::Accepted){
-                auto solve = std::make_unique<EdgeThicknessSolve>(si, edgeDlg->value(), edgeDlg->height());
+                auto solve = std::make_unique<EdgeThicknessSolve>(si, edgeDlg->height(), edgeDlg->value());
                 if(solve->check(m_opt_sys.get())){
                     m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
                     m_opt_sys->update_model();
@@ -262,6 +262,8 @@ void LensDataTableView::showSolveSelectionDlg(int si)
                 }
             }
             delete dlg;
+        }else{ // Solve "Fixed"
+            m_opt_sys->optical_assembly()->gap(si)->remove_solve();
         }
     }
 

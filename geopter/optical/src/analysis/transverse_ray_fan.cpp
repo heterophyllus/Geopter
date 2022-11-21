@@ -80,7 +80,7 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
                 continue;
             }
 
-            if(ray->status() == RayStatus::PassThrough){
+            if(ray->status() == TRACE_SUCCESS){
 
                 if(pupil_dir == 0) {
                     double x_at_stop = ray->at(stop_index)->x();

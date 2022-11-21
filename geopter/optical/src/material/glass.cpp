@@ -23,12 +23,13 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
+#include "material/glass.h"
+
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 
-#include "material/glass.h"
 #include "material/glass_catalog.h"
 #include "material/dispersion_formula.h"
 #include "material/air.h"
@@ -43,6 +44,8 @@ Glass::Glass() : Material(),
 {
     constexpr int knum_coefs = 12;
     coefs_ = std::vector<double>(knum_coefs, 0.0);
+
+    Pref_ = 101325.0;
 }
 
 Glass::~Glass()
@@ -55,7 +58,9 @@ Glass::~Glass()
 double Glass::rindex(double wv_nm) const
 {
     if(formula_func_ptr_){
-        return refractive_index_rel(wv_nm/1000.0);
+        double lambdainput = wv_nm/1000.0;
+        double lambdarel = relative_wavelength(lambdainput, Environment::temperature(), Environment::air_pressure());
+        return refractive_index_rel(lambdarel);
     }else{
         return 1.0;
     }
@@ -160,6 +165,14 @@ double Glass::abbe_d() const
     return (nd - 1.0)/(nF - nC);
 }
 
+double Glass::relative_wavelength(double lambdainput, double T, double P) const
+{
+    double n_air_sys = Air::refractive_index_abs(lambdainput, T, P);
+    double n_air_ref = Air::refractive_index_abs(lambdainput, Tref_, Pref_);
+
+    return lambdainput * (n_air_sys/n_air_ref);
+}
+
 double Glass::refractive_index_rel_Tref(double wvl_micron) const
 {
     if(formula_func_ptr_){
@@ -183,8 +196,7 @@ double Glass::refractive_index_abs_Tref(double wvl_micron) const
 double Glass::refractive_index_abs(double wvl_micron) const
 {
     double T = Environment::temperature();
-    double dn_dt = dn_dt_abs(wvl_micron, T);
-    double dn = (T-Tref_)*dn_dt;
+    double dn = delta_n_abs(wvl_micron, T);
     double n_abs_T0 = refractive_index_abs_Tref(wvl_micron);
     double n_abs = n_abs_T0 + dn;
 
@@ -216,9 +228,22 @@ double Glass::dn_dt_abs(double wvl_micron, double t) const
 {
     double dT = t - Tref_;
     double Stk = (Ltk_ > 0.0) - (Ltk_ < 0.0);
-    double n  = refractive_index_abs_Tref(wvl_micron);
+    double n  = refractive_index_rel_Tref(wvl_micron);
 
     return (n*n-1)/(2*n) * ( D0_ + 2*D1_*dT + 3*D2_*dT*dT + (E0_ + 2*E1_*dT)/(wvl_micron*wvl_micron - Stk*Ltk_*Ltk_) );
+}
+
+double Glass::delta_n_abs(double wvl_micron, double t) const
+{
+    double dT = t - Tref_;
+    double Stk = (Ltk_ > 0.0) - (Ltk_ < 0.0);
+    double n  = refractive_index_rel_Tref(wvl_micron);
+
+    // Zemax manual
+    return (n*n-1)/(2*n) * ( D0_*dT + D1_*dT*dT + D2_*dT*dT*dT + (E0_*dT + E1_*dT*dT)/(wvl_micron*wvl_micron - Stk*Ltk_*Ltk_) );
+
+    // Schott technical document
+    //return (n*n-1)/(2*n) * ( D0_*dT + D1_*dT*dT + D2_*dT*dT*dT + (E0_*dT + E1_*dT*dT)/(wvl_micron*wvl_micron - Ltk_*Ltk_) );
 }
 
 void Glass::print()

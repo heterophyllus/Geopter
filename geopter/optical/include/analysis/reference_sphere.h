@@ -2,6 +2,7 @@
 #define REFERENCE_SPHERE_H
 
 #include "Eigen/Core"
+#include "sequential/ray.h"
 
 namespace geopter{
 
@@ -9,40 +10,30 @@ class ReferenceSphere
 {
 public:
     ReferenceSphere();
-    ReferenceSphere(const Eigen::Vector3d& image_pt, const Eigen::Vector3d& ref_dir, double ref_sphere_radius);
+    ReferenceSphere(const Eigen::Vector3d& ref_pt, const Eigen::Vector3d& ref_dir, double radius, double exp_dist_parax);
 
-    inline Eigen::Vector3d image_pt() const;
-    inline Eigen::Vector3d ref_dir() const;
-    inline double ref_sphere_radius() const;
+    Eigen::Vector3d& ref_pt() { return ref_pt_; }
+    Eigen::Vector3d& ref_dir() { return ref_dir_; }
+    double radius() const { return radius_; }
 
-    void set_image_pt(const Eigen::Vector3d& image_pt);
-    void set_ref_dir(const Eigen::Vector3d& ref_dir);
-    void set_ref_sphere_radius(double ref_sphere_radius);
+    void set_ref_pt(const Eigen::Vector3d& ref_pt) { ref_pt_ = ref_pt; }
+    void set_ref_dir(const Eigen::Vector3d& ref_dir) { ref_dir_ = ref_dir; }
+    void set_radius(double radius) { radius_ = radius; }
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+    /** ray segment with the reference sphere */
+    Eigen::Vector3d compute_ray_segment(RayPtr ray);
+
 private:
-    Eigen::Vector3d image_pt_;
+    Eigen::Vector3d ref_pt_;
     Eigen::Vector3d ref_dir_;
-    double ref_sphere_radius_;
+    double radius_;
+    double exp_dist_parax_;
+
+    RayPtr chief_ray_;
+    Eigen::Vector3d cr_exp_pt_;
 };
-
-
-
-Eigen::Vector3d ReferenceSphere::image_pt() const
-{
-    return image_pt_;
-}
-
-Eigen::Vector3d ReferenceSphere::ref_dir() const
-{
-    return ref_dir_;
-}
-
-double ReferenceSphere::ref_sphere_radius() const
-{
-    return ref_sphere_radius_;
-}
 
 
 } // namespace geopter

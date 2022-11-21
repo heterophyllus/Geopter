@@ -47,7 +47,7 @@ public:
     }
 
     double f(const Eigen::Vector3d& p) const {
-        return p(2) - 0.5*cv_*p.dot(p);
+        return p(2) - 0.5*cv_*(p.dot(p));
     }
 
     Eigen::Vector3d df(const Eigen::Vector3d& p) const{

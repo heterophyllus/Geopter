@@ -4,30 +4,35 @@ using namespace geopter;
 
 ReferenceSphere::ReferenceSphere()
 {
-    image_pt_ = Eigen::Vector3d::Zero(3);
-    ref_dir_  = Eigen::Vector3d::Zero(3);
-    ref_sphere_radius_ = 0.0;
+    ref_pt_  = Eigen::Vector3d::Zero(3);
+    ref_dir_ = Eigen::Vector3d::Zero(3);
+    radius_  = 0.0;
+    exp_dist_parax_ = 0.0;
 }
 
-ReferenceSphere::ReferenceSphere(const Eigen::Vector3d& image_pt, const Eigen::Vector3d& ref_dir, double ref_sphere_radius)
+ReferenceSphere::ReferenceSphere(const Eigen::Vector3d& ref_pt, const Eigen::Vector3d& ref_dir, double radius, double exp_dist_parax)
 {
-    image_pt_ = image_pt;
+    ref_pt_  = ref_pt;
     ref_dir_ = ref_dir;
-    ref_sphere_radius_ = ref_sphere_radius;
+    radius_  = radius;
+    exp_dist_parax_ = exp_dist_parax;
 }
 
-void ReferenceSphere::set_image_pt(const Eigen::Vector3d &image_pt)
+Eigen::Vector3d ReferenceSphere::compute_ray_segment(RayPtr ray)
 {
-    image_pt_ = image_pt;
-}
+    Eigen::Vector3d cr_inc_pt_before_img;
+    Eigen::Vector3d cr_dir_before_img;
 
-void ReferenceSphere::set_ref_dir(const Eigen::Vector3d &ref_dir)
-{
-    ref_dir_ = ref_dir;
-}
+    double h = cr_inc_pt_before_img(1);
+    double u = cr_dir_before_img(1);
+    constexpr double eps = 1.0e-14;
 
-void ReferenceSphere::set_ref_sphere_radius(double ref_sphere_radius)
-{
-    ref_sphere_radius_ = ref_sphere_radius;
-}
+    double cr_exp_dist = 0.0;
+    if(fabs(u) < eps){
+        cr_exp_dist = exp_dist_parax_;
+    }else{
+        cr_exp_dist  = -h/u;
+    }
 
+    Eigen::Vector3d cr_exp_pt = cr_inc_pt_before_img + cr_exp_dist*cr_dir_before_img;
+}

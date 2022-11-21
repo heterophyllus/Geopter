@@ -7,6 +7,7 @@
 #include "renderer/renderer.h"
 #include "data/hexapolar_array.h"
 
+
 using namespace geopter;
 
 SpotDiagram::SpotDiagram(OpticalSystem* opt_sys):
@@ -77,6 +78,9 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
         // calculate nrd for current wvl
         int nrd = (wvl_weights_[wi]/max_wt)*max_nrd;
 
+        const double step = 2.0/(double)nrd;
+        const double start = -1.0 + step/2;
+
         if(SpotDiagram::SpotRayPattern::Grid == pattern)
         {            
             graph->resize(nrd*nrd);
@@ -85,14 +89,14 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
 
             for(int i = 0; i < nrd; i++){
                 for(int j = 0; j < nrd; j++){
-                    pupil(0) = -1.0 + static_cast<double>(j)*2.0/static_cast<double>(nrd-1);
-                    pupil(1) = -1.0 + static_cast<double>(i)*2.0/static_cast<double>(nrd-1);
+                    pupil(0) = start + step*static_cast<double>(j);
+                    pupil(1) = start + step*static_cast<double>(i);
 
                     if(pupil.norm() <= 1.0){
-                        //ray->set_status(RayStatus::PassThrough);
+                        ray->set_status(TRACE_SUCCESS);
                         tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
 
-                        if(RayStatus::PassThrough == ray->status()){
+                        if(TRACE_SUCCESS == ray->status()){
 
                             double ray_x = ray->back()->x();
                             double ray_y = ray->back()->y();
@@ -126,7 +130,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     pupil(0) = 0.0;
                     pupil(1) = 0.0;
 
-                    ray->set_status(RayStatus::PassThrough);
+                    ray->set_status(TRACE_SUCCESS);
                     tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
 
                     double dx = ray->back()->x() - chief_ray_x;
@@ -147,7 +151,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     //ray->set_status(RayStatus::PassThrough);
                     tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
 
-                    if(RayStatus::PassThrough == ray->status()){
+                    if(TRACE_SUCCESS == ray->status()){
                         double dx = ray->back()->x() - chief_ray_x;
                         double dy = ray->back()->y() - chief_ray_y;
 

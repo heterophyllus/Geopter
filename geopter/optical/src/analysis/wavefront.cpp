@@ -29,81 +29,66 @@
 
 using namespace geopter;
 
-Wavefront::Wavefront(OpticalSystem* opt_sys)
+WavefrontMap::WavefrontMap(OpticalSystem* opt_sys)
     :WaveAberration(opt_sys)
 {
-
+    opt_sys_ = opt_sys;
 }
 
-Eigen::MatrixXd Wavefront::to_matrix()
-{
 
-    Eigen::MatrixXd m(ndim_, ndim_);
-
-    for(int i = 0; i < ndim_; i++){
-        for(int j = 0; j < ndim_; j++){
-            m(i,j) = data_[to_index(i,j)];
-        }
-    }
-
-    return m;
-
-}
-
-void Wavefront::from_opd_trace(OpticalSystem *opt_sys, const Field *fld, double wvl, int ndim)
+std::shared_ptr<DataGrid> WavefrontMap::create(const Field *fld, double wvl, int ndim)
 {
     ndim_ = ndim;
     wvl_ = wvl;
 
-    const int num_wvls = opt_sys->optical_spec()->spectral_region()->wvl_count();
-    const double ref_wvl_val = opt_sys->optical_spec()->spectral_region()->reference_wvl();
+    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
+    const double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
     const double nm_to_mm = 1.0e-6;
     const double convert_to_waves = 1.0/(nm_to_mm*ref_wvl_val);
 
-    SequentialTrace *tracer = new SequentialTrace(opt_sys);
+    SequentialTrace *tracer = new SequentialTrace(opt_sys_);
     tracer->set_aperture_check(true);
     tracer->set_apply_vig(false);
 
     SequentialPath seq_path = tracer->sequential_path(wvl);
 
-    auto chief_ray = std::make_shared<Ray>(seq_path.size());
+    const auto chief_ray = std::make_shared<Ray>(seq_path.size());
     int trace_result = tracer->trace_pupil_ray(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
 
-    std::vector<double> px;
-    std::vector<double> py;
-
-    double step = 2.0/(double)(ndim-1);
-    for(int i = 0; i < ndim; i++){
-        px.push_back( -1.0 + step*(double)i );
-        py.push_back( -1.0 + step*(double)i );
-    }
+    const double step = 2.0/static_cast<double>(ndim-1);
+    const double start = -1.0;
 
     Eigen::Vector2d pupil;
 
+    double epd = 2.0*opt_sys_->first_order_data()->enp_radius;
     RayPtr ray = std::make_shared<Ray>(seq_path.size());
 
-    data_.resize(ndim*ndim);
+    auto data_grid = std::make_shared<DataGrid>(ndim, ndim, epd, epd);
+
+    double cr_exp_dist;
+    Eigen::Vector3d cr_exp_pt;
+    get_chief_ray_exp_segment(cr_exp_pt, cr_exp_dist, chief_ray);
+    auto ref_sphere = setup_reference_sphere(chief_ray,cr_exp_pt);
+
 
     for(int i = 0; i < ndim; i++)
     {
         for(int j = 0 ; j < ndim; j++)
         {
-            pupil(0) = -1.0 + step*(double)j;
-            pupil(1) = -1.0 + step*(double)i;
+            pupil(0) = start + step*static_cast<double>(j);
+            pupil(1) = start + step*static_cast<double>(i);
 
             if(pupil.norm() < 1.0){
-                ray->set_status(RayStatus::PassThrough);
-                tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
-
-                if(ray->status() == RayStatus::PassThrough){
-                    double opd = wave_abr_full_calc(ray, chief_ray);
+                trace_result = tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                if(TRACE_SUCCESS == trace_result){
+                    double opd = wave_abr_full_calc(ray, chief_ray, fld, ref_sphere);
                     opd *= convert_to_waves;
-                    data_[to_index(i, j)] = opd;
+                    data_grid->set_value_at(i, j, opd);
                 }else{
-                    data_[to_index(i, j)] = NAN;
+                    data_grid->set_value_at(i, j, NAN);
                 }
             }else{
-                data_[to_index(i, j)] = NAN;
+                data_grid->set_value_at(i, j, NAN);
             }
 
         }
@@ -111,4 +96,9 @@ void Wavefront::from_opd_trace(OpticalSystem *opt_sys, const Field *fld, double 
     }
 
     delete tracer;
+
+    return data_grid;
 }
+
+
+

@@ -31,20 +31,10 @@
 #include <memory>
 #include <cassert>
 
-#include "ray_at_surface.h"
+#include "ray_segment.h"
 #include "common/geopter_error.h"
 
 namespace geopter {
-
-
-enum RayStatus
-{
-    PassThrough,
-    Blocked,
-    MissedSurface,
-    TotalReflection,
-};
-
 
 class Ray
 {
@@ -53,33 +43,31 @@ public:
     Ray(int n);
     ~Ray();
 
-    RayAtSurface* operator[](std::size_t n) & {return ray_at_srfs_[n].get();}
-
     void allocate(int n);
 
     /** Add data at the beginning */
-    void prepend(std::unique_ptr<RayAtSurface> ray_at_srf);
+    void prepend(std::unique_ptr<RaySegment> ray_at_srf);
 
     /** Add data at the last */
     void append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
 
-    inline void set_status(int s);
-    inline void set_wvl(double wvl);
-    inline void set_pupil_coord(const Eigen::Vector2d& pupil);
+    void set_status(TraceError s) {status_ = s;}
+    void set_wvl(double wvl) { wvl_ = wvl; }
+    void set_pupil_coord(const Eigen::Vector2d& pupil) { pupil_crd_ = pupil;}
 
     void set_reached_surface(int i);
 
-    inline int size() const;
+    int size() const { return ray_at_srfs_.size();}
 
-    inline int reached_surface() const;
+    int reached_surface() const { return reached_surface_index_; }
 
-    inline RayAtSurface* at(int i);
-    inline RayAtSurface* front() const;
-    inline RayAtSurface* back() const;
-    inline RayAtSurface* at_lens_back() const;
-    inline int status() const;
-    inline double wavelength() const;
-    inline const Eigen::Vector2d& pupil_coord() const;
+    RaySegment* at(int i) { return ray_at_srfs_[i].get(); }
+    RaySegment* front() const { return ray_at_srfs_.front().get();}
+    RaySegment* back() const { return ray_at_srfs_.back().get();}
+    RaySegment* at_lens_back() const { int len = ray_at_srfs_.size(); return ray_at_srfs_[len-2].get();}
+    TraceError status() const { return status_;}
+    double wavelength() const { return wvl_;}
+    const Eigen::Vector2d& pupil_coord() const { return pupil_crd_;}
 
     double optical_path_length() const;
 
@@ -91,8 +79,8 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 private:
-    std::vector< std::unique_ptr<RayAtSurface> > ray_at_srfs_;
-    int status_;
+    std::vector< std::unique_ptr<RaySegment> > ray_at_srfs_;
+    TraceError status_;
     double wvl_;
     double opl_;
     int size_;
@@ -102,81 +90,6 @@ private:
 
 using RayPtr = std::shared_ptr<Ray>;
 
-
-int Ray::size() const
-{
-    return (int)ray_at_srfs_.size();
-}
-
-int Ray::reached_surface() const
-{
-    return reached_surface_index_;
-}
-
-int Ray::status() const
-{
-    return status_;
-}
-
-double Ray::wavelength() const
-{
-    return wvl_;
-}
-
-RayAtSurface* Ray::at(int i)
-{    
-    assert(size_ == (int)ray_at_srfs_.size());
-    if(i < size_){
-        return ray_at_srfs_[i].get();
-    }else{
-        return nullptr;
-    }
-}
-
-RayAtSurface* Ray::front() const
-{
-    return ray_at_srfs_.front().get();
-}
-
-RayAtSurface* Ray::back() const
-{
-    return ray_at_srfs_.back().get();
-}
-
-RayAtSurface* Ray::at_lens_back() const
-{
-    /*
-    auto itr = ray_at_srfs_.end();
-    itr--;
-    return itr->get();
-    */
-
-
-    int len = ray_at_srfs_.size();
-    int lens_back_index = len - 1 -1;
-    return ray_at_srfs_[lens_back_index].get();
-
-}
-
-void Ray::set_wvl(double wvl)
-{
-    wvl_ = wvl;
-}
-
-void Ray::set_status(int s)
-{
-    status_ = s;
-}
-
-void Ray::set_pupil_coord(const Eigen::Vector2d &pupil)
-{
-    pupil_crd_ = pupil;
-}
-
-const Eigen::Vector2d& Ray::pupil_coord() const
-{
-    return pupil_crd_;
-}
 
 } //namespace geopter
 

@@ -23,7 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-
 #ifndef OPTICALSYSTEM_H
 #define OPTICALSYSTEM_H
 
@@ -38,7 +37,6 @@
 #include "spec/optical_spec.h"
 #include "assembly/optical_assembly.h"
 #include "material/material_library.h"
-#include "sequential/ray_at_surface.h"
 #include "paraxial/first_order_data.h"
 
 namespace geopter {

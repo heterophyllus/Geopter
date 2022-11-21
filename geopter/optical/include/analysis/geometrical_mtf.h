@@ -14,7 +14,7 @@ public:
     std::shared_ptr<PlotData> plot(OpticalSystem* opt_sys, int nrd, double max_freq= 100.0, double freq_step= 5.0);
 
 private:
-    double calc_geo_mtf(double s, double t, const std::vector<double>& u, const std::vector<double>& v);
+
 };
 
 }

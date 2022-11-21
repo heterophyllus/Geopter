@@ -13,10 +13,12 @@ class AnalysisSettingDlg : public QDialog
     Q_OBJECT
 
 public:
-    AnalysisSettingDlg(OpticalSystem* sys, QWidget *parent);
+    AnalysisSettingDlg(OpticalSystem* sys, QWidget *parent) : QDialog(parent), m_opticalSystem(sys){}
 
-    virtual void updateParentDockContent();
-    virtual int parentDockType() const;
+    virtual void updateParentDockContent() = 0;
+    virtual int parentDockType() const{
+        return 0;
+    }
 
 protected:
     OpticalSystem *m_opticalSystem;

@@ -27,6 +27,7 @@
 #define ASTIGMATISM_H
 
 #include "analysis/ray_aberration.h"
+#include "data/data_series.h"
 
 namespace geopter {
 
@@ -35,6 +36,8 @@ class Astigmatism : RayAberration
 public:
     Astigmatism(OpticalSystem* opt_sys);
     std::shared_ptr<PlotData> plot(int num_rays= 10);
+
+
 };
 
 }

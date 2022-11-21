@@ -23,16 +23,16 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
+#include "sequential/ray.h"
+
 #include <iostream>
 #include <iomanip>
-
-#include "sequential/ray.h"
 
 
 using namespace geopter;
 
 Ray::Ray() :
-    status_(RayStatus::PassThrough),
+    status_(TRACE_NOT_REACHED_ERROR),
     wvl_(0.0),
     size_(0),
     reached_surface_index_(0)
@@ -41,7 +41,7 @@ Ray::Ray() :
 }
 
 Ray::Ray(int n) :
-    status_(RayStatus::PassThrough),
+    status_(TRACE_SUCCESS),
     wvl_(0.0),
     reached_surface_index_(0)
 {
@@ -61,16 +61,16 @@ void Ray::allocate(int n)
     this->clear();
 
     ray_at_srfs_.reserve(n);
-    RayAtSurface* before = nullptr;
+    RaySegment* before = nullptr;
     for(int i = 0; i < n; i++){
-        ray_at_srfs_.emplace_back( std::make_unique<RayAtSurface>() );
+        ray_at_srfs_.emplace_back( std::make_unique<RaySegment>() );
         ray_at_srfs_.back()->set_before(before);
         before = ray_at_srfs_.back().get();
     }
     size_ = ray_at_srfs_.size();
 }
 
-void Ray::prepend(std::unique_ptr<RayAtSurface> ray_at_srf)
+void Ray::prepend(std::unique_ptr<RaySegment> ray_at_srf)
 {
     ray_at_srfs_.insert(ray_at_srfs_.begin(), std::move(ray_at_srf));
     ray_at_srfs_.front()->set_before( ray_at_srfs_[1].get() );
@@ -80,13 +80,15 @@ void Ray::prepend(std::unique_ptr<RayAtSurface> ray_at_srf)
 
 void Ray::append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl)
 {
-    RayAtSurface *before;
+    RaySegment *before;
     if(ray_at_srfs_.empty()){
         before = nullptr;
     }else{
         before = ray_at_srfs_.back().get();
     }
-    ray_at_srfs_.emplace_back(std::make_unique<RayAtSurface>(inc_pt, normal, after_dir, dist, opl, before));
+
+    int i = size_-1;
+    ray_at_srfs_.emplace_back(std::make_unique<RaySegment>(i,inc_pt, normal, after_dir, dist, opl, before));
     opl_ += opl;
     size_ += 1;
 }
@@ -120,9 +122,9 @@ void Ray::set_reached_surface(int i)
 double Ray::optical_path_length() const
 {
     double opl_tot = 0.0;
-    int last_surf_idx = ray_at_srfs_.size()-1-1;
-    for(int i = 2; i <= last_surf_idx; i++){
-        opl_tot += ray_at_srfs_[i]->opl_from_before();
+    int last = ray_at_srfs_.size()-1;
+    for(int i = 2; i < last; i++){
+        opl_tot += ray_at_srfs_[i]->optical_path_length();
     }
     return opl_tot;
 }
@@ -138,16 +140,16 @@ void Ray::print(std::ostringstream& oss)
     //status
     oss << "Status: ";
     switch (status_) {
-    case RayStatus::PassThrough:
+    case TRACE_SUCCESS:
         oss << "Pass Through";
         break;
-    case RayStatus::Blocked:
+    case TRACE_BLOCKED_ERROR:
         oss << "Blocked";
         break;
-    case RayStatus::MissedSurface:
+    case TRACE_MISSEDSURFACE_ERROR:
         oss << "Missed Surface";
         break;
-    case RayStatus::TotalReflection:
+    case TRACE_TIR_ERROR                                                                                                                                                                                                                                                                                 :
         oss << "Total Reflection";
         break;
     default:

@@ -23,8 +23,10 @@
 **             Date: November 10th, 2021
 ********************************************************************************/
 
-#include <iostream>
 #include "analysis/astigmatism.h"
+
+#include <iostream>
+
 #include "sequential/sequential_trace.h"
 #include "sequential/trace_error.h"
 #include "renderer/renderer.h"
@@ -36,6 +38,7 @@ Astigmatism::Astigmatism(OpticalSystem* opt_sys):
 {
 
 }
+
 
 std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
 {

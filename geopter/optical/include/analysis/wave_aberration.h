@@ -18,10 +18,12 @@ protected:
 
     double wave_abr_full_calc(const std::shared_ptr<Ray>& ray, const std::shared_ptr<Ray>& chief_ray);
 
+    double wave_abr_full_calc(const std::shared_ptr<Ray>& ray, const std::shared_ptr<Ray>& chief_ray, const Field* fld, ReferenceSphere& ref_sphere);
+
     /** calculate equally inclined chord distance between 2 rays */
     double eic_distance(const Eigen::Vector3d& p, const Eigen::Vector3d& d, const Eigen::Vector3d& p0, const Eigen::Vector3d& d0);
 
-    void transform_after_surface(Eigen::Vector3d& before_pt, Eigen::Vector3d& before_dir, const Surface* srf, const RayAtSurface* ray_seg);
+    void transform_after_surface(Eigen::Vector3d& before_pt, Eigen::Vector3d& before_dir, const Surface* srf, const RaySegment* ray_seg);
 
     ReferenceSphere setup_reference_sphere(const std::shared_ptr<Ray>& chief_ray, const Eigen::Vector3d& cr_exp_pt, const Eigen::Vector2d& image_pt_2d);
 

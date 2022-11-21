@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -14,7 +14,7 @@
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** Lesser General Public License for more details.
 ** 
-** You should have received a copy of the GNU Lesser General Public
+** You should have received a copy of the GNU General Public
 ** License along with this library; If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************************
 **           Author: Hiiragi                                   
@@ -22,14 +22,6 @@
 **          Contact: heterophyllus.work@gmail.com                          
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
-
-//============================================================================
-/// \file   air.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef AIR_H
 #define AIR_H
@@ -51,7 +43,7 @@ public:
     static double refractive_index_abs(double wvl_micron, double T, double P= 101325.0);
 
 private:
-    static double refractive_index_reference(double wvl_micron);
+    static double refractive_index_15degC_1atm(double wvl_micron);
 };
 
 
