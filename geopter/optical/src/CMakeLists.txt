@@ -73,15 +73,10 @@ set(OPTICAL_SRCS
     sequential/sequential_trace.cpp
 
     renderer/renderer.cpp
-    renderer/renderer_mpl.cpp
-    #renderer/renderer_gnuplot.cpp
     renderer/rgb.cpp
 
     data/plot_data.cpp
     data/graph2d.cpp
-    data/map_data_3d.cpp
-    data/spot_data.cpp
-    data/scatter2d.cpp
     data/data_grid.cpp
 
     common/geopter_error.cpp

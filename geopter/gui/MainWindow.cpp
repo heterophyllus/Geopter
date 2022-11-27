@@ -72,6 +72,9 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionGeoMTF,                 SIGNAL(triggered()), this, SLOT(showGeoMTF()));
     QObject::connect(ui->actionFFT_MTF,                SIGNAL(triggered()), this, SLOT(showFFTMTF()));
 
+    // Tool
+    QObject::connect(ui->actionConsole,                SIGNAL(triggered()), this, SLOT(showConsole()));
+
     // Help menu
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
 
@@ -92,37 +95,6 @@ MainWindow::MainWindow(QWidget *parent)
     auto* CentralDockArea = m_dockManager->setCentralWidget(m_systemEditorDock );
     CentralDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
-    // create python console
-    /*
-    QTabWidget *consoleTab = new QTabWidget;
-    m_pyConsole = new PythonQtScriptingConsole(NULL, PythonQt::self()->getMainModule());
-    QTextEdit* stdoutText = new QTextEdit;
-    stdoutText->setReadOnly(true);
-    stdoutText->setLineWrapMode(QTextEdit::NoWrap);
-    QTextEdit* stderrText = new QTextEdit;
-    stderrText->setReadOnly(true);
-    stderrText->setLineWrapMode(QTextEdit::NoWrap);
-    consoleTab->addTab(m_pyConsole, tr("PyConsole"));
-    consoleTab->addTab(stdoutText, tr("Output"));
-    consoleTab->addTab(stderrText, tr("Error"));
-    m_qout = new QDebugStream(std::cout, stdoutText);
-    m_qerr = new QDebugStream(std::cerr, stderrText);
-
-    CDockWidget* ConsoleDock = new CDockWidget("Console");
-
-    ConsoleDock->setWidget(consoleTab);
-    ConsoleDock->setFeature(CDockWidget::DockWidgetClosable, false);
-    m_dockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, ConsoleDock);
-    ui->menuView->addAction(ConsoleDock->toggleViewAction());
-
-    QString scriptDirPath = QApplication::applicationDirPath() + "/scripts";
-    PythonQt::self()->getMainModule().evalScript("import sys");
-    PythonQt::self()->getMainModule().evalScript("sys.path.append(\"" + scriptDirPath +"\" )");
-
-    PythonQt::self()->getMainModule().addObject("osys",opt_sys_.get());
-    PythonQt::self()->getMainModule().addObject("lde",opt_sys_->LensDataEditor());
-
-    */
 
     // load glass catalogs
     QString agfDir = QApplication::applicationDirPath() + "/AGF";
@@ -394,7 +366,36 @@ QString MainWindow::createDockTitleWithNumber(QString dockTitleBase)
  * Tool menu
  *
  * ********************************************************************************************************************************/
+void MainWindow::showConsole()
+{
+    QTabWidget *consoleTab = new QTabWidget;
+    m_pyConsole = new PythonQtScriptingConsole(NULL, PythonQt::self()->getMainModule());
+    QTextEdit* stdoutText = new QTextEdit;
+    stdoutText->setReadOnly(true);
+    stdoutText->setLineWrapMode(QTextEdit::NoWrap);
+    QTextEdit* stderrText = new QTextEdit;
+    stderrText->setReadOnly(true);
+    stderrText->setLineWrapMode(QTextEdit::NoWrap);
+    consoleTab->addTab(m_pyConsole, tr("PyConsole"));
+    consoleTab->addTab(stdoutText, tr("Output"));
+    consoleTab->addTab(stderrText, tr("Error"));
+    m_qout = new QDebugStream(std::cout, stdoutText);
+    m_qerr = new QDebugStream(std::cerr, stderrText);
 
+    CDockWidget* ConsoleDock = new CDockWidget("Console");
+
+    ConsoleDock->setWidget(consoleTab);
+    //ConsoleDock->setFeature(CDockWidget::DockWidgetClosable, false);
+    m_dockManager->addDockWidgetFloating(ConsoleDock);
+    ui->menuView->addAction(ConsoleDock->toggleViewAction());
+
+    QString scriptDirPath = QApplication::applicationDirPath() + "/scripts";
+    PythonQt::self()->getMainModule().evalScript("import sys");
+    PythonQt::self()->getMainModule().evalScript("sys.path.append(\"" + scriptDirPath +"\" )");
+
+    PythonQt::self()->getMainModule().addObject("osys",opt_sys_.get());
+    PythonQt::self()->getMainModule().addObject("lde",opt_sys_->LensDataEditor());
+}
 
 
 /*********************************************************************************************************************************

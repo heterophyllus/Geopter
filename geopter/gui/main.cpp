@@ -14,11 +14,13 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 
+    /*
     // set the stylesheet
     QFile styleSheetFile("data/QSS/Diffnes/Diffnes.qss");
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     a.setStyleSheet(styleSheet);
+    */
 
 
     // Set monospaced font to align text

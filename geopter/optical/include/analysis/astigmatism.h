@@ -27,7 +27,6 @@
 #define ASTIGMATISM_H
 
 #include "analysis/ray_aberration.h"
-#include "data/data_series.h"
 
 namespace geopter {
 

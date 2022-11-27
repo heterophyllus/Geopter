@@ -112,34 +112,6 @@ void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int cmap)
     customPlot_->replot();
 }
 
-void RendererQCP::draw_colored_map(const std::shared_ptr<MapData3d> mapdata)
-{
-    QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
-    QCPColorMap *colorMap = new QCPColorMap(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
-
-    int nx = mapdata->rows();
-    int ny = mapdata->cols();
-
-    colorMap->data()->setSize(nx, ny);
-    colorMap->data()->setRange(QCPRange(-1,1), QCPRange(-1,1));
-
-    double x, y, z;
-    for (int xIndex = 0; xIndex < nx; ++xIndex)
-    {
-      for (int yIndex = 0; yIndex < ny; ++yIndex)
-      {
-        z = mapdata->cell(yIndex, xIndex).z; //(x,y) (col, row)
-        colorMap->data()->setCell(xIndex, yIndex, z);
-      }
-    }
-
-    colorMap->setGradient(QCPColorGradient::gpJet);
-    colorMap->rescaleDataRange();
-
-    axisRect->axis(QCPAxis::atBottom)->setVisible(false);
-    axisRect->axis(QCPAxis::atLeft)->setVisible(false);
-    customPlot_->replot();
-}
 
 void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style, double line_width)
 {

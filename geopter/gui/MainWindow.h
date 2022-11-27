@@ -76,7 +76,7 @@ public slots:
     void showFFTMTF();
 
     // Tool menu
-
+    void showConsole();
 
     // Help menu
     void showAbout();

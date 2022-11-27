@@ -218,34 +218,6 @@ TraceError SequentialTrace::trace_ray_throughout_path(RayPtr ray, const Sequenti
 }
 
 
-void SequentialTrace::trace_ray_bundle(SpotData &spot, int nrd, const Field *fld, double wvl)
-{
-    constexpr double eps = 1.0e-5;
-
-    SequentialPath seq_path = sequential_path(wvl);
-
-    auto ray = std::make_shared<Ray>(seq_path.size());
-
-    spot.allocate(nrd*nrd);
-
-    Eigen::Vector2d pupil;
-    int valid_count = 0;
-    for(int i = 0; i < nrd; i++){
-        for(int j = 0; j < nrd; j++){
-            pupil(0) = -1.0 + static_cast<double>(j)*2.0/static_cast<double>(nrd-1);
-            pupil(1) = -1.0 + static_cast<double>(i)*2.0/static_cast<double>(nrd-1);
-
-            if(pupil.norm() < (1.0 + eps)){
-                if(TRACE_SUCCESS == trace_pupil_ray(ray, seq_path, pupil, fld, wvl)){
-                    spot.set_segment(valid_count, *ray->back());
-                    valid_count++;
-                }
-            }
-
-        }
-    }
-
-}
 
 bool SequentialTrace::trace_coddington(Eigen::Vector2d &s_t, const std::shared_ptr<Ray> ray, const SequentialPath& path)
 {

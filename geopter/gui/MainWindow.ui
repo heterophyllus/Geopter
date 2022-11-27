@@ -113,6 +113,7 @@
     <property name="title">
      <string>Tool</string>
     </property>
+    <addaction name="actionConsole"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -246,6 +247,11 @@
   <action name="actionFFT_MTF">
    <property name="text">
     <string>FFT MTF</string>
+   </property>
+  </action>
+  <action name="actionConsole">
+   <property name="text">
+    <string>Python Console</string>
    </property>
   </action>
  </widget>

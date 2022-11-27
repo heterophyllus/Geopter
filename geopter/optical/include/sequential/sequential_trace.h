@@ -31,7 +31,6 @@
 #include "sequential/sequential_path.h"
 #include "sequential/ray.h"
 #include "sequential/trace_error.h"
-#include "data/spot_data.h"
 
 namespace geopter {
 
@@ -51,8 +50,6 @@ public:
 
     /** Trace reference rays(chief, meridional upper/lower, sagittal upper/lower */
     bool trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
-
-    void trace_ray_bundle(SpotData& spot, int nrd, const Field* fld, double wvl);
 
     /**
      * @brief Trace chief ray using Coddington equation

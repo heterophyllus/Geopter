@@ -2,7 +2,7 @@
 #define GEOPTER_DIFFRACTIVE_PSF_H
 
 #include "analysis/wavefront.h"
-#include "data/map_data_3d.h"
+//#include "data/map_data_3d.h"
 
 namespace geopter{
 

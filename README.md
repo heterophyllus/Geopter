@@ -5,13 +5,11 @@
 ## Introduction
 Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-Nowadays there have been developed several commercial software for optical design.  Their advanced functionality deserves a definitive choice for professional work, while their expensive licensing fees discourages trying for private purpose.
+This project was launched primarily to provide optical design tool that was accessible for everyone, introducing opportunity for optical design.
 
-This is why free software becomes the first choice for starters in optics. Fortunately, an increasing number of optical design libraries are being developed as open source projects these days. One of their drawbacks, however, is that they require matured programming skills to master or even to get touch with.
+Geopter also wishes to be developed by a global community of optical designers, optics researchers, and software engineers.  The co-development by diverse individuals united around improving the project is believed to bring more eyes and inspire the fruitful discussion.
 
-Geopter aims to be somewhere in between. As is common with open source projects, Geopter is freely available and its whole internal aspects are open to the public. This fundamental feature allows anyone to use, learn, validate and even modify it on their own.  It also features an intuitive graphical interface putting higher priority to let the user concentrate on the design workflow.
-
-The primary user of Geopter could be a fresh optical engineer or a student who majors in optics.  Geopter wishes to be a starting platform to gain an introductory experience in optical design.
+Geopter is very work-in-progress.  Contributions, feedbacks, comments, etc are greatly appreciated.
 
 
 ## Getting Started
@@ -26,7 +24,7 @@ Geopter doesn't have its own "macro" language unlike the exemplary software such
 For the moment, only a few functions have been implemented.
 
 ### Note
-In Geopter, the array indexes(fields, wavelengths, etc) start at 0 because of the necessity for consistency with Python.
+In Geopter, the array indexes(fields, wavelengths, etc) start at 0 to keep consistency with Python.
 
 
 ## Development
@@ -60,14 +58,5 @@ Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, 
 
 ## Contact
 - Hiiragi [ e-mail ](mailto:heterophyllus.work@gmail.com)
-
-
-## Acknowledgement
-The author would like to express the heartfelt respect and gratitude to the following excellent projects for their reference implementation of optical calculation.
-
-- [mjhoptics/ray-optics](https://github.com/mjhoptics/ray-optics) : Highly matured python module for geometrical optical simulation developed by the engineer who worked at Synopsys and ORA.
-- [quartiq/rayopt](https://github.com/quartiq/rayopt) : Another python optical design library with more advanced features.
-- [Goptical](https://www.gnu.org/software/goptical/) : C++ implemenation of optical simulation with great deal of functionalities. Though this original project has not been updated since 2012.
-- [dibyendumajumdar/goptical](https://github.com/dibyendumajumdar/goptical) : A modified fork of Goptical which has been maintained with greatest effort. This project features to analyze many lens data obtained from patent documents.
 
 

@@ -6,8 +6,6 @@
 
 #include "Eigen/Core"
 
-//#include "data/xyz.h"
-
 namespace geopter {
 
 class DataGrid
@@ -20,8 +18,6 @@ public:
     double y(int row) { return dy_*(double)(row/ny_); }
     double z(int row, int col) { return value_data_(row, col); }
     
-    //XYZ xyz(int row, int col);
-
     Eigen::MatrixXd& value_data() { return value_data_; }
 
     std::string description() const { return description_;}
