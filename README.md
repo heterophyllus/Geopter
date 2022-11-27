@@ -7,7 +7,7 @@ Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ra
 
 This project was launched primarily to provide optical design tool that was accessible for everyone, introducing opportunity for optical design.
 
-Geopter also wishes to be developed by a global community of optical designers, optics researchers, and software engineers.  The co-development by diverse individuals united around improving the project is believed to bring more eyes and inspire the fruitful discussion.
+Geopter also wishes to prompt a global community of optical designers, optics researchers, and software engineers.  The co-working by diverse individuals united around improving the project is believed to bring more eyes and inspire the fruitful discussion.
 
 Geopter is very work-in-progress.  Contributions, feedbacks, comments, etc are greatly appreciated.
 
