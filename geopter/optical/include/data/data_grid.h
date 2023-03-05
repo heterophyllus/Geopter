@@ -38,6 +38,8 @@ public:
     double get_value_at(int i, int j) { return value_data_(i, j); }
     void set_value_at(int i, int j, double val){ value_data_(i,j) = val; }
 
+    void set_value_matrix(Eigen::MatrixXd& mat){ value_data_ = mat;}
+
 private:
     std::string description_;
     std::string x_label_;

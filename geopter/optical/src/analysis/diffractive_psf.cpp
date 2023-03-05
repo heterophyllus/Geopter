@@ -24,6 +24,45 @@ Eigen::MatrixXd &DiffractivePSF::to_matrix()
     return psf_;
 }
 
+
+std::shared_ptr<DataGrid> DiffractivePSF::create(const Field *fld, double wvl, int ndim)
+{
+    WavefrontMap *wfm = new WavefrontMap(opt_sys_);
+
+    auto wf_grid = wfm->create(fld,wvl,ndim);
+
+    Eigen::MatrixXd W = wf_grid->value_data();
+
+    for(int i = 0; i < ndim; i++){
+        for(int j = 0; j < ndim; j++){
+            if(std::isnan(W(i,j))){
+                W(i,j) = 0.0;
+            }
+        }
+    }
+
+    Eigen::MatrixXd O = Eigen::MatrixXd::Zero(2*ndim, 2*ndim);
+
+    O.block(ndim/2, ndim/2, ndim, ndim) = W;
+
+    std::complex<double> im(0.0, 1.0);
+    double lambda = wvl*1.0e-6;
+    //double k = 2.0*M_PI/lambda;
+    double k = M_PI;
+    Eigen::MatrixXcd H = O.array() * ((-k*im*O).array().exp());
+    //Eigen::MatrixXcd H = O;
+    Eigen::MatrixXd psf = ((fftshift( MatrixTool::fft2(ifftshift(H)).matrix() )).array().abs() ).block(ndim/2, ndim/2, ndim, ndim) ;
+    //Eigen::MatrixXd psf = ((fftshift( MatrixTool::fft2(ifftshift(O)).matrix() )).array().abs() ).block(ndim/2, ndim/2, ndim, ndim);
+
+    psf /= psf.array().maxCoeff();
+
+    auto psf_grid = std::make_shared<DataGrid>(2*ndim, 2*ndim, 1.0, 1.0);
+    psf_grid->set_value_matrix(psf);
+
+    return psf_grid;
+
+}
+
 void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L)
 {
     /*

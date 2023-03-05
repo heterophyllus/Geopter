@@ -17,22 +17,3 @@ ReferenceSphere::ReferenceSphere(const Eigen::Vector3d& ref_pt, const Eigen::Vec
     radius_  = radius;
     exp_dist_parax_ = exp_dist_parax;
 }
-
-Eigen::Vector3d ReferenceSphere::compute_ray_segment(RayPtr ray)
-{
-    Eigen::Vector3d cr_inc_pt_before_img;
-    Eigen::Vector3d cr_dir_before_img;
-
-    double h = cr_inc_pt_before_img(1);
-    double u = cr_dir_before_img(1);
-    constexpr double eps = 1.0e-14;
-
-    double cr_exp_dist = 0.0;
-    if(fabs(u) < eps){
-        cr_exp_dist = exp_dist_parax_;
-    }else{
-        cr_exp_dist  = -h/u;
-    }
-
-    Eigen::Vector3d cr_exp_pt = cr_inc_pt_before_img + cr_exp_dist*cr_dir_before_img;
-}

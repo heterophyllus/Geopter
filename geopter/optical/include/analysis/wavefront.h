@@ -27,7 +27,6 @@
 #define WAVEFRONT_H
 
 #include "analysis/wave_aberration.h"
-//#include "data/map_data_3d.h"
 #include "data/data_grid.h"
 
 namespace geopter{

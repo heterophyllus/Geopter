@@ -22,8 +22,6 @@ public:
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    /** ray segment with the reference sphere */
-    Eigen::Vector3d compute_ray_segment(RayPtr ray);
 
 private:
     Eigen::Vector3d ref_pt_;

@@ -2,7 +2,7 @@
 #define FFT_PSFDLG_H
 
 #include "AnalysisDlg/AnalysisSettingDlg.h"
-#include "Dock/PlotViewDock.h"
+#include "Dock/AnalysisViewDock.h"
 #include "renderer_qcp.h"
 
 namespace Ui {
@@ -14,14 +14,14 @@ class FFT_PSFDlg : public AnalysisSettingDlg
     Q_OBJECT
 
 public:
-    explicit FFT_PSFDlg(OpticalSystem* sys, PlotViewDock *parent = nullptr);
+    explicit FFT_PSFDlg(OpticalSystem* sys, AnalysisViewDock *parent = nullptr);
     ~FFT_PSFDlg();
 
     void updateParentDockContent() override;
 
 private:
     Ui::FFT_PSFDlg *ui;
-    PlotViewDock* m_parentDock;
+    AnalysisViewDock* m_parentDock;
     RendererQCP *m_renderer;
 };
 

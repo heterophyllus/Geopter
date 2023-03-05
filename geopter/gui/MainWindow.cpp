@@ -281,8 +281,8 @@ void MainWindow::showWavefront()
 
 void MainWindow::showFFTPSF()
 {
-    QMessageBox::information(this,tr("Info"), tr("This function is temporally unavailable."));
-    //showAnalysisPlot<FFT_PSFDlg>("FFT PSF");
+    //QMessageBox::information(this,tr("Info"), tr("This function is temporally unavailable."));
+    showAnalysisResult<FFT_PSFDlg>("FFT PSF");
 }
 
 void MainWindow::showGeoMTF()

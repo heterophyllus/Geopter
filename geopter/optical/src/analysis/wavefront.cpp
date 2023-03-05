@@ -41,10 +41,8 @@ std::shared_ptr<DataGrid> WavefrontMap::create(const Field *fld, double wvl, int
     ndim_ = ndim;
     wvl_ = wvl;
 
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
-    const double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
     const double nm_to_mm = 1.0e-6;
-    const double convert_to_waves = 1.0/(nm_to_mm*ref_wvl_val);
+    const double convert_to_waves = 1.0/(nm_to_mm*wvl);
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
     tracer->set_aperture_check(true);

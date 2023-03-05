@@ -29,8 +29,6 @@ double WaveAberration::wave_abr_full_calc(const std::shared_ptr<Ray>& ray, const
     Eigen::Vector3d cr_exp_pt;
     get_chief_ray_exp_segment(cr_exp_pt, cr_exp_dist, chief_ray);
 
-
-
     Eigen::Vector3d ref_dir = ref_sphere.ref_dir();
     double ref_sphere_radius = ref_sphere.radius();
 
@@ -63,9 +61,9 @@ double WaveAberration::wave_abr_full_calc(const std::shared_ptr<Ray>& ray, const
     double ray_op = ray->optical_path_length();
     double chief_ray_op = chief_ray->optical_path_length();
 
-    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
-    double n_img = opt_sys_->optical_assembly()->image_space_gap()->material()->rindex(ref_wvl_val);
-    double n_obj = opt_sys_->optical_assembly()->gap(0)->material()->rindex(ref_wvl_val);
+    double wvl = chief_ray->wavelength();
+    double n_img = opt_sys_->optical_assembly()->image_space_gap()->material()->rindex(wvl);
+    double n_obj = opt_sys_->optical_assembly()->gap(0)->material()->rindex(wvl);
 
     n_img = fabs(n_img);
     n_obj = fabs(n_obj);
