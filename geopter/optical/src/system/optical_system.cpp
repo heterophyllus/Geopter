@@ -149,10 +149,10 @@ void OpticalSystem::save_to_file(const std::string &filepath)
     /* WvlSpec */
     json_data["Spec"]["Wvl"]["RefIndex"] = opt_spec_->spectral_region()->reference_index();
 
-    const int num_wvls = opt_spec_->spectral_region()->wvl_count();
+    const int num_wvls = opt_spec_->spectral_region()->number_of_wavelengths();
 
     for(int wi = 0; wi < num_wvls; wi++){
-        auto wvl = opt_spec_->spectral_region()->wvl(wi);
+        auto wvl = opt_spec_->spectral_region()->wavelength(wi);
 
         json_data["Spec"]["Wvl"]["Value"].push_back(wvl->value());
         json_data["Spec"]["Wvl"]["Weight"].push_back(wvl->weight());
@@ -293,7 +293,7 @@ void OpticalSystem::load_file(const std::string &filepath)
 
         for(int wi = 0; wi < (int)wvl_val.size(); wi++){
             Rgb color(wvl_color[wi][0], wvl_color[wi][1], wvl_color[wi][2], 0.0);
-            opt_spec_->spectral_region()->add(wvl_val[wi], wvl_wt[wi],color);
+            opt_spec_->spectral_region()->add_wavelength(wvl_val[wi], wvl_wt[wi],color);
         }
     }
     catch(...)

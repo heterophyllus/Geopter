@@ -16,7 +16,7 @@ DiffractiveMTF::DiffractiveMTF(OpticalSystem *opt_sys) :
 std::shared_ptr<PlotData> DiffractiveMTF::plot(OpticalSystem* opt_sys, int M)
 {
     const int num_flds = opt_sys->optical_spec()->field_of_view()->field_count();
-    const int num_wvls = opt_sys->optical_spec()->spectral_region()->wvl_count();
+    const int num_wvls = opt_sys->optical_spec()->spectral_region()->number_of_wavelengths();
     std::vector<double> wvl_list = opt_sys->optical_spec()->spectral_region()->get_wavelength_list();
     std::vector<double> wt_list = opt_sys->optical_spec()->spectral_region()->get_weight_list();
 

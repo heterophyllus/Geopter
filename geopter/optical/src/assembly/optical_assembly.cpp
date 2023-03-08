@@ -80,7 +80,7 @@ void OpticalAssembly::update_semi_diameters()
 
     const int num_srf = this->surface_count();
     const int num_flds = FieldSpec::number_of_fields();
-    const double ref_wvl = parent_->optical_spec()->spectral_region()->reference_wvl();
+    const double ref_wvl = parent_->optical_spec()->spectral_region()->reference_wavelength();
     constexpr int num_ref_rays = 5;
 
 

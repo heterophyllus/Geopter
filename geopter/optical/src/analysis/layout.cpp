@@ -83,7 +83,7 @@ void Layout::draw_elements()
 void Layout::draw_reference_rays()
 {
     int ref_wvl_idx = opt_sys_->optical_spec()->spectral_region()->reference_index();
-    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wavelength();
     int num_flds = opt_sys_->optical_spec()->field_of_view()->field_count();
     int num_srfs = opt_sys_->optical_assembly()->surface_count();
 
@@ -137,7 +137,7 @@ void Layout::draw_reference_rays()
 
 void Layout::draw_fan_rays(int nrd)
 {
-    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wavelength();
     int num_flds = opt_sys_->optical_spec()->field_of_view()->field_count();
     int num_srfs = opt_sys_->optical_assembly()->surface_count();
 

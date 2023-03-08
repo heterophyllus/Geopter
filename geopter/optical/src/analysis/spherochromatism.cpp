@@ -52,7 +52,7 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
 
     for(int wi = 0; wi < num_wvl_; wi++){
         //std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->paraxial_data()->axial_ray(wi);
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
+        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
         std::shared_ptr<ParaxialRay> ax_ray = prx_tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
         double l_prime = ax_ray->back().l_prime();
         l_primes.push_back(l_prime);
@@ -73,8 +73,8 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
     plotdata->set_xy_reverse(true);
 
     for(int wi = 0; wi < num_wvl_; wi++){
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
-        Rgb color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
+        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
+        Rgb color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
 
         SequentialPath seq_path = tracer->sequential_path(wvl);
 

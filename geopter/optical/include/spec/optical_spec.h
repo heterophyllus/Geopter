@@ -30,7 +30,7 @@
 
 #include "spec/pupil_spec.h"
 #include "spec/field_spec.h"
-#include "spec/wvl_spec.h"
+#include "spec/wavelength_spec.h"
 
 namespace geopter {
 
@@ -43,7 +43,7 @@ public:
     ~OpticalSpec();
 
     PupilSpec* pupil_spec() { return pupil_.get(); }
-    WvlSpec* spectral_region() { return spectral_region_.get(); }
+    WavelengthSpec* spectral_region() { return spectral_region_.get(); }
     FieldSpec* field_of_view() { return field_of_view_.get(); }
 
     void clear();
@@ -56,7 +56,7 @@ public:
 
 private:
     OpticalSystem* parent_;
-    std::unique_ptr<WvlSpec> spectral_region_;
+    std::unique_ptr<WavelengthSpec> spectral_region_;
     std::unique_ptr<PupilSpec> pupil_;
     std::unique_ptr<FieldSpec> field_of_view_;
 };

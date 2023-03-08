@@ -58,7 +58,7 @@ int QOpticalSystem::NumberOfFields() const
 
 int QOpticalSystem::NumberOfWavelengths() const
 {
-    return opt_spec_->spectral_region()->wvl_count();
+    return opt_spec_->spectral_region()->number_of_wavelengths();
 }
 
 int QOpticalSystem::NumberOfSurfaces() const

@@ -23,7 +23,7 @@ void FirstOrderData::update()
     const int img = parent_->optical_assembly()->image_index();
     const int last_surf = parent_->optical_assembly()->image_index() -1;
     const int stop = parent_->optical_assembly()->stop_index();
-    const double ref_wvl = parent_->optical_spec()->spectral_region()->reference_wvl();
+    const double ref_wvl = parent_->optical_spec()->spectral_region()->reference_wavelength();
     const double n_0 = parent_->optical_assembly()->gap(0)->material()->rindex(ref_wvl);
     const double n_k = parent_->optical_assembly()->image_space_gap()->material()->rindex(ref_wvl);
 

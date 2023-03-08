@@ -23,33 +23,30 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-#ifndef WVLSPEC_H
-#define WVLSPEC_H
+#ifndef WAVELENGTHSPEC_H
+#define WAVELENGTHSPEC_H
 
 
 #include <vector>
 #include <memory>
 
-#include "wvl.h"
+#include "wavelength.h"
 
 namespace geopter {
 
-class WvlSpec
+class WavelengthSpec
 {
 public:
-    WvlSpec();
-    ~WvlSpec();
+    WavelengthSpec();
+    ~WavelengthSpec();
 
-    static int number_of_wavelengths() { return num_wvls_; }
+    int number_of_wavelengths() { return num_wvls_; }
 
     /** Returns Wvl component at the specified index */
-    Wvl* wvl(int i) const { return wvls_[i].get();}
-
-    /** Returns number of wvl */
-    int wvl_count() const { return wvls_.size();}
+    Wavelength* wavelength(int i) const { return wvls_[i].get();}
 
     /** Get wavelength value of current reference index */
-    double reference_wvl() const { return wvls_[reference_index_]->value();}
+    double reference_wavelength() const { return wvls_[reference_index_]->value();}
 
     /** Returns current reference wavelength index */
     int reference_index() const { return reference_index_;}
@@ -73,10 +70,10 @@ public:
     double max_weight() const {return max_weight_;}
 
     /** Add a new wavelength */
-    void add(double wl, double wt= 1.0, Rgb render_color= rgb_black);
+    void add_wavelength(double wl, double wt= 1.0, Rgb render_color= rgb_black);
 
-    /** Remove Wvl component at the specified index */
-    void remove(int i);
+    /** Remove wavelength at the specified index */
+    void remove_wavelength(int i);
 
     void clear();
 
@@ -86,13 +83,13 @@ public:
 private:
     void update();
 
-    std::vector< std::unique_ptr<Wvl> > wvls_;
+    std::vector< std::unique_ptr<Wavelength> > wvls_;
     int reference_index_;
     double higher_;
     double lower_;
     double max_weight_;
 
-    static int num_wvls_;
+    int num_wvls_;
 };
 
 

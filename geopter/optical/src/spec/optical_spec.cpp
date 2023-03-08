@@ -33,7 +33,7 @@ using namespace geopter;
 OpticalSpec::OpticalSpec(OpticalSystem* opt_sys) :
     parent_(opt_sys)
 {
-    spectral_region_ = std::make_unique<WvlSpec>();
+    spectral_region_ = std::make_unique<WavelengthSpec>();
     pupil_           = std::make_unique<PupilSpec>();
     field_of_view_   = std::make_unique<FieldSpec>();
 }
@@ -52,7 +52,7 @@ void OpticalSpec::create_minimum_spec()
     field_of_view_->add(0.0, 0.0, 1.0, rgb_black);
 
     spectral_region_->clear();
-    spectral_region_->add(SpectralLine::d, 1.0, rgb_black);
+    spectral_region_->add_wavelength(SpectralLine::d, 1.0, rgb_black);
 
     pupil_->set_value(PupilType::EPD);
     pupil_->set_value(10);
@@ -121,7 +121,7 @@ void OpticalSpec::update()
 
         Eigen::Vector2d aim_pt;
         Eigen::Vector3d obj_pt;
-        double ref_wvl = spectral_region_->reference_wvl();
+        double ref_wvl = spectral_region_->reference_wavelength();
         for(int fi = 0; fi < FieldSpec::number_of_fields(); fi++){
             Field* fld = field_of_view_->field(fi);
 

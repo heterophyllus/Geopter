@@ -23,8 +23,8 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-#ifndef WVL_H
-#define WVL_H
+#ifndef WAVELENGTH_H
+#define WAVELENGTH_H
 
 #include "spectral_line.h"
 #include "renderer/rgb.h"
@@ -32,14 +32,19 @@
 namespace geopter{
 
 /** Wavelength component class */
-class Wvl
+class Wavelength
 {
 public:
-    Wvl(double wl=SpectralLine::d, double wt=1.0, Rgb render_color=rgb_black) :
+    Wavelength(){
+        value_ = SpectralLine::d;
+        weight_ = 0.0;
+        render_color_ = rgb_black;
+    }
+
+    Wavelength(double wl=SpectralLine::d, double wt=1.0, Rgb render_color=rgb_black) :
         value_(wl),
         weight_(wt),
         render_color_(render_color){}
-
 
     /**
      * @brief Set wavelength value
@@ -58,7 +63,7 @@ public:
     void set_render_color(const Rgb& color) { render_color_ = color;}
 
     /** Returns render color */
-    Rgb render_color() const {return render_color_;}
+    const Rgb& render_color() const {return render_color_;}
 
 private:
     /** wavelength in nm */
@@ -76,4 +81,4 @@ private:
 
 } //namespace geopter
 
-#endif // WVL_H
+#endif

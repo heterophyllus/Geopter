@@ -36,7 +36,7 @@ bool MarginalHeightSolve::check(const OpticalSystem * /*opt_sys*/)
 
 void MarginalHeightSolve::apply(OpticalSystem* opt_sys)
 {
-    const double ref_wvl = opt_sys->optical_spec()->spectral_region()->reference_wvl();
+    const double ref_wvl = opt_sys->optical_spec()->spectral_region()->reference_wavelength();
     const int surface_index = gap_index_;
 
     if(fabs(pupil_zone_) < std::numeric_limits<double>::epsilon()){ // paraxial

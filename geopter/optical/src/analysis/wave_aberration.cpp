@@ -134,7 +134,7 @@ double WaveAberration::wave_abr_full_calc(const std::shared_ptr<Ray>& ray, const
     double ray_op = ray->optical_path_length();
     double chief_ray_op = chief_ray->optical_path_length();
 
-    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+    double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wavelength();
     double n_img = opt_sys_->optical_assembly()->image_space_gap()->material()->rindex(ref_wvl_val);
     double n_obj = opt_sys_->optical_assembly()->gap(0)->material()->rindex(ref_wvl_val);
 

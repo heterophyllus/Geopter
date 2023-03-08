@@ -49,7 +49,7 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
      */
 
     const int num_flds = FieldSpec::number_of_fields();
-    const int num_wvls = WvlSpec::number_of_wavelengths();
+    const int num_wvls = opt_sys->optical_spec()->spectral_region()->number_of_wavelengths();
 
     std::vector<double> freqs;
     {
@@ -74,12 +74,12 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
 
     std::vector<SequentialPath> seq_paths;
     for (int wi = 0; wi < num_wvls; wi++){
-        double wvl = opt_sys->optical_spec()->spectral_region()->wvl(wi)->value();
+        double wvl = opt_sys->optical_spec()->spectral_region()->wavelength(wi)->value();
         seq_paths.emplace_back(tracer->sequential_path(wvl));
     }
 
     const int ref_wvl_idx = opt_sys->optical_spec()->spectral_region()->reference_index();
-    const double ref_wvl_val = opt_sys->optical_spec()->spectral_region()->reference_wvl();
+    const double ref_wvl_val = opt_sys->optical_spec()->spectral_region()->reference_wavelength();
     const SequentialPath ref_seq_path = seq_paths[ref_wvl_idx];
 
 
@@ -109,7 +109,7 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
         const double step = 2.0/static_cast<double>(nrd-1);
 
         for(int wi = 0; wi < num_wvls; wi++){
-            double wvl = opt_sys->optical_spec()->spectral_region()->wvl(wi)->value();
+            double wvl = opt_sys->optical_spec()->spectral_region()->wavelength(wi)->value();
 
             for (int pi = 0; pi < nrd; pi++){
                 for(int pj = 0; pj < nrd; pj++){

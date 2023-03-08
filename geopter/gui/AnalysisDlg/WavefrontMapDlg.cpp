@@ -28,9 +28,9 @@ WavefrontMapDlg::WavefrontMapDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
 
     //wvl combo
     QStringList wvlComboItems;
-    int wvlCount = WvlSpec::number_of_wavelengths();
+    int wvlCount = m_opticalSystem->optical_spec()->spectral_region()->number_of_wavelengths();
     for(int wi = 0; wi < wvlCount; wi++){
-        double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+        double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wi)->value();
         wvlComboItems.append( "W" + QString::number(wi) + ": " +  QString::number(wvl));
     }
     ui->wavelengthCombo->clear();
@@ -56,7 +56,7 @@ void WavefrontMapDlg::updateParentDockContent()
 
     WavefrontMap *wf = new WavefrontMap(m_opticalSystem);
     Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fieldIndex);
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wvlIndex)->value();
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wvlIndex)->value();
     auto data_grid = wf->create(fld, wvl, nrd);
 
     m_renderer->draw_hist2d(data_grid->value_data(), 0, 1);

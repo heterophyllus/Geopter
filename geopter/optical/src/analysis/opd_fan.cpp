@@ -40,19 +40,19 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
     auto plot_data = std::make_shared<PlotData>();
     plot_data->set_title("OPD");
 
-    const double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+    const double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wavelength();
     const double nm_to_mm = 1.0e-6;
     const double convert_to_waves = 1.0/(nm_to_mm*ref_wvl_val);
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
 
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
+    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->number_of_wavelengths();
     const int num_srfs = opt_sys_->optical_assembly()->surface_count();
 
     for(int wi = 0; wi < num_wvls; wi++)
     {
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
-        Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
+        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
+        Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
 
         SequentialPath seq_path = tracer->sequential_path(wvl);
 

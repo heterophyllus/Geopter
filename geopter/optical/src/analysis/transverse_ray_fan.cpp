@@ -56,8 +56,8 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
     // trace zonal rays for all wavelengths
     for(int wi = 0; wi < num_wvl_; wi++)
     {
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
-        Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
+        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
+        Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
 
         SequentialPath seq_path = tracer->sequential_path(wvl);
 

@@ -47,7 +47,7 @@ FFT_PSFDlg::FFT_PSFDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
 
     // wavelength
     QStringList wvlComboItems;
-    int numWvl = m_opticalSystem->optical_spec()->spectral_region()->wvl_count();
+    int numWvl = m_opticalSystem->optical_spec()->spectral_region()->number_of_wavelengths();
     for(int wi = 0; wi < numWvl; wi++) {
         wvlComboItems << QString::number(wi);
     }
@@ -74,7 +74,7 @@ void FFT_PSFDlg::updateParentDockContent()
 
 
     Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fieldIndex);
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wvlIndex)->value();
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wvlIndex)->value();
 
     DiffractivePSF* psf = new DiffractivePSF(m_opticalSystem);
     /*

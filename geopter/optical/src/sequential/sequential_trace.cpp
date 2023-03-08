@@ -402,7 +402,7 @@ bool SequentialTrace::aim_chief_ray(Eigen::Vector2d& aim_pt, Eigen::Vector3d& ob
 bool SequentialTrace::search_ray_aiming_at_surface(RayPtr ray, Eigen::Vector2d& aim_pt, const Field *fld, int target_srf_idx, const Eigen::Vector2d &xy_target)
 {
     //const int fld_type = opt_sys_->optical_spec()->field_of_view()->field_type();
-    double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+    double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wavelength();
 
     double obj_dist = opt_sys_->optical_assembly()->gap(0)->thi();
     double enp_dist = opt_sys_->first_order_data()->enp_dist;
@@ -627,7 +627,7 @@ double SequentialTrace::compute_vignetting_factor_for_pupil(const Eigen::Vector2
     const int stop_index = opt_sys_->optical_assembly()->stop_index();
     const double stop_radius = opt_sys_->optical_assembly()->surface(stop_index)->max_aperture();
 
-    const double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wvl();
+    const double ref_wvl = opt_sys_->optical_spec()->spectral_region()->reference_wavelength();
     SequentialPath path = sequential_path(ref_wvl);
 
     Eigen::Vector2d vig_pupil = full_pupil;

@@ -43,9 +43,9 @@ SingleRayTraceDlg::SingleRayTraceDlg(OpticalSystem *sys, AnalysisViewDock *paren
     }
 
     //wvl combo
-    const int num_wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl_count();
+    const int num_wvl = m_opticalSystem->optical_spec()->spectral_region()->number_of_wavelengths();
     for(int i = 0; i < num_wvl; i++){
-        QString wvl_item = "W" + QString::number(i) + ": " + QString::number(m_opticalSystem->optical_spec()->spectral_region()->wvl(i)->value());
+        QString wvl_item = "W" + QString::number(i) + ": " + QString::number(m_opticalSystem->optical_spec()->spectral_region()->wavelength(i)->value());
         ui->wvlForPupilCombo->addItem(wvl_item);
         ui->wvlForObjectCombo->addItem(wvl_item);
     }
@@ -92,7 +92,7 @@ void SingleRayTraceDlg::doPupilRayTrace()
     int fi = ui->fieldCombo->currentIndex();
     Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
     int wi = ui->wvlForPupilCombo->currentIndex();
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wi)->value();
 
     //Field *fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
     Eigen::Vector2d pupil_crd({px, py});
@@ -136,7 +136,7 @@ void SingleRayTraceDlg::doObjectRayTrace()
 
     Eigen::Vector3d p0({x,y,z});
     Eigen::Vector3d dir0({L,M,N});
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wi)->value();
 
     SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
     SequentialPath seq_path = tracer->sequential_path(wvl);

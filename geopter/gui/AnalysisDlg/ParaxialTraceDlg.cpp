@@ -15,9 +15,9 @@ ParaxialTraceDlg::ParaxialTraceDlg(OpticalSystem* sys, AnalysisViewDock *parent)
     this->setWindowTitle("Paraxial Ray Trace Setting");
 
     //wvl combo
-    const int num_wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl_count();
+    const int num_wvl = m_opticalSystem->optical_spec()->spectral_region()->number_of_wavelengths();
     for(int i = 0; i < num_wvl; i++){
-        QString wvl_item = "W" + QString::number(i+1) + ": " + QString::number(m_opticalSystem->optical_spec()->spectral_region()->wvl(i)->value());
+        QString wvl_item = "W" + QString::number(i+1) + ": " + QString::number(m_opticalSystem->optical_spec()->spectral_region()->wavelength(i)->value());
         ui->comboWvl->addItem(wvl_item);
     }
 
@@ -34,7 +34,7 @@ ParaxialTraceDlg::~ParaxialTraceDlg()
 void ParaxialTraceDlg::updateParentDockContent()
 {
     int wi = ui->comboWvl->currentIndex();
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wvl(wi)->value();
+    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wi)->value();
 
     std::ostringstream oss;
 

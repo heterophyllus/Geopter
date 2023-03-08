@@ -15,11 +15,11 @@ SpotDiagram::SpotDiagram(OpticalSystem* opt_sys):
 {
     // weight list
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
-    const int num_wvls = WvlSpec::number_of_wavelengths();
+    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->number_of_wavelengths();
     wvl_weights_.reserve(num_wvls);
     for(int wi = 0; wi < num_wvls; wi++){
-        wvl_weights_.push_back( opt_sys_->optical_spec()->spectral_region()->wvl(wi)->weight() );
-        seq_paths_.push_back( tracer->sequential_path(opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value()) );
+        wvl_weights_.push_back( opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->weight() );
+        seq_paths_.push_back( tracer->sequential_path(opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value()) );
     }
     delete tracer;
 }
@@ -65,8 +65,8 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
 
     for(int wi = 0; wi < num_wvl_; wi++){
 
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
-        Rgb color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
+        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
+        Rgb color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
 
         auto graph = std::make_shared<Graph2d>();
         graph->set_name(std::to_string(wvl) + "nm");

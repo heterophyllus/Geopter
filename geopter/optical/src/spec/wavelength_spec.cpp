@@ -29,13 +29,12 @@
 #include <sstream>
 #include <cassert>
 
-#include "spec/wvl_spec.h"
+#include "spec/wavelength_spec.h"
 
 using namespace geopter;
 
-int WvlSpec::num_wvls_ = 0;
 
-WvlSpec::WvlSpec() :
+WavelengthSpec::WavelengthSpec() :
     reference_index_(0),
     higher_(0.0),
     lower_(0.0),
@@ -45,7 +44,7 @@ WvlSpec::WvlSpec() :
 }
 
 
-WvlSpec::~WvlSpec()
+WavelengthSpec::~WavelengthSpec()
 {
     if(!wvls_.empty()){
         for(auto &w : wvls_){
@@ -56,7 +55,7 @@ WvlSpec::~WvlSpec()
 }
 
 
-std::vector<double> WvlSpec::get_wavelength_list() const
+std::vector<double> WavelengthSpec::get_wavelength_list() const
 {
     const int num_wvls = wvls_.size();
     std::vector<double> wvl_list(num_wvls);
@@ -68,7 +67,7 @@ std::vector<double> WvlSpec::get_wavelength_list() const
     return wvl_list;
 }
 
-std::vector<double> WvlSpec::get_weight_list() const
+std::vector<double> WavelengthSpec::get_weight_list() const
 {
     const int num_wvls = wvls_.size();
     std::vector<double> wvl_list(num_wvls);
@@ -80,14 +79,14 @@ std::vector<double> WvlSpec::get_weight_list() const
     return wvl_list;
 }
 
-void WvlSpec::add(double wl, double wt, Rgb render_color)
+void WavelengthSpec::add_wavelength(double wl, double wt, Rgb render_color)
 {
-    auto w = std::make_unique<Wvl>(wl, wt, render_color);
+    auto w = std::make_unique<Wavelength>(wl, wt, render_color);
     wvls_.push_back(std::move(w));
     update();
 }
 
-void WvlSpec::remove(int i)
+void WavelengthSpec::remove_wavelength(int i)
 {
     if(i >= (int)wvls_.size() || i < 0){
         return;
@@ -99,7 +98,7 @@ void WvlSpec::remove(int i)
     update();
 }
 
-void WvlSpec::clear()
+void WavelengthSpec::clear()
 {
     if(!wvls_.empty()){
         for(auto &w : wvls_){
@@ -116,7 +115,7 @@ void WvlSpec::clear()
     max_weight_ = 1.0;
 }
 
-void WvlSpec::update()
+void WavelengthSpec::update()
 {
     assert( !wvls_.empty());
 
@@ -137,14 +136,14 @@ void WvlSpec::update()
     }
 }
 
-void WvlSpec::print()
+void WavelengthSpec::print()
 {
     std::ostringstream oss;
     print(oss);
     std::cout << oss.str() << std::endl;
 }
 
-void WvlSpec::print(std::ostringstream &oss)
+void WavelengthSpec::print(std::ostringstream &oss)
 {
     const int idx_w = 4;
     const int val_w = 10;
@@ -159,16 +158,15 @@ void WvlSpec::print(std::ostringstream &oss)
     oss << std::endl;
 
     // list up data
-    int num_wvls = wvl_count();
-    for(int i = 0; i < num_wvls; i++)
+    for(int i = 0; i < num_wvls_; i++)
     {
         if(i == reference_index_){
             oss << std::setw(idx_w) << std::right << std::to_string(i) + "*";
         }else{
             oss << std::setw(idx_w) << std::right << i;
         }
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << wvl(i)->value();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << wvl(i)->weight();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << wavelength(i)->value();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << wavelength(i)->weight();
         oss << std::endl;
     }
     oss << std::endl;

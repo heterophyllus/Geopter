@@ -43,7 +43,7 @@ Astigmatism::Astigmatism(OpticalSystem* opt_sys):
 std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
 {
     const int num_srfs = opt_sys_->optical_assembly()->surface_count();
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->wvl_count();
+    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->number_of_wavelengths();
     const double maxfld = opt_sys_->optical_spec()->field_of_view()->max_field();
 
     auto plot_data = std::make_shared<PlotData>();
@@ -96,8 +96,8 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
 
     for(int wi = 0; wi < num_wvls; wi++){
 
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->value();
-        Rgb color = opt_sys_->optical_spec()->spectral_region()->wvl(wi)->render_color();
+        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
+        Rgb color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
 
         SequentialPath seq_path = tracer->sequential_path(wvl);
 
