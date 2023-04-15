@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -41,13 +41,13 @@ public:
     BuchdahlGlass(double nd, double vd);
     ~BuchdahlGlass();
 
-    double rindex(double wv_nm) const override;
+    double RefractiveIndex(double wv_nm) const override;
 
-    std::string glass_code() const;
+    std::string GlassCode() const;
 
-    double abbe_d() const override;
+    double Abbe_d() const override;
 
-    std::string name() const override;
+    std::string Name() const override;
 
 private:
     void compute_coefs();

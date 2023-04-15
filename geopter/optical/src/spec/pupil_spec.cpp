@@ -23,12 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   pupil_spec.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
 #include <iostream>
 #include <iomanip>
@@ -58,7 +52,7 @@ PupilSpec::~PupilSpec()
 }
 
 
-void PupilSpec::print(std::ostringstream &oss)
+void PupilSpec::Print(std::ostringstream &oss)
 {
     constexpr int label_w = 15;
 

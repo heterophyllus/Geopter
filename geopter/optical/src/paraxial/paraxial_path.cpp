@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   paraxial_path.cpp
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #include "paraxial/paraxial_path.h"
 
@@ -37,53 +30,53 @@ using namespace geopter;
 
 ParaxialPath::ParaxialPath()
 {
-    if(!par_path_comps_.empty()){
-        par_path_comps_.clear();
+    if(!prx_path_comps_.empty()){
+        prx_path_comps_.clear();
     }
 }
 
 ParaxialPath::~ParaxialPath()
 {
-    par_path_comps_.clear();
+    prx_path_comps_.clear();
 }
 
-void ParaxialPath::prepend(ParaxialPathComponent par_path_comp)
+void ParaxialPath::Prepend(ParaxialPathComponent par_path_comp)
 {
-    par_path_comps_.insert(par_path_comps_.begin(), par_path_comp);
+    prx_path_comps_.insert(prx_path_comps_.begin(), par_path_comp);
 }
 
-void ParaxialPath::append(double c, double t, double n)
+void ParaxialPath::Append(double c, double t, double n)
 {
-    par_path_comps_.push_back(ParaxialPathComponent(c,t,n));
+    prx_path_comps_.push_back(ParaxialPathComponent(c,t,n));
 }
 
-void ParaxialPath::append(ParaxialPathComponent par_path_comp)
+void ParaxialPath::Append(ParaxialPathComponent par_path_comp)
 {
-    par_path_comps_.push_back(par_path_comp);
+    prx_path_comps_.push_back(par_path_comp);
 }
 
-int ParaxialPath::size() const
+int ParaxialPath::Size() const
 {
-    return par_path_comps_.size();
+    return prx_path_comps_.size();
 }
 
-ParaxialPathComponent ParaxialPath::at(int i) const
+ParaxialPathComponent ParaxialPath::At(int i) const
 {
-    return par_path_comps_[i];
+    return prx_path_comps_[i];
 }
 
-ParaxialPathComponent ParaxialPath::front() const
+ParaxialPathComponent ParaxialPath::Front() const
 {
-    return par_path_comps_.front();
+    return prx_path_comps_.front();
 }
 
-ParaxialPathComponent ParaxialPath::back() const
+ParaxialPathComponent ParaxialPath::Back() const
 {
-    return par_path_comps_.back();
+    return prx_path_comps_.back();
 }
 
-void ParaxialPath::clear()
+void ParaxialPath::Clear()
 {
-    par_path_comps_.clear();
+    prx_path_comps_.clear();
 }
 

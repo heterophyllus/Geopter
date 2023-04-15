@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -39,17 +39,17 @@ public:
      * @brief Set room temperature
      * @param t temperature in Celcius
      */
-    static void set_temperature(double t);
+    static void SetTemperature(double t);
 
     /**
      * @brief Set air pressure
      * @param p air pressure in Pascal
      */
-    static void set_air_pressure(double p);
+    static void SetAirPressure(double p);
 
-    static double temperature();
+    static double Temperature();
 
-    static double air_pressure();
+    static double AirPressure();
 
 private:
     static double temperature_;

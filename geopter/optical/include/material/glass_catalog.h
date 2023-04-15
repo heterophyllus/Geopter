@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -22,13 +22,6 @@
 **          Contact: heterophyllus.work@gmail.com                          
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
-
-//============================================================================
-/// \file   glass_catalog.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
 
 #ifndef GLASSCATALOG_H
 #define GLASSCATALOG_H
@@ -52,24 +45,24 @@ public:
      * @param agf_path AGF file path
      * @return success
      */
-    bool load_agf(std::string agf_path);
+    bool LoadAgf(std::string agf_path);
 
     /** Get glass object pointer.  If not found, return nullptr */
-    std::shared_ptr<Glass> glass(std::string product_name);
+    std::shared_ptr<Glass> GetGlass(std::string product_name);
 
     /** Return glass ptr at the index */
-    std::shared_ptr<Glass> glass(int i);
+    std::shared_ptr<Glass> GetGlass(int i);
 
     /** Get supplier's name of the catalog */
-    std::string name() const;
+    std::string Name() const;
 
     /** Return number of glasses */
-    int glass_count() const;
+    int NumberOfGlasses() const;
 
-    void clear();
+    void Clear();
 
-    void print();
-    void print(std::ostringstream& oss);
+    void Print();
+    void Print(std::ostringstream& oss);
 
 private:
     /** supplier name */

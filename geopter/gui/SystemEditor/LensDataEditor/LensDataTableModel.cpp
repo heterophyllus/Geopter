@@ -27,7 +27,7 @@ int LensDataTableModel::columnCount(const QModelIndex & /*parent*/) const
 
 int LensDataTableModel::rowCount(const QModelIndex & /*parent*/) const
 {
-    return m_opt_sys->optical_assembly()->surface_count();
+    return m_opt_sys->GetOpticalAssembly()->NumberOfSurfaces();
 }
 
 Qt::ItemFlags LensDataTableModel::flags(const QModelIndex &index) const
@@ -37,11 +37,11 @@ Qt::ItemFlags LensDataTableModel::flags(const QModelIndex &index) const
     // uneditable
     int i = index.row();
     int j = index.column();
-    if(m_opt_sys->optical_assembly()->gap(i)->has_solve() && j == LensDataColumn::Thickness){
+    if(m_opt_sys->GetOpticalAssembly()->GetGap(i)->HasSolve() && j == LensDataColumn::Thickness){
         return QAbstractItemModel::flags(index);
     }
 
-    if(m_opt_sys->optical_assembly()->surface(i)->has_solve() && j == LensDataColumn::Radius) {
+    if(m_opt_sys->GetOpticalAssembly()->GetSurface(i)->HasSolve() && j == LensDataColumn::Radius) {
         return QAbstractItemModel::flags(index);
     }
 
@@ -56,7 +56,7 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
 {
     if(!index.isValid())  return QVariant();
 
-    if(index.row() >= m_opt_sys->optical_assembly()->surface_count()){
+    if( index.row() >= m_opt_sys->GetOpticalAssembly()->NumberOfSurfaces() ){
         qDebug() << "Out of surface range";
         return QVariant();
     }
@@ -67,9 +67,9 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
     if(role == Qt::DisplayRole || role == Qt::EditRole){
 
         if( LensDataColumn::Label == j){
-            return QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->label());
+            return QString().fromStdString( m_opt_sys->GetOpticalAssembly()->GetSurface(i)->Label());
         }else if (LensDataColumn::SurfaceType == j){
-            QString surface_type = QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->profile_name());
+            QString surface_type = QString().fromStdString(m_opt_sys->GetOpticalAssembly()->GetSurface(i)->ProfileName());
             if(surface_type == "SPH"){
                 return tr("Standard");
             }else if(surface_type == "ASP"){
@@ -80,24 +80,24 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
                 return tr("Unknown");
             }
         }else if (LensDataColumn::Radius == j){
-            return m_opt_sys->optical_assembly()->surface(i)->radius();
+            return m_opt_sys->GetOpticalAssembly()->GetSurface(i)->Radius();
         }else if (LensDataColumn::Thickness == j){
-            return m_opt_sys->optical_assembly()->gap(i)->thi();
+            return m_opt_sys->GetOpticalAssembly()->GetGap(i)->Thickness();
         }else if( LensDataColumn::Material == j){
-            return QString().fromStdString(m_opt_sys->optical_assembly()->gap(i)->material()->name());
+            return QString().fromStdString(m_opt_sys->GetOpticalAssembly()->GetGap(i)->GetMaterial()->Name());
         }else if(LensDataColumn::Mode == j){
-            return QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->interact_mode());
+            return QString().fromStdString(m_opt_sys->GetOpticalAssembly()->GetSurface(i)->InteractMode());
         }else if (LensDataColumn::SemiDiameter == j){
-            return m_opt_sys->optical_assembly()->surface(i)->semi_diameter();
+            return m_opt_sys->GetOpticalAssembly()->GetSurface(i)->SemiDiameter();
         }else if (LensDataColumn::Aperture == j){
-            QString aperture_shape = QString().fromStdString(m_opt_sys->optical_assembly()->surface(i)->aperture_shape());
+            QString aperture_shape = QString().fromStdString(m_opt_sys->GetOpticalAssembly()->GetSurface(i)->ApertureShape());
             if(aperture_shape == "None"){
                 return tr("");
             }else{
                 return aperture_shape;
             }
         }else if(LensDataColumn::ThicknessSolve == j){
-            if(m_opt_sys->optical_assembly()->gap(i)->has_solve()){
+            if(m_opt_sys->GetOpticalAssembly()->GetGap(i)->HasSolve()){
                 return tr("S");
             }
         }else{
@@ -107,11 +107,11 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
         QColor gray = QColor(200,200,200);
 
         // image
-        if(i == m_opt_sys->optical_assembly()->surface_count()-1){
+        if( i == m_opt_sys->GetOpticalAssembly()->NumberOfSurfaces() - 1 ){
             return gray;
         }
         // solve
-        if(m_opt_sys->optical_assembly()->gap(i)->has_solve() && LensDataColumn::Thickness == j){
+        if(m_opt_sys->GetOpticalAssembly()->GetGap(i)->HasSolve() && LensDataColumn::Thickness == j){
             return gray;
         }
 
@@ -129,16 +129,16 @@ bool LensDataTableModel::setData(const QModelIndex &index, const QVariant &value
         const int i = index.row();
         const int j = index.column();
         if(LensDataColumn::Label == j){
-            m_opt_sys->optical_assembly()->surface(i)->set_label(value.toString().toStdString());
+            m_opt_sys->GetOpticalAssembly()->GetSurface(i)->SetLabel(value.toString().toStdString());
         }else if(LensDataColumn::Radius == j){
-            m_opt_sys->optical_assembly()->surface(i)->set_radius(value.toDouble());
+            m_opt_sys->GetOpticalAssembly()->GetSurface(i)->SetRadius(value.toDouble());
         }else if(LensDataColumn::Thickness == j){
-            if( ! m_opt_sys->optical_assembly()->gap(i)->has_solve()){
-                m_opt_sys->optical_assembly()->gap(i)->set_thi(value.toDouble());
+            if( ! m_opt_sys->GetOpticalAssembly()->GetGap(i)->HasSolve()){
+                m_opt_sys->GetOpticalAssembly()->GetGap(i)->SetThickness(value.toDouble());
             }
         }else if(LensDataColumn::Material == j){
-            auto m = MaterialLibrary::find(value.toString().toStdString());
-            m_opt_sys->optical_assembly()->gap(i)->set_material(m);
+            auto m = MaterialLibrary::Find(value.toString().toStdString());
+            m_opt_sys->GetOpticalAssembly()->GetGap(i)->SetMaterial(m);
         }else if( LensDataColumn::Mode == j){
 
         }else if(LensDataColumn::SemiDiameter == j){
@@ -149,7 +149,7 @@ bool LensDataTableModel::setData(const QModelIndex &index, const QVariant &value
 
         }
 
-        m_opt_sys->update_model();
+        m_opt_sys->UpdateModel();
 
         emit dataChanged(index, index);
         return true;
@@ -186,7 +186,7 @@ QVariant LensDataTableModel::headerData(int section, Qt::Orientation orientation
     } else { // Vertical
         if(section == 0){
             return tr("OBJ");
-        }else if(section == m_opt_sys->optical_assembly()->stop_index()){
+        }else if(section == m_opt_sys->GetOpticalAssembly()->StopIndex()){
             return tr("STO");
         }else if(section == this->rowCount()-1){
             return tr("IMG");
@@ -200,9 +200,9 @@ bool LensDataTableModel::insertRows(int row, int count, const QModelIndex & /*pa
 {
     beginInsertRows(QModelIndex(), row, row+count-1);
     for(auto i = 0; i < count; i++){
-        m_opt_sys->optical_assembly()->insert(row);
+        m_opt_sys->GetOpticalAssembly()->Insert(row);
     }
-    m_opt_sys->update_model();
+    m_opt_sys->UpdateModel();
     endInsertRows();
 
     return true;
@@ -212,9 +212,9 @@ bool LensDataTableModel::removeRows(int row, int count, const QModelIndex & /*pa
 {
     beginRemoveRows(QModelIndex(), row, row + count - 1);
     for (auto i = 0; i < count; ++i){
-        m_opt_sys->optical_assembly()->remove(row);
+        m_opt_sys->GetOpticalAssembly()->Remove(row);
     }
-    m_opt_sys->update_model();
+    m_opt_sys->UpdateModel();
     endRemoveRows();
     return true;
 }
@@ -222,7 +222,7 @@ bool LensDataTableModel::removeRows(int row, int count, const QModelIndex & /*pa
 
 void LensDataTableModel::setStop(int i)
 {
-    m_opt_sys->optical_assembly()->set_stop(i);
-    m_opt_sys->update_model();
+    m_opt_sys->GetOpticalAssembly()->SetStop(i);
+    m_opt_sys->UpdateModel();
     emit headerDataChanged(Qt::Vertical, 0, rowCount()-1);
 }

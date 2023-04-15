@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -41,15 +41,15 @@ public:
     ~SequentialTrace();
 
     /** Base function for ray tracing. Trace a ray throughout the given sequantial path */
-    TraceError trace_ray_throughout_path(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
+    TraceError TraceRayThroughoutPath(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector3d& pt0, const Eigen::Vector3d& dir0);
 
     /** Trace a single ray at the given pupil coordinate */
-    TraceError trace_pupil_ray(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
+    TraceError TracePupilRay(RayPtr ray, const SequentialPath& seq_path, const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
 
-    RayPtr create_pupil_ray(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
+    RayPtr CreatePupilRay(const Eigen::Vector2d& pupil_crd, const Field* fld, double wvl);
 
     /** Trace reference rays(chief, meridional upper/lower, sagittal upper/lower */
-    bool trace_reference_rays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
+    bool TraceReferenceRays(std::vector<std::shared_ptr<Ray>>& ref_rays, const Field* fld, double wvl);
 
     /**
      * @brief Trace chief ray using Coddington equation
@@ -58,37 +58,37 @@ public:
      * @param path sequential path
      * @return true if no error
      */
-    bool trace_coddington(Eigen::Vector2d& s_t, const std::shared_ptr<Ray> ray, const SequentialPath& path);
+    bool TraceCoddington(Eigen::Vector2d& s_t, const std::shared_ptr<Ray> ray, const SequentialPath& path);
 
-    bool search_ray_aiming_at_surface(RayPtr ray, Eigen::Vector2d& aim_pt, const Field* fld, int target_srf_idx, const Eigen::Vector2d& xy_target);
+    bool SearchRayAimingAtSurface(RayPtr ray, Eigen::Vector2d& aim_pt, const Field* fld, int target_srf_idx, const Eigen::Vector2d& xy_target);
 
-    bool aim_chief_ray(Eigen::Vector2d& aim_pt, Eigen::Vector3d& obj_pt, const Field* fld, double wvl);
+    bool AimChiefRay(Eigen::Vector2d& aim_pt, Eigen::Vector3d& obj_pt, const Field* fld, double wvl);
 
     /**  Refract incoming direction, d_in, about normal */
-    bool bend(Eigen::Vector3d& d_out, const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out);
+    bool Bend(Eigen::Vector3d& d_out, const Eigen::Vector3d& d_in, const Eigen::Vector3d& normal, double n_in, double n_out);
 
     /** Get object coordinate for the given field */
-    Eigen::Vector3d get_default_object_pt(const Field* fld);
+    Eigen::Vector3d GetDefaultObjectPt(const Field* fld);
 
     /** Get sequential path between start and end */
-    SequentialPath sequential_path(int start, int end, double wvl);
+    SequentialPath CreateSequentialPath(int start, int end, double wvl);
 
     /** Get overall sequential path object from object to image */
-    SequentialPath sequential_path(double wvl);
+    SequentialPath CreateSequentialPath(double wvl);
 
 
-    double compute_vignetting_factor_for_pupil(const Eigen::Vector2d& full_pupil, const Field& fld);
+    double ComputeVignettingFactorForPupil(const Eigen::Vector2d& full_pupil, const Field& fld);
 
-    std::vector<double> compute_vignetting_factors(const Field& fld);
+    std::vector<double> ComputeVignettingFactors(const Field& fld);
 
-    inline void set_aperture_check(bool state);
-    inline bool aperture_check_state() const;
+    void SetApertureCheck(bool state) {do_aperture_check_ = state;}
+    bool ApertureCheckState() const { return do_aperture_check_;}
 
-    inline void set_apply_vig(bool state);
-    inline bool apply_vig_status() const;
+    void SetApplyVig(bool state) { do_apply_vig_ = state;}
+    bool ApplyVigStatus() const { return do_apply_vig_;}
 
 private:
-    void pupil_coord_to_obj(Eigen::Vector3d& pt0, Eigen::Vector3d& dir0, const Eigen::Vector2d& pupil_crd, const Field* fld);
+    void ConvertCoordinatePupilToObj(Eigen::Vector3d& pt0, Eigen::Vector3d& dir0, const Eigen::Vector2d& pupil_crd, const Field* fld);
     
     OpticalSystem *opt_sys_;
 
@@ -97,25 +97,6 @@ private:
 };
 
 
-void SequentialTrace::set_aperture_check(bool state)
-{
-    do_aperture_check_ = state;
-}
-
-bool SequentialTrace::aperture_check_state() const
-{
-    return do_aperture_check_;
-}
-
-void SequentialTrace::set_apply_vig(bool state)
-{
-    do_apply_vig_ = state;
-}
-
-bool SequentialTrace::apply_vig_status() const
-{
-    return do_apply_vig_;
-}
 
 
 }

@@ -39,25 +39,25 @@ void Layout2dDlg::onAccept()
 
 void Layout2dDlg::updateParentDockContent()
 {
-    m_renderer->clear();
-    m_renderer->set_mouse_interaction(true);
+    m_renderer->Clear();
+    m_renderer->SetMouseInteraction(true);
 
-    m_opticalSystem->update_model();
+    m_opticalSystem->UpdateModel();
 
     Layout *layout = new Layout(m_opticalSystem, m_renderer);
 
-    layout->draw_elements();
+    layout->DrawElements();
 
     if(ui->checkDrawRefRay->checkState()){
-        layout->draw_reference_rays();
+        layout->DrawReferenceRays();
     }
     if(ui->checkDrawFan->checkState()){
         int nrd = ui->editNumRays->text().toInt();
-        layout->draw_fan_rays(nrd);
+        layout->DrawFanRays(nrd);
     }
 
     m_parentDock->setCurrentTab(1);
-    layout->update();
+    layout->Update();
 
     delete layout;
 }

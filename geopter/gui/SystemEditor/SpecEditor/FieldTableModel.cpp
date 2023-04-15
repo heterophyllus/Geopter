@@ -142,22 +142,22 @@ void FieldTableModel::setData(const std::shared_ptr<OpticalSystem> opt_sys)
 {
     m_fields.clear();
 
-    const int num_flds = opt_sys->optical_spec()->field_of_view()->field_count();
+    const int num_flds = opt_sys->GetOpticalSpec()->GetFieldSpec()->NumberOfFields();
 
     beginInsertRows(QModelIndex(), 0, num_flds-1);
 
     for(int fi = 0; fi < num_flds; fi++){
-        Field* fld = opt_sys->optical_spec()->field_of_view()->field(fi);
+        Field* fld = opt_sys->GetOpticalSpec()->GetFieldSpec()->GetField(fi);
 
         FieldData fld_data;
-        fld_data.x = fld->x();
-        fld_data.y = fld->y();
-        fld_data.wt = fld->weight();
-        fld_data.vlx = fld->vlx();
-        fld_data.vly = fld->vly();
-        fld_data.vux = fld->vux();
-        fld_data.vuy = fld->vuy();
-        fld_data.color = rgbToQColor(fld->render_color());
+        fld_data.x = fld->X();
+        fld_data.y = fld->Y();
+        fld_data.wt = fld->Weight();
+        fld_data.vlx = fld->VLX();
+        fld_data.vly = fld->VLY();
+        fld_data.vux = fld->VUX();
+        fld_data.vuy = fld->VUY();
+        fld_data.color = rgbToQColor(fld->RenderColor());
 
         m_fields.append(fld_data);
     }
@@ -197,7 +197,7 @@ void FieldTableModel::addRow()
 
 void FieldTableModel::applyData(std::shared_ptr<OpticalSystem> opt_sys)
 {
-    opt_sys->optical_spec()->field_of_view()->clear();
+    opt_sys->GetOpticalSpec()->GetFieldSpec()->clear();
 
     for(int fi = 0; fi < m_fields.size(); fi++){
         double x = m_fields[fi].x;
@@ -209,7 +209,7 @@ void FieldTableModel::applyData(std::shared_ptr<OpticalSystem> opt_sys)
         double vuy = m_fields[fi].vuy;
         Rgb color = QColorToRgb(m_fields[fi].color);
 
-        opt_sys->optical_spec()->field_of_view()->add(x,y,wt,color,vuy, vly, vux, vlx);
+        opt_sys->GetOpticalSpec()->GetFieldSpec()->AddField(x,y,wt,color,vuy, vly, vux, vlx);
     }
 }
 

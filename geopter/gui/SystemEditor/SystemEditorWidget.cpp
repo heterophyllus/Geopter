@@ -49,7 +49,7 @@ void SystemEditorWidget::showSpecEditorDlg()
 
     if(dlg.exec() == QDialog::Accepted){
         dlg.applyData(m_opticalSystem);
-        m_opticalSystem->update_model();
+        m_opticalSystem->UpdateModel();
         m_lensDataView->update();
     }
 }

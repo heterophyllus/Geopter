@@ -25,9 +25,9 @@ class EdgeThicknessSolve : public Solve
 {
 public:
     EdgeThicknessSolve(int gap_index, double value, double height);
-    bool check(const OpticalSystem* opt_sys) override;
-    void apply(OpticalSystem* opt_sys) override;
-    void set_parameters(int index, double param1, double param2, double param3) override;
+    bool Check(const OpticalSystem* opt_sys) override;
+    void Apply(OpticalSystem* opt_sys) override;
+    void SetParameters(int index, double param1, double param2, double param3) override;
 
 private:
     int gap_index_;

@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 **
@@ -41,7 +41,7 @@ public:
     WavefrontMap(OpticalSystem *opt_sys);
 
     /** create by tracing multiple rays */
-    std::shared_ptr<DataGrid> create(const Field* fld, double wvl, int ndim);
+    std::shared_ptr<DataGrid> Create(const Field* fld, double wvl, int ndim);
 
 protected:
     int ndim_;

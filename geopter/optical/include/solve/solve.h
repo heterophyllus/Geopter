@@ -48,15 +48,15 @@ public:
     virtual ~Solve(){};
 
     /** Check parameters */
-    virtual bool check(const OpticalSystem* /*opt_sys*/){ return true; }
+    virtual bool Check(const OpticalSystem* /*opt_sys*/){ return true; }
 
     /** Apply solved value to the system */
-    virtual void apply(OpticalSystem* opt_sys) = 0;
+    virtual void Apply(OpticalSystem* opt_sys) = 0;
 
     /** Returns solve type as integer. If -1, no valid solve is set */
-    int solve_type() const {return solve_type_;}
+    int GetSolveType() const {return solve_type_;}
 
-    virtual void set_parameters(int index, double param1, double param2=0.0, double param3=0.0) = 0;
+    virtual void SetParameters(int index, double param1, double param2=0.0, double param3=0.0) = 0;
 
 protected:
     int solve_type_;

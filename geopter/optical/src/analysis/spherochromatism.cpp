@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 **
@@ -40,21 +40,24 @@ Spherochromatism::Spherochromatism(OpticalSystem* opt_sys) :
 
 std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
 {
-    const Field* fld0 = opt_sys_->optical_spec()->field_of_view()->field(0);
+    const Field* fld0 = opt_sys_->GetOpticalSpec()->GetFieldSpec()->GetField(0);
 
     // collect l_prime for on-axial data
     std::vector<double> l_primes;
 
-    double y0 = opt_sys_->first_order_data()->ref_y0;
-    double u0 = opt_sys_->first_order_data()->ref_u0;
+    double y0 = opt_sys_->GetFirstOrderData()->reference_y0;
+    double u0 = opt_sys_->GetFirstOrderData()->reference_u0;
 
     ParaxialTrace *prx_tracer = new ParaxialTrace(opt_sys_);
 
     for(int wi = 0; wi < num_wvl_; wi++){
         //std::shared_ptr<ParaxialRay> ax_ray = opt_sys_->paraxial_data()->axial_ray(wi);
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
-        std::shared_ptr<ParaxialRay> ax_ray = prx_tracer->trace_paraxial_ray_from_object(y0, u0, wvl);
-        double l_prime = ax_ray->back().l_prime();
+        double wvl = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
+        std::shared_ptr<ParaxialRay> ax_ray = prx_tracer->TraceParaxialRayFromObject(y0, u0, wvl);
+        double u_prime = ax_ray->Back().u_prime;
+        double y       = ax_ray->Back().y;
+        double l_prime = -y/u_prime;
+        //double l_prime = ax_ray->Back().l_prime();
         l_primes.push_back(l_prime);
     }
 
@@ -67,16 +70,16 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
     Eigen::Vector2d pupil;
 
     auto plotdata = std::make_shared<PlotData>();
-    plotdata->set_title("Longitudinal Spherical Aberration");
-    plotdata->set_x_axis_label("Spherical Aberration");
-    plotdata->set_y_axis_label("Pupil");
-    plotdata->set_xy_reverse(true);
+    plotdata->SetTitle("Longitudinal Spherical Aberration");
+    plotdata->SetXLabel("Spherical Aberration");
+    plotdata->SetYLabel("Pupil");
+    plotdata->SetXYReverse(true);
 
     for(int wi = 0; wi < num_wvl_; wi++){
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
-        Rgb color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
+        double wvl = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
+        Rgb color = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->RenderColor();
 
-        SequentialPath seq_path = tracer->sequential_path(wvl);
+        SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
 
         std::vector<double> py;
         std::vector<double> lsa;
@@ -89,18 +92,18 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
             pupil(0) = 0.0;
             pupil(1) = (double)ri/(double)(num_rays-1);
 
-            auto ray = std::make_shared<Ray>(seq_path.size());
+            auto ray = std::make_shared<Ray>(seq_path.Size());
 
-            if(TRACE_SUCCESS != tracer->trace_pupil_ray(ray, seq_path, pupil, fld0, wvl) ){
+            if(TRACE_SUCCESS != tracer->TracePupilRay(ray, seq_path, pupil, fld0, wvl) ){
                 std::cerr << "Failed to trace ray: " << "pupil= (" << pupil(0) << "," << pupil(1) << ")" << std::endl;
                 continue;
             }
 
             py.push_back(pupil(1));
 
-            double y = ray->back()->y();
-            double M = ray->back()->M();
-            double N = ray->back()->N();
+            double y = ray->GetBack()->Y();
+            double M = ray->GetBack()->M();
+            double N = ray->GetBack()->N();
             lsa.push_back(-y*N/M);
         }
 
@@ -121,9 +124,9 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
         */
 
         auto graph = std::make_shared<Graph2d>(lsa, py, color);
-        graph->set_name("W" + std::to_string(wi));
+        graph->SetName("W" + std::to_string(wi));
 
-        plotdata->add_graph(graph);
+        plotdata->AddGraph(graph);
     }
 
     delete tracer;

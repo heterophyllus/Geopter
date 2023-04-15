@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -45,7 +45,7 @@ Ray::Ray(int n) :
     wvl_(0.0),
     reached_surface_index_(0)
 {
-    this->allocate(n);
+    this->Allocate(n);
 }
 
 Ray::~Ray()
@@ -56,29 +56,29 @@ Ray::~Ray()
     ray_at_srfs_.clear();
 }
 
-void Ray::allocate(int n)
+void Ray::Allocate(int n)
 {
-    this->clear();
+    this->Clear();
 
     ray_at_srfs_.reserve(n);
     RaySegment* before = nullptr;
     for(int i = 0; i < n; i++){
         ray_at_srfs_.emplace_back( std::make_unique<RaySegment>() );
-        ray_at_srfs_.back()->set_before(before);
+        ray_at_srfs_.back()->SetBefore(before);
         before = ray_at_srfs_.back().get();
     }
     size_ = ray_at_srfs_.size();
 }
 
-void Ray::prepend(std::unique_ptr<RaySegment> ray_at_srf)
+void Ray::Prepend(std::unique_ptr<RaySegment> ray_at_srf)
 {
     ray_at_srfs_.insert(ray_at_srfs_.begin(), std::move(ray_at_srf));
-    ray_at_srfs_.front()->set_before( ray_at_srfs_[1].get() );
+    ray_at_srfs_.front()->SetBefore( ray_at_srfs_[1].get() );
     size_ += 1;
 }
 
 
-void Ray::append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl)
+void Ray::Append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl)
 {
     RaySegment *before;
     if(ray_at_srfs_.empty()){
@@ -94,7 +94,7 @@ void Ray::append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, c
 }
 
 
-void Ray::clear()
+void Ray::Clear()
 {
     if( !ray_at_srfs_.empty() ){
         for(auto &r : ray_at_srfs_){
@@ -105,31 +105,22 @@ void Ray::clear()
     size_ = 0;
 }
 
-void Ray::set_reached_surface(int i)
+void Ray::SetReachedSurfaceIndex(int i)
 {
     reached_surface_index_ = i;
-
-    /*
-    if( i < (int)ray_at_srfs_.size()-1 ){
-        for(int j = i+1; j < (int)ray_at_srfs_.size(); j++){
-            ray_at_srfs_[j] = nullptr;
-        }
-    }
-    */
-
 }
 
-double Ray::optical_path_length() const
+double Ray::OpticalPathLength() const
 {
     double opl_tot = 0.0;
     int last = ray_at_srfs_.size()-1;
     for(int i = 2; i < last; i++){
-        opl_tot += ray_at_srfs_[i]->optical_path_length();
+        opl_tot += ray_at_srfs_[i]->OpticalPathLength();
     }
     return opl_tot;
 }
 
-void Ray::print(std::ostringstream& oss)
+void Ray::Print(std::ostringstream& oss)
 {
     const int idx_w = 4;
     const int val_w = 10;
@@ -177,18 +168,18 @@ void Ray::print(std::ostringstream& oss)
 
     for(int si = 0; si < num_srfs; si++)
     {
-        Eigen::Vector3d intercept = ray_at_srfs_[si]->intersect_pt();
+        Eigen::Vector3d intercept = ray_at_srfs_[si]->IntersectPt();
         oss << std::setw(idx_w) << std::right << si;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << intercept(0);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << intercept(1);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << intercept(2);
 
-        Eigen::Vector3d after_dir = ray_at_srfs_[si]->after_dir();
+        Eigen::Vector3d after_dir = ray_at_srfs_[si]->Direction();
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(0);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(1);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(2);
 
-        double aoi = ray_at_srfs_[si]->aoi();
+        double aoi = ray_at_srfs_[si]->AngleOfIncidence();
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << aoi;
 
         oss << std::endl;
@@ -197,9 +188,9 @@ void Ray::print(std::ostringstream& oss)
     oss << std::endl;
 }
 
-void Ray::print()
+void Ray::Print()
 {
     std::ostringstream oss;
-    this->print(oss);
+    this->Print(oss);
     std::cout << oss.str() << std::endl;
 }

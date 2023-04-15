@@ -19,19 +19,19 @@ DiffractivePSF::DiffractivePSF(OpticalSystem *opt_sys) :
 {
 
 }
-Eigen::MatrixXd &DiffractivePSF::to_matrix()
+Eigen::MatrixXd &DiffractivePSF::ConvertToMatrix()
 {
     return psf_;
 }
 
 
-std::shared_ptr<DataGrid> DiffractivePSF::create(const Field *fld, double wvl, int ndim)
+std::shared_ptr<DataGrid> DiffractivePSF::Create(const Field *fld, double wvl, int ndim)
 {
     WavefrontMap *wfm = new WavefrontMap(opt_sys_);
 
-    auto wf_grid = wfm->create(fld,wvl,ndim);
+    auto wf_grid = wfm->Create(fld,wvl,ndim);
 
-    Eigen::MatrixXd W = wf_grid->value_data();
+    Eigen::MatrixXd W = wf_grid->ValueData();
 
     for(int i = 0; i < ndim; i++){
         for(int j = 0; j < ndim; j++){
@@ -57,13 +57,13 @@ std::shared_ptr<DataGrid> DiffractivePSF::create(const Field *fld, double wvl, i
     psf /= psf.array().maxCoeff();
 
     auto psf_grid = std::make_shared<DataGrid>(2*ndim, 2*ndim, 1.0, 1.0);
-    psf_grid->set_value_matrix(psf);
+    psf_grid->SetValueMatrix(psf);
 
     return psf_grid;
 
 }
 
-void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L)
+void DiffractivePSF::CreateFromOpdTrace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L)
 {
     /*
      * David G. Voelz, "Computational fourier optics : a MATLAB tutorial", SPIE
@@ -71,23 +71,23 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
      */
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys);
-    tracer->set_aperture_check(true);
-    tracer->set_apply_vig(false);
+    tracer->SetApertureCheck(true);
+    tracer->SetApplyVig(false);
 
-    SequentialPath seq_path = tracer->sequential_path(wvl);
+    SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
 
-    auto chief_ray = std::make_shared<Ray>(seq_path.size());
-    if( TRACE_SUCCESS != tracer->trace_pupil_ray(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl) ){
+    auto chief_ray = std::make_shared<Ray>(seq_path.Size());
+    if( TRACE_SUCCESS != tracer->TracePupilRay(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl) ){
         std::cerr << "Trace error" << std::endl;
     }
 
     double du = L/static_cast<double>(M);
-    double img_ht = chief_ray->back()->height();
-    double img_dist = opt_sys->first_order_data()->img_dist;
-    double exp_dist = opt_sys->first_order_data()->exp_dist;
+    double img_ht = chief_ray->GetBack()->Height();
+    double img_dist = opt_sys->GetFirstOrderData()->image_distance;
+    double exp_dist = opt_sys->GetFirstOrderData()->exit_pupil_distance;
     double zxp = img_dist - exp_dist;
     double dxp = sqrt(zxp*zxp + img_ht*img_ht);
-    double wxp = opt_sys->first_order_data()->exp_radius;
+    double wxp = opt_sys->GetFirstOrderData()->exit_pupil_radius;
     double lambda = wvl*1.0e-6;
     double lz = lambda*dxp;
     double k = 2.0*M_PI/lambda;
@@ -106,7 +106,7 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
     W_ = Eigen::MatrixXd::Zero(M, M);
     Eigen::MatrixXcd A = Eigen::MatrixXcd::Zero(M, M);
     Eigen::Vector2d pupil;
-    RayPtr ray = std::make_shared<Ray>(seq_path.size());
+    RayPtr ray = std::make_shared<Ray>(seq_path.Size());
 
     for(int i = 0; i < M; i++){
         for(int j = 0; j < M; j++){
@@ -114,9 +114,9 @@ void DiffractivePSF::from_opd_trace(OpticalSystem* opt_sys, const Field* fld, do
             pupil(1) = fv[i] * lz/wxp;
 
             if(pupil.norm() <= 1.0){
-                tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                tracer->TracePupilRay(ray, seq_path, pupil, fld, wvl);
 
-                if(ray->status() == TRACE_SUCCESS){
+                if(ray->Status() == TRACE_SUCCESS){
                     double opd = wave_abr_full_calc(ray, chief_ray);
                     W_(i,j) = opd;
                     A(i,j) = 1.0;

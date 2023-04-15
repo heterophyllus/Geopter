@@ -33,8 +33,8 @@ FieldCurvatureDlg::~FieldCurvatureDlg()
 
 void FieldCurvatureDlg::updateParentDockContent()
 {
-    m_opticalSystem->update_model();
-    double maxField = m_opticalSystem->optical_spec()->field_of_view()->max_field();
+    m_opticalSystem->UpdateModel();
+    double maxField = m_opticalSystem->GetOpticalSpec()->GetFieldSpec()->MaxField();
 
     double scale = ui->scaleEdit->text().toDouble();
     int numRays = ui->numRaysEdit->text().toInt();
@@ -43,17 +43,17 @@ void FieldCurvatureDlg::updateParentDockContent()
     auto plotData = ast->plot(numRays);
 
     std::ostringstream oss;
-    plotData->print(oss);
+    plotData->Print(oss);
 
-    m_renderer->clear();
-    m_renderer->draw_plot(plotData);
-    m_renderer->set_x_axis_range(-scale, scale);
-    m_renderer->set_y_axis_range(0.0, maxField);
-    m_renderer->set_x_axis_label(plotData->x_axis_label());
-    m_renderer->set_y_axis_label(plotData->y_axis_label());
-    m_renderer->draw_x_axis();
-    m_renderer->draw_y_axis();
-    m_renderer->update();
+    m_renderer->Clear();
+    m_renderer->DrawPlot(plotData);
+    m_renderer->SetXaxisRange(-scale, scale);
+    m_renderer->SetYaxisRange(0.0, maxField);
+    m_renderer->SetXaxisLabel(plotData->XLabel());
+    m_renderer->SetYaxisLabel(plotData->YLabel());
+    m_renderer->DrawXaxis();
+    m_renderer->DrawYaxis();
+    m_renderer->Update();
 
     delete ast;
 

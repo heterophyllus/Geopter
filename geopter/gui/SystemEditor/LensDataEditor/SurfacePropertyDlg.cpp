@@ -59,8 +59,8 @@ void SurfacePropertyDlg::syncSystemWithUi()
     if( surface_type == 0 ){ // Sphere
         double r = ui->sphericalRadiusEdit->text().toDouble();
         double cv = 1.0/r;
-        //opt_sys_->optical_assembly()->surface(surface_index_)->set_profile(std::make_unique<Spherical>(cv));
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<Spherical>(cv);
+        //opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->set_profile(std::make_unique<Spherical>(cv));
+        opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->SetProfile<Spherical>(cv);
     }
     else if(surface_type == 1){ // Even Asphere
         double r = ui->evenAsphereDataTable->item(0,0)->text().toDouble();
@@ -72,7 +72,7 @@ void SurfacePropertyDlg::syncSystemWithUi()
             coefs[i] = ui->evenAsphereDataTable->item(i+2, 0)->text().toDouble();
         }
 
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<EvenPolynomial>(cv,k,coefs);
+        opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->SetProfile<EvenPolynomial>(cv,k,coefs);
     }
     else if(surface_type == 2){
         double r = ui->oddAsphereDataTable->item(0,0)->text().toDouble();
@@ -84,18 +84,18 @@ void SurfacePropertyDlg::syncSystemWithUi()
             coefs[i] = ui->oddAsphereDataTable->item(i+2, 0)->text().toDouble();
         }
 
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_profile<OddPolynomial>(cv,k,coefs);
+        opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->SetProfile<OddPolynomial>(cv,k,coefs);
     }
 
     //-----> aperture
     int aperture_type = ui->apertureTypeCombo->currentIndex();
 
     if(aperture_type == 0){ //None
-        opt_sys_->optical_assembly()->surface(surface_index_)->remove_clear_aperture();
+        opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->RemoveClearAperture();
     }
     else if(aperture_type == 1){ // Circular
         double ap_radius = ui->circularRadiusEdit->text().toDouble();
-        opt_sys_->optical_assembly()->surface(surface_index_)->set_clear_aperture<Circular>(ap_radius, ap_radius);
+        opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->SetClearAperture<Circular>(ap_radius, ap_radius);
     }
 
     // decenter
@@ -107,14 +107,14 @@ void SurfacePropertyDlg::syncUiWithSystem()
 {
     //==================================
     // surface profile
-    std::string surface_type_name = opt_sys_->optical_assembly()->surface(surface_index_)->profile_name();
+    std::string surface_type_name = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->ProfileName();
 
     if(surface_type_name == "SPH"){
         ui->surfaceProfileTypeCombo->setCurrentIndex(0);
         ui->surfaceProfileStack->setCurrentIndex(0);
         ui->surfaceProfileStack->show();
 
-        double r = opt_sys_->optical_assembly()->surface(surface_index_)->radius();
+        double r = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->Radius();
         ui->sphericalRadiusEdit->setText(QString::number(r));
         setValueToCell(ui->evenAsphereDataTable, 0, 0, r);
 
@@ -124,13 +124,13 @@ void SurfacePropertyDlg::syncUiWithSystem()
         ui->surfaceProfileStack->show();
         initializeEvenAsphereDataTable();
 
-        double r = opt_sys_->optical_assembly()->surface(surface_index_)->radius();
-        double k = opt_sys_->optical_assembly()->surface(surface_index_)->profile<EvenPolynomial>()->conic();
+        double r = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->Radius();
+        double k = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->Profile<EvenPolynomial>()->Conic();
         setValueToCell(ui->evenAsphereDataTable, 0, 0, r);
         setValueToCell(ui->evenAsphereDataTable, 1, 0, k);
 
         for(int i = 0; i < 10; i++){
-            double coef = opt_sys_->optical_assembly()->surface(surface_index_)->profile<EvenPolynomial>()->coef(i);
+            double coef = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->Profile<EvenPolynomial>()->GetNthTerm(i);
             setValueToCell(ui->evenAsphereDataTable, i+2, 0, coef);
         }
         ui->sphericalRadiusEdit->setText(QString::number(r));
@@ -141,13 +141,13 @@ void SurfacePropertyDlg::syncUiWithSystem()
         ui->surfaceProfileStack->show();
         initializeOddAsphereDataTable();
 
-        double r = opt_sys_->optical_assembly()->surface(surface_index_)->profile<OddPolynomial>()->radius();
-        double k = opt_sys_->optical_assembly()->surface(surface_index_)->profile<OddPolynomial>()->conic();
+        double r = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->Profile<OddPolynomial>()->Radius();
+        double k = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->Profile<OddPolynomial>()->Conic();
         setValueToCell(ui->oddAsphereDataTable, 0, 0, r);
         setValueToCell(ui->oddAsphereDataTable, 1, 0, k);
 
         for(int i = 0; i < 10; i++){
-            double coef = opt_sys_->optical_assembly()->surface(surface_index_)->profile<OddPolynomial>()->coef(i);
+            double coef = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->Profile<OddPolynomial>()->GetNthTerm(i);
             setValueToCell(ui->oddAsphereDataTable, i+2, 0, coef);
         }
         ui->sphericalRadiusEdit->setText(QString::number(r));
@@ -156,10 +156,10 @@ void SurfacePropertyDlg::syncUiWithSystem()
 
     //=====================================================
     // aperture
-    if(opt_sys_->optical_assembly()->surface(surface_index_)->is_aperture<Circular>()){ // Circular
+    if(opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->IsAperture<Circular>()){ // Circular
 
         ui->apertureTypeCombo->setCurrentIndex(1);
-        double ap_radius = opt_sys_->optical_assembly()->surface(surface_index_)->clear_aperture<Circular>()->max_dimension();
+        double ap_radius = opt_sys_->GetOpticalAssembly()->GetSurface(surface_index_)->GetClearAperture<Circular>()->MaxDimension();
         ui->circularRadiusEdit->setText(QString::number(ap_radius));
 
     }else{ // None

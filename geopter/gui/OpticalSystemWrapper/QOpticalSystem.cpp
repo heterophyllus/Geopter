@@ -33,37 +33,37 @@ QString QOpticalSystem::GetNote() const
 
 double QOpticalSystem::EntrancePupilDiameter() const
 {
-    return fod_->enp_radius*2.0;
+    return fod_->entrance_pupil_radius*2.0;
 }
 
 double QOpticalSystem::EntrancePupilDistance() const
 {
-    return fod_->enp_dist;
+    return fod_->entrance_pupil_distance;
 }
 
 double QOpticalSystem::ExitPupilDiameter() const
 {
-    return fod_->exp_radius*2.0;
+    return fod_->exit_pupil_radius*2.0;
 }
 
 double QOpticalSystem::ExitPupilDistance() const
 {
-    return fod_->exp_dist;
+    return fod_->exit_pupil_distance;
 }
 
 int QOpticalSystem::NumberOfFields() const
 {
-    return opt_spec_->field_of_view()->field_count();
+    return opt_spec_->GetFieldSpec()->NumberOfFields();
 }
 
 int QOpticalSystem::NumberOfWavelengths() const
 {
-    return opt_spec_->spectral_region()->number_of_wavelengths();
+    return opt_spec_->GetWavelengthSpec()->NumberOfWavelengths();
 }
 
 int QOpticalSystem::NumberOfSurfaces() const
 {
-    return opt_assembly_->surface_count();
+    return opt_assembly_->NumberOfSurfaces();
 }
 
 double QOpticalSystem::FocalLength(int start, int end) const
@@ -79,10 +79,10 @@ double QOpticalSystem::FocalLength(int start, int end) const
         return qQNaN();
     }
 
-    const int ref_wi = opt_spec_->spectral_region()->reference_index();
+    const int ref_wi = opt_spec_->GetWavelengthSpec()->ReferenceIndex();
 
     ParaxialTrace *tracer = new ParaxialTrace(this);
-    Eigen::Matrix2d M = tracer->system_matrix(start, end, ref_wi);
+    Eigen::Matrix2d M = tracer->SystemMatrix(start, end, ref_wi);
     delete tracer;
 
     double f = -1.0/M(1,0);
@@ -92,7 +92,7 @@ double QOpticalSystem::FocalLength(int start, int end) const
 double QOpticalSystem::FocalLength() const
 {
     const int s1 = 1;
-    const int s2 = opt_assembly_->image_index() - 1;
+    const int s2 = opt_assembly_->ImageIndex() - 1;
 
     return this->FocalLength(s1, s2);
 }
@@ -117,7 +117,7 @@ bool QOpticalSystem::CheckSurfaceIndex(int si) const
     if(si < 0){
         return false;
     }
-    else if(si <= opt_assembly_->image_index()){
+    else if(si <= opt_assembly_->ImageIndex()){
         return true;
     }
     else{

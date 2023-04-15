@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -44,26 +44,26 @@ GlassCatalog::GlassCatalog() :
 
 GlassCatalog::~GlassCatalog()
 {
-    clear();
+    Clear();
 }
 
-std::string GlassCatalog::name() const
+std::string GlassCatalog::Name() const
 {
     return name_;
 }
 
-int GlassCatalog::glass_count() const
+int GlassCatalog::NumberOfGlasses() const
 {
     return (int)glasses_.size();
 }
 
-std::shared_ptr<Glass> GlassCatalog::glass(std::string product_name)
+std::shared_ptr<Glass> GlassCatalog::GetGlass(std::string product_name)
 {
     if(!glasses_.empty())
     {
         for(auto &g : glasses_)
         {
-            if(g->product_name() == product_name){
+            if(g->ProductName() == product_name){
                 return g;
             }
         }
@@ -73,12 +73,12 @@ std::shared_ptr<Glass> GlassCatalog::glass(std::string product_name)
 }
 
 
-std::shared_ptr<Glass> GlassCatalog::glass(int i)
+std::shared_ptr<Glass> GlassCatalog::GetGlass(int i)
 {
     return glasses_[i];
 }
 
-void GlassCatalog::clear()
+void GlassCatalog::Clear()
 {
     if(glasses_.size() > 0){
         for(auto &g : glasses_){
@@ -88,7 +88,7 @@ void GlassCatalog::clear()
     }
 }
 
-bool GlassCatalog::load_agf(std::string agf_path)
+bool GlassCatalog::LoadAgf(std::string agf_path)
 {
     std::ifstream ifs(agf_path);
     std::string line_str;
@@ -97,7 +97,7 @@ bool GlassCatalog::load_agf(std::string agf_path)
         return false;
     }
 
-    clear();
+    Clear();
 
     // set catalog name
     std::filesystem::path p = agf_path;
@@ -108,25 +108,25 @@ bool GlassCatalog::load_agf(std::string agf_path)
 
     while(getline(ifs,line_str))
     {
-        if(StringTool::starts_with(line_str, "NM"))
+        if(StringTool::StartsWith(line_str, "NM"))
         {
             //NM <glass name> <dispersion formula #> <MIL#> <N(d)> <V(d)> <Exclude Sub> <status> <melt freq>
 
-            std::vector<std::string> line_parts = StringTool::split(line_str,' ');
+            std::vector<std::string> line_parts = StringTool::Split(line_str,' ');
             auto glass = std::make_shared<Glass>();
             glasses_.push_back(std::move(glass));
             std::string glassname = line_parts[1];
             std::transform(glassname.begin(), glassname.end(), glassname.begin(), ::toupper);
-            glasses_.back()->set_product_name(glassname);
-            glasses_.back()->set_supplier(supplier);
-            glasses_.back()->set_dispersion_formula(atoi(line_parts[2].c_str()));
+            glasses_.back()->SetProductName(glassname);
+            glasses_.back()->SetSupplier(supplier);
+            glasses_.back()->SetDispersionFormula(atoi(line_parts[2].c_str()));
 
         }
-        else if(StringTool::starts_with(line_str, "CD"))
+        else if(StringTool::StartsWith(line_str, "CD"))
         {
             // CD <dispersion coefficients 1 - 10>
 
-            std::vector<std::string> line_parts = StringTool::split(line_str,' ');
+            std::vector<std::string> line_parts = StringTool::Split(line_str,' ');
             for(int i = 1; i < (int)line_parts.size(); i++){
                 double val;
                 try {
@@ -134,12 +134,12 @@ bool GlassCatalog::load_agf(std::string agf_path)
                 }  catch (...) {
                     val = 0.0;
                 }
-                glasses_.back()->set_dispersion_coefs(i-1,val);
+                glasses_.back()->SetDispersionCoefs(i-1,val);
             }
         }
-        else if(StringTool::starts_with(line_str, "TD"))
+        else if(StringTool::StartsWith(line_str, "TD"))
         {
-            std::vector<std::string> line_parts = StringTool::split(line_str,' ');
+            std::vector<std::string> line_parts = StringTool::Split(line_str,' ');
             if(line_parts.size() >= 8){
                 double D0 = std::stod(line_parts[1]);
                 double D1 = std::stod(line_parts[2]);
@@ -148,7 +148,7 @@ bool GlassCatalog::load_agf(std::string agf_path)
                 double E1 = std::stod(line_parts[5]);
                 double Ltk = std::stod(line_parts[6]);
                 double Tref = std::stod(line_parts[7]);
-                glasses_.back()->set_thermal_data(D0, D1, D2, E0, E1, Ltk, Tref);
+                glasses_.back()->SetThermalData(D0, D1, D2, E0, E1, Ltk, Tref);
             }
         }
     }
@@ -160,15 +160,15 @@ bool GlassCatalog::load_agf(std::string agf_path)
     return true;
 }
 
-void GlassCatalog::print()
+void GlassCatalog::Print()
 {
     std::ostringstream oss;
-    print(oss);
+    Print(oss);
     std::cout << oss.str() << std::endl;
 }
 
 
-void GlassCatalog::print(std::ostringstream &oss)
+void GlassCatalog::Print(std::ostringstream &oss)
 {
     const int idx_w = 4;
     const int val_w = 10;
@@ -184,9 +184,9 @@ void GlassCatalog::print(std::ostringstream &oss)
     int num_glasses = glasses_.size();
     for(int i = 0; i < num_glasses; i++)
     {
-        std::string name = glasses_[i]->name();
-        double n = glasses_[i]->rindex(SpectralLine::d);
-        double vd = glasses_[i]->abbe_d();
+        std::string name = glasses_[i]->Name();
+        double n = glasses_[i]->RefractiveIndex(SpectralLine::d);
+        double vd = glasses_[i]->Abbe_d();
 
         oss << std::setw(idx_w) << std::right << i;
         oss << std::setw(val_w) << std::right << std::fixed << name;

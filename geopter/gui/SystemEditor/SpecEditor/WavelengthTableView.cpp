@@ -53,7 +53,7 @@ void WavelengthTableView::onDoubleClick(const QModelIndex& index)
         QStringList items;
         items.reserve(num_spectrals);
         for(int i = 0; i < num_spectrals; i++){
-            items.append(spectralNames[i] + ": " + QString::number(SpectralLine::wavelength(spectralNames[i].toStdString())) + "nm" );
+            items.append(spectralNames[i] + ": " + QString::number(SpectralLine::Wavelength(spectralNames[i].toStdString())) + "nm" );
         }
 
         bool ok;
@@ -62,7 +62,7 @@ void WavelengthTableView::onDoubleClick(const QModelIndex& index)
             double value = 0.0;
             if(items.contains(item)){
                 int select = items.indexOf(item);
-                value = SpectralLine::wavelength(spectralNames[select].toStdString());
+                value = SpectralLine::Wavelength(spectralNames[select].toStdString());
             }else{
                 value = item.toDouble();
             }

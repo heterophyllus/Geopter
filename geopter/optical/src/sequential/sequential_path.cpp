@@ -44,31 +44,31 @@ SequentialPath::~SequentialPath()
     seq_path_comps_.clear();
 }
 
-int SequentialPath::size() const
+int SequentialPath::Size() const
 {
     assert(array_size_ == (int)seq_path_comps_.size());
     return array_size_;
 }
 
-void SequentialPath::clear()
+void SequentialPath::Clear()
 {
     seq_path_comps_.clear();
     array_size_ = 0;
 }
 
-void SequentialPath::append(SequentialPathComponent seq_path_comp)
+void SequentialPath::Append(SequentialPathComponent seq_path_comp)
 {
     seq_path_comps_.push_back(seq_path_comp);
     array_size_ += 1;
 }
 
-void SequentialPath::append(Surface *s, double thi, double n)
+void SequentialPath::Append(Surface *s, double thi, double n)
 {
     seq_path_comps_.emplace_back( SequentialPathComponent(s, thi, n) );
     array_size_ += 1;
 }
 
-SequentialPathComponent SequentialPath::at(int i) const
+SequentialPathComponent SequentialPath::At(int i) const
 {
     assert(array_size_ == (int)seq_path_comps_.size());
 
@@ -79,12 +79,12 @@ SequentialPathComponent SequentialPath::at(int i) const
     }
 }
 
-double SequentialPath::wvl() const
+double SequentialPath::Wavelength() const
 {
     return wvl_;
 }
 
-void SequentialPath::set_wvl(double wvl)
+void SequentialPath::SetWavelength(double wvl)
 {
     wvl_ = wvl;
 }

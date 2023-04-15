@@ -41,49 +41,48 @@ public:
     RaySegment(const RaySegment& other);
     ~RaySegment();
 
-    void set_data(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
+    void SetData(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
 
-    void set_before(RaySegment* before) { before_ = before;}
+    void SetBefore(RaySegment* before) { before_ = before;}
 
-    void set_index(int i) { index_ = i; }
+    void SetIndex(int i) { index_ = i; }
 
-    void set_status(TraceError s) { status_ = s;}
+    void SetStatus(TraceError s) { status_ = s;}
 
-    const Eigen::Vector3d& intersect_pt() const { return intersect_pt_;}
+    const Eigen::Vector3d& IntersectPt() const { return intersect_pt_;}
 
-    double path_length() const { return path_length_;}
+    double PathLength() const { return path_length_;}
 
     /** optical path length from the previous surface to the current */
-    double optical_path_length() const { return opl_;}
+    double OpticalPathLength() const { return opl_;}
 
     /** Local coordinate at the intersection point */
-    double x() const { return intersect_pt_(0);}
-    double y() const { return intersect_pt_(1);}
-    double z() const { return intersect_pt_(2);}
+    double X() const { return intersect_pt_(0);}
+    double Y() const { return intersect_pt_(1);}
+    double Z() const { return intersect_pt_(2);}
 
-    const Eigen::Vector3d& after_dir() const { return after_dir_;}
+    /** Direction after surface interaction */
+    const Eigen::Vector3d& Direction() const { return after_dir_;}
     double L() const { return after_dir_(0);}
     double M() const { return after_dir_(1);}
     double N() const { return after_dir_(2);}
 
-    const Eigen::Vector3d& surface_normal() const { return normal_;}
-    double srl() const { return normal_(0);}
-    double srm() const { return normal_(1);}
-    double srn() const { return normal_(2);}
+    /** Get surface normal at the interaction point */
+    const Eigen::Vector3d& SurfaceNormal() const { return normal_;}
 
     /** Ray height from the axis */
-    double height() const { return sqrt( pow(intersect_pt_(0),2) + pow(intersect_pt_(1),2) );}
+    double Height() const { return sqrt( pow(intersect_pt_(0),2) + pow(intersect_pt_(1),2) );}
 
     /** Angle of incidence (signed) */
-    double aoi() const;
+    double AngleOfIncidence() const;
 
     /** Angle of refraction (signed) */
-    double aor() const;
+    double AngleOfRefraction() const;
 
-    TraceError status() const { return status_; }
+    TraceError Status() const { return status_; }
 
     /** Get surface index of this ray segment */
-    int index() const { return index_; }
+    int Index() const { return index_; }
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 

@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -42,7 +42,7 @@ public:
         cv_ = c;
     }
 
-    std::string name() const{
+    std::string Name() const{
         return "SPH";
     }
 
@@ -55,9 +55,9 @@ public:
         return df;
     }
 
-    double sag(double x, double y) const;
+    double Sag(double x, double y) const;
 
-    bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
+    bool Intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
 
     void print(std::ostringstream& oss){};
 

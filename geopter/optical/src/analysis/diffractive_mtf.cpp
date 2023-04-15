@@ -15,10 +15,10 @@ DiffractiveMTF::DiffractiveMTF(OpticalSystem *opt_sys) :
 
 std::shared_ptr<PlotData> DiffractiveMTF::plot(OpticalSystem* opt_sys, int M)
 {
-    const int num_flds = opt_sys->optical_spec()->field_of_view()->field_count();
-    const int num_wvls = opt_sys->optical_spec()->spectral_region()->number_of_wavelengths();
-    std::vector<double> wvl_list = opt_sys->optical_spec()->spectral_region()->get_wavelength_list();
-    std::vector<double> wt_list = opt_sys->optical_spec()->spectral_region()->get_weight_list();
+    const int num_flds = opt_sys->GetOpticalSpec()->GetFieldSpec()->NumberOfFields();
+    const int num_wvls = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
+    std::vector<double> wvl_list = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->GetWavelengthList();
+    std::vector<double> wt_list = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->GetWeightList();
 
     const double sum_wt = std::accumulate(wt_list.begin(), wt_list.end(), 0);
 
@@ -33,23 +33,23 @@ std::shared_ptr<PlotData> DiffractiveMTF::plot(OpticalSystem* opt_sys, int M)
     }
 
     auto plot_data = std::make_shared<PlotData>();
-    plot_data->set_plot_style(Renderer::PlotStyle::Curve);
-    plot_data->set_title("FFT MTF");
-    plot_data->set_x_axis_label("Spatial Frequency");
-    plot_data->set_y_axis_label("MTF");
+    plot_data->SetPlotStyle(Renderer::PlotStyle::Curve);
+    plot_data->SetTitle("FFT MTF");
+    plot_data->SetXLabel("Spatial Frequency");
+    plot_data->SetYLabel("MTF");
 
     DiffractivePSF *psf_analyzer = new DiffractivePSF(opt_sys);
 
 
     for(int fi = 0; fi < num_flds; fi++){
-        Field* fld = opt_sys->optical_spec()->field_of_view()->field(fi);
+        Field* fld = opt_sys->GetOpticalSpec()->GetFieldSpec()->GetField(fi);
         Eigen::MatrixXd psf = Eigen::MatrixXd::Zero(M,M);
 
         for(int wi = 0; wi < num_wvls; wi++) {
             double wvl = wvl_list[wi];
             double wt = wt_list[wi];
-            psf_analyzer->from_opd_trace(opt_sys, fld, wvl, M, L);
-            Eigen::MatrixXd psf_for_wvl = psf_analyzer->to_matrix();
+            psf_analyzer->CreateFromOpdTrace(opt_sys, fld, wvl, M, L);
+            Eigen::MatrixXd psf_for_wvl = psf_analyzer->ConvertToMatrix();
             psf += wt*psf_for_wvl;
         }
 
@@ -80,19 +80,19 @@ std::shared_ptr<PlotData> DiffractiveMTF::plot(OpticalSystem* opt_sys, int M)
         //std::vector<double> mtf_sag = MatrixTool::to_std_vector(mtf.row(0));
 
         auto graph_sag = std::make_shared<Graph2d>();
-        graph_sag->set_data(fu,MatrixTool::to_std_vector(mtf.row(0)));
-        graph_sag->set_line_style(Renderer::LineStyle::Solid);
-        graph_sag->set_render_color(fld->render_color());
-        graph_sag->set_name("MTF_S F" + std::to_string(fi));
+        graph_sag->SetData(fu,MatrixTool::to_std_vector(mtf.row(0)));
+        graph_sag->SetLineStyle(Renderer::LineStyle::Solid);
+        graph_sag->SetRenderColor(fld->RenderColor());
+        graph_sag->SetName("MTF_S F" + std::to_string(fi));
 
         auto graph_tan = std::make_shared<Graph2d>();
-        graph_tan->set_data(fu,MatrixTool::to_std_vector(mtf.col(0)));
-        graph_tan->set_line_style(Renderer::LineStyle::Dots);
-        graph_tan->set_render_color(fld->render_color());
-        graph_tan->set_name("MTF_T F" + std::to_string(fi));
+        graph_tan->SetData(fu,MatrixTool::to_std_vector(mtf.col(0)));
+        graph_tan->SetLineStyle(Renderer::LineStyle::Dots);
+        graph_tan->SetRenderColor(fld->RenderColor());
+        graph_tan->SetName("MTF_T F" + std::to_string(fi));
 
-        plot_data->add_graph(graph_sag);
-        plot_data->add_graph(graph_tan);
+        plot_data->AddGraph(graph_sag);
+        plot_data->AddGraph(graph_tan);
 
     }
 

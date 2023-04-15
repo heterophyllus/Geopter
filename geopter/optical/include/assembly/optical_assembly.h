@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -47,76 +47,74 @@ public:
     OpticalAssembly(OpticalSystem* opt_sys);
     ~OpticalAssembly();
 
-    void clear();
+    void Clear();
 
     template<typename ... A>
-    void setup_from_text(A... args);
+    void SetupFromText(A... args);
 
-    static int number_of_surfaces() { return num_surfs_;}
+    int NumberOfSurfaces() { return num_surfs_;}
 
     /** Get surface at the given index */
-    Surface* surface(int i) const { return interfaces_[i].get();}
+    Surface* GetSurface(int i) const { return interfaces_[i].get();}
 
     /** Get gap at the given index */
-    Gap* gap(int i) const {return gaps_[i].get();}
+    Gap* GetGap(int i) const {return gaps_[i].get();}
 
-    Surface* current_surface() const {return interfaces_[current_surface_index_].get();}
+    Surface* CurrentSurface() const {return interfaces_[current_surface_index_].get();}
 
-    Gap* current_gap() const {return gaps_[current_surface_index_].get();}
+    Gap* CurrentGap() const {return gaps_[current_surface_index_].get();}
 
-    /** Returns number of surfaces */
-    int surface_count() const { return interfaces_.size();}
 
     /** Returns number of gaps */
-    int gap_count() const { return gaps_.size();}
+    int NumberOfGaps() const { return gaps_.size();}
 
     /** Returns current index of the stop */
-    int stop_index() const { return stop_index_;}
+    int StopIndex() const { return stop_index_;}
 
     /** Returns surface at the stop index */
-    Surface* stop_surface() const { return interfaces_[stop_index_].get();}
+    Surface* StopSurface() const { return interfaces_[stop_index_].get();}
 
     /** Returns the index of the image surface */
-    int image_index() const {return interfaces_.size()-1;}
+    int ImageIndex() const {return interfaces_.size()-1;}
 
     /** Returns image surface pointer */
-    Surface* image_surface() const {return interfaces_[interfaces_.size()-1].get();}
+    Surface* ImageSurface() const {return interfaces_[interfaces_.size()-1].get();}
 
     /** Returns the last gap */
-    Gap* image_space_gap() const;
+    Gap* ImageSpaceGap() const;
 
     /** Set the given surface as stop */
-    void set_stop(int i) { stop_index_ = i;}
+    void SetStop(int i) { stop_index_ = i;}
 
-    void create_minimun_assembly();
+    void CreateMinimumAssembly();
 
     /** insert a dummy surface */
-    void insert(int i);
+    void Insert(int i);
 
-    void insert(int i, double r, double t, const std::string& mat_name="AIR");
+    void Insert(int i, double r, double t, const std::string& mat_name="AIR");
 
     /** Remove surface and gap from sequence model */
-    void remove(int i);
+    void Remove(int i);
 
     /** Compute and update global surface coordinates with reference to @param{ref_srf} */
-    void set_global_transforms(int ref_srf=1);
+    void SetGlobalTransforms(int ref_srf=1);
 
     /** Compute and update forward surface coordinates (r.T, t) for each interface */
-    void set_local_transforms();
+    void SetLocalTransforms();
 
-    void update_transforms();
+    void UpdateTransforms();
 
-    void update_solve();
+    void UpdateSolve();
 
-    void update_semi_diameters();
+    void UpdateSemiDiameters();
 
     /** Returns overall length from start to end */
-    double overall_length(int start, int end);
+    double OverallLength(int start, int end);
 
 
     /** List up model properties */
-    void print(std::ostringstream& oss) const;
-    void print() const;
+    void Print(std::ostringstream& oss) const;
+    void Print() const;
 
 private:
     OpticalSystem* parent_;
@@ -127,12 +125,13 @@ private:
     int stop_index_;
     int current_surface_index_;
 
-    static int num_surfs_;
+    int num_surfs_;
+    int num_gaps_;
 
 };
 
 template<typename... A>
-void OpticalAssembly::setup_from_text(A... args)
+void OpticalAssembly::SetupFromText(A... args)
 {
     /* lens data must be commma separated text
      *
@@ -145,15 +144,15 @@ void OpticalAssembly::setup_from_text(A... args)
      *
      */
 
-    this->clear();
+    this->Clear();
 
     // add obejct surface
-    this->insert(0);
+    this->Insert(0);
 
     int count = 0;
     for(auto s : std::initializer_list<std::string>{args...}) {
         count++;
-        std::vector<std::string> srtm = StringTool::split(s, ',');
+        std::vector<std::string> srtm = StringTool::Split(s, ',');
 
         int si = 0;
         double r = 0;
@@ -165,7 +164,7 @@ void OpticalAssembly::setup_from_text(A... args)
             t = std::stod(srtm[2]);
         }catch(...){
             std::cerr << "Failed to parse line (" << count << ")" << std::endl;
-            this->insert(this->image_index()+1, std::numeric_limits<double>::infinity(), 0.0, "AIR");
+            this->Insert(this->ImageIndex()+1, std::numeric_limits<double>::infinity(), 0.0, "AIR");
             continue;
         }
 
@@ -175,11 +174,11 @@ void OpticalAssembly::setup_from_text(A... args)
             mat_name = srtm[3];
         }
 
-        this->insert(si, r, t, mat_name);
+        this->Insert(si, r, t, mat_name);
     }
 
     // add image surface
-    this->insert(this->image_index() + 1, std::numeric_limits<double>::infinity(), 0.0, "AIR");
+    this->Insert(this->ImageIndex() + 1, std::numeric_limits<double>::infinity(), 0.0, "AIR");
 
 }
 

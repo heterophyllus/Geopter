@@ -34,7 +34,7 @@ void PrescriptionDlg::updateParentDockContent()
     bool doFirstOrderData = ui->firstOrderDataCheck->checkState();
     bool doSurfaceData = ui->surfaceDataCheck->checkState();
 
-    m_opticalSystem->update_model();
+    m_opticalSystem->UpdateModel();
 
     std::ostringstream oss;
 
@@ -42,44 +42,44 @@ void PrescriptionDlg::updateParentDockContent()
     oss << std::endl;
 
     if(doGeneralInfo) {
-        oss << "TITLE: " << m_opticalSystem->title() << std::endl;
+        oss << "TITLE: " << m_opticalSystem->Title() << std::endl;
         oss << std::endl;
         oss << "NOTE: " << std::endl;
-        oss << m_opticalSystem->note() << std::endl;
+        oss << m_opticalSystem->Note() << std::endl;
         oss << std::endl;
     }
 
     if(doSpec) {
-        m_opticalSystem->optical_spec()->print(oss);
+        m_opticalSystem->GetOpticalSpec()->print(oss);
         oss << std::endl;
     }
 
     if(doFirstOrderData) {
         oss << "FIRST ORDER DATA..." << std::endl;
-        m_opticalSystem->first_order_data()->print(oss);
+        m_opticalSystem->GetFirstOrderData()->Print(oss);
         oss << std::endl;
     }
 
     if(doLensData) {
         oss << "LENS DATA..." << std::endl;
-        m_opticalSystem->optical_assembly()->print(oss);
+        m_opticalSystem->GetOpticalAssembly()->Print(oss);
         oss << std::endl;
     }
 
     if(doSurfaceData){
         oss << "SURFACE DATA..." << std::endl;
-        const int num_srf = m_opticalSystem->optical_assembly()->surface_count();
+        const int num_srf = m_opticalSystem->GetOpticalAssembly()->NumberOfSurfaces();
         for(int si = 0; si < num_srf; si++){
-            Surface* srf = m_opticalSystem->optical_assembly()->surface(si);
-            if(srf->is_profile<Spherical>()){
+            Surface* srf = m_opticalSystem->GetOpticalAssembly()->GetSurface(si);
+            if(srf->IsProfile<Spherical>()){
                 continue;
-            }else if(srf->is_profile<EvenPolynomial>()){
+            }else if(srf->IsProfile<EvenPolynomial>()){
                 oss << "Surface " << si << std::endl;
-                srf->profile<EvenPolynomial>()->print(oss);
+                srf->Profile<EvenPolynomial>()->Print(oss);
                 oss << std::endl;
-            }else if(srf->is_profile<OddPolynomial>()){
+            }else if(srf->IsProfile<OddPolynomial>()){
                 oss << "Surface " << si << std::endl;
-                srf->profile<OddPolynomial>()->print(oss);
+                srf->Profile<OddPolynomial>()->Print(oss);
                 oss << std::endl;
             }else{
                 qDebug() << "Unknown Surface Profile";

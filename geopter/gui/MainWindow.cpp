@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // create optical system
     opt_sys_ = std::make_shared<QOpticalSystem>();
-    opt_sys_->initialize();
+    opt_sys_->Initialize();
 
     // set system editor as central dock
     m_dockManager = new CDockManager(this);
@@ -134,7 +134,7 @@ void MainWindow::loadAgfsFromDir(QString agfDir)
         agf_paths.push_back(dir.filePath(file).toStdString());
     }
 
-    bool ret = opt_sys_->material_lib()->load_agf_files(agf_paths);
+    bool ret = opt_sys_->GetMaterialLib()->LoadAgfFiles(agf_paths);
     if(!ret){
         QMessageBox::warning(this,tr("Error") ,tr("AGF load error"));
     }
@@ -154,7 +154,7 @@ void MainWindow::syncUiWithSystem()
  * ********************************************************************************************************************************/
 void MainWindow::newFile()
 {
-    opt_sys_->initialize();
+    opt_sys_->Initialize();
     //opt_sys_->update_model();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
@@ -171,7 +171,7 @@ void MainWindow::saveAs()
     }
 
     std::string json_path = filePath.toStdString();
-    opt_sys_->save_to_file(json_path);
+    opt_sys_->SaveToFile(json_path);
 
     QMessageBox::information(this,tr("Info"), tr("Saved to JSON file"));
 }
@@ -185,9 +185,9 @@ void MainWindow::openFile()
     }
 
     std::string json_path = filePaths.first().toStdString();
-    opt_sys_->load_file(json_path);
+    opt_sys_->LoadFile(json_path);
 
-    opt_sys_->update_model();
+    opt_sys_->UpdateModel();
 
     m_systemEditorDock->setOpticalSystem(opt_sys_);
     m_systemEditorDock->rebuildUi();
@@ -209,11 +209,11 @@ void MainWindow::showPreference()
  * ********************************************************************************************************************************/
 void MainWindow::setVignettingFactors()
 {
-    opt_sys_->set_vignetting_factors();
-    opt_sys_->update_model();
+    opt_sys_->SetVignettingFactors();
+    opt_sys_->UpdateModel();
 
     // In order to update UI, emit signal by running a simple function
-    int stop = opt_sys_->optical_assembly()->stop_index();
+    int stop = opt_sys_->GetOpticalAssembly()->StopIndex();
     m_systemEditorDock->systemEditorWidget()->lensDataView()->lensDataModel()->setStop(stop);
 }
 

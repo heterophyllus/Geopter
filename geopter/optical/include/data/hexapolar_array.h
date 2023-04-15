@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 **
@@ -42,10 +42,10 @@ public:
 
     auto & operator [](int n) { return data_[n]; }
 
-    T at(int ring_index, int azimuth_index);
-    int total_number_of_points() const;
-    static int points_in_ring(int ri);
-    static int ring_azimuth_to_index(int ring_index, int azimuth_index);
+    T GetAt(int ring_index, int azimuth_index);
+    int TotalNumberOfPoints() const;
+    static int PointsInRing(int ri);
+    static int RingAzimuthToIndex(int ring_index, int azimuth_index);
 
     private:
     int nrd_;
@@ -67,7 +67,7 @@ HexapolarArray<T>::HexapolarArray(int nrd)
 
     int total_num_pts = 0;
     for(int ri = 0; ri <= rings_; ri++){
-        total_num_pts += points_in_ring(ri);
+        total_num_pts += PointsInRing(ri);
     }
 
     data_.resize(total_num_pts);
@@ -81,24 +81,24 @@ HexapolarArray<T>::~HexapolarArray()
 
 
 template<class T>
-T HexapolarArray<T>::at(int ring_index, int azimuth_index)
+T HexapolarArray<T>::GetAt(int ring_index, int azimuth_index)
 {
-    return data_[ring_azimuth_to_index(ring_index, azimuth_index)];
+    return data_[RingAzimuthToIndex(ring_index, azimuth_index)];
 }
 
 template<class T>
-int HexapolarArray<T>::total_number_of_points() const
+int HexapolarArray<T>::TotalNumberOfPoints() const
 {
     int total_num_pts = 0;
     for(int ri = 0; ri <= rings_; ri++){
-        total_num_pts += points_in_ring(ri);
+        total_num_pts += PointsInRing(ri);
     }
 
     return total_num_pts;
 }
 
 template<class T>
-int HexapolarArray<T>::points_in_ring(int ri)
+int HexapolarArray<T>::PointsInRing(int ri)
 {
     if(ri == 0){
         return 1;
@@ -108,7 +108,7 @@ int HexapolarArray<T>::points_in_ring(int ri)
 }
 
 template<class T>
-int HexapolarArray<T>::ring_azimuth_to_index(int ring_index, int azimuth_index)
+int HexapolarArray<T>::RingAzimuthToIndex(int ring_index, int azimuth_index)
 {
     if(ring_index == 0) {
         return 0;
@@ -116,7 +116,7 @@ int HexapolarArray<T>::ring_azimuth_to_index(int ring_index, int azimuth_index)
 
     int ring_start_index = 0;
     for(int i = 1; i < ring_index; i++){
-        ring_start_index += points_in_ring(i);
+        ring_start_index += PointsInRing(i);
     }
     ring_start_index += 1;
 

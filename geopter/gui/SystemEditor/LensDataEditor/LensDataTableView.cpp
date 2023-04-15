@@ -215,13 +215,13 @@ void LensDataTableView::showSurfacePropertyDlg()
     SurfacePropertyDlg dlg(m_opt_sys, si, this);
     dlg.syncUiWithSystem();
     if(dlg.exec() == QDialog::Accepted){
-        m_opt_sys->update_model();
+        m_opt_sys->UpdateModel();
     }
 }
 
 void LensDataTableView::showSolveSelectionDlg(int si)
 {
-    int currentSolveIndex = m_opt_sys->optical_assembly()->gap(si)->solve_type();
+    int currentSolveIndex = m_opt_sys->GetOpticalAssembly()->GetGap(si)->SolveType();
     if(currentSolveIndex < 0){
         currentSolveIndex = 0;
     }
@@ -234,36 +234,27 @@ void LensDataTableView::showSolveSelectionDlg(int si)
             EdgeThicknessSolveDlg *edgeDlg = new EdgeThicknessSolveDlg();
             if(edgeDlg->exec() == QDialog::Accepted){
                 auto solve = std::make_unique<EdgeThicknessSolve>(si, edgeDlg->height(), edgeDlg->value());
-                if(solve->check(m_opt_sys.get())){
-                    m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
-                    m_opt_sys->update_model();
+                if(solve->Check(m_opt_sys.get())){
+                    m_opt_sys->GetOpticalAssembly()->GetGap(si)->SetSolve(std::move(solve));
+                    m_opt_sys->UpdateModel();
                 }else{
                     solve.reset();
                 }
             }
             delete edgeDlg;
-        }else if(selectedIndex == Solve::OverallLength){
-            OverallLengthSolveDlg *dlg = new OverallLengthSolveDlg();
-            if(dlg->exec() == QDialog::Accepted){
-                auto solve = std::make_unique<OverallLengthSolve>(si, dlg->value(), dlg->startSurface(), dlg->endSurface());
-                if(solve->check(m_opt_sys.get())){
-                    m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
-                    m_opt_sys->update_model();
-                }
-            }
-            delete dlg;
+
         }else if(selectedIndex == Solve::MarginalHeight){
             MarginalHeightSolveDlg *dlg = new MarginalHeightSolveDlg();
             if(dlg->exec() == QDialog::Accepted){
                 auto solve = std::make_unique<MarginalHeightSolve>(si, dlg->value(), dlg->zone());
-                if(solve->check(m_opt_sys.get())){
-                    m_opt_sys->optical_assembly()->gap(si)->set_solve(std::move(solve));
-                    m_opt_sys->update_model();
+                if(solve->Check(m_opt_sys.get())){
+                    m_opt_sys->GetOpticalAssembly()->GetGap(si)->SetSolve(std::move(solve));
+                    m_opt_sys->UpdateModel();
                 }
             }
             delete dlg;
         }else{ // Solve "Fixed"
-            m_opt_sys->optical_assembly()->gap(si)->remove_solve();
+            m_opt_sys->GetOpticalAssembly()->GetGap(si)->RemoveSolve();
         }
     }
 

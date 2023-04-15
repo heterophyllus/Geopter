@@ -33,41 +33,41 @@ SpotDiagramDlg::~SpotDiagramDlg()
 
 void SpotDiagramDlg::updateParentDockContent()
 {
-    m_opticalSystem->update_model();
-    int fieldCount = m_opticalSystem->optical_spec()->field_of_view()->field_count();
+    m_opticalSystem->UpdateModel();
+    int fieldCount = m_opticalSystem->GetOpticalSpec()->GetFieldSpec()->NumberOfFields();
 
     int pattern = ui->rayPatternCombo->currentIndex();
     int nrd = ui->nrdEdit->text().toInt();
     double scale = ui->scaleEdit->text().toDouble();
     double dotSize = ui->dotSizeEdit->text().toDouble();
 
-    m_renderer->clear();
-    m_renderer->set_grid_layout(fieldCount, 1);
+    m_renderer->Clear();
+    m_renderer->SetGridLayout(fieldCount, 1);
 
     std::ostringstream oss;
 
     SpotDiagram *spot = new SpotDiagram(m_opticalSystem);
 
     for(int fi = 0; fi < fieldCount; fi++) {
-        m_renderer->set_current_cell(fieldCount - fi - 1, 0);
+        m_renderer->SetCurrentCell(fieldCount - fi - 1, 0);
 
-        Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
+        Field* fld = m_opticalSystem->GetOpticalSpec()->GetFieldSpec()->GetField(fi);
 
         auto plotData = spot->plot(fld, pattern, nrd, dotSize);
 
-        m_renderer->draw_plot(plotData);
-        m_renderer->set_x_axis_range(-scale, scale);
-        m_renderer->set_y_axis_range(-scale, scale);
-        m_renderer->set_x_axis_label(plotData->x_axis_label());
-        m_renderer->set_y_axis_label(plotData->y_axis_label());
-        m_renderer->draw_x_axis();
-        m_renderer->draw_y_axis();
+        m_renderer->DrawPlot(plotData);
+        m_renderer->SetXaxisRange(-scale, scale);
+        m_renderer->SetYaxisRange(-scale, scale);
+        m_renderer->SetXaxisLabel(plotData->XLabel());
+        m_renderer->SetYaxisLabel(plotData->YLabel());
+        m_renderer->DrawXaxis();
+        m_renderer->DrawYaxis();
 
-        plotData->print(oss);
+        plotData->Print(oss);
     }
 
     delete spot;
 
-    m_renderer->update();
+    m_renderer->Update();
 
 }

@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 **
@@ -42,19 +42,19 @@ Astigmatism::Astigmatism(OpticalSystem* opt_sys):
 
 std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
 {
-    const int num_srfs = opt_sys_->optical_assembly()->surface_count();
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->number_of_wavelengths();
-    const double maxfld = opt_sys_->optical_spec()->field_of_view()->max_field();
+    const int num_srfs = opt_sys_->GetOpticalAssembly()->NumberOfSurfaces();
+    const int num_wvls = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
+    const double maxfld = opt_sys_->GetOpticalSpec()->GetFieldSpec()->MaxField();
 
     auto plot_data = std::make_shared<PlotData>();
-    plot_data->set_title("Astigmatism");
-    plot_data->set_x_axis_label("astigmatism");
-    plot_data->set_y_axis_label("field");
-    plot_data->set_xy_reverse(true);
+    plot_data->SetTitle("Astigmatism");
+    plot_data->SetXLabel("astigmatism");
+    plot_data->SetYLabel("field");
+    plot_data->SetXYReverse(true);
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
-    tracer->set_apply_vig(true);
-    tracer->set_aperture_check(true);
+    tracer->SetApplyVig(true);
+    tracer->SetApertureCheck(true);
 
     // create temporary fields
     std::vector<Field*> tmp_flds;
@@ -63,7 +63,7 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
     tmp_flds.reserve(num_rays);
     ys.reserve(num_rays);
 
-    SequentialPath seq_path = tracer->sequential_path(ref_wvl_val_);
+    SequentialPath seq_path = tracer->CreateSequentialPath(ref_wvl_val_);
 
     Eigen::Vector2d aim_pt({0.0, 0.0});
     Eigen::Vector3d obj_pt;
@@ -73,10 +73,10 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
 
         double y = maxfld*(double)fi/(double)(num_rays-1);
         ys.push_back(y);
-        tmp_fld->set_y(y);
+        tmp_fld->SetY(y);
 
-        if(tracer->aim_chief_ray(aim_pt, obj_pt, tmp_fld, ref_wvl_val_) ){
-            tmp_fld->set_aim_pt(aim_pt);
+        if(tracer->AimChiefRay(aim_pt, obj_pt, tmp_fld, ref_wvl_val_) ){
+            tmp_fld->SetAimPt(aim_pt);
             //tmp_fld->set_object_pt(obj_pt);
             tmp_flds.push_back(tmp_fld);
         }else{
@@ -96,10 +96,10 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
 
     for(int wi = 0; wi < num_wvls; wi++){
 
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
-        Rgb color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
+        double wvl = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
+        Rgb color = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->RenderColor();
 
-        SequentialPath seq_path = tracer->sequential_path(wvl);
+        SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
 
         std::vector<double> fy;
         std::vector<double> xfo;
@@ -108,12 +108,12 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
         for(int fi = 0; fi < num_rays; fi++) {
             Field* tmp_fld = tmp_flds[fi];
 
-            if(TRACE_SUCCESS != tracer->trace_pupil_ray(ray, seq_path, Eigen::Vector2d({0.0, 0.0}), tmp_fld, wvl)){
+            if(TRACE_SUCCESS != tracer->TracePupilRay(ray, seq_path, Eigen::Vector2d({0.0, 0.0}), tmp_fld, wvl)){
                 std::cerr << "Failed to trace chief ray" << std::endl;
                 continue;
             }
 
-            if( ! tracer->trace_coddington(s_t, ray, seq_path)){
+            if( ! tracer->TraceCoddington(s_t, ray, seq_path)){
                 std::cerr << "Failed to compute coddington" << std::endl;
                 continue;
             }
@@ -125,13 +125,13 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
         }
 
         auto graph_sag = std::make_shared<Graph2d>(xfo, fy, color,Renderer::LineStyle::Solid);
-        graph_sag->set_name("W" + std::to_string(wi) + "-Sag");
+        graph_sag->SetName("W" + std::to_string(wi) + "-Sag");
 
         auto graph_tan = std::make_shared<Graph2d>(yfo, fy, color,Renderer::LineStyle::Dots);
-        graph_tan->set_name("W" + std::to_string(wi)  + "-Tan");
+        graph_tan->SetName("W" + std::to_string(wi)  + "-Tan");
 
-        plot_data->add_graph(graph_sag);
-        plot_data->add_graph(graph_tan);
+        plot_data->AddGraph(graph_sag);
+        plot_data->AddGraph(graph_tan);
     }
 
     for(auto& fld : tmp_flds){

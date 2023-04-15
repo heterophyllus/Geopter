@@ -12,13 +12,13 @@ public:
     ReferenceSphere();
     ReferenceSphere(const Eigen::Vector3d& ref_pt, const Eigen::Vector3d& ref_dir, double radius, double exp_dist_parax);
 
-    Eigen::Vector3d& ref_pt() { return ref_pt_; }
-    Eigen::Vector3d& ref_dir() { return ref_dir_; }
-    double radius() const { return radius_; }
+    Eigen::Vector3d& ReferencePt() { return ref_pt_; }
+    Eigen::Vector3d& ReferenceDirection() { return ref_dir_; }
+    double Radius() const { return radius_; }
 
-    void set_ref_pt(const Eigen::Vector3d& ref_pt) { ref_pt_ = ref_pt; }
-    void set_ref_dir(const Eigen::Vector3d& ref_dir) { ref_dir_ = ref_dir; }
-    void set_radius(double radius) { radius_ = radius; }
+    void SetReferencePt(const Eigen::Vector3d& ref_pt) { ref_pt_ = ref_pt; }
+    void SetReferenceDirection(const Eigen::Vector3d& ref_dir) { ref_dir_ = ref_dir; }
+    void SetRadius(double radius) { radius_ = radius; }
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 

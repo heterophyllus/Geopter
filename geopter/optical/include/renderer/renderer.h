@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -42,8 +42,8 @@ namespace geopter {
 class Renderer
 {
 public:
-    Renderer();
-    virtual ~Renderer();
+    Renderer(){};
+    virtual ~Renderer(){};
 
     enum LineStyle
     {
@@ -56,34 +56,34 @@ public:
         Scatter
     };
 
-    virtual void set_grid_layout(int rows, int cols);
-    virtual void set_current_cell(int row, int col);
+    virtual void SetGridLayout(int rows, int cols){};
+    virtual void SetCurrentCell(int row, int col){};
 
-    virtual void draw_plot(const std::shared_ptr<PlotData> plotdata);
+    virtual void DrawPlot(const std::shared_ptr<PlotData> plotdata){};
 
-    virtual void draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0, double line_width= 1.0);
-    virtual void draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0, double line_width= 1.0);
-    virtual void draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style=0, double line_width= 1.0);
-    virtual void draw_text(std::string str, const Rgb& color, double line_width= 1.0);
-    virtual void draw_dots(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, double dot_size);
+    virtual void DrawLine(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0, double line_width= 1.0){};
+    virtual void DrawPolyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0, double line_width= 1.0){};
+    virtual void DrawPolyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style=0, double line_width= 1.0){};
+    virtual void DrawText(std::string str, const Rgb& color, double line_width= 1.0){};
+    virtual void DrawDots(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, double dot_size){};
 
-    virtual void draw_x_axis(bool state= true);
-    virtual void draw_y_axis(bool state= true);
-    virtual void set_x_axis_range(double xmin, double xmax);
-    virtual void set_y_axis_range(double ymin, double ymax);
-    virtual void set_x_axis_label(std::string label);
-    virtual void set_y_axis_label(std::string label);
+    virtual void DrawXaxis(bool state= true){};
+    virtual void DrawYaxis(bool state= true){};
+    virtual void SetXaxisRange(double xmin, double xmax){};
+    virtual void SetYaxisRange(double ymin, double ymax){};
+    virtual void SetXaxisLabel(std::string label){};
+    virtual void SetYaxisLabel(std::string label){};
 
 
     /**
      * @brief Set aspect ratio h:v
      * @param ratio aspect ratio h/v
      */
-    virtual void set_aspect_ratio(double h_per_v);
+    virtual void SetAspectRatio(double h_per_v){};
 
-    virtual void update();
+    virtual void Update(){};
 
-    virtual void clear();
+    virtual void Clear(){};
 
 protected:
     int nrows_;

@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -70,34 +70,24 @@ Surface::~Surface()
     solve_.reset();
 }
 
-std::string Surface::aperture_shape() const
+std::string Surface::ApertureShape() const
 {
-    return std::visit([](auto ap){ return ap.shape_name() ;}, clear_aperture_);
+    return std::visit([](auto ap){ return ap.ShapeName() ;}, clear_aperture_);
 }
 
-double Surface::max_aperture() const
+double Surface::MaxAperture() const
 {
-    double max_ap = std::visit([](auto ap){ return ap.max_dimension() ;}, clear_aperture_);
+    double max_ap = std::visit([](auto ap){ return ap.MaxDimension() ;}, clear_aperture_);
     return std::max(max_ap, semi_diameter_);
 }
 
-void Surface::remove_clear_aperture()
+void Surface::RemoveClearAperture()
 {
     clear_aperture_ = Aperture<NoneAperture>();
 }
 
-bool Surface::point_inside(double x, double y) const
-{
-    return std::visit([&](auto ap){ return ap.point_inside(x,y); }, clear_aperture_);
-}
 
-bool Surface::point_inside(const Eigen::Vector2d& pt) const
-{
-    return std::visit([&](auto ap){ return ap.point_inside(pt(0), pt(1)); }, clear_aperture_);
-}
-
-
-void Surface::update()
+void Surface::Update()
 {
     if(decenter_){
         decenter_->update();
@@ -105,16 +95,16 @@ void Surface::update()
 }
 
 
-void Surface::print()
+void Surface::Print()
 {
     std::ostringstream oss;
-    print(oss);
+    Print(oss);
     std::cout << oss.str() << std::endl;
 }
 
-void Surface::print(std::ostringstream& oss)
+void Surface::Print(std::ostringstream& oss)
 {
     oss << label_ << ": ";
-    oss << this->cv() << ", ";
-    oss << max_aperture();
+    oss << this->Curvature() << ", ";
+    oss << MaxAperture();
 }

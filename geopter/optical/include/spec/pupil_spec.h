@@ -49,43 +49,21 @@ public:
     PupilSpec(int pupil_type, double value);
     ~PupilSpec();
 
-    inline int pupil_type() const;
+    int PupilType() const { return pupil_type_; }
 
-    inline double value() const;
+    double Value() const { return value_; }
 
-    inline void set_pupil_type(int i);
+    void SetPupilType(int i) { pupil_type_ = i; }
 
-    inline void set_value(double val);
+    void SetValue(double val) { value_ = val; }
 
-    void print(std::ostringstream& oss);
+    void Print(std::ostringstream& oss);
 
 private:
     int pupil_type_;
     double value_;
 };
 
-
-
-int PupilSpec::pupil_type() const
-{
-    return pupil_type_;
-}
-
-double PupilSpec::value() const
-{
-    return value_;
-}
-
-void PupilSpec::set_pupil_type(int i)
-{
-    assert( 0 <= i && i < 4);
-    pupil_type_ = i;
-}
-
-void PupilSpec::set_value(double val)
-{
-    value_ = val;
-}
 
 
 } //namespace geopter

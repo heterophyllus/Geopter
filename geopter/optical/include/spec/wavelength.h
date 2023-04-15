@@ -50,20 +50,20 @@ public:
      * @brief Set wavelength value
      * @param val_nm value in nm
      */
-    void set_value(double val_nm) { value_ = val_nm;}
+    void SetValue(double val_nm) { value_ = val_nm;}
 
     /** Returns wavelength value in nm */
-    double value() const {return value_;}
+    double Value() const {return value_;}
 
-    void set_weight(double wt) { weight_ = wt;}
+    void SetWeight(double wt) { weight_ = wt;}
 
     /** Returns the weight */
-    double weight() const { return weight_;}
+    double Weight() const { return weight_;}
 
-    void set_render_color(const Rgb& color) { render_color_ = color;}
+    void SetRenderColor(const Rgb& color) { render_color_ = color;}
 
     /** Returns render color */
-    const Rgb& render_color() const {return render_color_;}
+    const Rgb& RenderColor() const {return render_color_;}
 
 private:
     /** wavelength in nm */

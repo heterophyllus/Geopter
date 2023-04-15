@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -48,25 +48,25 @@ BuchdahlGlass::~BuchdahlGlass()
 
 }
 
-std::string BuchdahlGlass::name() const
+std::string BuchdahlGlass::Name() const
 {
     return std::to_string(n_) + ":" + std::to_string(vd_);
 }
 
-double BuchdahlGlass::rindex(double wv_nm) const
+double BuchdahlGlass::RefractiveIndex(double wv_nm) const
 {
     double om = omega(wv_nm/1000.0 - wv0_);
     return rind0_ + v1_*om + v2_*pow(om,2);
 }
 
-std::string BuchdahlGlass::glass_code() const
+std::string BuchdahlGlass::GlassCode() const
 {
     std::string nd_part = std::to_string( (long int)round((n_-1.0)*10000.0) );
     std::string vd_part = std::to_string( (int)round(vd_*100.0) );
     return nd_part + "." + vd_part;
 }
 
-double BuchdahlGlass::abbe_d() const
+double BuchdahlGlass::Abbe_d() const
 {
     return vd_;
 }

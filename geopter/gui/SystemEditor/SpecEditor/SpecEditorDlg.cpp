@@ -51,31 +51,31 @@ void SpecEditorDlg::catchValueEdited()
 void SpecEditorDlg::loadData(const std::shared_ptr<OpticalSystem> optsys)
 {
     // pupil
-    int pupilType = optsys->optical_spec()->pupil_spec()->pupil_type();
+    int pupilType = optsys->GetOpticalSpec()->GetPupilSpec()->PupilType();
     ui->pupilTypeCombo->setCurrentIndex(pupilType);
 
-    double pupilValue = optsys->optical_spec()->pupil_spec()->value();
+    double pupilValue = optsys->GetOpticalSpec()->GetPupilSpec()->Value();
     ui->pupilValueEdit->setText(QString::number(pupilValue));
 
     // fields
-    int fieldType = optsys->optical_spec()->field_of_view()->field_type();
+    int fieldType = optsys->GetOpticalSpec()->GetFieldSpec()->FieldType();
     ui->fieldTypeCombo->setCurrentIndex(fieldType);
     dynamic_cast<FieldTableModel*>(ui->fieldTable->model())->setData(optsys);
 
     // wavelengths
-    int refWvlIdx = optsys->optical_spec()->spectral_region()->reference_index();
+    int refWvlIdx = optsys->GetOpticalSpec()->GetWavelengthSpec()->ReferenceIndex();
     dynamic_cast<WavelengthTableModel*>(ui->wavelengthTable->model())->setData(optsys);
     setupReferenceWavelengthCombo(refWvlIdx);
 
     // title/note
-    std::string title = optsys->title();
+    std::string title = optsys->Title();
     ui->titleEdit->setText(QString().fromStdString(title));
 
-    std::string note = optsys->note();
+    std::string note = optsys->Note();
     ui->noteEdit->setText(QString().fromStdString(note));
 
     // environment
-    double temperature = Environment::temperature();
+    double temperature = Environment::Temperature();
     ui->temperatureEdit->setText(QString::number(temperature));
 }
 
@@ -83,33 +83,33 @@ void SpecEditorDlg::applyData(std::shared_ptr<OpticalSystem> optsys)
 {
     //pupil
     int pupilType = ui->pupilTypeCombo->currentIndex();
-    optsys->optical_spec()->pupil_spec()->set_pupil_type(pupilType);
+    optsys->GetOpticalSpec()->GetPupilSpec()->SetPupilType(pupilType);
 
     double pupilValue = ui->pupilValueEdit->text().toDouble();
-    optsys->optical_spec()->pupil_spec()->set_value(pupilValue);
+    optsys->GetOpticalSpec()->GetPupilSpec()->SetValue(pupilValue);
 
     // fields
     int fieldType = ui->fieldTypeCombo->currentIndex();
-    optsys->optical_spec()->field_of_view()->set_field_type(fieldType);
+    optsys->GetOpticalSpec()->GetFieldSpec()->SetFieldType(fieldType);
     dynamic_cast<FieldTableModel*>(ui->fieldTable->model())->applyData(optsys);
 
     // wavelength
     dynamic_cast<WavelengthTableModel*>(ui->wavelengthTable->model())->applyData(optsys);
     int ref = ui->referenceWavelengthCombo->currentIndex();
-    optsys->optical_spec()->spectral_region()->set_reference_index(ref);
+    optsys->GetOpticalSpec()->GetWavelengthSpec()->SetReferenceIndex(ref);
 
     //title/note
     QString title = ui->titleEdit->text();
-    optsys->set_title(title.toStdString());
+    optsys->SetTitle(title.toStdString());
 
     QString note = ui->noteEdit->toPlainText();
-    optsys->set_note(note.toStdString());
+    optsys->SetNote(note.toStdString());
 
     // environment
     double t = ui->temperatureEdit->text().toDouble();
-    Environment::set_temperature(t);
+    Environment::SetTemperature(t);
 
-    optsys->update_model();
+    optsys->UpdateModel();
 }
 
 

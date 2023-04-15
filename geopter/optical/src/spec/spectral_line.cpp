@@ -47,7 +47,7 @@ const double SpectralLine::h =  404.656;
 const double SpectralLine::i =  365.015;
 
 
-double SpectralLine::wavelength(const std::string& spectralname)
+double SpectralLine::Wavelength(const std::string& spectralname)
 {
     if(spectralname == "t"){
         return SpectralLine::t;

@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -31,7 +31,7 @@
 
 using namespace geopter;
 
-double Spherical::sag(double x, double y) const
+double Spherical::Sag(double x, double y) const
 {
     if(fabs(cv_) < std::numeric_limits<double>::epsilon())
     {
@@ -54,7 +54,7 @@ double Spherical::sag(double x, double y) const
 }
 
 
-bool Spherical::intersect(Eigen::Vector3d &pt, double &distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
+bool Spherical::Intersect(Eigen::Vector3d &pt, double &distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
 {
     constexpr double z_dir = 1.0; // z direction, currently reflection is not supported
 
@@ -65,7 +65,6 @@ bool Spherical::intersect(Eigen::Vector3d &pt, double &distance, const Eigen::Ve
     double inside_sqrt = b*b - ax2*cx2;
 
     if(inside_sqrt < 0.0){
-        //throw TraceMissedSurfaceError();
         return false;
     }
     else{

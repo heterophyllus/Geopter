@@ -55,24 +55,20 @@ Glass::~Glass()
 }
 
 
-double Glass::rindex(double wv_nm) const
+double Glass::RefractiveIndex(double wv_nm) const
 {
     if(formula_func_ptr_){
         double lambdainput = wv_nm/1000.0;
-        double lambdarel = relative_wavelength(lambdainput, Environment::temperature(), Environment::air_pressure());
-        return refractive_index_rel(lambdarel);
+        double lambdarel = RelativeWavelength(lambdainput, Environment::Temperature(), Environment::AirPressure());
+        return RefractiveIndexRel(lambdarel);
     }else{
         return 1.0;
     }
 }
 
 
-std::string Glass::name() const
-{
-    return product_name_ + "_" + supplier_name_;
-}
 
-void Glass::set_dispersion_formula(int i)
+void Glass::SetDispersionFormula(int i)
 {
     switch (i) {
     case 1:
@@ -112,7 +108,7 @@ void Glass::set_dispersion_formula(int i)
         formula_func_ptr_ = &(DispersionFormula::Extended2);
         break;
     case 13: // Unknown
-        if(StringTool::contains(supplier_name_, "HIKARI")){
+        if(StringTool::Contains(supplier_name_, "HIKARI")){
             formula_func_ptr_ = &(DispersionFormula::Nikon_Hikari);
         }else{
             formula_func_ptr_ = &(DispersionFormula::Unknown);
@@ -124,7 +120,7 @@ void Glass::set_dispersion_formula(int i)
 
 }
 
-void Glass::set_dispersion_coefs(int i, double val)
+void Glass::SetDispersionCoefs(int i, double val)
 {
     if(i < (int)coefs_.size()){
         coefs_[i] = val;
@@ -134,46 +130,26 @@ void Glass::set_dispersion_coefs(int i, double val)
 }
 
 
-std::string Glass::product_name() const
-{
-    return product_name_;
-}
 
-void Glass::set_product_name(std::string name)
-{
-    product_name_ = name;
-    std::transform(product_name_.begin(), product_name_.end(), product_name_.begin(), toupper);
-}
 
-void Glass::set_supplier(std::string sup)
+double Glass::Abbe_d() const
 {
-    supplier_name_ = sup;
-    std::transform(supplier_name_.begin(), supplier_name_.end(), supplier_name_.begin(), toupper);
-}
-
-std::string Glass::supplier() const
-{
-    return supplier_name_;
-}
-
-double Glass::abbe_d() const
-{
-    double nd = rindex(SpectralLine::d);
-    double nF = rindex(SpectralLine::F);
-    double nC = rindex(SpectralLine::C);
+    double nd = RefractiveIndex(SpectralLine::d);
+    double nF = RefractiveIndex(SpectralLine::F);
+    double nC = RefractiveIndex(SpectralLine::C);
 
     return (nd - 1.0)/(nF - nC);
 }
 
-double Glass::relative_wavelength(double lambdainput, double T, double P) const
+double Glass::RelativeWavelength(double lambdainput, double T, double P) const
 {
-    double n_air_sys = Air::refractive_index_abs(lambdainput, T, P);
-    double n_air_ref = Air::refractive_index_abs(lambdainput, Tref_, Pref_);
+    double n_air_sys = Air::RefractiveIndexAbs(lambdainput, T, P);
+    double n_air_ref = Air::RefractiveIndexAbs(lambdainput, Tref_, Pref_);
 
     return lambdainput * (n_air_sys/n_air_ref);
 }
 
-double Glass::refractive_index_rel_Tref(double wvl_micron) const
+double Glass::RefractiveIndexRel_Tref(double wvl_micron) const
 {
     if(formula_func_ptr_){
         return formula_func_ptr_(wvl_micron, coefs_);
@@ -183,37 +159,37 @@ double Glass::refractive_index_rel_Tref(double wvl_micron) const
 }
 
 
-double Glass::refractive_index_abs_Tref(double wvl_micron) const
+double Glass::RefractiveIndexAbs_Tref(double wvl_micron) const
 {
     constexpr double P = 101325.0;
-    double n_air_T0 = Air::refractive_index_abs(wvl_micron, Tref_, P);
-    double n_rel_T0 = refractive_index_rel_Tref(wvl_micron);
+    double n_air_T0 = Air::RefractiveIndexAbs(wvl_micron, Tref_, P);
+    double n_rel_T0 = RefractiveIndexRel_Tref(wvl_micron);
     double n_abs_T0 = n_rel_T0*n_air_T0;
 
     return n_abs_T0;
 }
 
-double Glass::refractive_index_abs(double wvl_micron) const
+double Glass::RefractiveIndexAbs(double wvl_micron) const
 {
-    double T = Environment::temperature();
-    double dn = delta_n_abs(wvl_micron, T);
-    double n_abs_T0 = refractive_index_abs_Tref(wvl_micron);
+    double T = Environment::Temperature();
+    double dn = Delta_n_Abs(wvl_micron, T);
+    double n_abs_T0 = RefractiveIndexAbs_Tref(wvl_micron);
     double n_abs = n_abs_T0 + dn;
 
     return n_abs;
 }
 
-double Glass::refractive_index_rel(double wvl_micron) const
+double Glass::RefractiveIndexRel(double wvl_micron) const
 {
-    double T = Environment::temperature();
-    double n_abs = refractive_index_abs(wvl_micron);
-    double n_air = Air::refractive_index_abs(wvl_micron, T);
+    double T = Environment::Temperature();
+    double n_abs = RefractiveIndexAbs(wvl_micron);
+    double n_air = Air::RefractiveIndexAbs(wvl_micron, T);
     double n_rel = n_abs/n_air;
 
     return n_rel;
 }
 
-void Glass::set_thermal_data(double D0, double D1, double D2, double E0, double E1, double Ltk, double Tref)
+void Glass::SetThermalData(double D0, double D1, double D2, double E0, double E1, double Ltk, double Tref)
 {
     D0_ = D0;
     D1_ = D1;
@@ -224,20 +200,20 @@ void Glass::set_thermal_data(double D0, double D1, double D2, double E0, double 
     Tref_ = Tref;
 }
 
-double Glass::dn_dt_abs(double wvl_micron, double t) const
+double Glass::DnDtAbs(double wvl_micron, double t) const
 {
     double dT = t - Tref_;
     double Stk = (Ltk_ > 0.0) - (Ltk_ < 0.0);
-    double n  = refractive_index_rel_Tref(wvl_micron);
+    double n  = RefractiveIndexRel_Tref(wvl_micron);
 
     return (n*n-1)/(2*n) * ( D0_ + 2*D1_*dT + 3*D2_*dT*dT + (E0_ + 2*E1_*dT)/(wvl_micron*wvl_micron - Stk*Ltk_*Ltk_) );
 }
 
-double Glass::delta_n_abs(double wvl_micron, double t) const
+double Glass::Delta_n_Abs(double wvl_micron, double t) const
 {
     double dT = t - Tref_;
     double Stk = (Ltk_ > 0.0) - (Ltk_ < 0.0);
-    double n  = refractive_index_rel_Tref(wvl_micron);
+    double n  = RefractiveIndexRel_Tref(wvl_micron);
 
     // Zemax manual
     return (n*n-1)/(2*n) * ( D0_*dT + D1_*dT*dT + D2_*dT*dT*dT + (E0_*dT + E1_*dT*dT)/(wvl_micron*wvl_micron - Stk*Ltk_*Ltk_) );
@@ -246,14 +222,14 @@ double Glass::delta_n_abs(double wvl_micron, double t) const
     //return (n*n-1)/(2*n) * ( D0_*dT + D1_*dT*dT + D2_*dT*dT*dT + (E0_*dT + E1_*dT*dT)/(wvl_micron*wvl_micron - Ltk_*Ltk_) );
 }
 
-void Glass::print()
+void Glass::Print()
 {
     std::ostringstream oss;
-    print(oss);
+    Print(oss);
     std::cout << oss.str() << std::endl;
 }
 
-void Glass::print(std::ostringstream &oss)
+void Glass::Print(std::ostringstream &oss)
 {
     //const int idx_w = 4;
     constexpr int val_w = 10;
@@ -261,7 +237,7 @@ void Glass::print(std::ostringstream &oss)
 
     oss << "Glass: " << name_ << " (" << supplier_name_ << ")" << std::endl;
     oss << "nd: " << std::setw(val_w) << std::scientific << std::setprecision(prec) << n_ << std::endl;
-    oss << "vd: " << std::setw(val_w) << std::scientific << std::setprecision(prec) << abbe_d() << std::endl;
+    oss << "vd: " << std::setw(val_w) << std::scientific << std::setprecision(prec) << Abbe_d() << std::endl;
 
     oss << "CD: ";
     for(int i = 0; i < (int)coefs_.size(); i++)

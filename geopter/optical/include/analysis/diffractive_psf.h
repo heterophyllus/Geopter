@@ -11,13 +11,13 @@ class DiffractivePSF : WaveAberration
 public:
     DiffractivePSF(OpticalSystem *opt_sys);
 
-    std::shared_ptr<DataGrid> create(const Field* fld, double wvl, int ndim);
+    std::shared_ptr<DataGrid> Create(const Field* fld, double wvl, int ndim);
 
-    void from_opd_trace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L=1.0);
+    void CreateFromOpdTrace(OpticalSystem* opt_sys, const Field* fld, double wvl, int M, double L=1.0);
 
-    void create_from_spot_data();
+    void CreateFromSpotData();
 
-    Eigen::MatrixXd &to_matrix();
+    Eigen::MatrixXd &ConvertToMatrix();
 
 protected:
     int ndim_;

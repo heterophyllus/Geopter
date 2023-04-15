@@ -16,9 +16,9 @@ ChromaticFocusShiftDlg::ChromaticFocusShiftDlg(OpticalSystem* sys, AnalysisViewD
     ui->minWvlEdit->setValidator(new QDoubleValidator(0.0, 10000.0, 4, this));
     ui->maxWvlEdit->setValidator(new QDoubleValidator(0.0, 10000.0, 4, this));
 
-    double lower = m_opticalSystem->optical_spec()->spectral_region()->lower_wavelength();
+    double lower = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->LowerWavelength();
     ui->minWvlEdit->setText(QString::number(lower));
-    double higher = m_opticalSystem->optical_spec()->spectral_region()->higher_wavelength();
+    double higher = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->HigherWavelength();
     ui->maxWvlEdit->setText(QString::number(higher));
 
 }
@@ -31,7 +31,7 @@ ChromaticFocusShiftDlg::~ChromaticFocusShiftDlg()
 
 void ChromaticFocusShiftDlg::updateParentDockContent()
 {
-    m_opticalSystem->update_model();
+    m_opticalSystem->UpdateModel();
 
     double lower = ui->minWvlEdit->text().toDouble();
     double higher = ui->maxWvlEdit->text().toDouble();
@@ -39,22 +39,22 @@ void ChromaticFocusShiftDlg::updateParentDockContent()
     ChromaticFocusShift *chrom = new ChromaticFocusShift(m_opticalSystem);
     std::ostringstream oss;
     auto plotData = chrom->plot(lower, higher);
-    plotData->print(oss);
+    plotData->Print(oss);
     m_parentDock->setText(oss);
 
 
     double lower_y, higher_y;
-    plotData->graph(0)->get_y_range(&lower_y, &higher_y);
+    plotData->GetGraph(0)->GetYRange(&lower_y, &higher_y);
 
-    m_renderer->clear();
-    m_renderer->draw_plot(plotData);
-    m_renderer->set_x_axis_range(lower, higher);
-    m_renderer->set_y_axis_range(lower_y, higher_y);
-    m_renderer->set_x_axis_label(plotData->x_axis_label());
-    m_renderer->set_y_axis_label(plotData->y_axis_label());
-    m_renderer->draw_x_axis();
-    m_renderer->draw_y_axis();
-    m_renderer->update();
+    m_renderer->Clear();
+    m_renderer->DrawPlot(plotData);
+    m_renderer->SetXaxisRange(lower, higher);
+    m_renderer->SetYaxisRange(lower_y, higher_y);
+    m_renderer->SetXaxisLabel(plotData->XLabel());
+    m_renderer->SetYaxisLabel(plotData->YLabel());
+    m_renderer->DrawXaxis();
+    m_renderer->DrawYaxis();
+    m_renderer->Update();
 
     delete chrom;
 

@@ -30,7 +30,6 @@
 
 using namespace geopter;
 
-int FieldSpec::num_fields_ = 0;
 
 FieldSpec::FieldSpec()
 {
@@ -49,20 +48,15 @@ FieldSpec::~FieldSpec()
     clear();
 }
 
-void FieldSpec::set_field_type(int i)
-{
-    assert( i >= 0 && i < 3);
-    field_type_ = i;
-}
 
-void FieldSpec::add(double x, double y, double wt, Rgb color, double vuy, double vly, double vux, double vlx)
+void FieldSpec::AddField(double x, double y, double wt, Rgb color, double vuy, double vly, double vux, double vlx)
 {
     auto fld = std::make_unique<Field>(x, y, wt, color, vuy, vly, vux, vlx);
     fields_.push_back(std::move(fld));
     update();
 }
 
-void FieldSpec::remove(int i)
+void FieldSpec::RemoveField(int i)
 {
     if( i >= (int)fields_.size() || i < 0 ){
         return;
@@ -86,8 +80,8 @@ void FieldSpec::update()
 
     for(auto& f : fields_)
     {
-        double x = f->x();
-        double y = f->y();
+        double x = f->X();
+        double y = f->Y();
         double fld_sqrd = x*x + y*y;
         if(fld_sqrd > max_fld_sqrd)
         {
@@ -159,15 +153,15 @@ void FieldSpec::print(std::ostringstream &oss)
     for(int i = 0; i < num_flds; i++)
     {
         oss << std::setw(idx_w) << std::right << i;
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->x();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->y();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->weight();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->vuy();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->vly();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->vux();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->vlx();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->aim_pt()(0);
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << field(i)->aim_pt()(1);
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->X();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->Y();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->Weight();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->VUY();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->VLY();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->VUX();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->VLX();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->AimPt()(0);
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << GetField(i)->AimPt()(1);
         oss << std::endl;
     }
 

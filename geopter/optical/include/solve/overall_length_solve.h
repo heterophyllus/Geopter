@@ -34,9 +34,9 @@ class OverallLengthSolve : public Solve
 {
 public:
     OverallLengthSolve(int gi, double value, int s1, int s2);
-    bool check(const OpticalSystem* opt_sys) override;
-    void apply(OpticalSystem* opt_sys) override;
-    void set_parameters(int index, double param1, double param2=0.0, double param3=0.0) override;
+    bool Check(const OpticalSystem* opt_sys) override;
+    void Apply(OpticalSystem* opt_sys) override;
+    void SetParameters(int index, double param1, double param2=0.0, double param3=0.0) override;
 
 private:
     int surface1_;

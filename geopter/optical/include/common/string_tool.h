@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -37,16 +37,16 @@ class StringTool
 {
 public:
     /** Split file path into components */
-    static void split_path(const std::string& full_path, std::string& folder_path, std::string& file_base, std::string& ext);
+    static void SplitPath(const std::string& full_path, std::string& folder_path, std::string& file_base, std::string& ext);
 
     /** Split string with the deliminater */
-    static std::vector<std::string> split(const std::string& s, char delim);
+    static std::vector<std::string> Split(const std::string& s, char delim);
 
     /** Return true if the string starts with the sepecified prefix */
-    static bool starts_with(const std::string& s, const std::string& prefix);
+    static bool StartsWith(const std::string& s, const std::string& prefix);
 
     /** Check whether specific string is contained */
-    static bool contains(const std::string& s, const std::string& item);
+    static bool Contains(const std::string& s, const std::string& item);
 };
 
 }

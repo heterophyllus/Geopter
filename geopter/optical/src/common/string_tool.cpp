@@ -35,14 +35,14 @@
 
 using namespace geopter;
 
-void StringTool::split_path(const std::string &full_path, std::string &folder_path, std::string &file_base, std::string &ext)
+void StringTool::SplitPath(const std::string &full_path, std::string &folder_path, std::string &file_base, std::string &ext)
 {
     file_base = std::filesystem::path(full_path).stem().u8string();
     folder_path = std::filesystem::path(full_path).parent_path().u8string();
     ext = std::filesystem::path(full_path).extension().u8string();
 }
 
-std::vector<std::string> StringTool::split(const std::string& s, char delim)
+std::vector<std::string> StringTool::Split(const std::string& s, char delim)
 {
     std::vector<std::string> elems;
     std::string item;
@@ -65,7 +65,7 @@ std::vector<std::string> StringTool::split(const std::string& s, char delim)
 }
 
 
-bool StringTool::starts_with(const std::string &s, const std::string &prefix)
+bool StringTool::StartsWith(const std::string &s, const std::string &prefix)
 {
     auto size = prefix.size();
     if (s.size() < size) {
@@ -74,7 +74,7 @@ bool StringTool::starts_with(const std::string &s, const std::string &prefix)
     return std::equal(std::begin(prefix), std::end(prefix), std::begin(s));
 }
 
-bool StringTool::contains(const std::string &s, const std::string &item)
+bool StringTool::Contains(const std::string &s, const std::string &item)
 {
     if(s.find(item) != std::string::npos){
         return true;

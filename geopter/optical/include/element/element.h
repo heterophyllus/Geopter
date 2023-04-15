@@ -38,14 +38,11 @@ public:
     Element();
     virtual ~Element();
 
-    virtual std::string label() const;
-    virtual std::string element_type() const;
+    virtual std::string Label() const;
+    virtual std::string ElementType() const;
 
-    Rgb render_color() const;
-    void set_render_color(const Rgb& color);
-
-    //virtual double weight() const;
-    //virtual double volume() const;
+    Rgb RenderColor() const;
+    void SetRenderColor(const Rgb& color);
 
 protected:
     std::string label_;

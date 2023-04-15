@@ -64,7 +64,7 @@ Field::~Field()
 }
 
 
-Eigen::Vector2d Field::apply_vignetting(const Eigen::Vector2d& pupil) const
+Eigen::Vector2d Field::ApplyVignetting(const Eigen::Vector2d& pupil) const
 {
     Eigen::Vector2d vig_pupil = pupil;
 

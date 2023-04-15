@@ -37,7 +37,7 @@ class SpectralLine
 public:
 
     /** get wavelength value from spectral line name */
-    static double wavelength(const std::string& spectralname);
+    static double Wavelength(const std::string& spectralname);
 
     static const double t;
     static const double s;

@@ -47,45 +47,45 @@ ParaxialRay::~ParaxialRay()
     prx_ray_segments_.clear();
 }
 
-void ParaxialRay::clear()
+void ParaxialRay::Clear()
 {
     prx_ray_segments_.clear();
     name_ = "";
 }
 
 
-void ParaxialRay::prepend(const ParaxialRaySegment& segment)
+void ParaxialRay::Prepend(const ParaxialRaySegment& segment)
 {
     auto itr = prx_ray_segments_.begin();
     prx_ray_segments_.insert(itr, segment);
 }
 
-void ParaxialRay::prepend(double y, double u_prime, double i, double n_prime)
+void ParaxialRay::Prepend(double y, double u_prime, double i, double n_prime)
 {
     auto prx_ray_at_srf = ParaxialRaySegment(y, u_prime, i, n_prime);
     auto itr = prx_ray_segments_.begin();
     prx_ray_segments_.insert( itr, prx_ray_at_srf);
 }
 
-void ParaxialRay::append(const ParaxialRaySegment& segment)
+void ParaxialRay::Append(const ParaxialRaySegment& segment)
 {
     prx_ray_segments_.push_back(segment);
 }
 
-void ParaxialRay::append(double y, double u_prime, double i, double n_prime)
+void ParaxialRay::Append(double y, double u_prime, double i, double n_prime)
 {
     prx_ray_segments_.emplace_back(ParaxialRaySegment(y, u_prime, i, n_prime));
 }
 
 
-void ParaxialRay::print() const
+void ParaxialRay::Print() const
 {
     std::ostringstream oss;
-    this->print(oss);
+    this->Print(oss);
     std::cout << oss.str() << std::endl;
 }
 
-void ParaxialRay::print(std::ostringstream& oss) const
+void ParaxialRay::Print(std::ostringstream& oss) const
 {
     constexpr int idx_w  = 4;
     constexpr int val_w  = 10;
@@ -106,11 +106,11 @@ void ParaxialRay::print(std::ostringstream& oss) const
     for(int i = 0; i < num_srf; i++)
     {
         oss << std::setw(idx_w) << std::right << i;
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].y();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].n_prime();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].u_prime();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].n_prime()*prx_ray_segments_[i].u_prime();
-        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].i();
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].y;
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].n_prime;
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].u_prime;
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].n_prime*prx_ray_segments_[i].u_prime;
+        oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << prx_ray_segments_[i].i;
         oss << std::endl;
     }
     oss << std::endl;

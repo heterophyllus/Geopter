@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -34,33 +34,31 @@ using namespace geopter;
 
 EvenPolynomial::EvenPolynomial() :
     conic_(0.0),
-    max_nonzero_index_(0),
-    num_coefs_(10)
+    num_terms_(10)
 {
     cv_ = 0.0;
-    coefs_ = std::vector<double>(num_coefs_, 0.0);
+    terms_ = std::vector<double>(num_terms_, 0.0);
     eps_ = 1.0e-8;
 }
 
 EvenPolynomial::EvenPolynomial(double cv, double conic, const std::vector<double>& coefs) :
     conic_(conic),
-    max_nonzero_index_(0),
-    num_coefs_(10)
+    num_terms_(10)
 {
     cv_ = cv;
-    coefs_ = std::vector<double>(num_coefs_, 0.0);
-    this->set_coef(coefs);
+    terms_ = std::vector<double>(num_terms_, 0.0);
+    this->SetTerms(coefs);
     eps_ = 1.0e-8;
 }
 
 
 EvenPolynomial::~EvenPolynomial()
 {
-    coefs_.clear();
+    terms_.clear();
 }
 
 
-bool EvenPolynomial::intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
+bool EvenPolynomial::Intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
 {
     // Spencer's method
 
@@ -92,36 +90,34 @@ bool EvenPolynomial::intersect(Eigen::Vector3d& pt, double& distance, const Eige
     return true;
 }
 
-double EvenPolynomial::coef(int i) const
+double EvenPolynomial::GetNthTerm(int i) const
 {
-    if(i < num_coefs_){
-        return coefs_[i];
+    if(i < num_terms_){
+        return terms_[i];
     }else{
         return 0.0;
     }
 }
 
-void EvenPolynomial::set_coef(int i, double val)
+void EvenPolynomial::SetNthTerm(int i, double val)
 {
-    if(i < num_coefs_){
-        coefs_[i] = val;
-        update_max_nonzero_index();
+    if(i < num_terms_){
+        terms_[i] = val;
     }
 }
 
-void EvenPolynomial::set_coef(const std::vector<double>& coefs)
+void EvenPolynomial::SetTerms(const std::vector<double>& coefs)
 {
-    coefs_ = std::vector<double>(num_coefs_, 0.0);
+    terms_ = std::vector<double>(num_terms_, 0.0);
 
-    for(int i = 0; i < std::min(num_coefs_, (int)coefs.size()); i++){
-        coefs_[i] = coefs[i];
+    for(int i = 0; i < std::min(num_terms_, (int)terms_.size()); i++){
+        terms_[i] = coefs[i];
     }
 
-    update_max_nonzero_index();
 }
 
 
-double EvenPolynomial::sag(double x, double y) const
+double EvenPolynomial::Sag(double x, double y) const
 {
     double r2 = x*x + y*y;
 
@@ -133,7 +129,6 @@ double EvenPolynomial::sag(double x, double y) const
         return NAN;
     }
     else{
-        //z = cv_*r2 / ( 1.0 + sqrt(1.0 - (conic_+1.0)*cv_*cv_*r2) );
         z = cv_*r2 / ( 1.0 + sqrt( inside_sqrt ) );
     }
 
@@ -142,9 +137,9 @@ double EvenPolynomial::sag(double x, double y) const
     double r_pow = r2;
 
     //Ar4 + Br6 + Cr8...
-    for(int i = 0; i < num_coefs_; i++){
+    for(int i = 0; i < num_terms_; i++){
         r_pow *= r2;
-        z_asp += coefs_[i]*r_pow;        
+        z_asp += terms_[i]*r_pow;
     }
 
     return (z + z_asp);
@@ -152,7 +147,7 @@ double EvenPolynomial::sag(double x, double y) const
 
 double EvenPolynomial::f(const Eigen::Vector3d& p) const
 {
-    return ( p(2) - this->sag(p(0), p(1)) );
+    return ( p(2) - this->Sag(p(0), p(1)) );
 }
 
 Eigen::Vector3d EvenPolynomial::df(const Eigen::Vector3d& p) const
@@ -171,8 +166,8 @@ Eigen::Vector3d EvenPolynomial::df(const Eigen::Vector3d& p) const
     c_coef += 2.0;
     r_pow *= r2;
 
-    for(int i = 0; i < num_coefs_; i++){
-        e_asp += c_coef*coefs_[i]*r_pow;
+    for(int i = 0; i < num_terms_; i++){
+        e_asp += c_coef*terms_[i]*r_pow;
         c_coef += 2.0;
         r_pow *= r2;
     }
@@ -184,19 +179,6 @@ Eigen::Vector3d EvenPolynomial::df(const Eigen::Vector3d& p) const
 
 }
 
-void EvenPolynomial::update_max_nonzero_index()
-{
-    max_nonzero_index_ = num_coefs_-1;
-
-    int i = num_coefs_-1;
-    while(i > 0){
-        if(fabs(coefs_[i]) > std::numeric_limits<double>::epsilon()){
-            max_nonzero_index_ = i;
-            break;
-        }
-        i--;
-    }
-}
 
 double EvenPolynomial::deriv_1st(double h) const
 {
@@ -211,8 +193,8 @@ double EvenPolynomial::deriv_1st(double h) const
     double z2 = z2_denom/z2_num;
 
     double z3 = 0.0;
-    for (int i = 0; i < num_coefs_; i++) {
-        z3 += 2*(i+2) * coefs_[i] * pow(h, 2*(i+1) + 1);
+    for (int i = 0; i < num_terms_; i++) {
+        z3 += 2*(i+2) * terms_[i] * pow(h, 2*(i+1) + 1);
     }
 
     return (z1 + z2 + z3);
@@ -239,9 +221,9 @@ double EvenPolynomial::deriv_2nd(double h) const
 
     double z5 = 0.0;
     double h_pow = h*h;
-    for(int i = 0; i < num_coefs_; i++) {
+    for(int i = 0; i < num_terms_; i++) {
         double n = (2*(i+1)+1) * (2*(i+1)+1 +1);
-        z5 += n * coefs_[i] * h_pow;
+        z5 += n * terms_[i] * h_pow;
         h_pow *= h*h;
     }
 
@@ -249,10 +231,8 @@ double EvenPolynomial::deriv_2nd(double h) const
 }
 
 
-void EvenPolynomial::print(std::ostringstream &oss)
+void EvenPolynomial::Print(std::ostringstream &oss)
 {
-    update_max_nonzero_index();
-
     constexpr int label_w = 6;
     //constexpr int val_w = 16;
     constexpr int prec  = 6;
@@ -266,11 +246,11 @@ void EvenPolynomial::print(std::ostringstream &oss)
     oss << std::setw(label_w) << std::left << "k";
     oss << std::setw(label_w) << std::right << std::fixed << std::setprecision(prec) << conic_ << std::endl;
 
-    for(int i = 0; i <= max_nonzero_index_; i++){
+    for(int i = 0; i <= num_terms_; i++){
         int coef_index = 4 + 2*i;
         std::string coef_label = "A" + std::to_string(coef_index);
         oss << std::setw(label_w) << std::left << coef_label;
-        oss << std::setw(label_w) << std::right << std::fixed << std::scientific << std::setprecision(prec) << coefs_[i] << std::endl;
+        oss << std::setw(label_w) << std::right << std::fixed << std::scientific << std::setprecision(prec) << terms_[i] << std::endl;
     }
 
 }

@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -43,38 +43,39 @@ public:
     Ray(int n);
     ~Ray();
 
-    void allocate(int n);
+    void Allocate(int n);
 
     /** Add data at the beginning */
-    void prepend(std::unique_ptr<RaySegment> ray_at_srf);
+    void Prepend(std::unique_ptr<RaySegment> ray_at_srf);
 
     /** Add data at the last */
-    void append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
+    void Append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl);
 
-    void set_status(TraceError s) {status_ = s;}
-    void set_wvl(double wvl) { wvl_ = wvl; }
-    void set_pupil_coord(const Eigen::Vector2d& pupil) { pupil_crd_ = pupil;}
+    void SetStatus(TraceError s) {status_ = s;}
+    void SetWavelength(double wvl) { wvl_ = wvl; }
+    void SetPupilCoordinate(const Eigen::Vector2d& pupil) { pupil_crd_ = pupil;}
 
-    void set_reached_surface(int i);
+    void SetReachedSurfaceIndex(int i);
 
-    int size() const { return ray_at_srfs_.size();}
+    int Size() const { return ray_at_srfs_.size();}
 
-    int reached_surface() const { return reached_surface_index_; }
+    int GetReachedSurfaceIndex() const { return reached_surface_index_; }
 
-    RaySegment* at(int i) { return ray_at_srfs_[i].get(); }
-    RaySegment* front() const { return ray_at_srfs_.front().get();}
-    RaySegment* back() const { return ray_at_srfs_.back().get();}
-    RaySegment* at_lens_back() const { int len = ray_at_srfs_.size(); return ray_at_srfs_[len-2].get();}
-    TraceError status() const { return status_;}
-    double wavelength() const { return wvl_;}
-    const Eigen::Vector2d& pupil_coord() const { return pupil_crd_;}
+    RaySegment* GetAt(int i) { return ray_at_srfs_[i].get(); }
+    RaySegment* GetFront() const { return ray_at_srfs_.front().get();}
+    RaySegment* GetBack() const { return ray_at_srfs_.back().get();}
+    RaySegment* GetLensBack() const { int len = ray_at_srfs_.size(); return ray_at_srfs_[len-2].get();}
+    TraceError Status() const { return status_;}
+    double Savelength() const { return wvl_;}
+    const Eigen::Vector2d& PupilCoordinate() const { return pupil_crd_;}
+    double Wavelength() const { return wvl_;}
 
-    double optical_path_length() const;
+    double OpticalPathLength() const;
 
-    void clear();
+    void Clear();
 
-    void print(std::ostringstream& oss);
-    void print();
+    void Print(std::ostringstream& oss);
+    void Print();
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 

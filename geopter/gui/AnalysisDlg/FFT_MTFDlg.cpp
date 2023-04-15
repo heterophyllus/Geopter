@@ -30,7 +30,7 @@ FFT_MTFDlg::~FFT_MTFDlg()
 
 void FFT_MTFDlg::updateParentDockContent()
 {
-    m_opticalSystem->update_model();
+    m_opticalSystem->UpdateModel();
 
     int M = 16 * pow(2, ui->samplingCombo->currentIndex());
     double maxFreq = ui->maxFreqEdit->text().toDouble();
@@ -40,19 +40,19 @@ void FFT_MTFDlg::updateParentDockContent()
     delete mtf;
 
     std::ostringstream oss;
-    plotData->print(oss);
+    plotData->Print(oss);
     std::cout << oss.str() << std::endl;
 
-    m_renderer->clear();
+    m_renderer->Clear();
 
-    m_renderer->draw_plot(plotData);
-    m_renderer->set_x_axis_range(0.0, maxFreq);
-    m_renderer->set_y_axis_range(0.0, 1.0);
-    m_renderer->set_x_axis_label("Frequency");
-    m_renderer->set_y_axis_label("MTF");
-    m_renderer->draw_x_axis();
-    m_renderer->draw_y_axis();
+    m_renderer->DrawPlot(plotData);
+    m_renderer->SetXaxisRange(0.0, maxFreq);
+    m_renderer->SetYaxisRange(0.0, 1.0);
+    m_renderer->SetXaxisLabel("Frequency");
+    m_renderer->SetYaxisLabel("MTF");
+    m_renderer->DrawXaxis();
+    m_renderer->DrawYaxis();
 
-    m_renderer->update();
+    m_renderer->Update();
 
 }

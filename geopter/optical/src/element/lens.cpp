@@ -44,22 +44,22 @@ Lens::~Lens()
     gap_ = nullptr;
 }
 
-Surface* Lens::surface1() const
+Surface* Lens::Surface1() const
 {
     return s1_;
 }
 
-Surface* Lens::surface2() const
+Surface* Lens::Surface2() const
 {
     return s2_;;
 }
 
-void Lens::set_render_color_s1(const Rgb &color)
+void Lens::SetRenderColor_s1(const Rgb &color)
 {
     render_color_s1_ = color;
 }
 
-void Lens::set_render_color_s2(const Rgb &color)
+void Lens::SetRenderColor_s2(const Rgb &color)
 {
     render_color_s2_ = color;
 }

@@ -26,10 +26,8 @@ set(OPTICAL_SRCS
     assembly/decenter_data.cpp
     assembly/transformation.cpp
 
-    solve/solve.cpp
     solve/marginal_ray_height_solve.cpp
     solve/edge_thickness_solve.cpp
-    solve/overall_length_solve.cpp
 
     profile/surface_profile.cpp
     profile/spherical.cpp
@@ -56,7 +54,6 @@ set(OPTICAL_SRCS
     material/material_library.cpp
     material/glass_catalog.cpp
     material/buchdahl_glass.cpp
-    material/material.cpp
     material/air.cpp
     material/glass.cpp
 
@@ -72,12 +69,10 @@ set(OPTICAL_SRCS
     sequential/ray_segment.cpp
     sequential/sequential_trace.cpp
 
-    renderer/renderer.cpp
     renderer/rgb.cpp
 
     data/plot_data.cpp
     data/graph2d.cpp
-    data/data_grid.cpp
 
     common/geopter_error.cpp
     common/matrix_tool.cpp

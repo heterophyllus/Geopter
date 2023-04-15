@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -23,19 +23,12 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   material.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
 #include <string>
-
+#include "spec/spectral_line.h"
 
 namespace geopter {
 
@@ -43,17 +36,32 @@ namespace geopter {
 class Material
 {
 public:
-    Material(double nd=1.0, std::string name="");
-    virtual ~Material();
+    Material(){
+        name_ = "";
+        n_ = 1.0;
+    }
 
-    virtual std::string name() const;
-    virtual void set_name(std::string name);
+    Material(double nd, std::string name){
+        n_ = nd;
+        name_ = name;
+    }
+
+    virtual ~Material(){}
+
+    virtual std::string Name() const { return name_; }
+    virtual void SetName(std::string name) { name_ = name; }
 
     /** Return refractive index at specified wavelength */
-    virtual double rindex(double wv_nm) const;
+    virtual double RefractiveIndex(double /*wv_nm*/) const { return n_; }
 
     /** Returns Abbe number in d-lne */
-    virtual double abbe_d() const;
+    virtual double Abbe_d() const {
+        double nd = RefractiveIndex(SpectralLine::d);
+        double nF = RefractiveIndex(SpectralLine::F);
+        double nC = RefractiveIndex(SpectralLine::C);
+
+        return (nd - 1.0)/(nF - nC);
+    }
 
 protected:
     std::string name_;

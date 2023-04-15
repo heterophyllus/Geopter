@@ -54,7 +54,7 @@ ElementModel::~ElementModel()
     opt_sys_ = nullptr;
 }
 
-Element* ElementModel::element(int i) const
+Element* ElementModel::GetElement(int i) const
 {   
     assert( i >= 0);
 
@@ -67,37 +67,37 @@ Element* ElementModel::element(int i) const
 }
 
 
-int ElementModel::element_count() const
+int ElementModel::NumberOfElements() const
 {
     return elements_.size();
 }
 
-void ElementModel::create()
+void ElementModel::Create()
 {
-    int num_gaps = opt_sys_->optical_assembly()->gap_count();
-    int stop_index = opt_sys_->optical_assembly()->stop_index();
+    int num_gaps = opt_sys_->GetOpticalAssembly()->NumberOfGaps();
+    int stop_index = opt_sys_->GetOpticalAssembly()->StopIndex();
 
-    clear();
+    Clear();
 
     for(int gi = 0; gi < num_gaps; gi++){
-        Gap* gap = opt_sys_->optical_assembly()->gap(gi);
+        Gap* gap = opt_sys_->GetOpticalAssembly()->GetGap(gi);
 
-        if(gap->material()->name() == "AIR") {
+        if(gap->GetMaterial()->Name() == "AIR") {
             if(gi == 0){
                 // add dummy as Object
-                auto dummy = std::make_unique<DummyInterface>(opt_sys_->optical_assembly()->surface(gi));
+                auto dummy = std::make_unique<DummyInterface>(opt_sys_->GetOpticalAssembly()->GetSurface(gi));
                 elements_.push_back(std::move(dummy));
 
             }else{
-                Gap* gap_before = opt_sys_->optical_assembly()->gap(gi-1);
-                if(gap_before->material()->name() == "AIR"){
+                Gap* gap_before = opt_sys_->GetOpticalAssembly()->GetGap(gi-1);
+                if(gap_before->GetMaterial()->Name() == "AIR"){
                     if(gi == stop_index){
                         // add stop
-                        auto stop_elem = std::make_unique<Stop>(opt_sys_->optical_assembly()->surface(gi));
+                        auto stop_elem = std::make_unique<Stop>(opt_sys_->GetOpticalAssembly()->GetSurface(gi));
                         elements_.push_back(std::move(stop_elem));
                     }else{
                         // add dummy
-                        auto dummy = std::make_unique<DummyInterface>(opt_sys_->optical_assembly()->surface(gi));
+                        auto dummy = std::make_unique<DummyInterface>(opt_sys_->GetOpticalAssembly()->GetSurface(gi));
                         elements_.push_back(std::move(dummy));
                     }
                 }
@@ -105,8 +105,8 @@ void ElementModel::create()
         }
         else{
             // add lens
-            Surface* s1 = opt_sys_->optical_assembly()->surface(gi);
-            Surface* s2 = opt_sys_->optical_assembly()->surface(gi+1);
+            Surface* s1 = opt_sys_->GetOpticalAssembly()->GetSurface(gi);
+            Surface* s2 = opt_sys_->GetOpticalAssembly()->GetSurface(gi+1);
             auto lens = std::make_unique<Lens>(s1, s2, gap);
             elements_.push_back(std::move(lens));
         }
@@ -114,7 +114,7 @@ void ElementModel::create()
 
 }
 
-void ElementModel::clear()
+void ElementModel::Clear()
 {
     if(!elements_.empty()){
         for(auto &e:elements_){
@@ -125,7 +125,7 @@ void ElementModel::clear()
 }
 
 
-void ElementModel::update_model()
+void ElementModel::Update_Model()
 {
-    create();
+    Create();
 }

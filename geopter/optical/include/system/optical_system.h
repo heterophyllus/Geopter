@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -55,45 +55,45 @@ public:
     OpticalSystem();
     virtual ~OpticalSystem();
 
-    void initialize();
+    void Initialize();
 
     /** Returns the title of the system */
-    std::string title() const { return title_; }
+    std::string Title() const { return title_; }
 
     /** Returns note attached to the system */
-    std::string note() const { return note_; }
+    std::string Note() const { return note_; }
 
     /** Optical specifications; pupil, field, wavelength */
-    OpticalSpec* optical_spec() const { return opt_spec_.get(); }
+    OpticalSpec* GetOpticalSpec() const { return opt_spec_.get(); }
 
     /** sequential assembly of surfaces and gaps filled with material */
-    OpticalAssembly* optical_assembly() const { return opt_assembly_.get(); }
+    OpticalAssembly* GetOpticalAssembly() const { return opt_assembly_.get(); }
 
-    MaterialLibrary* material_lib() const { return material_lib_.get(); }
+    MaterialLibrary* GetMaterialLib() const { return material_lib_.get(); }
 
-    FirstOrderData* first_order_data() const { return fod_.get(); }
+    FirstOrderData* GetFirstOrderData() const { return fod_.get(); }
 
-    void load_file(const std::string& filepath);
-    void save_to_file(const std::string& filepath);
+    void LoadFile(const std::string& filepath);
+    void SaveToFile(const std::string& filepath);
 
-    void set_title(std::string title) { title_ = title; }
-    void set_note(std::string note) { note_ = note;}
+    void SetTitle(std::string title) { title_ = title; }
+    void SetNote(std::string note) { note_ = note;}
 
-    void set_vignetting_factors();
+    void SetVignettingFactors();
 
-    void get_object_coord();
+    void GetObjectCoord();
 
-    void update_model();
+    void UpdateModel();
 
-    void clear();
+    void Clear();
 
-    void print(std::ostringstream& oss);
+    void Print(std::ostringstream& oss);
 
 
 protected:
     std::unique_ptr<OpticalAssembly> opt_assembly_;
-    std::unique_ptr<OpticalSpec> opt_spec_;
-    std::unique_ptr<FirstOrderData> fod_;
+    std::unique_ptr<OpticalSpec>     opt_spec_;
+    std::unique_ptr<FirstOrderData>  fod_;
     std::unique_ptr<MaterialLibrary> material_lib_;
 
     std::string title_;

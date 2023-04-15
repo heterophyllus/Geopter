@@ -37,56 +37,53 @@
 
 using namespace geopter;
 
-int OpticalAssembly::num_surfs_ = 0;
-
 OpticalAssembly::OpticalAssembly(OpticalSystem* opt_sys) :
     parent_(opt_sys)
 {
-
+    num_surfs_ = 0;
 }
 
 OpticalAssembly::~OpticalAssembly()
 {
-    clear();
+    Clear();
 }
 
 
-void OpticalAssembly::update_transforms()
+void OpticalAssembly::UpdateTransforms()
 {
     // update transforms
-    set_local_transforms();
-    set_global_transforms(1);
+    SetLocalTransforms();
+    SetGlobalTransforms(1);
 
     num_surfs_ = interfaces_.size();
 }
 
 
-void OpticalAssembly::update_solve()
+void OpticalAssembly::UpdateSolve()
 {
-    const int num_srfs = this->surface_count();
+    const int num_srfs = interfaces_.size();
     for(int i = 0; i < num_srfs; i++){
-        if(this->surface(i)->has_solve()){
-            this->surface(i)->solve()->apply(parent_);
+        if(this->GetSurface(i)->HasSolve()){
+            this->GetSurface(i)->GetSolve()->Apply(parent_);
         }
-        if(this->gap(i)->has_solve()){
-            this->gap(i)->solve()->apply(parent_);
+        if(this->GetGap(i)->HasSolve()){
+            this->GetGap(i)->GetSolve()->Apply(parent_);
         }
     }
 }
 
-void OpticalAssembly::update_semi_diameters()
+void OpticalAssembly::UpdateSemiDiameters()
 {
     SequentialTrace *tracer = new SequentialTrace(parent_);
 
-    const int num_srf = this->surface_count();
-    const int num_flds = FieldSpec::number_of_fields();
-    const double ref_wvl = parent_->optical_spec()->spectral_region()->reference_wavelength();
+    const int num_flds = parent_->GetOpticalSpec()->GetFieldSpec()->NumberOfFields();
+    const double ref_wvl = parent_->GetOpticalSpec()->GetWavelengthSpec()->ReferenceWavelength();
     constexpr int num_ref_rays = 5;
 
 
     // initialize all surface
-    for(int si = 0; si < num_srf; si++) {
-        this->surface(si)->set_semi_diameter(0.0);
+    for(int si = 0; si < num_surfs_; si++) {
+        this->GetSurface(si)->SetSemiDiameter(0.0);
     }
 
     // update semi diameter
@@ -95,16 +92,16 @@ void OpticalAssembly::update_semi_diameters()
 
     for(int fi = 0; fi < num_flds; fi++)
     {
-        Field* fld = parent_->optical_spec()->field_of_view()->field(fi);
+        Field* fld = parent_->GetOpticalSpec()->GetFieldSpec()->GetField(fi);
 
-        if(!tracer->trace_reference_rays(ref_rays, fld, ref_wvl) ){
+        if(!tracer->TraceReferenceRays(ref_rays, fld, ref_wvl) ){
             std::cerr << "Failed to trace reference rays:" << "f" << fi << std::endl;
             continue;
         }
 
         std::vector<double> ray_size_list;
         for(int ri = 0; ri < num_ref_rays; ri++){
-            ray_size_list.push_back(ref_rays[ri]->size());
+            ray_size_list.push_back(ref_rays[ri]->Size());
         }
         int ray_size = *std::min_element(ray_size_list.begin(), ray_size_list.end());
 
@@ -114,7 +111,7 @@ void OpticalAssembly::update_semi_diameters()
 
             try{
                 for(int ri = 0; ri < num_ref_rays; ri++){
-                    ray_ht_list[ri] = ref_rays[ri]->at(si)->height();
+                    ray_ht_list[ri] = ref_rays[ri]->GetAt(si)->Height();
                 }
             }
             catch(std::out_of_range &e){
@@ -129,10 +126,10 @@ void OpticalAssembly::update_semi_diameters()
 
             double ray_ht_for_cur_fld = *std::max_element(ray_ht_list.begin(), ray_ht_list.end());
 
-            double current_sd = this->surface(si)->semi_diameter();
+            double current_sd = this->GetSurface(si)->SemiDiameter();
 
             if(current_sd < ray_ht_for_cur_fld) {
-                this->surface(si)->set_semi_diameter(ray_ht_for_cur_fld);
+                this->GetSurface(si)->SetSemiDiameter(ray_ht_for_cur_fld);
             }
 
         }
@@ -142,7 +139,7 @@ void OpticalAssembly::update_semi_diameters()
     delete tracer;
 }
 
-void OpticalAssembly::clear()
+void OpticalAssembly::Clear()
 {
     if(!interfaces_.empty())
     {
@@ -163,16 +160,16 @@ void OpticalAssembly::clear()
     num_surfs_ = 0;
 }
 
-void OpticalAssembly::create_minimun_assembly()
+void OpticalAssembly::CreateMinimumAssembly()
 {
-    clear();
+    Clear();
 
     // add object interface and gap
     auto s_obj = std::make_unique<Surface>("Obj");
     interfaces_.push_back(std::move(s_obj));
 
     //auto air = std::make_shared<Air>();
-    auto air = MaterialLibrary::air();
+    auto air = MaterialLibrary::GetAir();
     auto g = std::make_unique<Gap>(0.0, air);
     gaps_.push_back(std::move(g));
 
@@ -199,7 +196,7 @@ void OpticalAssembly::create_minimun_assembly()
 }
 
 
-Gap* OpticalAssembly::image_space_gap() const
+Gap* OpticalAssembly::ImageSpaceGap() const
 {
     if(gaps_.empty()){
         return nullptr;
@@ -210,7 +207,7 @@ Gap* OpticalAssembly::image_space_gap() const
 
 }
 
-void OpticalAssembly::insert(int i)
+void OpticalAssembly::Insert(int i)
 {
     if( i < 0){ //append
         auto s = std::make_unique<Surface>();
@@ -224,11 +221,11 @@ void OpticalAssembly::insert(int i)
         num_surfs_ = interfaces_.size();
 
     }else{
-        this->insert(i, std::numeric_limits<double>::infinity(), 0.0, "AIR");
+        this->Insert(i, std::numeric_limits<double>::infinity(), 0.0, "AIR");
     }
 }
 
-void OpticalAssembly::insert(int i, double r, double t, const std::string &mat_name)
+void OpticalAssembly::Insert(int i, double r, double t, const std::string &mat_name)
 {
     bool is_appending = false; // append after image
 
@@ -262,7 +259,7 @@ void OpticalAssembly::insert(int i, double r, double t, const std::string &mat_n
     }
 
     // search material
-    auto m = MaterialLibrary::find(mat_name);
+    auto m = MaterialLibrary::Find(mat_name);
 
     // insert the gap
     auto g = std::make_unique<Gap>(t,m);
@@ -281,7 +278,7 @@ void OpticalAssembly::insert(int i, double r, double t, const std::string &mat_n
     num_surfs_ = interfaces_.size();
 }
 
-void OpticalAssembly::remove(int i)
+void OpticalAssembly::Remove(int i)
 {
     if ( i < (int)gaps_.size() ) {
         auto ifcs_itr = interfaces_.begin();
@@ -306,11 +303,7 @@ void OpticalAssembly::remove(int i)
 }
 
 
-
-
-
-
-void OpticalAssembly::set_local_transforms()
+void OpticalAssembly::SetLocalTransforms()
 {
     // For the moment, deceneter is not supported
 
@@ -323,14 +316,14 @@ void OpticalAssembly::set_local_transforms()
         //r = rotation to next
         //t(0) = x to next
         //t(1) = y to next
-        t(2) = gaps_[i]->thi();
+        t(2) = gaps_[i]->Thickness();
         tfrm.rotation = r;
         tfrm.transfer = t;
-        interfaces_[i]->set_local_transform(tfrm);
+        interfaces_[i]->SetLocalTransform(tfrm);
     }
 }
 
-void OpticalAssembly::set_global_transforms(int ref_srf)
+void OpticalAssembly::SetGlobalTransforms(int ref_srf)
 {
     assert(ref_srf > 0);
 
@@ -342,21 +335,21 @@ void OpticalAssembly::set_global_transforms(int ref_srf)
     // ref
     tfrm.rotation = Eigen::Matrix3d::Identity(3,3);
     tfrm.transfer = Eigen::Vector3d::Zero(3);
-    interfaces_[ref_srf]->set_global_transform(tfrm);
+    interfaces_[ref_srf]->SetGlobalTransform(tfrm);
 
     // s0..ref-1
     for (int i = 0; i < ref_srf; i++) {
         Eigen::Vector3d transfer_cur_to_ref = Eigen::Vector3d::Zero(3);
 
         for(int j = i; j < ref_srf; j++) {
-            Eigen::Vector3d transfer_sj = interfaces_[j]->local_transform().transfer;
+            Eigen::Vector3d transfer_sj = interfaces_[j]->LocalTransform().transfer;
             transfer_cur_to_ref += transfer_sj;
         }
         Eigen::Vector3d transfer_ref_to_cur = - transfer_cur_to_ref;
 
         tfrm.rotation = global_rot;
         tfrm.transfer = transfer_ref_to_cur;
-        interfaces_[i]->set_global_transform(tfrm);
+        interfaces_[i]->SetGlobalTransform(tfrm);
     }
 
     // ref+1..last
@@ -365,29 +358,29 @@ void OpticalAssembly::set_global_transforms(int ref_srf)
         Eigen::Vector3d transfer_ref_to_cur = Eigen::Vector3d::Zero(3);
 
         for(int j = ref_srf; j < i; j++) {
-            Eigen::Vector3d transfer_sj = interfaces_[j]->local_transform().transfer;
+            Eigen::Vector3d transfer_sj = interfaces_[j]->LocalTransform().transfer;
             transfer_ref_to_cur += transfer_sj;
         }
         tfrm.rotation = global_rot;
         tfrm.transfer = transfer_ref_to_cur;
-        interfaces_[i]->set_global_transform(tfrm);
+        interfaces_[i]->SetGlobalTransform(tfrm);
     }
 }
 
 
-double OpticalAssembly::overall_length(int start, int end)
+double OpticalAssembly::OverallLength(int start, int end)
 {
     assert(start <= end);
 
     double oal = 0.0;
     for(int si = start; si < end; si++){
-        oal += gaps_[si]->thi();
+        oal += gaps_[si]->Thickness();
     }
 
     return oal;
 }
 
-void OpticalAssembly::print(std::ostringstream& oss) const
+void OpticalAssembly::Print(std::ostringstream& oss) const
 {
     constexpr int idx_w = 4;
     constexpr int val_w = 16;
@@ -411,7 +404,8 @@ void OpticalAssembly::print(std::ostringstream& oss) const
     oss << std::setw(val_w) << std::right << "GblTfrm(Z)";
     oss << std::endl;
 
-    int num_srf = interfaces_.size();
+    const int num_srf = interfaces_.size();
+    const int num_gaps = gaps_.size();
 
     double r, thi, nd, vd, sd;
     vd = 0.0;
@@ -419,20 +413,20 @@ void OpticalAssembly::print(std::ostringstream& oss) const
 
     for(int i = 0; i < num_srf; i++) {
 
-        r             = interfaces_[i]->radius();
-        label         = interfaces_[i]->label();
-        sd            = interfaces_[i]->semi_diameter();
-        aperture_type = interfaces_[i]->aperture_shape();
+        r             = interfaces_[i]->Radius();
+        label         = interfaces_[i]->Label();
+        sd            = interfaces_[i]->SemiDiameter();
+        aperture_type = interfaces_[i]->ApertureShape();
 
         if(aperture_type == "None"){
             aperture_type = "-";
         }
 
-        if(i < gap_count()){
-            thi      = gaps_[i]->thi();
-            mat_name = gaps_[i]->material()->name();
-            nd       = gaps_[i]->material()->rindex(SpectralLine::d);
-            vd       = gaps_[i]->material()->abbe_d();
+        if(i < num_gaps){
+            thi      = gaps_[i]->Thickness();
+            mat_name = gaps_[i]->GetMaterial()->Name();
+            nd       = gaps_[i]->GetMaterial()->RefractiveIndex(SpectralLine::d);
+            vd       = gaps_[i]->GetMaterial()->Abbe_d();
         }else{
             thi = 0.0;
             mat_name = "";
@@ -450,13 +444,13 @@ void OpticalAssembly::print(std::ostringstream& oss) const
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << sd;
 
         // local transforms
-        Eigen::Vector3d lcl_t = interfaces_[i]->local_transform().transfer;
+        Eigen::Vector3d lcl_t = interfaces_[i]->LocalTransform().transfer;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << lcl_t(0);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << lcl_t(1);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << lcl_t(2);
 
         // global transform
-        Eigen::Vector3d gbl_t = interfaces_[i]->global_transform().transfer;
+        Eigen::Vector3d gbl_t = interfaces_[i]->GlobalTransform().transfer;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << gbl_t(0);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << gbl_t(1);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << gbl_t(2);

@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -31,8 +31,7 @@ using namespace geopter;
 
 OddPolynomial::OddPolynomial() :
     conic_(0.0),
-    max_nonzero_index_(0),
-    num_coefs_(10)
+    num_terms_(10)
 {
     cv_ = 0.0;
     eps_ = 1.0e-5;
@@ -40,22 +39,21 @@ OddPolynomial::OddPolynomial() :
 
 OddPolynomial::OddPolynomial(double cv, double conic, const std::vector<double>& coefs) :
     conic_(conic),
-    max_nonzero_index_(0),
-    num_coefs_(10)
+    num_terms_(10)
 {
     cv_ = cv;
-    this->set_coef(coefs);
+    this->SetTerms(coefs);
     eps_ = 1.0e-5;
 }
 
 
 OddPolynomial::~OddPolynomial()
 {
-    coefs_.clear();
+    terms_.clear();
 }
 
 
-bool OddPolynomial::intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
+bool OddPolynomial::Intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir)
 {
     // Spencer's method
 
@@ -88,51 +86,35 @@ bool OddPolynomial::intersect(Eigen::Vector3d& pt, double& distance, const Eigen
 }
 
 
-void OddPolynomial::set_coef(int i, double val)
+void OddPolynomial::SetNthTerm(int i, double val)
 {
-    if(i < num_coefs_){
-        coefs_[i] = val;
-        update_max_nonzero_index();
+    if(i < num_terms_){
+        terms_[i] = val;
     }
 }
 
-void OddPolynomial::set_coef(const std::vector<double>& coefs)
+void OddPolynomial::SetTerms(const std::vector<double>& coefs)
 {
-    coefs_ = std::vector<double>(num_coefs_, 0.0);
+    terms_ = std::vector<double>(num_terms_, 0.0);
 
-    for(int i = 0; i < std::min(num_coefs_, (int)coefs.size()); i++){
-        coefs_[i] = coefs[i];
+    for(int i = 0; i < std::min(num_terms_, (int)coefs.size()); i++){
+        terms_[i] = coefs[i];
     }
-
-    update_max_nonzero_index();
 }
 
 
-double OddPolynomial::coef(int i) const
+double OddPolynomial::GetNthTerm(int i) const
 {
-    if(i < num_coefs_){
-        return coefs_[i];
+    if(i < num_terms_){
+        return terms_[i];
     }else{
         return 0.0;
     }
 }
 
 
-void OddPolynomial::update_max_nonzero_index()
-{
-    max_nonzero_index_ = num_coefs_-1;
 
-    int i = num_coefs_-1;
-    while(i > 0){
-        if(fabs(coefs_[i]) > std::numeric_limits<double>::epsilon()){
-            max_nonzero_index_ = i;
-            break;
-        }
-        i--;
-    }
-}
-
-double OddPolynomial::sag(double x, double y) const
+double OddPolynomial::Sag(double x, double y) const
 {
     double r2 = x*x + y*y;
     double r = sqrt(r2);
@@ -144,8 +126,8 @@ double OddPolynomial::sag(double x, double y) const
     double z_pol = 0.0;
     double r_pow = r2*r;
 
-    for(int i = 0; i < num_coefs_; i++) {
-        z_pol += coefs_[i] * r_pow;
+    for(int i = 0; i < num_terms_; i++) {
+        z_pol += terms_[i] * r_pow;
         r_pow *= r;
     }
 
@@ -154,7 +136,7 @@ double OddPolynomial::sag(double x, double y) const
 
 double OddPolynomial::f(const Eigen::Vector3d &p) const
 {
-    return ( p(2) - this->sag(p(0), p(1)) );
+    return ( p(2) - this->Sag(p(0), p(1)) );
 }
 
 Eigen::Vector3d OddPolynomial::df(const Eigen::Vector3d &p) const
@@ -172,8 +154,8 @@ Eigen::Vector3d OddPolynomial::df(const Eigen::Vector3d &p) const
 
     double r_pow = r;
     double num = 3.0;
-    for(int i = 0; i < num_coefs_; i++){
-        pol_contrib += num*coefs_[i]*r_pow;
+    for(int i = 0; i < num_terms_; i++){
+        pol_contrib += num*terms_[i]*r_pow;
         num += 1.0;
         r_pow *= r;
     }
@@ -196,8 +178,8 @@ double OddPolynomial::deriv_1st(double h) const
     double pol_contrib = 0.0;
     double h_pol = h*h;
     double num = 3.0;
-    for(int i = 0; i < num_coefs_; i++){
-        pol_contrib += num*coefs_[i]*h_pol;
+    for(int i = 0; i < num_terms_; i++){
+        pol_contrib += num*terms_[i]*h_pol;
         num += 1.0;
         h_pol *= h;
     }
@@ -233,9 +215,9 @@ double OddPolynomial::deriv_2nd(double h) const
     double z_pol = 0.0;
     double h_pow = h;
 
-    for(int i = 0; i < num_coefs_; i++) {
+    for(int i = 0; i < num_terms_; i++) {
         double n = (double) ((i+2)*(i+3));
-        z_pol += n*h_pow*coefs_[i];
+        z_pol += n*h_pow*terms_[i];
 
         h_pow *= h;
     }
@@ -243,9 +225,8 @@ double OddPolynomial::deriv_2nd(double h) const
     return (z_conic + z_pol);
 }
 
-void OddPolynomial::print(std::ostringstream &oss)
+void OddPolynomial::Print(std::ostringstream &oss)
 {
-    update_max_nonzero_index();
 
     constexpr int label_w = 6;
     //constexpr int val_w = 16;
@@ -260,11 +241,11 @@ void OddPolynomial::print(std::ostringstream &oss)
     oss << std::setw(label_w) << std::left << "k";
     oss << std::setw(label_w) << std::right << std::fixed << std::setprecision(prec) << conic_ << std::endl;
 
-    for(int i = 0; i <= max_nonzero_index_; i++){
+    for(int i = 0; i <= num_terms_; i++){
         int coef_index = 3 + i;
         std::string coef_label = "A" + std::to_string(coef_index);
         oss << std::setw(label_w) << std::left << coef_label;
-        oss << std::setw(label_w) << std::right << std::fixed << std::scientific << std::setprecision(prec) << coefs_[i] << std::endl;
+        oss << std::setw(label_w) << std::right << std::fixed << std::scientific << std::setprecision(prec) << terms_[i] << std::endl;
     }
 
 }

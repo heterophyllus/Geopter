@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -45,29 +45,29 @@ public:
      * @param y0 paraxial ray height at starting point
      * @param u0 slope of outgoing ray at starting point
      */
-    std::shared_ptr<ParaxialRay> trace_paraxial_ray_from_object(double y0, double u0, double wvl);
+    std::shared_ptr<ParaxialRay> TraceParaxialRayFromObject(double y0, double u0, double wvl);
 
-    std::shared_ptr<ParaxialRay> trace_paraxial_axis_ray(double wvl);
+    std::shared_ptr<ParaxialRay> TraceParaxialAxisRay(double wvl);
 
-    std::shared_ptr<ParaxialRay> trace_paraxial_chief_ray(double wvl);
+    std::shared_ptr<ParaxialRay> TraceParaxialChiefRay(double wvl);
 
     /**
-     * @brief Generate the paraxial path 
+     * @brief Generate paraxial path
      * 
      * @param start start surface index
      * @param end end surface index
      * @param wi wavelength index
      * @return ParaxialPath 
      */
-    ParaxialPath paraxial_path(int start, int end, double wvl) const;
+    ParaxialPath CreateParaxialPath(int start, int end, double wvl) const;
 
-    Eigen::Matrix2d system_matrix(int s1, int s2, double wvl) const;
+    Eigen::Matrix2d SystemMatrix(int s1, int s2, double wvl) const;
 
-    static Eigen::Matrix2d system_matrix(OpticalSystem* opt_sys, int s1, int s2, double wvl);
+    static Eigen::Matrix2d SystemMatrix(OpticalSystem* opt_sys, int s1, int s2, double wvl);
 
 private:
-    ParaxialPath forward_paraxial_path(int start, int end, double wvl) const;
-    ParaxialPath reverse_paraxial_path(int start, int end, double wvl) const;
+    ParaxialPath CreateForwardParaxialPath(int start, int end, double wvl) const;
+    ParaxialPath CreateReverseParaxialPath(int start, int end, double wvl) const;
 
     const OpticalSystem* opt_sys_;
 };

@@ -54,29 +54,29 @@ public:
         y_dimension_ = radius_;
     }
 
-    void set_radius(double r){
+    void SetRadius(double r){
         radius_ = r;
     }
 
-    double radius() const{
+    double Radius() const{
         return radius_;
     }
 
-    std::string shape_name() const{
+    std::string ShapeName() const{
         return "Circular";
     }
 
-    double max_dimension() const{
+    double MaxDimension() const{
         return radius_;
     }
 
-    void set_dimension(double x, double y){
+    void SetDimension(double x, double y){
         x_dimension_ = x;
         y_dimension_ = y;
         radius_ = sqrt(x*x + y*y);
     }
 
-    bool point_inside(double x, double y) const{
+    bool PointInside(double x, double y) const{
         //constexpr double eps = 1.0e-5;
         if( (x*x + y*y) <= (radius_*radius_) ){
             return true;

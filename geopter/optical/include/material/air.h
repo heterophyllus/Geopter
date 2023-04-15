@@ -37,13 +37,13 @@ public:
     Air();
     ~Air();
 
-    double rindex(double wv_nm) const override;
-    double abbe_d() const override;
+    double RefractiveIndex(double wv_nm) const override;
+    double Abbe_d() const override;
 
-    static double refractive_index_abs(double wvl_micron, double T, double P= 101325.0);
+    static double RefractiveIndexAbs(double wvl_micron, double T, double P= 101325.0);
 
 private:
-    static double refractive_index_15degC_1atm(double wvl_micron);
+    static double RefractiveIndex15deg1atm(double wvl_micron);
 };
 
 

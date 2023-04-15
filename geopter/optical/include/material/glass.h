@@ -43,35 +43,35 @@ public:
     Glass();
     ~Glass();
 
-    double rindex(double wv_nm) const override;
+    double RefractiveIndex(double wv_nm) const override;
 
-    std::string name() const override;
+    std::string Name() const override { return product_name_ + "_" + supplier_name_;}
 
-    void set_dispersion_formula(int i);
-    void set_dispersion_coefs(int i, double val);
+    void SetDispersionFormula(int i);
+    void SetDispersionCoefs(int i, double val);
 
-    double refractive_index_rel(double wvl_micron) const;
-    double refractive_index_abs(double wvl_micron) const;
+    double RefractiveIndexRel(double wvl_micron) const;
+    double RefractiveIndexAbs(double wvl_micron) const;
 
-    void set_supplier(std::string sup);
-    std::string supplier() const;
+    void SetSupplier(std::string sup){ supplier_name_ = sup; std::transform(supplier_name_.begin(), supplier_name_.end(), supplier_name_.begin(), toupper); }
+    std::string Supplier() const { return supplier_name_;}
 
-    void set_product_name(std::string name);
-    std::string product_name() const;
+    void SetProductName(std::string name){ product_name_ = name; std::transform(product_name_.begin(), product_name_.end(), product_name_.begin(), toupper); }
+    const std::string& ProductName() const { return product_name_; }
 
-    double abbe_d() const override;
+    double Abbe_d() const override;
 
-    void set_thermal_data(double D0, double D1, double D2, double E0, double E1, double Ltk, double Tref);
-    double dn_dt_abs(double wvl_micron, double t) const;
-    double delta_n_abs(double wvl_micron, double t) const;
+    void SetThermalData(double D0, double D1, double D2, double E0, double E1, double Ltk, double Tref);
+    double DnDtAbs(double wvl_micron, double t) const;
+    double Delta_n_Abs(double wvl_micron, double t) const;
 
-    void print();
-    void print(std::ostringstream& oss);
+    void Print();
+    void Print(std::ostringstream& oss);
 
 private:
-    double relative_wavelength(double lambdainput, double T, double P = 101325.0) const;
-    double refractive_index_abs_Tref(double wvl_micron) const;
-    double refractive_index_rel_Tref(double wvl_micron) const;
+    double RelativeWavelength(double lambdainput, double T, double P = 101325.0) const;
+    double RefractiveIndexAbs_Tref(double wvl_micron) const;
+    double RefractiveIndexRel_Tref(double wvl_micron) const;
 
     /** dispersion formula */
     double (*formula_func_ptr_)(double, const std::vector<double>&);

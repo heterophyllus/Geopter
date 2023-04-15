@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -55,14 +55,14 @@ PlotData::~PlotData()
 }
 
 
-void PlotData::print()
+void PlotData::Print()
 {
     std::ostringstream oss;
-    print(oss);
+    Print(oss);
     std::cout << oss.str() << std::endl;
 }
 
-void PlotData::print(std::ostringstream &oss)
+void PlotData::Print(std::ostringstream &oss)
 {    
     constexpr int idx_w = 8;
     constexpr int val_w = 12;
@@ -75,16 +75,16 @@ void PlotData::print(std::ostringstream &oss)
         // labels
         oss << std::setw(idx_w) << std::right << std::fixed << y_axis_label_;
         for(auto &g : graphs_){
-            oss << std::setw(val_w) << std::right << std::fixed << g->name();
+            oss << std::setw(val_w) << std::right << std::fixed << g->Name();
         }
         oss << std::endl;
 
         // data
-        const int num_data = graphs_[0]->data_count();
+        const int num_data = graphs_[0]->NumberOfData();
         for(int i = 0; i < num_data; i++){
-            oss << std::setw(idx_w) << std::right << std::fixed << std::setprecision(prec) << graphs_[0]->y_data()[i];
+            oss << std::setw(idx_w) << std::right << std::fixed << std::setprecision(prec) << graphs_[0]->YData()[i];
             for(auto &g : graphs_){
-                oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << g->x_data()[i];
+                oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << g->XData()[i];
             }
             oss << std::endl;
         }
@@ -93,16 +93,16 @@ void PlotData::print(std::ostringstream &oss)
         // labels
         oss << std::setw(idx_w) << std::right << std::fixed << x_axis_label_;
         for(auto &g : graphs_){
-            oss << std::setw(val_w) << std::right << std::fixed << g->name();
+            oss << std::setw(val_w) << std::right << std::fixed << g->Name();
         }
         oss << std::endl;
 
         // data
-        const int num_data = graphs_[0]->data_count();
+        const int num_data = graphs_[0]->NumberOfData();
         for(int i = 0; i < num_data; i++){
-            oss << std::setw(idx_w) << std::right << std::fixed << std::setprecision(prec) << graphs_[0]->x_data()[i];
+            oss << std::setw(idx_w) << std::right << std::fixed << std::setprecision(prec) << graphs_[0]->XData()[i];
             for(auto &g : graphs_){
-                oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << g->y_data()[i];
+                oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << g->YData()[i];
             }
             oss << std::endl;
         }

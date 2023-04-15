@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -45,27 +45,27 @@ public:
     Layout(OpticalSystem* sys, Renderer* renderer);
     ~Layout();
 
-    void draw_elements();
+    void DrawElements();
 
     /** Draw chief ray, upper/lower marginal rays for one field */
-    void draw_reference_rays();
+    void DrawReferenceRays();
 
-    void draw_fan_rays(int nrd= 10);
+    void DrawFanRays(int nrd= 10);
 
     /** Draw a single ray */
-    void draw_single_ray(const std::shared_ptr<Ray>& ray, const Rgb& color);
+    void DrawSingleRay(const std::shared_ptr<Ray>& ray, const Rgb& color);
 
-    void update();
+    void Update();
 
 private:
     OpticalSystem* opt_sys_;
     Renderer* renderer_;
 
-    void draw_lens(Lens* lens, const Rgb& color);
-    void draw_surface(Surface* srf, double max_y, const Rgb& color);
-    void draw_stop(Stop* stop_elem, const Rgb &color);
-    void draw_dummy_surface(DummyInterface *dummy_srf, const Rgb &color);
-    void draw_flat(Surface* srf, double min_y, double max_y, const Rgb& color);
+    void DrawLens(Lens* lens, const Rgb& color);
+    void DrawSurface(Surface* srf, double max_y, const Rgb& color);
+    void DrawStop(Stop* stop_elem, const Rgb &color);
+    void DrawDummySurface(DummyInterface *dummy_srf, const Rgb &color);
+    void DrawFlat(Surface* srf, double min_y, double max_y, const Rgb& color);
 };
 
 } //namespace geopter

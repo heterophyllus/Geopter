@@ -29,7 +29,7 @@ Graph2d::~Graph2d()
     y_data_.clear();
 }
 
-void Graph2d::set_data(const std::vector<double>& x, const std::vector<double>& y)
+void Graph2d::SetData(const std::vector<double>& x, const std::vector<double>& y)
 {
     assert(x.size() == y.size());
 
@@ -37,31 +37,31 @@ void Graph2d::set_data(const std::vector<double>& x, const std::vector<double>& 
     y_data_ = y;
 }
 
-void Graph2d::add_data(double x, double y)
+void Graph2d::AddData(double x, double y)
 {
     x_data_.push_back(x);
     y_data_.push_back(y);
 }
 
-void Graph2d::get_data(std::vector<double>& xdata, std::vector<double>& ydata)
+void Graph2d::GetData(std::vector<double>& xdata, std::vector<double>& ydata)
 {
     xdata = x_data_;
     ydata = y_data_;
 }
 
-void Graph2d::get_x_range(double* lower, double* higher) const
+void Graph2d::GetXRange(double* lower, double* higher) const
 {
     *lower  = *std::min_element(x_data_.begin(), y_data_.end());
     *higher = *std::max_element(x_data_.begin(), y_data_.end());
 }
 
-void Graph2d::get_y_range(double* lower, double* higher) const
+void Graph2d::GetYRange(double* lower, double* higher) const
 {
     *lower  = *std::min_element(y_data_.begin(), y_data_.end());
     *higher = *std::max_element(y_data_.begin(), y_data_.end());
 }
 
-void Graph2d::print(std::ostringstream &oss)
+void Graph2d::Print(std::ostringstream &oss)
 {
     constexpr int idx_w = 8;
     constexpr int val_w = 12;

@@ -10,15 +10,15 @@ class NoneAperture
 public:
     NoneAperture() : x_dimension_(0.0), y_dimension_(0.0), x_offset_(0.0), y_offset_(0.0), rotation_(0.0){}
 
-    std::string shape_name() const{
+    std::string ShapeName() const{
         return "None";
     }
 
-    double max_dimension() const{
+    double MaxDimension() const{
         return 0.0;
     }
 
-    bool point_inside(double x, double y) const{
+    bool PointInside(double /*x*/, double /*y*/) const{
         return true;
     }
 

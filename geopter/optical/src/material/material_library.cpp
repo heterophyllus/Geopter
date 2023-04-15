@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -37,7 +37,6 @@
 #include <cstdlib>
 
 #include "material/material_library.h"
-#include "material/glass_catalog.h"
 #include "material/buchdahl_glass.h"
 
 #include "common/string_tool.h"
@@ -71,12 +70,12 @@ void MaterialLibrary::clear()
 
 }
 
-std::shared_ptr<Air> MaterialLibrary::air()
+std::shared_ptr<Air> MaterialLibrary::GetAir()
 {
     return air_;
 }
 
-GlassCatalog* MaterialLibrary::glass_catalog(int i)
+GlassCatalog* MaterialLibrary::GetGlassCatalog(int i)
 {
     if(i < (int)catalogs_.size()){
         return catalogs_[i].get();
@@ -85,39 +84,39 @@ GlassCatalog* MaterialLibrary::glass_catalog(int i)
     }
 }
 
-GlassCatalog* MaterialLibrary::glass_catalog(const std::string catname)
+GlassCatalog* MaterialLibrary::GetGlassCatalog(const std::string catname)
 {
     for(auto &cat : catalogs_)
     {
-        if(catname == cat->name()){
+        if(catname == cat->Name()){
             return cat.get();
         }
     }
     return nullptr;
 }
 
-int MaterialLibrary::catalog_count() const
+int MaterialLibrary::NumberOfCatalogs() const
 {
     return catalogs_.size();
 }
 
-std::shared_ptr<Material> MaterialLibrary::find(std::string material_name)
+std::shared_ptr<Material> MaterialLibrary::Find(std::string material_name)
 {
-    if(StringTool::contains(material_name, "_")){
+    if(StringTool::Contains(material_name, "_")){
         // assume real glass (ex. N-BK7_SCHOTT)
         std::transform(material_name.begin(), material_name.end(), material_name.begin(), ::toupper); // all-uppercase
-        std::vector<std::string> product_and_supplier = StringTool::split(material_name, '_');
+        std::vector<std::string> product_and_supplier = StringTool::Split(material_name, '_');
         std::string product_name  = product_and_supplier[0];
         std::string supplier_name = product_and_supplier[1];
-        GlassCatalog* catalog = glass_catalog(supplier_name);
+        GlassCatalog* catalog = GetGlassCatalog(supplier_name);
         if(catalog){
-            return catalog->glass(product_name);
+            return catalog->GetGlass(product_name);
         }else{
             return nullptr;
         }
-    }else if(StringTool::contains(material_name, ":")){
+    }else if(StringTool::Contains(material_name, ":")){
         // assume model glass
-        std::vector<std::string> nd_and_vd = StringTool::split(material_name, ':');
+        std::vector<std::string> nd_and_vd = StringTool::Split(material_name, ':');
         double nd = std::stod(nd_and_vd[0]);
         double vd = std::stod(nd_and_vd[1]);
         auto buchdahl_glass = std::make_shared<BuchdahlGlass>(nd, vd);
@@ -129,8 +128,8 @@ std::shared_ptr<Material> MaterialLibrary::find(std::string material_name)
             GlassCatalog* catalog = catalogs_[ci].get();
             //std::string product_and_supplier = material_name + "_" + catalog->name();
             std::string product_name = material_name;
-            if(catalog->glass(product_name)){ //found
-                return catalog->glass(product_name);
+            if(catalog->GetGlass(product_name)){ //found
+                return catalog->GetGlass(product_name);
             }
         }
         return nullptr;
@@ -138,7 +137,7 @@ std::shared_ptr<Material> MaterialLibrary::find(std::string material_name)
 }
 
 
-bool MaterialLibrary::load_agf_files(const std::vector<std::string>& agf_paths)
+bool MaterialLibrary::LoadAgfFiles(const std::vector<std::string>& agf_paths)
 {
     if(agf_paths.empty()) {
         return false;
@@ -151,7 +150,7 @@ bool MaterialLibrary::load_agf_files(const std::vector<std::string>& agf_paths)
     for(auto itr = agf_paths.begin(); itr != agf_paths.end(); itr++) {
         std::string agf_path = *itr;
         cat = std::make_unique<GlassCatalog>();
-        if(cat->load_agf(agf_path)){
+        if(cat->LoadAgf(agf_path)){
             catalogs_.push_back(std::move(cat));
         }else{
             cat.reset();

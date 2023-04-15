@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 **
@@ -36,7 +36,7 @@ WavefrontMap::WavefrontMap(OpticalSystem* opt_sys)
 }
 
 
-std::shared_ptr<DataGrid> WavefrontMap::create(const Field *fld, double wvl, int ndim)
+std::shared_ptr<DataGrid> WavefrontMap::Create(const Field *fld, double wvl, int ndim)
 {
     ndim_ = ndim;
     wvl_ = wvl;
@@ -45,21 +45,21 @@ std::shared_ptr<DataGrid> WavefrontMap::create(const Field *fld, double wvl, int
     const double convert_to_waves = 1.0/(nm_to_mm*wvl);
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
-    tracer->set_aperture_check(true);
-    tracer->set_apply_vig(false);
+    tracer->SetApertureCheck(true);
+    tracer->SetApplyVig(false);
 
-    SequentialPath seq_path = tracer->sequential_path(wvl);
+    SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
 
-    const auto chief_ray = std::make_shared<Ray>(seq_path.size());
-    int trace_result = tracer->trace_pupil_ray(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
+    const auto chief_ray = std::make_shared<Ray>(seq_path.Size());
+    int trace_result = tracer->TracePupilRay(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
 
     const double step = 2.0/static_cast<double>(ndim-1);
     const double start = -1.0;
 
     Eigen::Vector2d pupil;
 
-    double epd = 2.0*opt_sys_->first_order_data()->enp_radius;
-    RayPtr ray = std::make_shared<Ray>(seq_path.size());
+    double epd = 2.0*opt_sys_->GetFirstOrderData()->entrance_pupil_radius;
+    RayPtr ray = std::make_shared<Ray>(seq_path.Size());
 
     auto data_grid = std::make_shared<DataGrid>(ndim, ndim, epd, epd);
 
@@ -77,16 +77,16 @@ std::shared_ptr<DataGrid> WavefrontMap::create(const Field *fld, double wvl, int
             pupil(1) = start + step*static_cast<double>(i);
 
             if(pupil.norm() < 1.0){
-                trace_result = tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl);
+                trace_result = tracer->TracePupilRay(ray, seq_path, pupil, fld, wvl);
                 if(TRACE_SUCCESS == trace_result){
                     double opd = wave_abr_full_calc(ray, chief_ray, fld, ref_sphere);
                     opd *= convert_to_waves;
-                    data_grid->set_value_at(i, j, opd);
+                    data_grid->SetValueAt(i, j, opd);
                 }else{
-                    data_grid->set_value_at(i, j, NAN);
+                    data_grid->SetValueAt(i, j, NAN);
                 }
             }else{
-                data_grid->set_value_at(i, j, NAN);
+                data_grid->SetValueAt(i, j, NAN);
             }
 
         }

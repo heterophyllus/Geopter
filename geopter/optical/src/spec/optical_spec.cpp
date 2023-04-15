@@ -33,35 +33,35 @@ using namespace geopter;
 OpticalSpec::OpticalSpec(OpticalSystem* opt_sys) :
     parent_(opt_sys)
 {
-    spectral_region_ = std::make_unique<WavelengthSpec>();
+    wavelength_spec_ = std::make_unique<WavelengthSpec>();
     pupil_           = std::make_unique<PupilSpec>();
-    field_of_view_   = std::make_unique<FieldSpec>();
+    field_spec_      = std::make_unique<FieldSpec>();
 }
 
 OpticalSpec::~OpticalSpec()
 {
-    spectral_region_.reset();
+    wavelength_spec_.reset();
     pupil_.reset();
-    field_of_view_.reset();
+    field_spec_.reset();
 }
 
 
-void OpticalSpec::create_minimum_spec()
+void OpticalSpec::CreateMinimumSpec()
 {
-    field_of_view_->clear();
-    field_of_view_->add(0.0, 0.0, 1.0, rgb_black);
+    field_spec_->clear();
+    field_spec_->AddField(0.0, 0.0, 1.0, rgb_black);
 
-    spectral_region_->clear();
-    spectral_region_->add_wavelength(SpectralLine::d, 1.0, rgb_black);
+    wavelength_spec_->clear();
+    wavelength_spec_->AddWavelength(SpectralLine::d, 1.0, rgb_black);
 
-    pupil_->set_value(PupilType::EPD);
-    pupil_->set_value(10);
+    pupil_->SetPupilType(PupilType::EPD);
+    pupil_->SetValue(10);
 }
 
-void OpticalSpec::clear()
+void OpticalSpec::Clear()
 {
-    spectral_region_->clear();
-    field_of_view_->clear();
+    wavelength_spec_->clear();
+    field_spec_->clear();
 }
 
 void OpticalSpec::update()
@@ -72,15 +72,15 @@ void OpticalSpec::update()
     Eigen::Vector3d img_pt;
     Eigen::Vector3d dir_tan;
 
-    const int field_type = field_of_view_->field_type();
-    double enp_dist = parent_->first_order_data()->enp_dist;
-    double obj_dist = parent_->first_order_data()->obj_dist;
-    double red      = parent_->first_order_data()->red;
+    const int field_type = field_spec_->FieldType();
+    double enp_dist = parent_->GetFirstOrderData()->entrance_pupil_distance;
+    double obj_dist = parent_->GetFirstOrderData()->object_distance;
+    double red      = parent_->GetFirstOrderData()->reduction;
 
-    for(int fi = 0; fi < FieldSpec::number_of_fields(); fi++){
-        Field* fld = field_of_view_->field(fi);
-        double fld_x = fld->x();
-        double fld_y = fld->y();
+    for(int fi = 0; fi < field_spec_->NumberOfFields(); fi++){
+        Field* fld = field_spec_->GetField(fi);
+        double fld_x = fld->X();
+        double fld_y = fld->Y();
 
         switch (field_type)
         {
@@ -109,25 +109,25 @@ void OpticalSpec::update()
             obj_pt = Eigen::Vector3d::Zero(3);
         }
 
-        fld->set_object_pt(obj_pt);
+        fld->SetObjectPt(obj_pt);
     }
 
     // update aim pt
-    if(OpticalAssembly::number_of_surfaces() > 2)
+    if(parent_->GetOpticalAssembly()->NumberOfSurfaces() > 2)
     {
         SequentialTrace tracer(parent_);
-        tracer.set_apply_vig(true);
-        tracer.set_aperture_check(false);
+        tracer.SetApplyVig(true);
+        tracer.SetApertureCheck(false);
 
         Eigen::Vector2d aim_pt;
         Eigen::Vector3d obj_pt;
-        double ref_wvl = spectral_region_->reference_wavelength();
-        for(int fi = 0; fi < FieldSpec::number_of_fields(); fi++){
-            Field* fld = field_of_view_->field(fi);
+        double ref_wvl = wavelength_spec_->ReferenceWavelength();
+        for(int fi = 0; fi < field_spec_->NumberOfFields(); fi++){
+            Field* fld = field_spec_->GetField(fi);
 
-            if(tracer.aim_chief_ray(aim_pt, obj_pt, fld, ref_wvl)){
-                field_of_view_->field(fi)->set_aim_pt(aim_pt);
-                field_of_view_->field(fi)->set_object_pt(obj_pt);
+            if(tracer.AimChiefRay(aim_pt, obj_pt, fld, ref_wvl)){
+                field_spec_->GetField(fi)->SetAimPt(aim_pt);
+                field_spec_->GetField(fi)->SetObjectPt(obj_pt);
             }else{
                 std::cerr << "Ray aiming failed at field " << fi << std::endl;
                 continue;
@@ -140,12 +140,12 @@ void OpticalSpec::update()
 void OpticalSpec::print(std::ostringstream &oss)
 {
     oss << "Pupil Specs..." << std::endl;
-    pupil_->print(oss);
+    pupil_->Print(oss);
 
     oss << "Wavelengths..." << std::endl;
-    spectral_region_->print(oss);
+    wavelength_spec_->print(oss);
 
     oss << "Fields..." << std::endl;
-    field_of_view_->print(oss);
+    field_spec_->print(oss);
 
 }

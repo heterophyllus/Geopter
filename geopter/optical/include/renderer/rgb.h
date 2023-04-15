@@ -46,16 +46,6 @@
 */
 
 
-//============================================================================
-/// \file   rgb.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
-
-
-
 #ifndef RGB_H
 #define RGB_H
 
@@ -68,7 +58,8 @@ struct Rgb
 {
 public:
     Rgb() : r(0.0), g(0.0), b(0.0), a(0.0){ }
-    Rgb(double red, double green, double blue, double alpha = 0.0) : r(red), g(green), b(blue), a(alpha){ }
+    Rgb(double red, double green, double blue, double alpha = 0.0)
+        : r(red), g(green), b(blue), a(alpha){ }
 
     double r;
     double g;

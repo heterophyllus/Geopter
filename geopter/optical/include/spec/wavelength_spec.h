@@ -40,40 +40,40 @@ public:
     WavelengthSpec();
     ~WavelengthSpec();
 
-    int number_of_wavelengths() { return num_wvls_; }
+    int NumberOfWavelengths() { return num_wvls_; }
 
     /** Returns Wvl component at the specified index */
-    Wavelength* wavelength(int i) const { return wvls_[i].get();}
+    Wavelength* GetWavelength(int i) const { return wvls_[i].get();}
 
     /** Get wavelength value of current reference index */
-    double reference_wavelength() const { return wvls_[reference_index_]->value();}
+    double ReferenceWavelength() const { return wvls_[reference_index_]->Value();}
 
     /** Returns current reference wavelength index */
-    int reference_index() const { return reference_index_;}
+    int ReferenceIndex() const { return reference_index_;}
 
     /** Set reference index to the given index */
-    void set_reference_index(int i) { reference_index_ = i;}
+    void SetReferenceIndex(int i) { reference_index_ = i;}
 
     /** Returns minimum wavelength value in current spectral region */
-    double lower_wavelength() const { return lower_;}
+    double LowerWavelength() const { return lower_;}
 
     /** Returns maximum wavelength value in current spectral region */
-    double higher_wavelength() const { return higher_;}
+    double HigherWavelength() const { return higher_;}
 
     /** Returns wavelength value list */
-    std::vector<double> get_wavelength_list() const;
+    std::vector<double> GetWavelengthList() const;
 
     /** Returns wavelength weight list */
-    std::vector<double> get_weight_list() const;
+    std::vector<double> GetWeightList() const;
 
     /** Returns max weight */
-    double max_weight() const {return max_weight_;}
+    double MaxWeight() const {return max_weight_;}
 
     /** Add a new wavelength */
-    void add_wavelength(double wl, double wt= 1.0, Rgb render_color= rgb_black);
+    void AddWavelength(double wl, double wt= 1.0, Rgb render_color= rgb_black);
 
     /** Remove wavelength at the specified index */
-    void remove_wavelength(int i);
+    void RemoveWavelength(int i);
 
     void clear();
 

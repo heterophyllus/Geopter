@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -39,44 +39,41 @@ public:
     OddPolynomial(double cv, double k=0.0, const std::vector<double>& coefs=std::vector<double>(10, 0.0));
     ~OddPolynomial();
 
-    std::string name() const{ return "ODD";}
+    std::string Name() const{ return "ODD";}
 
     /** Returns the conic factor */
-    double conic() const{
+    double Conic() const{
         return conic_;
     }
 
     /** Returns aspherical coefficient at the specified index */
-    double coef(int i) const;
+    double GetNthTerm(int i) const;
 
-    int coef_count() const{
-        return coefs_.size();
+    int NumberOfTerms() const{
+        return terms_.size();
     }
-    double sag(double x, double y) const;
+    double Sag(double x, double y) const;
     double f(const Eigen::Vector3d& p) const;
     Eigen::Vector3d df(const Eigen::Vector3d& p) const;
     double deriv_1st(double h) const;
     double deriv_2nd(double h) const;
 
-    void set_conic(double k){
+    void SetConic(double k){
         conic_ = k;
     }
-    void set_coef(int i, double val);
-    void set_coef(const std::vector<double>& coefs);
+    void SetNthTerm(int i, double val);
+    void SetTerms(const std::vector<double>& coefs);
 
-    bool intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
+    bool Intersect(Eigen::Vector3d& pt, double& distance, const Eigen::Vector3d& p0, const Eigen::Vector3d& dir);
 
-    void print(std::ostringstream& oss);
+    void Print(std::ostringstream& oss);
 
 protected:
-    void update_max_nonzero_index();
-
     double cv_;
     double eps_;
     double conic_;
-    int max_nonzero_index_;
-    std::vector<double> coefs_;
-    int num_coefs_;
+    std::vector<double> terms_;
+    int num_terms_;
 };
 
 }

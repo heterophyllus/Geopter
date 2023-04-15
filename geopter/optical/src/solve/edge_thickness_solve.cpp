@@ -37,28 +37,28 @@ EdgeThicknessSolve::EdgeThicknessSolve(int gap_index, double height, double valu
     value_ = value;
 }
 
-bool EdgeThicknessSolve::check(const OpticalSystem *opt_sys)
+bool EdgeThicknessSolve::Check(const OpticalSystem *opt_sys)
 {
     if(gap_index_ < 0 || height_ < 0.0 || value_ < 0.0) return false;
 
-    if(gap_index_ > opt_sys->optical_assembly()->gap_count()-1) return false;
+    if(gap_index_ > opt_sys->GetOpticalAssembly()->NumberOfGaps() -1) return false;
 
     return true;
 }
 
-void EdgeThicknessSolve::apply(OpticalSystem* opt_sys)
+void EdgeThicknessSolve::Apply(OpticalSystem* opt_sys)
 {
     int s1 = gap_index_;
     int s2 = s1+1;
-    double sag1 = opt_sys->optical_assembly()->surface(s1)->sag(0.0, height_);
-    double sag2 = opt_sys->optical_assembly()->surface(s2)->sag(0.0, height_);
+    double sag1 = opt_sys->GetOpticalAssembly()->GetSurface(s1)->Sag(0.0, height_);
+    double sag2 = opt_sys->GetOpticalAssembly()->GetSurface(s2)->Sag(0.0, height_);
 
     double thi = value_ - ( -sag1 + sag2); //et = -sag1 + thi + sag2;
 
-    opt_sys->optical_assembly()->gap(gap_index_)->set_thi(thi);
+    opt_sys->GetOpticalAssembly()->GetGap(gap_index_)->SetThickness(thi);
 }
 
-void EdgeThicknessSolve::set_parameters(int index, double param1, double param2, double param3)
+void EdgeThicknessSolve::SetParameters(int index, double param1, double param2, double param3)
 {
 
 }

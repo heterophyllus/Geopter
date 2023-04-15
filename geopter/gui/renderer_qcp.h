@@ -14,33 +14,33 @@ public:
     RendererQCP(QCustomPlot* customPlot);
     ~RendererQCP();
 
-    void clear() override;
-    void update() override;
+    void Clear() override;
+    void Update() override;
 
-    void set_grid_layout(int rows, int cols) override;
-    void set_current_cell(int row, int col) override;
+    void SetGridLayout(int rows, int cols) override;
+    void SetCurrentCell(int row, int col) override;
 
-    void draw_plot(const std::shared_ptr<PlotData> plotdata) override;
+    void DrawPlot(const std::shared_ptr<PlotData> plotdata) override;
 
-    void draw_hist2d(const Eigen::MatrixXd& Z, int type, int colormap);
+    void DrawHist2d(const Eigen::MatrixXd& Z, int type, int colormap);
 
-    void draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0, double line_width= 1.0) override;
-    void draw_polyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0, double line_width= 1.0) override;
-    void draw_polyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style=0, double line_width= 1.0) override;
-    void draw_dots(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, double dot_size) override;
+    void DrawLine(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style=0, double line_width= 1.0) override;
+    void DrawPolyline(const std::vector<Eigen::Vector2d>& pts, const Rgb& color, int line_style=0, double line_width= 1.0) override;
+    void DrawPolyline(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, int line_style=0, double line_width= 1.0) override;
+    void DrawDots(const std::vector<double>& x, const std::vector<double>& y, const Rgb& color, double dot_size) override;
 
-    QCPRange current_x_axis_range();
-    QCPRange current_y_axis_range();
+    QCPRange CurrentXaxisRange();
+    QCPRange CurrentYaxisRange();
 
-    void set_x_axis_range(double xmin, double xmax) override;
-    void set_y_axis_range(double ymin, double ymax) override;
+    void SetXaxisRange(double xmin, double xmax) override;
+    void SetYaxisRange(double ymin, double ymax) override;
 
-    void set_x_axis_label(std::string label) override;
-    void set_y_axis_label(std::string label) override;
+    void SetXaxisLabel(std::string label) override;
+    void SetYaxisLabel(std::string label) override;
 
-    void set_aspect_ratio(double h_per_v) override;
+    void SetAspectRatio(double h_per_v) override;
 
-    void set_mouse_interaction(bool state);
+    void SetMouseInteraction(bool state);
 
 private:
     QCustomPlot* customPlot_;

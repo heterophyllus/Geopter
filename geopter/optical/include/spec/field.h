@@ -43,29 +43,38 @@ public:
     Field(double x, double y, double wt, const Rgb& color, double vuy, double vly, double vux, double vlx);
     ~Field();
 
-    double x() const                  { return x_; }
-    double y() const                  { return y_; }
-    double vlx() const                { return vlx_; }
-    double vux() const                { return vux_; }
-    double vly() const                { return vly_; }
-    double vuy() const                { return vuy_; }
-    double weight() const             { return wt_; }
-    Rgb render_color() const          { return render_color_; }
-    Eigen::Vector2d aim_pt() const    { return aim_pt_; }
-    Eigen::Vector3d object_pt() const { return object_pt_; }
+    double X() const                  { return x_; }
+    double Y() const                  { return y_; }
 
-    void set_x(double x) { x_ = x; }
-    void set_y(double y) { y_ = y; }
-    void set_vlx(double vlx) { vlx_ = vlx; }
-    void set_vux(double vux) { vux_ = vux; }
-    void set_vly(double vly) { vly_ = vly; }
-    void set_vuy(double vuy) { vuy_ = vuy; }
-    void set_weight(double wt) { wt_= wt; }
-    void set_render_color(const Rgb& color) { render_color_ = color; }
-    void set_aim_pt(const Eigen::Vector2d& aim_pt) { aim_pt_ = aim_pt; }
-    void set_object_pt(const Eigen::Vector3d& obj_pt) { object_pt_ = obj_pt; }
+    /** Vignetting factor of lower x */
+    double VLX() const                { return vlx_; }
 
-    Eigen::Vector2d apply_vignetting(const Eigen::Vector2d& pupil) const;
+    /** Vignetting factor of upper x */
+    double VUX() const                { return vux_; }
+
+    /** Vignetting factor of lower y */
+    double VLY() const                { return vly_; }
+
+    /** Vignetting factor of upper y */
+    double VUY() const                { return vuy_; }
+
+    double Weight() const             { return wt_; }
+    const Rgb& RenderColor() const          { return render_color_; }
+    const Eigen::Vector2d& AimPt() const    { return aim_pt_; }
+    const Eigen::Vector3d& ObjectPt() const { return object_pt_; }
+
+    void SetX(double x) { x_ = x; }
+    void SetY(double y) { y_ = y; }
+    void SetVLX(double vlx) { vlx_ = vlx; }
+    void SetVUX(double vux) { vux_ = vux; }
+    void SetVLY(double vly) { vly_ = vly; }
+    void SetVUY(double vuy) { vuy_ = vuy; }
+    void SetWeight(double wt) { wt_= wt; }
+    void SetRenderColor(const Rgb& color) { render_color_ = color; }
+    void SetAimPt(const Eigen::Vector2d& aim_pt) { aim_pt_ = aim_pt; }
+    void SetObjectPt(const Eigen::Vector3d& obj_pt) { object_pt_ = obj_pt; }
+
+    Eigen::Vector2d ApplyVignetting(const Eigen::Vector2d& pupil) const;
 
 
 

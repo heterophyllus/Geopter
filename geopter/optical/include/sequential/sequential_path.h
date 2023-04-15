@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -37,22 +37,22 @@ namespace geopter {
 struct SequentialPathComponent
 {
     SequentialPathComponent(){
-        srf  = nullptr;
-        d    = 0.0;
-        rind = 1.0;
+        surface          = nullptr;
+        distance         = 0.0;
+        refractive_index = 1.0;
     }
     SequentialPathComponent(Surface* s, double thi, double n){
-        srf  = s;
-        d    = thi;
-        rind = n;
+        surface          = s;
+        distance         = thi;
+        refractive_index = n;
     }
     ~SequentialPathComponent(){
-        srf = nullptr;
+        surface = nullptr;
     }
 
-    Surface* srf;
-    double d;
-    double rind;
+    Surface* surface;
+    double distance;
+    double refractive_index;
 };
 
 
@@ -63,25 +63,25 @@ public:
     ~SequentialPath();
 
     /** Returns number of path components */
-    int size() const;
+    int Size() const;
 
     /** Access to path component at the given index */
-    SequentialPathComponent at(int i) const;
+    SequentialPathComponent At(int i) const;
 
     /** Returns wavelength used to calculate refractive index */
-    double wvl() const;
+    double Wavelength() const;
 
     /** Clear arrays */
-    void clear();
+    void Clear();
 
     /** Append a new path component */
-    void append(SequentialPathComponent seq_path_comp);
+    void Append(SequentialPathComponent seq_path_comp);
 
     /** Append a new path component */
-    void append(Surface* s, double thi, double n);
+    void Append(Surface* s, double thi, double n);
 
     /** Set wavelength value used to calculate refractive index */
-    void set_wvl(double wvl);
+    void SetWavelength(double wvl);
 
 private:
     std::vector<SequentialPathComponent> seq_path_comps_;

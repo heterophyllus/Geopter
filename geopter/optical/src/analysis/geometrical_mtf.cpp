@@ -9,7 +9,7 @@
 namespace  {
 
 
-double calc_geo_mtf(double s, double t, const std::vector<double>& x, const std::vector<double>& y)
+double CalculateGeometricalMtf(double s, double t, const std::vector<double>& x, const std::vector<double>& y)
 {
     assert(x.size() == y.size());
 
@@ -48,8 +48,8 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
      *
      */
 
-    const int num_flds = FieldSpec::number_of_fields();
-    const int num_wvls = opt_sys->optical_spec()->spectral_region()->number_of_wavelengths();
+    const int num_flds = opt_sys->GetOpticalSpec()->GetFieldSpec()->NumberOfFields();
+    const int num_wvls = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
 
     std::vector<double> freqs;
     {
@@ -63,39 +63,39 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
     const int num_freqs = freqs.size();
 
     std::shared_ptr<PlotData> plot_data = std::make_shared<PlotData>();
-    plot_data->set_plot_style(0);
-    plot_data->set_title("Geometrical MTF");
-    plot_data->set_x_axis_label("Frequency");
-    plot_data->set_y_axis_label("MTF");
+    plot_data->SetPlotStyle(0);
+    plot_data->SetTitle("Geometrical MTF");
+    plot_data->SetXLabel("Frequency");
+    plot_data->SetYLabel("MTF");
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys);
-    tracer->set_aperture_check(true);
-    tracer->set_apply_vig(false);
+    tracer->SetApertureCheck(true);
+    tracer->SetApplyVig(false);
 
     std::vector<SequentialPath> seq_paths;
     for (int wi = 0; wi < num_wvls; wi++){
-        double wvl = opt_sys->optical_spec()->spectral_region()->wavelength(wi)->value();
-        seq_paths.emplace_back(tracer->sequential_path(wvl));
+        double wvl = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
+        seq_paths.emplace_back(tracer->CreateSequentialPath(wvl));
     }
 
-    const int ref_wvl_idx = opt_sys->optical_spec()->spectral_region()->reference_index();
-    const double ref_wvl_val = opt_sys->optical_spec()->spectral_region()->reference_wavelength();
+    const int ref_wvl_idx = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->ReferenceIndex();
+    const double ref_wvl_val = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->ReferenceWavelength();
     const SequentialPath ref_seq_path = seq_paths[ref_wvl_idx];
 
 
-    auto chief_ray = std::make_shared<Ray>(opt_sys->optical_assembly()->number_of_surfaces());
-    auto ray = std::make_shared<Ray>(opt_sys->optical_assembly()->number_of_surfaces());
+    auto chief_ray = std::make_shared<Ray>( opt_sys->GetOpticalAssembly()->NumberOfSurfaces() );
+    auto ray = std::make_shared<Ray>(opt_sys->GetOpticalAssembly()->NumberOfSurfaces());
 
     for(int fi = 0; fi < num_flds; fi++){
-        Field* fld = opt_sys->optical_spec()->field_of_view()->field(fi);
+        Field* fld = opt_sys->GetOpticalSpec()->GetFieldSpec()->GetField(fi);
 
-        if(TRACE_SUCCESS != tracer->trace_pupil_ray(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val) ){
+        if(TRACE_SUCCESS != tracer->TracePupilRay(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val) ){
             std::cerr << "Failed to trace chief ray" << std::endl;
             continue;
         }
 
-        double chief_ray_x = chief_ray->back()->x();
-        double chief_ray_y = chief_ray->back()->y();
+        double chief_ray_x = chief_ray->GetBack()->X();
+        double chief_ray_y = chief_ray->GetBack()->Y();
 
 
         std::vector<double> us, vs; //point coordinates on image in current field
@@ -109,18 +109,18 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
         const double step = 2.0/static_cast<double>(nrd-1);
 
         for(int wi = 0; wi < num_wvls; wi++){
-            double wvl = opt_sys->optical_spec()->spectral_region()->wavelength(wi)->value();
+            double wvl = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
 
             for (int pi = 0; pi < nrd; pi++){
                 for(int pj = 0; pj < nrd; pj++){
                     pupil(0) = -1.0 + static_cast<double>(pj)*step;
                     pupil(1) = -1.0 + static_cast<double>(pi)*step;
 
-                    if(pupil.norm() <= 1.00001){
-                        ray->set_status(TRACE_SUCCESS);
-                        if(TRACE_SUCCESS == tracer->trace_pupil_ray(ray,seq_paths[wi], pupil, fld, wvl)){
-                            double ray_x = ray->back()->x();
-                            double ray_y = ray->back()->y();
+                    if(pupil.norm() <= 1.00){
+                        ray->SetStatus(TRACE_SUCCESS);
+                        if(TRACE_SUCCESS == tracer->TracePupilRay(ray,seq_paths[wi], pupil, fld, wvl)){
+                            double ray_x = ray->GetBack()->X();
+                            double ray_y = ray->GetBack()->Y();
 
                             double dx = ray_x - chief_ray_x;
                             double dy = ray_y - chief_ray_y;
@@ -143,27 +143,27 @@ std::shared_ptr<PlotData> GeometricalMTF::plot(OpticalSystem* opt_sys, int nrd, 
 
         for(int fk=0; fk < num_freqs; fk++){
             double freq = freqs[fk];
-            double mtf_sag = calc_geo_mtf(freq, 0.0, us, vs);
-            double mtf_tan = calc_geo_mtf(0.0, freq, us, vs);
+            double mtf_sag = CalculateGeometricalMtf(freq, 0.0, us, vs);
+            double mtf_tan = CalculateGeometricalMtf(0.0, freq, us, vs);
 
             mtf_sag_list[fk] = mtf_sag;
             mtf_tan_list[fk] = mtf_tan;
         }
 
         std::shared_ptr<Graph2d> graph_tan = std::make_shared<Graph2d>();
-        graph_tan->set_data(freqs, mtf_tan_list);
-        graph_tan->set_line_style(Renderer::LineStyle::Dots);
-        graph_tan->set_render_color(fld->render_color());
-        graph_tan->set_name("F" + std::to_string(fi) + "_T");
+        graph_tan->SetData(freqs, mtf_tan_list);
+        graph_tan->SetLineStyle(Renderer::LineStyle::Dots);
+        graph_tan->SetRenderColor(fld->RenderColor());
+        graph_tan->SetName("F" + std::to_string(fi) + "_T");
 
         std::shared_ptr<Graph2d> graph_sag = std::make_shared<Graph2d>();
-        graph_sag->set_line_style(Renderer::LineStyle::Solid);
-        graph_sag->set_data(freqs, mtf_sag_list);
-        graph_sag->set_render_color(fld->render_color());
-        graph_sag->set_name("F" + std::to_string(fi) + "_S");
+        graph_sag->SetLineStyle(Renderer::LineStyle::Solid);
+        graph_sag->SetData(freqs, mtf_sag_list);
+        graph_sag->SetRenderColor(fld->RenderColor());
+        graph_sag->SetName("F" + std::to_string(fi) + "_S");
 
-        plot_data->add_graph(graph_sag);
-        plot_data->add_graph(graph_tan);
+        plot_data->AddGraph(graph_sag);
+        plot_data->AddGraph(graph_tan);
     }
 
     delete tracer;

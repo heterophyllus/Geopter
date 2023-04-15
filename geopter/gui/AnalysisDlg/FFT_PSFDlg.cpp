@@ -38,7 +38,7 @@ FFT_PSFDlg::FFT_PSFDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
 
     // field
     QStringList fieldComboItems;
-    int numField = m_opticalSystem->optical_spec()->field_of_view()->field_count();
+    int numField = m_opticalSystem->GetOpticalSpec()->GetFieldSpec()->NumberOfFields();
     for(int fi = 0; fi < numField; fi ++) {
         fieldComboItems << QString::number(fi);
     }
@@ -47,7 +47,7 @@ FFT_PSFDlg::FFT_PSFDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
 
     // wavelength
     QStringList wvlComboItems;
-    int numWvl = m_opticalSystem->optical_spec()->spectral_region()->number_of_wavelengths();
+    int numWvl = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
     for(int wi = 0; wi < numWvl; wi++) {
         wvlComboItems << QString::number(wi);
     }
@@ -62,7 +62,7 @@ FFT_PSFDlg::~FFT_PSFDlg()
 
 void FFT_PSFDlg::updateParentDockContent()
 {
-    m_opticalSystem->update_model();
+    m_opticalSystem->UpdateModel();
 
     int fieldIndex = ui->fieldCombo->currentIndex();
     int wvlIndex = ui->wvlCombo->currentIndex();
@@ -73,28 +73,28 @@ void FFT_PSFDlg::updateParentDockContent()
     int colormap = ui->colormapCombo->currentIndex();
 
 
-    Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fieldIndex);
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wvlIndex)->value();
+    Field* fld = m_opticalSystem->GetOpticalSpec()->GetFieldSpec()->GetField(fieldIndex);
+    double wvl = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wvlIndex)->Value();
 
     DiffractivePSF* psf = new DiffractivePSF(m_opticalSystem);
     /*
     psf->from_opd_trace(m_opticalSystem, fld, wvl, ndim, L);
     */
 
-    auto psf_grid = psf->create(fld, wvl, ndim);
+    auto psf_grid = psf->Create(fld, wvl, ndim);
 
 
-    m_renderer->clear();
-    m_renderer->draw_hist2d(psf_grid->value_data(), type, colormap);
+    m_renderer->Clear();
+    m_renderer->DrawHist2d(psf_grid->ValueData(), type, colormap);
 
-    m_renderer->set_x_axis_range(0, ndim);
-    m_renderer->set_y_axis_range(0, ndim);
+    m_renderer->SetXaxisRange(0, ndim);
+    m_renderer->SetYaxisRange(0, ndim);
 
-    m_renderer->update();
+    m_renderer->Update();
 
     Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     std::ostringstream oss;
-    oss << psf_grid->value_data().format(CleanFmt) << std::endl;
+    oss << psf_grid->ValueData().format(CleanFmt) << std::endl;
     m_parentDock->setText(oss);
     m_parentDock->setCurrentTab(1);
 

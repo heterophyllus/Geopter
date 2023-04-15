@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -23,13 +23,6 @@
 **             Date: May 16th, 2021                                                                                          
 ********************************************************************************/
 
-//============================================================================
-/// \file   paraxial_path.h
-/// \author Hiiragi
-/// \date   September 12th, 2021
-/// \brief  
-//============================================================================
-
 
 #ifndef PARAXIALPATH_H
 #define PARAXIALPATH_H
@@ -41,25 +34,25 @@ namespace geopter {
 struct ParaxialPathComponent
 {
     ParaxialPathComponent() {
-        c = 0.0;
-        t = 0.0;
-        n = 1.0;
+        curvature        = 0.0;
+        thickness        = 0.0;
+        refractive_index = 1.0;
     }
 
     ParaxialPathComponent(double cv, double thi, double ind){
-        c = cv;
-        t = thi;
-        n = ind;
+        curvature        = cv;
+        thickness        = thi;
+        refractive_index = ind;
     }
 
     /** surface curvature */
-    double c;
+    double curvature;
 
     /** gap thickness */
-    double t;
+    double thickness;
 
     /** refractive index */
-    double n;
+    double refractive_index;
 };
 
 
@@ -69,21 +62,21 @@ public:
     ParaxialPath();
     ~ParaxialPath();
 
-    void prepend(ParaxialPathComponent par_path_comp);
+    void Prepend(ParaxialPathComponent par_path_comp);
 
-    void append(double c, double t, double n);
-    void append(ParaxialPathComponent par_path_comp);
+    void Append(double c, double t, double n);
+    void Append(ParaxialPathComponent par_path_comp);
 
-    int size() const;
+    int Size() const;
 
-    ParaxialPathComponent at(int i) const;
-    ParaxialPathComponent front() const;
-    ParaxialPathComponent back() const;
+    ParaxialPathComponent At(int i) const;
+    ParaxialPathComponent Front() const;
+    ParaxialPathComponent Back() const;
 
-    void clear();
+    void Clear();
 
 private:
-    std::vector<ParaxialPathComponent> par_path_comps_;
+    std::vector<ParaxialPathComponent> prx_path_comps_;
 };
 
 }

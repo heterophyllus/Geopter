@@ -16,7 +16,7 @@ public:
     {
         setWindowTitle("Solve");
 
-        QStringList items({"Fix", "Edge Thickness", "Overall Length", "Marginal Height"});
+        QStringList items({"Fix", "Edge Thickness", "Marginal Height"});
 
         m_combo = new QComboBox;
         m_combo->addItems(items);

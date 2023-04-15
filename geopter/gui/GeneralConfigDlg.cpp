@@ -38,7 +38,7 @@ void GeneralConfigDlg::browseAgfFiles()
         agf_paths.push_back(qspath.toStdString());
     }
 
-    opt_sys_->material_lib()->load_agf_files(agf_paths);
+    opt_sys_->GetMaterialLib()->LoadAgfFiles(agf_paths);
 
     updateCatalogList();
 
@@ -49,8 +49,8 @@ void GeneralConfigDlg::updateCatalogList()
 {
     QStringList catalogNames;
 
-    for(int i = 0; i < opt_sys_->material_lib()->catalog_count(); i++){
-        catalogNames << QString().fromStdString(opt_sys_->material_lib()->glass_catalog(i)->name());
+    for(int i = 0; i < opt_sys_->GetMaterialLib()->NumberOfCatalogs(); i++){
+        catalogNames << QString().fromStdString(opt_sys_->GetMaterialLib()->GetGlassCatalog(i)->Name());
     }
 
     ui->listCatalogs->clear();

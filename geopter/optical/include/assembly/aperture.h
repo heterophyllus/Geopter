@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -44,14 +44,14 @@ public:
     Aperture(double r) : Shape(r){}
     Aperture(double x, double y) : Shape(x,y){}
 
-    double x_dimension() const{
+    double DimensionX() const{
         return Shape::x_dimension_;
     }
-    double y_dimension() const{
+    double DimensionY() const{
         return Shape::y_dimension_;
     }
 
-    Eigen::Vector2d dimension() const{
+    Eigen::Vector2d Dimension() const{
         Eigen::Vector2d dim({Shape::x_dimension_, Shape::y_dimension_});
         return dim;
     }

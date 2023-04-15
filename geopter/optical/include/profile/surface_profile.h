@@ -43,16 +43,16 @@ public:
     SurfaceProfile(double cv) : Profile(cv){}
     SurfaceProfile(double cv, double k, const std::vector<double> coefs) : Profile(cv, k, coefs){}
 
-    void set_cv(double c) {
+    void SetCurvature(double c) {
         Profile::cv_ = c;
     }
 
     /** Returns center curvature */
-    double cv() const {
+    double Curvature() const {
         return Profile::cv_;
     }
 
-    void set_radius(double r){
+    void SetRadius(double r){
         if(std::isnan(r)){
             return;
         }else if(std::isinf(r)){
@@ -65,7 +65,7 @@ public:
     }
 
     /** Returns center radius */
-    double radius() const {
+    double Radius() const {
         if(fabs(Profile::cv_) < std::numeric_limits<double>::epsilon()){
             return std::numeric_limits<double>::infinity();
         }else{
@@ -73,7 +73,7 @@ public:
         }
     }
 
-    Eigen::Vector3d normal(const Eigen::Vector3d& p) const{
+    Eigen::Vector3d Normal(const Eigen::Vector3d& p) const{
         return Profile::df(p).normalized();
     }
 

@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -43,19 +43,19 @@ public:
     ~ElementModel();
 
     /** Returns pointer to element at the given index */
-    Element* element(int i) const;
+    Element* GetElement(int i) const;
 
     /** Returns number of elements */
-    int element_count() const;
+    int NumberOfElements() const;
 
     /** Create elements list */
-    void create();
+    void Create();
 
     /** Clear elements list */
-    void clear();
+    void Clear();
 
     
-    void update_model();
+    void Update_Model();
 
 private:
     OpticalSystem* opt_sys_;

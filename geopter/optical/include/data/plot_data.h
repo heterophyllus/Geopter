@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -26,8 +26,6 @@
 #ifndef PLOT_DATA_H
 #define PLOT_DATA_H
 
-#include <string>
-#include <vector>
 #include <map>
 #include <memory>
 #include <sstream>
@@ -42,25 +40,25 @@ public:
     PlotData();
     ~PlotData();
 
-    inline void add_graph(std::shared_ptr<Graph2d> graph);
-    inline void add_optional_data(const std::string& dataname, double value);
-    inline void set_title(const std::string& title);
-    inline void set_x_axis_label(const std::string& label);
-    inline void set_y_axis_label(const std::string& label);
-    inline void set_plot_style(int ps);
-    inline void set_xy_reverse(bool xy_reverse);
+    void AddGraph(std::shared_ptr<Graph2d> graph){ graphs_.push_back(graph); }
+    void AddOptionalData(const std::string& dataname, double value) { optional_data_.insert(std::make_pair(dataname, value)); }
+    void SetTitle(const std::string& title) { title_ = title; }
+    void SetXLabel(const std::string& label) { x_axis_label_ = label;}
+    void SetYLabel(const std::string& label) { y_axis_label_ = label; }
+    void SetPlotStyle(int ps) { plot_style_ = ps; }
+    void SetXYReverse(bool xy_reverse) { xy_reverse_ = xy_reverse; }
 
-    inline int data_count() const;
+    int NumberOfGraphs() const { return graphs_.size(); }
 
-    inline std::shared_ptr<Graph2d> graph(int i) const;
-    inline double get_optional_data(const std::string& dataname) const;
-    inline std::string title() const;
-    inline std::string x_axis_label() const;
-    inline std::string y_axis_label() const;
-    inline int plot_style() const;
+    std::shared_ptr<Graph2d> GetGraph(int i) const { return graphs_[i]; }
+    double GetOptionalData(const std::string& dataname) const { return optional_data_.at(dataname);}
+    std::string title() const { return title_;}
+    std::string XLabel() const { return x_axis_label_; }
+    std::string YLabel() const { return y_axis_label_;}
+    int PlotStyle() const { return plot_style_; }
 
-    void print(std::ostringstream& oss);
-    void print();
+    void Print(std::ostringstream& oss);
+    void Print();
 
 private:
     std::vector< std::shared_ptr<Graph2d> > graphs_;
@@ -73,76 +71,6 @@ private:
     bool common_x_label_;
 };
 
-
-void PlotData::add_graph(std::shared_ptr<Graph2d> graph)
-{
-    graphs_.push_back(graph);
-}
-
-void PlotData::add_optional_data(const std::string& dataname, double value)
-{
-    optional_data_.insert(std::make_pair(dataname, value));
-}
-
-void PlotData::set_title(const std::string &title)
-{
-    title_ = title;
-}
-
-void PlotData::set_x_axis_label(const std::string& label)
-{
-    x_axis_label_ = label;
-}
-
-void PlotData::set_y_axis_label(const std::string& label)
-{
-    y_axis_label_ = label;
-}
-
-void PlotData::set_plot_style(int ps)
-{
-    plot_style_ = ps;
-}
-
-void PlotData::set_xy_reverse(bool xy_reverse)
-{
-    xy_reverse_ = xy_reverse;
-}
-
-std::shared_ptr<Graph2d> PlotData::graph(int i) const
-{
-    return graphs_[i];
-}
-
-double PlotData::get_optional_data(const std::string& dataname) const
-{
-    return optional_data_.at(dataname);
-}
-
-std::string PlotData::title() const
-{
-    return title_;
-}
-
-int PlotData::data_count() const
-{
-    return graphs_.size();
-}
-
-std::string PlotData::x_axis_label() const
-{
-    return x_axis_label_;
-}
-
-std::string PlotData::y_axis_label() const
-{
-    return y_axis_label_;
-}
-
-int PlotData::plot_style() const
-{
-    return plot_style_;
-}
 
 }
 

@@ -13,49 +13,49 @@ QLensDataEditor::~QLensDataEditor()
 
 double QLensDataEditor::GetRadiusAt(int i) const
 {
-    return parent_->optical_assembly()->surface(i)->radius();
+    return parent_->GetOpticalAssembly()->GetSurface(i)->Radius();
 }
 
 double QLensDataEditor::GetThicknessAt(int i) const
 {
-    return parent_->optical_assembly()->gap(i)->thi();
+    return parent_->GetOpticalAssembly()->GetGap(i)->Thickness();
 }
 
 QString QLensDataEditor::GetMaterialAt(int i) const
 {
-    return QString().fromStdString( parent_->optical_assembly()->gap(i)->material()->name() );
+    return QString().fromStdString( parent_->GetOpticalAssembly()->GetGap(i)->GetMaterial()->Name() );
 }
 
 QString QLensDataEditor::GetLabelAt(int i) const
 {
-    return QString().fromStdString( parent_->optical_assembly()->surface(i)->label() );
+    return QString().fromStdString( parent_->GetOpticalAssembly()->GetSurface(i)->Label() );
 }
 
 void QLensDataEditor::InsertNewSurfaceAt(int i)
 {
-    parent_->optical_assembly()->insert(i);
+    parent_->GetOpticalAssembly()->Insert(i);
 }
 
 void QLensDataEditor::SetSurfaceDataAt(int i, double radius, double thick, QString material, QString comment)
 {
-    parent_->optical_assembly()->surface(i)->set_radius(radius);
-    parent_->optical_assembly()->gap(i)->set_thi(thick);
-    parent_->optical_assembly()->gap(i)->set_material( MaterialLibrary::find(material.toStdString()) );
-    parent_->optical_assembly()->surface(i)->set_label(comment.toStdString());
+    parent_->GetOpticalAssembly()->GetSurface(i)->SetRadius(radius);
+    parent_->GetOpticalAssembly()->GetGap(i)->SetThickness(thick);
+    parent_->GetOpticalAssembly()->GetGap(i)->SetMaterial( MaterialLibrary::Find(material.toStdString()) );
+    parent_->GetOpticalAssembly()->GetSurface(i)->SetLabel(comment.toStdString());
 }
 
 void QLensDataEditor::SetRadiusAt(int i, double r)
 {
-    parent_->optical_assembly()->surface(i)->set_radius(r);
+    parent_->GetOpticalAssembly()->GetSurface(i)->SetRadius(r);
 }
 
 void QLensDataEditor::SetThicknessAt(int i, double t)
 {
-    parent_->optical_assembly()->gap(i)->set_thi(t);
+    parent_->GetOpticalAssembly()->GetGap(i)->SetThickness(t);
 }
 
 void QLensDataEditor::SetMaterialAt(int i, QString material)
 {
-    parent_->optical_assembly()->gap(i)->set_material(MaterialLibrary::find(material.toStdString()));
+    parent_->GetOpticalAssembly()->GetGap(i)->SetMaterial(MaterialLibrary::Find(material.toStdString()));
 }
 

@@ -31,7 +31,7 @@ GeoMtfDlg::~GeoMtfDlg()
 
 void GeoMtfDlg::updateParentDockContent()
 {
-    m_opticalSystem->update_model();
+    m_opticalSystem->UpdateModel();
 
     int nrd = 16 * pow(2, ui->samplingCombo->currentIndex());
     double maxFreq = ui->maxFreqEdit->text().toDouble();
@@ -41,20 +41,20 @@ void GeoMtfDlg::updateParentDockContent()
 
     GeometricalMTF* geoMTF = new GeometricalMTF;
     auto plotData = geoMTF->plot(m_opticalSystem, nrd, maxFreq, step);
-    plotData->print(oss);
+    plotData->Print(oss);
     delete geoMTF;
 
-    m_renderer->clear();
+    m_renderer->Clear();
 
-    m_renderer->draw_plot(plotData);
-    m_renderer->set_x_axis_range(0.0, maxFreq);
-    m_renderer->set_y_axis_range(0.0, 1.0);
-    m_renderer->set_x_axis_label("Frequency");
-    m_renderer->set_y_axis_label("MTF");
-    m_renderer->draw_x_axis();
-    m_renderer->draw_y_axis();
+    m_renderer->DrawPlot(plotData);
+    m_renderer->SetXaxisRange(0.0, maxFreq);
+    m_renderer->SetYaxisRange(0.0, 1.0);
+    m_renderer->SetXaxisLabel("Frequency");
+    m_renderer->SetYaxisLabel("MTF");
+    m_renderer->DrawXaxis();
+    m_renderer->DrawYaxis();
 
-    m_renderer->update();
+    m_renderer->Update();
 
     m_parentDock->setText(oss);
 

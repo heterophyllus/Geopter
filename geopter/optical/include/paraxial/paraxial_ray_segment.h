@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -31,53 +31,31 @@ namespace geopter {
 
 
 /** Paraxial ray information on a surface */
-class ParaxialRaySegment
+struct ParaxialRaySegment
 {
 public:
     ParaxialRaySegment(){
-        y_ = 0.0;
-        u_prime_ = 0.0;
-        i_ = 0.0;
-        n_prime_ = 0.0;
+        y = 0.0;
+        u_prime = 0.0;
+        i = 0.0;
+        n_prime = 0.0;
     }
 
-    ParaxialRaySegment(double y, double u_prime, double i, double n_prime){
-        y_ = y;
-        u_prime_ = u_prime;
-        i_ = i;
-        n_prime_ = n_prime;
+    ParaxialRaySegment(double h, double up, double in, double np){
+        y       = h;
+        u_prime = up;
+        i       = in;
+        n_prime = np;
     }
 
     ~ParaxialRaySegment(){
 
     }
 
-
-    double y() const {
-        return y_;
-    }
-
-    double u_prime() const {
-        return u_prime_;
-    }
-
-    double i() const {
-        return i_;
-    }
-
-    double n_prime() const {
-        return n_prime_;
-    }
-
-    double l_prime() const{
-        return (-y_/u_prime_);
-    }
-
-private:
-    double y_;
-    double u_prime_; // outgoing
-    double i_;       // incident
-    double n_prime_; // outgoing
+    double y;
+    double u_prime; // outgoing
+    double i;       // incident
+    double n_prime; // outgoing
 };
 
 

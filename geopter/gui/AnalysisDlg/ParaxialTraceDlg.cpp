@@ -15,13 +15,13 @@ ParaxialTraceDlg::ParaxialTraceDlg(OpticalSystem* sys, AnalysisViewDock *parent)
     this->setWindowTitle("Paraxial Ray Trace Setting");
 
     //wvl combo
-    const int num_wvl = m_opticalSystem->optical_spec()->spectral_region()->number_of_wavelengths();
+    const int num_wvl = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
     for(int i = 0; i < num_wvl; i++){
-        QString wvl_item = "W" + QString::number(i+1) + ": " + QString::number(m_opticalSystem->optical_spec()->spectral_region()->wavelength(i)->value());
+        QString wvl_item = "W" + QString::number(i+1) + ": " + QString::number(m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(i)->Value());
         ui->comboWvl->addItem(wvl_item);
     }
 
-    int refWvlIndex = m_opticalSystem->optical_spec()->spectral_region()->reference_index();
+    int refWvlIndex = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->ReferenceIndex();
     ui->comboWvl->setCurrentIndex(refWvlIndex);
 
 }
@@ -34,7 +34,7 @@ ParaxialTraceDlg::~ParaxialTraceDlg()
 void ParaxialTraceDlg::updateParentDockContent()
 {
     int wi = ui->comboWvl->currentIndex();
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wi)->value();
+    double wvl = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
 
     std::ostringstream oss;
 
@@ -44,15 +44,15 @@ void ParaxialTraceDlg::updateParentDockContent()
     oss << std::endl;
 
     ParaxialTrace* tracer = new ParaxialTrace(m_opticalSystem);
-    auto ax_ray = tracer->trace_paraxial_axis_ray(wvl);
+    auto ax_ray = tracer->TraceParaxialAxisRay(wvl);
 
     oss << "Axial Ray..." << std::endl;
-    ax_ray->print(oss);
+    ax_ray->Print(oss);
     oss << std::endl;
 
-    auto pr_ray = tracer->trace_paraxial_chief_ray(wvl);
+    auto pr_ray = tracer->TraceParaxialChiefRay(wvl);
     oss << "Principle Ray..." << std::endl;
-    pr_ray->print(oss);
+    pr_ray->Print(oss);
     oss << std::endl;
 
     m_parentDock->setText(oss);

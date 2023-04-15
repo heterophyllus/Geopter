@@ -29,61 +29,61 @@ MarginalHeightSolve::MarginalHeightSolve(int gi, double value, double zone) :
     pupil_zone_ = zone;
 }
 
-bool MarginalHeightSolve::check(const OpticalSystem * /*opt_sys*/)
+bool MarginalHeightSolve::Check(const OpticalSystem * /*opt_sys*/)
 {
     return true;
 }
 
-void MarginalHeightSolve::apply(OpticalSystem* opt_sys)
+void MarginalHeightSolve::Apply(OpticalSystem* opt_sys)
 {
-    const double ref_wvl = opt_sys->optical_spec()->spectral_region()->reference_wavelength();
+    const double ref_wvl = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->ReferenceWavelength();
     const int surface_index = gap_index_;
 
     if(fabs(pupil_zone_) < std::numeric_limits<double>::epsilon()){ // paraxial
 
         ParaxialTrace* tracer = new ParaxialTrace(opt_sys);
 
-        double y0 = opt_sys->first_order_data()->ref_y0;
-        double u0 = opt_sys->first_order_data()->ref_u0;
+        double y0 = opt_sys->GetFirstOrderData()->reference_y0;
+        double u0 = opt_sys->GetFirstOrderData()->reference_u0;
 
         assert(fabs(y0) <= std::numeric_limits<double>::epsilon());
         //u0 *= pupil_zone_;
 
-        auto ax_ray = tracer->trace_paraxial_ray_from_object(y0, u0, ref_wvl);
+        auto ax_ray = tracer->TraceParaxialRayFromObject(y0, u0, ref_wvl);
 
-        double u_prime = ax_ray->at(surface_index).u_prime();
-        double y       = ax_ray->at(surface_index).y();
+        double u_prime = ax_ray->At(surface_index).u_prime;
+        double y       = ax_ray->At(surface_index).y;
 
         double t = (height_ - y)/u_prime;
 
         delete tracer;
         // set value
-        opt_sys->optical_assembly()->gap(gap_index_)->set_thi(t);
+        opt_sys->GetOpticalAssembly()->GetGap(gap_index_)->SetThickness(t);
 
     }else{
         SequentialTrace *tracer = new SequentialTrace(opt_sys);
-        SequentialPath seq_path = tracer->sequential_path(ref_wvl);
+        SequentialPath seq_path = tracer->CreateSequentialPath(ref_wvl);
         Eigen::Vector2d pupil({0.0, pupil_zone_});
-        Field* fld = opt_sys->optical_spec()->field_of_view()->field(0);
-        auto ray = std::make_shared<Ray>(seq_path.size());
-        tracer->trace_pupil_ray(ray, seq_path, pupil, fld, ref_wvl);
+        Field* fld = opt_sys->GetOpticalSpec()->GetFieldSpec()->GetField(0);
+        auto ray = std::make_shared<Ray>(seq_path.Size());
+        tracer->TracePupilRay(ray, seq_path, pupil, fld, ref_wvl);
 
-        double y = ray->at(surface_index)->y();
-        double z = ray->at(surface_index)->z(); // surface sag
-        double M = ray->at(surface_index)->M();
-        double N = ray->at(surface_index)->N();
+        double y = ray->GetAt(surface_index)->Y();
+        double z = ray->GetAt(surface_index)->Z(); // surface sag
+        double M = ray->GetAt(surface_index)->M();
+        double N = ray->GetAt(surface_index)->N();
         double tanU = M/N;
 
         double t = (height_ - y)/tanU + z;
 
         delete tracer;
 
-        opt_sys->optical_assembly()->gap(gap_index_)->set_thi(t);
+        opt_sys->GetOpticalAssembly()->GetGap(gap_index_)->SetThickness(t);
     }
 
 }
 
-void MarginalHeightSolve::set_parameters(int index, double param1, double param2, double param3)
+void MarginalHeightSolve::SetParameters(int index, double param1, double param2, double param3)
 {
 
 }

@@ -16,16 +16,16 @@ FirstOrderData::~FirstOrderData()
 }
 
 
-void FirstOrderData::update()
+void FirstOrderData::Update()
 {
     ParaxialTrace tracer(parent_);
 
-    const int img = parent_->optical_assembly()->image_index();
-    const int last_surf = parent_->optical_assembly()->image_index() -1;
-    const int stop = parent_->optical_assembly()->stop_index();
-    const double ref_wvl = parent_->optical_spec()->spectral_region()->reference_wavelength();
-    const double n_0 = parent_->optical_assembly()->gap(0)->material()->rindex(ref_wvl);
-    const double n_k = parent_->optical_assembly()->image_space_gap()->material()->rindex(ref_wvl);
+    const int img = parent_->GetOpticalAssembly()->ImageIndex();
+    const int last_surf = parent_->GetOpticalAssembly()->ImageIndex() -1;
+    const int stop = parent_->GetOpticalAssembly()->StopIndex();
+    const double ref_wvl = parent_->GetOpticalSpec()->GetWavelengthSpec()->ReferenceWavelength();
+    const double n_0 = parent_->GetOpticalAssembly()->GetGap(0)->GetMaterial()->RefractiveIndex(ref_wvl);
+    const double n_k = parent_->GetOpticalAssembly()->ImageSpaceGap()->GetMaterial()->RefractiveIndex(ref_wvl);
 
 
     /**************************************
@@ -37,8 +37,8 @@ void FirstOrderData::update()
     Eigen::Vector2d y_nuk_q;
     Eigen::Vector2d y_nus_p;
     Eigen::Vector2d y_nus_q;
-    Eigen::Matrix2d Mk = tracer.system_matrix(1,last_surf, ref_wvl);
-    Eigen::Matrix2d Ms = tracer.system_matrix(1, stop, ref_wvl);
+    Eigen::Matrix2d Mk = tracer.SystemMatrix(1,last_surf, ref_wvl);
+    Eigen::Matrix2d Ms = tracer.SystemMatrix(1, stop, ref_wvl);
 
     y_nuk_p = Mk*y_nu1_p;
     y_nuk_q = Mk*y_nu1_q;
@@ -50,37 +50,37 @@ void FirstOrderData::update()
     double ck1 = y_nuk_p(1);
     double dk1 = y_nuk_q(1);
 
-    const double thi0 = parent_->optical_assembly()->gap(0)->thi();
-    obj_dist = thi0;
-    red = dk1 + thi0*ck1;
+    const double thi0 = parent_->GetOpticalAssembly()->GetGap(0)->Thickness();
+    object_distance = thi0;
+    reduction = dk1 + thi0*ck1;
 
     double ybar1 = -bs1;
     double ubar1 = as1;
 
-    enp_dist = -ybar1/(n_0*ubar1);
+    entrance_pupil_distance = -ybar1/(n_0*ubar1);
 
-    double obj2enp_dist = thi0 + enp_dist;
+    double obj2enp_dist = thi0 + entrance_pupil_distance;
 
     double y0 = 0.0;
     double u0 = 1.0;
     double uk;
 
-    PupilSpec* pupil = parent_->optical_spec()->pupil_spec();
-    switch (pupil->pupil_type())
+    PupilSpec* pupil = parent_->GetOpticalSpec()->GetPupilSpec();
+    switch (pupil->PupilType())
     {
     case PupilType::EPD:
-        u0 = 0.5 * pupil->value() / obj2enp_dist;
+        u0 = 0.5 * pupil->Value() / obj2enp_dist;
         break;
     case PupilType::NAO:
-        u0 = n_0*tan(asin(pupil->value()/n_0));
+        u0 = n_0*tan(asin(pupil->Value()/n_0));
         break;
     case PupilType::FNO:
-        uk = -1.0/(2.0*pupil->value());
-        u0 = uk/red;
+        uk = -1.0/(2.0*pupil->Value());
+        u0 = uk/reduction;
         break;
     case PupilType::NA:
-        uk = n_k*tan(asin(pupil->value()/n_k));
-        u0 = uk/red;
+        uk = n_k*tan(asin(pupil->Value()/n_k));
+        u0 = uk/reduction;
         break;
     default:
         std::cout << "Invalid pupil type" << std::endl;
@@ -90,11 +90,11 @@ void FirstOrderData::update()
     double ybar0 = 1.0;
     double ubar0 = 0.0;
 
-    FieldSpec* fov = parent_->optical_spec()->field_of_view();
-    double max_fld = fov->max_field();
+    FieldSpec* fov = parent_->GetOpticalSpec()->GetFieldSpec();
+    double max_fld = fov->MaxField();
     double ang;
 
-    switch(fov->field_type()) {
+    switch(fov->FieldType()) {
         case FieldType::OBJ_ANG:
             ang = max_fld * M_PI/180.0;
             ubar0 = tan(ang);
@@ -105,7 +105,7 @@ void FirstOrderData::update()
             ubar0 = -ybar0/obj2enp_dist;
             break;
         case FieldType::IMG_HT:
-            ybar0 = red*max_fld;
+            ybar0 = reduction*max_fld;
             ubar0 = -ybar0/obj2enp_dist;
             break;
         default:
@@ -113,116 +113,115 @@ void FirstOrderData::update()
             break;
     }
 
-    ref_u0 = u0;
-    ref_y0 = y0;
-    ref_ubar0 = ubar0;
-    ref_ybar0 = ybar0;
-
+    reference_u0 = u0;
+    reference_y0 = y0;
+    reference_ubar0 = ubar0;
+    reference_ybar0 = ybar0;
 
 
     /****************************************************************
      * compute first order data
      * **************************************************************/
 
-    auto ax_ray = tracer.trace_paraxial_ray_from_object(y0, u0, ref_wvl);
-    auto pr_ray = tracer.trace_paraxial_ray_from_object(ybar0, ubar0, ref_wvl);
+    auto ax_ray = tracer.TraceParaxialRayFromObject(y0, u0, ref_wvl);
+    auto pr_ray = tracer.TraceParaxialRayFromObject(ybar0, ubar0, ref_wvl);
 
-    double y1 = ax_ray->at(1).y();
-    double ubar0_prime = pr_ray->at(0).u_prime();
-    ybar1 = pr_ray->at(1).y();
-    double u0_prime = ax_ray->at(0).u_prime();
+    double y1 = ax_ray->At(1).y;
+    double ubar0_prime = pr_ray->At(0).u_prime;
+    ybar1 = pr_ray->At(1).y;
+    double u0_prime = ax_ray->At(0).u_prime;
 
-    opt_inv = n_0 * ( y1*ubar0_prime - ybar1*u0_prime );
-    efl = -1.0/ck1;
-    fno = -1.0/(2.0*n_k*ax_ray->at(img).u_prime());
+    optical_invariant = n_0 * ( y1*ubar0_prime - ybar1*u0_prime );
+    effective_focal_length = -1.0/ck1;
+    fno = -1.0/(2.0*n_k*ax_ray->At(img).u_prime);
 
-    //obj_dist = parent_->optical_assembly()->gap(0)->thi();
-    img_dist = parent_->optical_assembly()->image_space_gap()->thi();
+    //obj_dist = parent_->GetOpticalAssembly()->gap(0)->thi();
+    image_distance = parent_->GetOpticalAssembly()->ImageSpaceGap()->Thickness();
 
     //red = dk1 + ck1*obj_dist;
 
     pp1 = (dk1 - 1.0)*(n_0/ck1);
     //fod->ppk = (p_ray->at(img-1)->y() - 1.0)*(n_k/ck1);
     ppk = (y_nuk_p(0)-1.0)*(n_k/ck1);
-    ffl = pp1 - efl;
-    bfl = efl - ppk;
+    front_focal_length = pp1 - effective_focal_length;
+    back_focal_length = effective_focal_length - ppk;
 
     n_obj = n_0;
     n_img = n_k;
 
-    img_ht = -opt_inv/(n_k*ax_ray->at(img).u_prime());
-    obj_ang = atan(pr_ray->at(0).u_prime()) * 180.0/M_PI;
+    image_height = -optical_invariant/(n_k*ax_ray->At(img).u_prime);
+    object_angle = atan(pr_ray->At(0).u_prime) * 180.0/M_PI;
 
-    double nu_pr0 = n_0*pr_ray->at(0).u_prime();
-    enp_dist = -ybar1/nu_pr0;
-    enp_radius = fabs(opt_inv/nu_pr0);
-    if(std::isnan(enp_dist)){
-        enp_dist = 1.0e+10;
+    double nu_pr0 = n_0*pr_ray->At(0).u_prime;
+    entrance_pupil_distance = -ybar1/nu_pr0;
+    entrance_pupil_radius = fabs(optical_invariant/nu_pr0);
+    if(std::isnan(entrance_pupil_distance)){
+        entrance_pupil_distance = 1.0e+10;
     }
-    if(std::isnan(enp_radius)){
-        enp_radius = 1.0e+10;
-    }
-
-    exp_dist = -(pr_ray->at(img).y()/pr_ray->at(img).u_prime() - img_dist);
-    exp_radius = fabs( opt_inv/(n_k*pr_ray->at(img).u_prime()) );
-    if(std::isnan(exp_dist)){
-        exp_dist = -1.0e+10;
-    }
-    if(std::isnan(exp_radius)){
-        exp_radius = -1.0e+10;
+    if(std::isnan(entrance_pupil_radius)){
+        entrance_pupil_radius = 1.0e+10;
     }
 
-    obj_na = n_0*sin( atan(ax_ray->at(0).u_prime()) );
-    img_na = n_k*sin( atan(ax_ray->at(img).u_prime()) );
+    exit_pupil_distance = -(pr_ray->At(img).y/pr_ray->At(img).u_prime - image_distance);
+    exit_pupil_radius = fabs( optical_invariant/(n_k*pr_ray->At(img).u_prime) );
+    if(std::isnan(exit_pupil_distance)){
+        exit_pupil_distance = -1.0e+10;
+    }
+    if(std::isnan(exit_pupil_radius)){
+        exit_pupil_radius = -1.0e+10;
+    }
+
+    object_space_na = n_0*sin( atan(ax_ray->At(0).u_prime) );
+    image_space_na = n_k*sin( atan(ax_ray->At(img).u_prime) );
 
 }
 
-void FirstOrderData::print(std::ostringstream &oss)
+void FirstOrderData::Print(std::ostringstream &oss)
 {
     constexpr int fixed_w = 30;
     constexpr int pre = 4;
 
     oss << std::setw(fixed_w) << std::left << "Effective Focal Length";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << efl << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << effective_focal_length << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Front Focal Length";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << ffl << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << front_focal_length << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Back Focal Length";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << bfl << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << back_focal_length << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "F/#";
     oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << fno << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Reduction Rate";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << red << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << reduction << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Object Distance";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << obj_dist << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << object_distance << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Object Angle";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << obj_ang << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << object_angle << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Image Distance";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << img_dist << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << image_distance << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Image Height";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << img_ht << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << image_height << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Entrance Pupil Distance";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << enp_dist << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << entrance_pupil_distance << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Entrance Pupil Radius";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << enp_radius << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << entrance_pupil_radius << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Exit Pupil Distance";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << exp_dist << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << exit_pupil_distance << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Exit Pupil Radius";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << exp_radius << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << exit_pupil_radius << std::endl;
 
     oss << std::setw(fixed_w) << std::left << "Optical Invariant";
-    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << opt_inv << std::endl;
+    oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << optical_invariant << std::endl;
 
     oss << std::endl;
 }

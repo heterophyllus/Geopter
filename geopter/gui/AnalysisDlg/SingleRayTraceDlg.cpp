@@ -36,16 +36,16 @@ SingleRayTraceDlg::SingleRayTraceDlg(OpticalSystem *sys, AnalysisViewDock *paren
     ui->pupilYEdit->setText(QString::number(0.0));
 
     // field select combo
-    const int num_flds = m_opticalSystem->optical_spec()->field_of_view()->field_count();
+    const int num_flds = m_opticalSystem->GetOpticalSpec()->GetFieldSpec()->NumberOfFields();
     for(int i = 0; i < num_flds; i++){
         QString field_item = "F" + QString::number(i);
         ui->fieldCombo->addItem(field_item);
     }
 
     //wvl combo
-    const int num_wvl = m_opticalSystem->optical_spec()->spectral_region()->number_of_wavelengths();
+    const int num_wvl = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
     for(int i = 0; i < num_wvl; i++){
-        QString wvl_item = "W" + QString::number(i) + ": " + QString::number(m_opticalSystem->optical_spec()->spectral_region()->wavelength(i)->value());
+        QString wvl_item = "W" + QString::number(i) + ": " + QString::number(m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(i)->Value());
         ui->wvlForPupilCombo->addItem(wvl_item);
         ui->wvlForObjectCombo->addItem(wvl_item);
     }
@@ -90,19 +90,19 @@ void SingleRayTraceDlg::doPupilRayTrace()
     double px = ui->pupilXEdit->text().toDouble();
     double py = ui->pupilYEdit->text().toDouble();
     int fi = ui->fieldCombo->currentIndex();
-    Field* fld = m_opticalSystem->optical_spec()->field_of_view()->field(fi);
+    Field* fld = m_opticalSystem->GetOpticalSpec()->GetFieldSpec()->GetField(fi);
     int wi = ui->wvlForPupilCombo->currentIndex();
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wi)->value();
+    double wvl = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
 
-    //Field *fld = opt_sys_->optical_spec()->field_of_view()->field(fi);
+    //Field *fld = opt_sys_->GetOpticalSpec()->field_of_view()->field(fi);
     Eigen::Vector2d pupil_crd({px, py});
 
 
     // trace
     SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
-    SequentialPath seq_path = tracer->sequential_path(wvl);
-    auto ray_trace_result = std::make_shared<Ray>(seq_path.size());
-    tracer->trace_pupil_ray(ray_trace_result, seq_path, pupil_crd, fld, wvl);
+    SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
+    auto ray_trace_result = std::make_shared<Ray>(seq_path.Size());
+    tracer->TracePupilRay(ray_trace_result, seq_path, pupil_crd, fld, wvl);
     delete tracer;
 
     // construct output text
@@ -112,7 +112,7 @@ void SingleRayTraceDlg::doPupilRayTrace()
     oss << "Field: " << (fi+1) << std::endl;
     oss << "Wavelength(nm): " << wvl << std::endl;
 
-    ray_trace_result->print(oss);
+    ray_trace_result->Print(oss);
     oss << std::endl;
 
     // write to textview dock
@@ -126,7 +126,7 @@ void SingleRayTraceDlg::doObjectRayTrace()
     // Get parameters from UI
     double x = ui->objectXEdit->text().toDouble();
     double y = ui->objectYEdit->text().toDouble();
-    double z = m_opticalSystem->optical_assembly()->gap(0)->thi();
+    double z = m_opticalSystem->GetOpticalAssembly()->GetGap(0)->Thickness();
     double tanX = ui->objectTanXEdit->text().toDouble();
     double tanY = ui->objectTanYEdit->text().toDouble();
     double L = tanX;
@@ -136,12 +136,12 @@ void SingleRayTraceDlg::doObjectRayTrace()
 
     Eigen::Vector3d p0({x,y,z});
     Eigen::Vector3d dir0({L,M,N});
-    double wvl = m_opticalSystem->optical_spec()->spectral_region()->wavelength(wi)->value();
+    double wvl = m_opticalSystem->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
 
     SequentialTrace *tracer = new SequentialTrace(m_opticalSystem);
-    SequentialPath seq_path = tracer->sequential_path(wvl);
-    auto ray_trace_result = std::make_shared<Ray>(seq_path.size());
-    tracer->trace_ray_throughout_path(ray_trace_result, seq_path, p0, dir0);
+    SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
+    auto ray_trace_result = std::make_shared<Ray>(seq_path.Size());
+    tracer->TraceRayThroughoutPath(ray_trace_result, seq_path, p0, dir0);
     delete tracer;
 
     std::ostringstream oss;
@@ -150,7 +150,7 @@ void SingleRayTraceDlg::doObjectRayTrace()
     oss << "Object Space Direction : " << "(" << L << ", " << M << ", " << N << ")" << std::endl;
     oss << "Wavelength: " << wi << " " << wvl << std::endl;
 
-    ray_trace_result->print(oss);
+    ray_trace_result->Print(oss);
     oss << std::endl;
 
     m_parentDock->setText(oss);

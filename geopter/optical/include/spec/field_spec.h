@@ -49,31 +49,28 @@ public:
     FieldSpec(int field_type);
     ~FieldSpec();
 
-    static int number_of_fields() { return num_fields_;}
+    int NumberOfFields() { return num_fields_;}
 
     /** Returns current field type */
-    int field_type() const { return field_type_;}
-
-    /** Get number of fields */
-    int field_count() const { return fields_.size();}
+    int FieldType() const { return field_type_;}
 
     /** Access to field component */
-    Field* field(int i) const { return fields_[i].get();}
+    Field* GetField(int i) const { return fields_[i].get();}
 
     /** Returns the maximum field of view */
-    double max_field() const {return max_field_;}
+    double MaxField() const {return max_field_;}
 
     /**
      * @brief Set field type
      * @param int FieldType:OBJ_ANG, OBJ_HT, IMG_HT
      *  */
-    void set_field_type(int i);
+    void SetFieldType(int i) { field_type_ = i; }
 
     /** Add new field */
-    void add(double x, double y, double wt=1.0, Rgb color= rgb_black, double vuy=0.0, double vly=0.0, double vux=0.0, double vlx=0.0);
+    void AddField(double x, double y, double wt=1.0, Rgb color= rgb_black, double vuy=0.0, double vly=0.0, double vux=0.0, double vlx=0.0);
 
     /** Remove field at the given index */
-    void remove(int i);
+    void RemoveField(int i);
 
     void clear();
 
@@ -87,7 +84,7 @@ protected:
     std::vector< std::unique_ptr<Field> > fields_;
     double max_field_;
 
-    static int num_fields_;
+    int num_fields_;
 };
 
 

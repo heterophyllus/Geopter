@@ -38,22 +38,22 @@ Environment::Environment()
     pressure_ = 101325.0;
 }
 
-void Environment::set_temperature(double t)
+void Environment::SetTemperature(double t)
 {
     temperature_ = t;
 }
 
-void Environment::set_air_pressure(double p)
+void Environment::SetAirPressure(double p)
 {
     pressure_ = p;
 }
 
-double Environment::temperature()
+double Environment::Temperature()
 {
     return temperature_;
 }
 
-double Environment::air_pressure()
+double Environment::AirPressure()
 {
     return pressure_;
 }

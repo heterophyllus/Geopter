@@ -14,41 +14,38 @@ struct FirstOrderData
     FirstOrderData(OpticalSystem* parent);
     ~FirstOrderData();
 
-    double ref_y0;
-    double ref_ybar0;
-    double ref_u0;
-    double ref_ubar0;
-    double opt_inv;
-    double efl;
+    double reference_y0;
+    double reference_ybar0;
+    double reference_u0;
+    double reference_ubar0;
+    double optical_invariant;
+    double effective_focal_length;
     double fno;
-    double red;
-    double enp_dist;
-    double enp_radius;
-    double exp_dist;
-    double exp_radius;
-    double img_dist;
-    double obj_dist;
+    double reduction;
+    double entrance_pupil_distance;
+    double entrance_pupil_radius;
+    double exit_pupil_distance;
+    double exit_pupil_radius;
+    double image_distance;
+    double object_distance;
     double pp1;
     double ppk;
-    double ffl;
-    double bfl;
+    double front_focal_length;
+    double back_focal_length;
     double n_obj;
     double n_img;
-    double img_ht;
-    double obj_ang;
-    double obj_na;
-    double img_na;
+    double image_height;
+    double object_angle;
+    double object_space_na;
+    double image_space_na;
 
-    void update();
+    void Update();
 
-    void print(std::ostringstream& oss);
+    void Print(std::ostringstream& oss);
 
 private:
     OpticalSystem* parent_;
 };
-
-
-
 
 
 }

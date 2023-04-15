@@ -42,13 +42,13 @@ public:
     OpticalSpec(OpticalSystem* opt_sys);
     ~OpticalSpec();
 
-    PupilSpec* pupil_spec() { return pupil_.get(); }
-    WavelengthSpec* spectral_region() { return spectral_region_.get(); }
-    FieldSpec* field_of_view() { return field_of_view_.get(); }
+    PupilSpec* GetPupilSpec() { return pupil_.get(); }
+    WavelengthSpec* GetWavelengthSpec() { return wavelength_spec_.get(); }
+    FieldSpec* GetFieldSpec() { return field_spec_.get(); }
 
-    void clear();
+    void Clear();
 
-    void create_minimum_spec();
+    void CreateMinimumSpec();
 
     void update();
 
@@ -56,9 +56,9 @@ public:
 
 private:
     OpticalSystem* parent_;
-    std::unique_ptr<WavelengthSpec> spectral_region_;
+    std::unique_ptr<WavelengthSpec> wavelength_spec_;
     std::unique_ptr<PupilSpec> pupil_;
-    std::unique_ptr<FieldSpec> field_of_view_;
+    std::unique_ptr<FieldSpec> field_spec_;
 };
 
 

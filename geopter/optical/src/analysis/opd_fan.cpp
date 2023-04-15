@@ -5,7 +5,7 @@
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Lesser General Public
+** modify it under the terms of the GNU General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 **
@@ -38,23 +38,23 @@ OpdFan::OpdFan(OpticalSystem* opt_sys) :
 std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
 {
     auto plot_data = std::make_shared<PlotData>();
-    plot_data->set_title("OPD");
+    plot_data->SetTitle("OPD");
 
-    const double ref_wvl_val = opt_sys_->optical_spec()->spectral_region()->reference_wavelength();
+    const double ref_wvl_val = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->ReferenceWavelength();
     const double nm_to_mm = 1.0e-6;
     const double convert_to_waves = 1.0/(nm_to_mm*ref_wvl_val);
 
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
 
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->number_of_wavelengths();
-    const int num_srfs = opt_sys_->optical_assembly()->surface_count();
+    const int num_wvls = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
+    const int num_srfs = opt_sys_->GetOpticalAssembly()->NumberOfSurfaces();
 
     for(int wi = 0; wi < num_wvls; wi++)
     {
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
-        Rgb render_color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
+        double wvl = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
+        Rgb render_color = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->RenderColor();
 
-        SequentialPath seq_path = tracer->sequential_path(wvl);
+        SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
 
         std::vector<double> pupil_data;
         std::vector<double> opd_data;
@@ -67,7 +67,7 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
         //Eigen::Vector2d aim_pt = tracer->aim_chief_ray(fld, wvl);
         //fld->set_aim_pt(aim_pt);
         auto chief_ray = std::make_shared<Ray>(num_srfs);
-        int trace_result = tracer->trace_pupil_ray(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
+        int trace_result = tracer->TracePupilRay(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
 
         if(TRACE_SUCCESS != trace_result){
             std::cerr << "Trace error" << std::endl;
@@ -79,11 +79,11 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
             pupil(1) = -1.0 + (double)ri*2.0/(double)(nrd-1);
 
             auto ray = std::make_shared<Ray>(num_srfs);
-            if( TRACE_SUCCESS != tracer->trace_pupil_ray(ray, seq_path, pupil, fld, wvl) ){
+            if( TRACE_SUCCESS != tracer->TracePupilRay(ray, seq_path, pupil, fld, wvl) ){
                 break;
             }
 
-            if(ray->status() == TRACE_SUCCESS){
+            if(ray->Status() == TRACE_SUCCESS){
                 //double opd = wave_abr_full_calc(fld, wvl, ray, cr_pkg, ref_sphere);
                 double opd = wave_abr_full_calc(ray, chief_ray);
                 opd *= convert_to_waves;
@@ -95,8 +95,8 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
         }
 
         auto graph = std::make_shared<Graph2d>(pupil_data, opd_data, render_color);
-        graph->set_name(std::to_string(wvl) + "nm");
-        plot_data->add_graph(graph);
+        graph->SetName(std::to_string(wvl) + "nm");
+        plot_data->AddGraph(graph);
     }
 
     delete tracer;

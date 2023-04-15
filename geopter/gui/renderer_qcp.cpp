@@ -15,20 +15,20 @@ RendererQCP::~RendererQCP()
     customPlot_ = nullptr;
 }
 
-void RendererQCP::clear()
+void RendererQCP::Clear()
 {
     customPlot_->clearGraphs();
     customPlot_->clearItems();
     customPlot_->clearPlottables();
 }
 
-void RendererQCP::update()
+void RendererQCP::Update()
 {
     customPlot_->update();
     customPlot_->replot();
 }
 
-void RendererQCP::set_grid_layout(int rows, int cols)
+void RendererQCP::SetGridLayout(int rows, int cols)
 {
     customPlot_->plotLayout()->clear();
 
@@ -45,29 +45,29 @@ void RendererQCP::set_grid_layout(int rows, int cols)
 
 }
 
-void RendererQCP::set_current_cell(int row, int col)
+void RendererQCP::SetCurrentCell(int row, int col)
 {
     current_cell_index_ = customPlot_->plotLayout()->rowColToIndex(row, col);
 }
 
 
-void RendererQCP::draw_plot(std::shared_ptr<PlotData> plotdata)
+void RendererQCP::DrawPlot(std::shared_ptr<PlotData> plotdata)
 {
-    const int num_graphs = plotdata->data_count();
+    const int num_graphs = plotdata->NumberOfGraphs();
 
     for (int i = 0; i < num_graphs; i++) {
-        int ls = plotdata->graph(i)->line_style();
-        double lw = plotdata->graph(i)->line_width();
-        Rgb color = plotdata->graph(i)->render_color();
+        int ls = plotdata->GetGraph(i)->LineStyle();
+        double lw = plotdata->GetGraph(i)->LineWidth();
+        Rgb color = plotdata->GetGraph(i)->RenderColor();
 
         std::vector<double> x, y;
-        plotdata->graph(i)->get_data(x, y);
+        plotdata->GetGraph(i)->GetData(x, y);
 
-        draw_polyline(x, y, color, ls, lw);
+        DrawPolyline(x, y, color, ls, lw);
     }
 }
 
-void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int cmap)
+void RendererQCP::DrawHist2d(const Eigen::MatrixXd &Z, int type, int cmap)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
     QCPColorMap *colorMap = new QCPColorMap(axisRect->axis(QCPAxis::atBottom), axisRect->axis(QCPAxis::atLeft));
@@ -113,7 +113,7 @@ void RendererQCP::draw_hist2d(const Eigen::MatrixXd &Z, int type, int cmap)
 }
 
 
-void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style, double line_width)
+void RendererQCP::DrawLine(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2, const Rgb& color, int line_style, double line_width)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
 
@@ -147,7 +147,7 @@ void RendererQCP::draw_line(const Eigen::Vector2d& p1, const Eigen::Vector2d& p2
     line->setVisible(true);
 }
 
-void RendererQCP::draw_polyline(const std::vector<Eigen::Vector2d> &pts, const Rgb& color, int line_style, double line_width)
+void RendererQCP::DrawPolyline(const std::vector<Eigen::Vector2d> &pts, const Rgb& color, int line_style, double line_width)
 {
     QCPAxisRect *axisRect = customPlot_->axisRect(current_cell_index_);
     //QCPCurve* polyline = new QCPCurve(_customPlot->xAxis, _customPlot->yAxis);
@@ -179,7 +179,7 @@ void RendererQCP::draw_polyline(const std::vector<Eigen::Vector2d> &pts, const R
 
 }
 
-void RendererQCP::draw_polyline(const std::vector<double> &x, const std::vector<double> &y, const Rgb& color, int line_style, double line_width)
+void RendererQCP::DrawPolyline(const std::vector<double> &x, const std::vector<double> &y, const Rgb& color, int line_style, double line_width)
 {
     int pointCount = x.size();
     QVector<QCPCurveData> curveData(pointCount);
@@ -211,7 +211,7 @@ void RendererQCP::draw_polyline(const std::vector<double> &x, const std::vector<
     polyline->setVisible(true);
 }
 
-void RendererQCP::draw_dots(const std::vector<double> &x, const std::vector<double> &y, const Rgb &color, double dot_size)
+void RendererQCP::DrawDots(const std::vector<double> &x, const std::vector<double> &y, const Rgb &color, double dot_size)
 {
     int pointCount = x.size();
     QVector<QCPCurveData> dotsData(pointCount);
@@ -233,42 +233,42 @@ void RendererQCP::draw_dots(const std::vector<double> &x, const std::vector<doub
     dots->setVisible(true);
 }
 
-QCPRange RendererQCP::current_x_axis_range()
+QCPRange RendererQCP::CurrentXaxisRange()
 {
     return customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atBottom)->range();
 }
 
-QCPRange RendererQCP::current_y_axis_range()
+QCPRange RendererQCP::CurrentYaxisRange()
 {
     return customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atLeft)->range();
 }
 
-void RendererQCP::set_x_axis_range(double xmin, double xmax)
+void RendererQCP::SetXaxisRange(double xmin, double xmax)
 {
     //_customPlot->xAxis->setRange(xmin, xmax);
     customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atBottom)->setRange(xmin, xmax);
 }
 
-void RendererQCP::set_y_axis_range(double ymin, double ymax)
+void RendererQCP::SetYaxisRange(double ymin, double ymax)
 {
     //_customPlot->yAxis->setRange(ymin, ymax);
     customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atLeft)->setRange(ymin, ymax);
 }
 
 
-void RendererQCP::set_x_axis_label(std::string label)
+void RendererQCP::SetXaxisLabel(std::string label)
 {
     QString xLabel = QString().fromStdString(label);
     customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atBottom)->setLabel(xLabel);
 }
 
-void RendererQCP::set_y_axis_label(std::string label)
+void RendererQCP::SetYaxisLabel(std::string label)
 {
     QString yLabel = QString().fromStdString(label);
     customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atLeft)->setLabel(yLabel);
 }
 
-void RendererQCP::set_aspect_ratio(double h_per_v)
+void RendererQCP::SetAspectRatio(double h_per_v)
 {
     customPlot_->yAxis->setScaleRatio(customPlot_->xAxis, h_per_v);
     QCPAxis *xAxis = customPlot_->axisRect(current_cell_index_)->axis(QCPAxis::atBottom);
@@ -277,7 +277,7 @@ void RendererQCP::set_aspect_ratio(double h_per_v)
     xAxis->setScaleRatio(yAxis, h_per_v);
 }
 
-void RendererQCP::set_mouse_interaction(bool state)
+void RendererQCP::SetMouseInteraction(bool state)
 {
     customPlot_->setInteraction(QCP::iRangeDrag,   state);
     customPlot_->setInteraction(QCP::iRangeZoom,   state);

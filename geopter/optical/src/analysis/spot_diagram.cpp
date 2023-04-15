@@ -15,11 +15,11 @@ SpotDiagram::SpotDiagram(OpticalSystem* opt_sys):
 {
     // weight list
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
-    const int num_wvls = opt_sys_->optical_spec()->spectral_region()->number_of_wavelengths();
+    const int num_wvls = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
     wvl_weights_.reserve(num_wvls);
     for(int wi = 0; wi < num_wvls; wi++){
-        wvl_weights_.push_back( opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->weight() );
-        seq_paths_.push_back( tracer->sequential_path(opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value()) );
+        wvl_weights_.push_back( opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Weight() );
+        seq_paths_.push_back( tracer->CreateSequentialPath(opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value()) );
     }
     delete tracer;
 }
@@ -33,46 +33,46 @@ SpotDiagram::~SpotDiagram()
 std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int max_nrd, double dot_size)
 {
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
-    tracer->set_aperture_check(true);
-    tracer->set_apply_vig(false);
+    tracer->SetApertureCheck(true);
+    tracer->SetApplyVig(false);
 
     auto plot_data = std::make_shared<PlotData>();
-    plot_data->set_title("Spot");
-    plot_data->set_x_axis_label("dx");
-    plot_data->set_y_axis_label("dy");
-    plot_data->set_plot_style(Renderer::PlotStyle::Scatter);
+    plot_data->SetTitle("Spot");
+    plot_data->SetXLabel("dx");
+    plot_data->SetYLabel("dy");
+    plot_data->SetPlotStyle(Renderer::PlotStyle::Scatter);
 
 
     double max_wt = *std::max_element(wvl_weights_.begin(), wvl_weights_.end());
 
     SequentialPath ref_seq_path = seq_paths_[ref_wvl_idx_];
     // trace chief ray
-    auto chief_ray = std::make_shared<Ray>(ref_seq_path.size());
-    if(TRACE_SUCCESS != tracer->trace_pupil_ray(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_) ){
+    auto chief_ray = std::make_shared<Ray>(ref_seq_path.Size());
+    if(TRACE_SUCCESS != tracer->TracePupilRay(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_) ){
         std::cerr << "Failed to trace chief ray" << std::endl;
         delete tracer;
         return plot_data;
     }
 
-    double chief_ray_x = chief_ray->back()->x();
-    double chief_ray_y = chief_ray->back()->y();
+    double chief_ray_x = chief_ray->GetBack()->X();
+    double chief_ray_y = chief_ray->GetBack()->Y();
 
 
     // trace patterned rays for all wavelengths
     Eigen::Vector2d pupil;
 
-    auto ray = std::make_shared<Ray>(chief_ray->size());
+    auto ray = std::make_shared<Ray>(chief_ray->Size());
 
     for(int wi = 0; wi < num_wvl_; wi++){
 
-        double wvl = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->value();
-        Rgb color = opt_sys_->optical_spec()->spectral_region()->wavelength(wi)->render_color();
+        double wvl = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->Value();
+        Rgb color = opt_sys_->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi)->RenderColor();
 
         auto graph = std::make_shared<Graph2d>();
-        graph->set_name(std::to_string(wvl) + "nm");
-        graph->set_line_style(Renderer::LineStyle::Dots);
-        graph->set_render_color(color);
-        graph->set_line_width(dot_size);
+        graph->SetName(std::to_string(wvl) + "nm");
+        graph->SetLineStyle(Renderer::LineStyle::Dots);
+        graph->SetRenderColor(color);
+        graph->SetLineWidth(dot_size);
 
 
         // calculate nrd for current wvl
@@ -83,7 +83,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
 
         if(SpotDiagram::SpotRayPattern::Grid == pattern)
         {            
-            graph->resize(nrd*nrd);
+            graph->Resize(nrd*nrd);
 
             int valid_ray_count = 0;
 
@@ -93,18 +93,18 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     pupil(1) = start + step*static_cast<double>(i);
 
                     if(pupil.norm() <= 1.0){
-                        ray->set_status(TRACE_SUCCESS);
-                        tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
+                        ray->SetStatus(TRACE_SUCCESS);
+                        tracer->TracePupilRay(ray, seq_paths_[wi], pupil, fld, wvl);
 
-                        if(TRACE_SUCCESS == ray->status()){
+                        if(TRACE_SUCCESS == ray->Status()){
 
-                            double ray_x = ray->back()->x();
-                            double ray_y = ray->back()->y();
+                            double ray_x = ray->GetBack()->X();
+                            double ray_y = ray->GetBack()->Y();
 
                             double dx = ray_x - chief_ray_x;
                             double dy = ray_y - chief_ray_y;
 
-                            graph->set_data(valid_ray_count, dx, dy);
+                            graph->SetData(valid_ray_count, dx, dy);
 
                             valid_ray_count++;
                         }
@@ -113,11 +113,11 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
 
             }
 
-            graph->resize(valid_ray_count);
+            graph->Resize(valid_ray_count);
 
         }else if(SpotDiagram::SpotRayPattern::Hexapolar == pattern){
 
-            graph->resize(HexapolarArray<double>(nrd).total_number_of_points());
+            graph->Resize( HexapolarArray<double>(nrd).TotalNumberOfPoints() );
             int valid_ray_count = 0;
 
             int half_num_rings = nrd/2;
@@ -130,13 +130,13 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     pupil(0) = 0.0;
                     pupil(1) = 0.0;
 
-                    ray->set_status(TRACE_SUCCESS);
-                    tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
+                    ray->SetStatus(TRACE_SUCCESS);
+                    tracer->TracePupilRay(ray, seq_paths_[wi], pupil, fld, wvl);
 
-                    double dx = ray->back()->x() - chief_ray_x;
-                    double dy = ray->back()->y() - chief_ray_y;
+                    double dx = ray->GetBack()->X() - chief_ray_x;
+                    double dy = ray->GetBack()->Y() - chief_ray_y;
 
-                    graph->set_data(valid_ray_count, dx, dy);
+                    graph->SetData(valid_ray_count, dx, dy);
                     valid_ray_count++;
 
                     continue;
@@ -149,19 +149,19 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
                     pupil(1) = (double)r * 1.0/(half_num_rings) * sin((double)ai*ang_step);
 
                     //ray->set_status(RayStatus::PassThrough);
-                    tracer->trace_pupil_ray(ray, seq_paths_[wi], pupil, fld, wvl);
+                    tracer->TracePupilRay(ray, seq_paths_[wi], pupil, fld, wvl);
 
-                    if(TRACE_SUCCESS == ray->status()){
-                        double dx = ray->back()->x() - chief_ray_x;
-                        double dy = ray->back()->y() - chief_ray_y;
+                    if(TRACE_SUCCESS == ray->Status()){
+                        double dx = ray->GetBack()->X() - chief_ray_x;
+                        double dy = ray->GetBack()->Y() - chief_ray_y;
 
-                        graph->set_data(valid_ray_count, dx, dy);
+                        graph->SetData(valid_ray_count, dx, dy);
                         valid_ray_count++;
                     }
                 }
             }
 
-            graph->resize(valid_ray_count);
+            graph->Resize(valid_ray_count);
 
         }else{
             std::cerr << "Undefined spot pattern" << std::endl;
@@ -170,7 +170,7 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
         // TODO: calculate RMS, Max diameter, etc
 
 
-        plot_data->add_graph(graph);
+        plot_data->AddGraph(graph);
     }
 
     delete tracer;

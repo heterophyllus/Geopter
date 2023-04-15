@@ -113,16 +113,16 @@ void WavelengthTableModel::setData(const std::shared_ptr<OpticalSystem> opt_sys)
     m_wvls.clear();
 
     WavelengthData wvl_data;
-    const int num_wvls = opt_sys->optical_spec()->spectral_region()->number_of_wavelengths();
+    const int num_wvls = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->NumberOfWavelengths();
 
     beginInsertRows(QModelIndex(), 0, num_wvls-1);
 
     for(int wi = 0; wi < num_wvls; wi++){
-        Wavelength* wvl = opt_sys->optical_spec()->spectral_region()->wavelength(wi);
+        Wavelength* wvl = opt_sys->GetOpticalSpec()->GetWavelengthSpec()->GetWavelength(wi);
 
-        wvl_data.value = wvl->value();
-        wvl_data.weight = wvl->weight();
-        wvl_data.color = rgbToQColor(wvl->render_color());
+        wvl_data.value = wvl->Value();
+        wvl_data.weight = wvl->Weight();
+        wvl_data.color = rgbToQColor(wvl->RenderColor());
 
         m_wvls.append(wvl_data);
     }
@@ -161,14 +161,14 @@ void WavelengthTableModel::addRow()
 
 void WavelengthTableModel::applyData(std::shared_ptr<OpticalSystem> opt_sys)
 {
-    opt_sys->optical_spec()->spectral_region()->clear();
+    opt_sys->GetOpticalSpec()->GetWavelengthSpec()->clear();
 
     for(int wi = 0; wi < m_wvls.size(); wi++){
         double val = m_wvls[wi].value;
         double wt = m_wvls[wi].weight;
         Rgb color = QColorToRgb(m_wvls[wi].color);
 
-        opt_sys->optical_spec()->spectral_region()->add_wavelength(val, wt, color);
+        opt_sys->GetOpticalSpec()->GetWavelengthSpec()->AddWavelength(val, wt, color);
     }
 }
 
