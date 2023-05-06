@@ -76,7 +76,8 @@ void DiffractivePSF::CreateFromOpdTrace(OpticalSystem* opt_sys, const Field* fld
 
     SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
 
-    auto chief_ray = std::make_shared<Ray>(seq_path.Size());
+    auto chief_ray = std::make_shared<Ray>();
+    chief_ray->Allocate(seq_path.Size());
     if( TRACE_SUCCESS != tracer->TracePupilRay(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl) ){
         std::cerr << "Trace error" << std::endl;
     }

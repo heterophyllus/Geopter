@@ -92,7 +92,8 @@ std::shared_ptr<PlotData> Spherochromatism::plot(int num_rays)
             pupil(0) = 0.0;
             pupil(1) = (double)ri/(double)(num_rays-1);
 
-            auto ray = std::make_shared<Ray>(seq_path.Size());
+            auto ray = std::make_shared<Ray>();
+            ray->Allocate(seq_path.Size());
 
             if(TRACE_SUCCESS != tracer->TracePupilRay(ray, seq_path, pupil, fld0, wvl) ){
                 std::cerr << "Failed to trace ray: " << "pupil= (" << pupil(0) << "," << pupil(1) << ")" << std::endl;

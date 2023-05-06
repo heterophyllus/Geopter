@@ -41,7 +41,8 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
     SequentialPath ref_seq_path = tracer->CreateSequentialPath(ref_wvl_val_);
 
     // trace chief ray
-    auto chief_ray = std::make_shared<Ray>(ref_seq_path.Size());
+    auto chief_ray = std::make_shared<Ray>();
+    chief_ray->Allocate(ref_seq_path.Size());
 
     int trace_result = tracer->TracePupilRay(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_);
     if(TRACE_SUCCESS != trace_result){
@@ -74,7 +75,8 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
                 pupil(1) = -1.0 + (double)ri*2.0/(double)(nrd-1);
             }
 
-            auto ray = std::make_shared<Ray>(seq_path.Size());
+            auto ray = std::make_shared<Ray>();
+            ray->Allocate(seq_path.Size());
 
             if(TRACE_SUCCESS != tracer->TracePupilRay(ray, seq_path, pupil, fld, wvl)){
                 continue;
@@ -83,10 +85,10 @@ std::shared_ptr<PlotData> TransverseRayFan::plot(double nrd, const Field* fld, i
             if(ray->Status() == TRACE_SUCCESS){
 
                 if(pupil_dir == 0) {
-                    double x_at_stop = ray->GetAt(stop_index)->X();
+                    double x_at_stop = ray->GetSegmentAt(stop_index)->X();
                     pupil_data.push_back(x_at_stop);
                 }else{
-                    double y_at_stop = ray->GetAt(stop_index)->Y();
+                    double y_at_stop = ray->GetSegmentAt(stop_index)->Y();
                     pupil_data.push_back(y_at_stop);
                 }
 

@@ -34,75 +34,79 @@ using namespace geopter;
 Ray::Ray() :
     status_(TRACE_NOT_REACHED_ERROR),
     wvl_(0.0),
-    size_(0),
+    num_segments_(0),
     reached_surface_index_(0)
 {
     pupil_crd_ = Eigen::Vector2d::Zero(2);
 }
 
 Ray::Ray(int n) :
-    status_(TRACE_SUCCESS),
+    status_(TRACE_NOT_REACHED_ERROR),
     wvl_(0.0),
+    num_segments_(0),
     reached_surface_index_(0)
 {
+    pupil_crd_ = Eigen::Vector2d::Zero(2);
     this->Allocate(n);
 }
 
+
+
 Ray::~Ray()
 {
-    for(auto &r : ray_at_srfs_){
+    for(auto &r : segments_){
         r.reset();
     }
-    ray_at_srfs_.clear();
+    segments_.clear();
 }
 
 void Ray::Allocate(int n)
 {
     this->Clear();
 
-    ray_at_srfs_.reserve(n);
+    segments_.reserve(n);
     RaySegment* before = nullptr;
     for(int i = 0; i < n; i++){
-        ray_at_srfs_.emplace_back( std::make_unique<RaySegment>() );
-        ray_at_srfs_.back()->SetBefore(before);
-        before = ray_at_srfs_.back().get();
+        segments_.emplace_back( std::make_unique<RaySegment>() );
+        segments_.back()->SetBefore(before);
+        before = segments_.back().get();
     }
-    size_ = ray_at_srfs_.size();
+    num_segments_ = segments_.size();
 }
 
 void Ray::Prepend(std::unique_ptr<RaySegment> ray_at_srf)
 {
-    ray_at_srfs_.insert(ray_at_srfs_.begin(), std::move(ray_at_srf));
-    ray_at_srfs_.front()->SetBefore( ray_at_srfs_[1].get() );
-    size_ += 1;
+    segments_.insert(segments_.begin(), std::move(ray_at_srf));
+    segments_.front()->SetBefore( segments_[1].get() );
+    num_segments_ += 1;
 }
 
 
 void Ray::Append(const Eigen::Vector3d& inc_pt, const Eigen::Vector3d& normal, const Eigen::Vector3d& after_dir, double dist, double opl)
 {
     RaySegment *before;
-    if(ray_at_srfs_.empty()){
+    if(segments_.empty()){
         before = nullptr;
     }else{
-        before = ray_at_srfs_.back().get();
+        before = segments_.back().get();
     }
 
-    int i = size_-1;
-    ray_at_srfs_.emplace_back(std::make_unique<RaySegment>(i,inc_pt, normal, after_dir, dist, opl, before));
+    int i = num_segments_-1;
+    segments_.emplace_back(std::make_unique<RaySegment>(i,inc_pt, normal, after_dir, dist, opl, before));
     opl_ += opl;
-    size_ += 1;
+    num_segments_ += 1;
 }
 
 
 void Ray::Clear()
 {
-    if( !ray_at_srfs_.empty() ){
-        for(auto &r : ray_at_srfs_){
+    if( !segments_.empty() ){
+        for(auto &r : segments_){
             r.reset();
         }
-        ray_at_srfs_.clear();
+        segments_.clear();
     }
-    size_ = 0;
+    num_segments_ = 0;
 }
 
 void Ray::SetReachedSurfaceIndex(int i)
@@ -113,9 +117,9 @@ void Ray::SetReachedSurfaceIndex(int i)
 double Ray::OpticalPathLength() const
 {
     double opl_tot = 0.0;
-    int last = ray_at_srfs_.size()-1;
+    int last = segments_.size()-1;
     for(int i = 2; i < last; i++){
-        opl_tot += ray_at_srfs_[i]->OpticalPathLength();
+        opl_tot += segments_[i]->OpticalPathLength();
     }
     return opl_tot;
 }
@@ -126,7 +130,7 @@ void Ray::Print(std::ostringstream& oss)
     const int val_w = 10;
     const int prec  = 4;
 
-    int num_srfs = ray_at_srfs_.size();
+    int num_srfs = segments_.size();
 
     //status
     oss << "Status: ";
@@ -168,18 +172,18 @@ void Ray::Print(std::ostringstream& oss)
 
     for(int si = 0; si < num_srfs; si++)
     {
-        Eigen::Vector3d intercept = ray_at_srfs_[si]->IntersectPt();
+        Eigen::Vector3d intercept = segments_[si]->IntersectPt();
         oss << std::setw(idx_w) << std::right << si;
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << intercept(0);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << intercept(1);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << intercept(2);
 
-        Eigen::Vector3d after_dir = ray_at_srfs_[si]->Direction();
+        Eigen::Vector3d after_dir = segments_[si]->Direction();
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(0);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(1);
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << after_dir(2);
 
-        double aoi = ray_at_srfs_[si]->AngleOfIncidence();
+        double aoi = segments_[si]->AngleOfIncidence();
         oss << std::setw(val_w) << std::right << std::fixed << std::setprecision(prec) << aoi;
 
         oss << std::endl;

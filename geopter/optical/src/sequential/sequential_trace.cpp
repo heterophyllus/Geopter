@@ -127,7 +127,7 @@ TraceError SequentialTrace::TraceRayThroughoutPath(RayPtr ray, const SequentialP
 {
     const int path_size = seq_path.Size();
 
-    if(ray->Size() != path_size){
+    if(ray->NumberOfSegments() != path_size){
         ray->Allocate(path_size);
     }
 
@@ -147,7 +147,7 @@ TraceError SequentialTrace::TraceRayThroughoutPath(RayPtr ray, const SequentialP
 
     // first surface
     Eigen::Vector3d srf_normal_1st = seq_path.At(0).surface->Normal(pt0);
-    ray->GetAt(0)->SetData(pt0, srf_normal_1st, dir0, 0.0, 0.0);
+    ray->GetSegmentAt(0)->SetData(pt0, srf_normal_1st, dir0, 0.0, 0.0);
 
 
     // trace ray throughout the path till the image
@@ -172,7 +172,7 @@ TraceError SequentialTrace::TraceRayThroughoutPath(RayPtr ray, const SequentialP
         if( ! cur_srf->Intersect(intersect_pt, dist_from_perpendicular_to_intersect_pt, foot_of_perpendicular_pt, rel_before_dir) ){
             ray->SetStatus(TRACE_MISSEDSURFACE_ERROR);
             ray->SetReachedSurfaceIndex(cur_srf_idx - 1);
-            ray->GetAt(cur_srf_idx)->SetStatus(TRACE_MISSEDSURFACE_ERROR);
+            ray->GetSegmentAt(cur_srf_idx)->SetStatus(TRACE_MISSEDSURFACE_ERROR);
             return TRACE_MISSEDSURFACE_ERROR;
         }
 
@@ -183,21 +183,21 @@ TraceError SequentialTrace::TraceRayThroughoutPath(RayPtr ray, const SequentialP
         if( ! Bend(after_dir ,before_dir, srf_normal, n_in, n_out) ){
             ray->SetStatus(TRACE_TIR_ERROR);
             ray->SetReachedSurfaceIndex(cur_srf_idx);
-            ray->GetAt(cur_srf_idx)->SetData(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before, opl);
-            ray->GetAt(cur_srf_idx)->SetStatus(TRACE_TIR_ERROR);
+            ray->GetSegmentAt(cur_srf_idx)->SetData(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before, opl);
+            ray->GetSegmentAt(cur_srf_idx)->SetStatus(TRACE_TIR_ERROR);
             return TRACE_TIR_ERROR;
         }
 
         opl = n_in * distance_from_before;
 
-        ray->GetAt(cur_srf_idx)->SetData(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before, opl);
-        ray->GetAt(cur_srf_idx)->SetStatus(TRACE_SUCCESS);
+        ray->GetSegmentAt(cur_srf_idx)->SetData(intersect_pt, srf_normal, after_dir.normalized(),distance_from_before, opl);
+        ray->GetSegmentAt(cur_srf_idx)->SetStatus(TRACE_SUCCESS);
 
         if(do_aperture_check_) {
             if( !cur_srf->PointInside(intersect_pt(0),intersect_pt(1)) ){
                 ray->SetStatus(TRACE_BLOCKED_ERROR);
                 ray->SetReachedSurfaceIndex(cur_srf_idx);
-                ray->GetAt(cur_srf_idx)->SetStatus(TRACE_BLOCKED_ERROR);
+                ray->GetSegmentAt(cur_srf_idx)->SetStatus(TRACE_BLOCKED_ERROR);
                 return TRACE_BLOCKED_ERROR;
             }
         }
@@ -212,7 +212,7 @@ TraceError SequentialTrace::TraceRayThroughoutPath(RayPtr ray, const SequentialP
 
     ray->SetStatus(TRACE_SUCCESS);
     ray->SetReachedSurfaceIndex(path_size-1);
-    ray->GetAt(path_size-1)->SetStatus(TRACE_SUCCESS);
+    ray->GetSegmentAt(path_size-1)->SetStatus(TRACE_SUCCESS);
 
     return TRACE_SUCCESS;
 }
@@ -244,10 +244,10 @@ bool SequentialTrace::TraceCoddington(Eigen::Vector2d &s_t, const std::shared_pt
         s_before = std::numeric_limits<double>::infinity();
         t_before = std::numeric_limits<double>::infinity();
     }else{
-        Eigen::Vector3d dir0 = ray->GetAt(0)->Direction();
+        Eigen::Vector3d dir0 = ray->GetSegmentAt(0)->Direction();
         double cosUpr = dir0(2);
         double B = -path.At(0).distance; // object distance
-        double Zpr = ray->GetAt(1)->Z();
+        double Zpr = ray->GetSegmentAt(1)->Z();
 
         s_before = (B - Zpr)/cosUpr;
         t_before = s_before;
@@ -255,15 +255,15 @@ bool SequentialTrace::TraceCoddington(Eigen::Vector2d &s_t, const std::shared_pt
 
     n_before = path.At(0).refractive_index;
 
-    int num_srf = ray->Size();
+    int num_srf = ray->NumberOfSegments();
     for(int i = 1; i < num_srf-1; i++) {
         n_after = path.At(i).refractive_index;
-        double cosI = cos(ray->GetAt(i)->AngleOfIncidence());
-        double cosI_prime = cos(ray->GetAt(i)->AngleOfRefraction());
-        double sinI = sin(ray->GetAt(i)->AngleOfIncidence());
+        double cosI = cos(ray->GetSegmentAt(i)->AngleOfIncidence());
+        double cosI_prime = cos(ray->GetSegmentAt(i)->AngleOfRefraction());
+        double sinI = sin(ray->GetSegmentAt(i)->AngleOfIncidence());
 
-        cosU = ray->GetAt(i-1)->N();
-        cosU_prime = ray->GetAt(i)->N();
+        cosU = ray->GetSegmentAt(i-1)->N();
+        cosU_prime = ray->GetSegmentAt(i)->N();
         double sinU = sqrt(1.0 - cosU*cosU);
 
         Surface* surf = path.At(i).surface;
@@ -274,7 +274,7 @@ bool SequentialTrace::TraceCoddington(Eigen::Vector2d &s_t, const std::shared_pt
 
         }else{ // aspherical
 
-            double y = ray->GetAt(i)->Y();
+            double y = ray->GetSegmentAt(i)->Y();
 
             if(fabs(y) < std::numeric_limits<double>::epsilon()){
                 double cs = surf->Curvature();
@@ -298,8 +298,8 @@ bool SequentialTrace::TraceCoddington(Eigen::Vector2d &s_t, const std::shared_pt
         }
 
 
-        double z1 = ray->GetAt(i)->Z();
-        double z2 = ray->GetAt(i+1)->Z();
+        double z1 = ray->GetSegmentAt(i)->Z();
+        double z2 = ray->GetSegmentAt(i+1)->Z();
         double d = path.At(i).distance;
 
         double D = (d + z2 - z1)/cosU_prime;
@@ -318,7 +318,7 @@ bool SequentialTrace::TraceCoddington(Eigen::Vector2d &s_t, const std::shared_pt
     // Closing Equation
     double img_dist = opt_sys_->GetOpticalAssembly()->ImageSpaceGap()->Thickness();
 
-    double z = ray->GetAt(ray->Size()-1-1)->Z();
+    double z = ray->GetSegmentAt(ray->NumberOfSegments()-1-1)->Z();
 
     double zs = s_after*cosU_prime + z - img_dist;
     double zt = t_after*cosU_prime + z - img_dist;
@@ -382,7 +382,7 @@ bool SequentialTrace::AimChiefRay(Eigen::Vector2d& aim_pt, Eigen::Vector3d& obj_
     bool result = SearchRayAimingAtSurface(ray, aim_pt, fld, stop, xy_target);
 
     if(result){
-        obj_pt = ray->GetAt(0)->IntersectPt();
+        obj_pt = ray->GetSegmentAt(0)->IntersectPt();
         return true;
     }else{
         return false;
@@ -449,10 +449,10 @@ bool SequentialTrace::SearchRayAimingAtSurface(RayPtr ray, Eigen::Vector2d& aim_
         ray->SetPupilCoordinate(aim_pt);
         trace_result1 = TraceRayThroughoutPath(ray, seq_path, pt0, dir0);
         if(trace_result1 == TRACE_SUCCESS){
-            y_ray1 = ray->GetAt(target_srf_idx)->Y();
+            y_ray1 = ray->GetSegmentAt(target_srf_idx)->Y();
         }else{
             if(ray->GetReachedSurfaceIndex() >= target_srf_idx){
-                y_ray1 = ray->GetAt(target_srf_idx)->Y();
+                y_ray1 = ray->GetSegmentAt(target_srf_idx)->Y();
             }else{
                 continue;
             }
@@ -471,10 +471,10 @@ bool SequentialTrace::SearchRayAimingAtSurface(RayPtr ray, Eigen::Vector2d& aim_
         ray->SetPupilCoordinate(aim_pt);
         trace_result2 = TraceRayThroughoutPath(ray, seq_path, pt0, dir0);
         if(trace_result2 == TRACE_SUCCESS){
-            y_ray2 = ray->GetAt(target_srf_idx)->Y();
+            y_ray2 = ray->GetSegmentAt(target_srf_idx)->Y();
         }else{
             if(ray->GetReachedSurfaceIndex() >= target_srf_idx){
-                y_ray2 = ray->GetAt(target_srf_idx)->Y();
+                y_ray2 = ray->GetSegmentAt(target_srf_idx)->Y();
             }else{
                 continue;
             }
@@ -645,7 +645,7 @@ double SequentialTrace::ComputeVignettingFactorForPupil(const Eigen::Vector2d& f
 
 
     if(ray_full_marginal->Status() == TRACE_SUCCESS){
-        double ray_height_at_stop = ray_full_marginal->GetAt(stop_index)->Height();
+        double ray_height_at_stop = ray_full_marginal->GetSegmentAt(stop_index)->Height();
         if( fabs(ray_height_at_stop - stop_radius) < eps){
             do_apply_vig_ = orig_vig_state;
             do_aperture_check_ = orig_aperture_check;

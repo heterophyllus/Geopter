@@ -94,9 +94,13 @@ void Layout::DrawReferenceRays()
 
     SequentialPath seq_path = tracer->CreateSequentialPath(ref_wvl_val);
 
-    auto r1 = std::make_shared<Ray>(num_srfs);
-    auto r2 = std::make_shared<Ray>(num_srfs);
-    auto r3 = std::make_shared<Ray>(num_srfs);
+    auto r1 = std::make_shared<Ray>();
+    auto r2 = std::make_shared<Ray>();
+    auto r3 = std::make_shared<Ray>();
+
+    r1->Allocate(num_srfs);
+    r2->Allocate(num_srfs);
+    r3->Allocate(num_srfs);
 
     for(int fi = 0; fi < num_flds; fi++)
     {
@@ -142,7 +146,8 @@ void Layout::DrawFanRays(int nrd)
     int num_srfs = opt_sys_->GetOpticalAssembly()->NumberOfSurfaces();
 
     Rgb color;
-    auto ray = std::make_shared<Ray>(num_srfs);
+    auto ray = std::make_shared<Ray>();
+    ray->Allocate(num_srfs);
     Eigen::Vector2d pupil;
     
     SequentialTrace *tracer = new SequentialTrace(opt_sys_);
@@ -364,8 +369,8 @@ void Layout::DrawSingleRay(const std::shared_ptr<Ray>& ray, const Rgb& color)
 {
     for(int i = 1; i <= ray->GetReachedSurfaceIndex(); i++)
     {
-        Eigen::Vector3d pt_to = ray->GetAt(i)->IntersectPt();
-        Eigen::Vector3d pt_from = ray->GetAt(i-1)->IntersectPt();
+        Eigen::Vector3d pt_to = ray->GetSegmentAt(i)->IntersectPt();
+        Eigen::Vector3d pt_from = ray->GetSegmentAt(i-1)->IntersectPt();
 
         Surface* cur_srf = opt_sys_->GetOpticalAssembly()->GetSurface(i);
         Surface* prev_srf = opt_sys_->GetOpticalAssembly()->GetSurface(i-1);

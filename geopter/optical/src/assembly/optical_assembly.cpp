@@ -101,7 +101,7 @@ void OpticalAssembly::UpdateSemiDiameters()
 
         std::vector<double> ray_size_list;
         for(int ri = 0; ri < num_ref_rays; ri++){
-            ray_size_list.push_back(ref_rays[ri]->Size());
+            ray_size_list.push_back(ref_rays[ri]->NumberOfSegments());
         }
         int ray_size = *std::min_element(ray_size_list.begin(), ray_size_list.end());
 
@@ -111,7 +111,7 @@ void OpticalAssembly::UpdateSemiDiameters()
 
             try{
                 for(int ri = 0; ri < num_ref_rays; ri++){
-                    ray_ht_list[ri] = ref_rays[ri]->GetAt(si)->Height();
+                    ray_ht_list[ri] = ref_rays[ri]->GetSegmentAt(si)->Height();
                 }
             }
             catch(std::out_of_range &e){

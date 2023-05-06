@@ -66,7 +66,8 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
 
         //Eigen::Vector2d aim_pt = tracer->aim_chief_ray(fld, wvl);
         //fld->set_aim_pt(aim_pt);
-        auto chief_ray = std::make_shared<Ray>(num_srfs);
+        auto chief_ray = std::make_shared<Ray>();
+        chief_ray->Allocate(num_srfs);
         int trace_result = tracer->TracePupilRay(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
 
         if(TRACE_SUCCESS != trace_result){
@@ -78,7 +79,8 @@ std::shared_ptr<PlotData> OpdFan::plot(Field* fld, int nrd)
             pupil(0) = 0.0;
             pupil(1) = -1.0 + (double)ri*2.0/(double)(nrd-1);
 
-            auto ray = std::make_shared<Ray>(num_srfs);
+            auto ray = std::make_shared<Ray>();
+            ray->Allocate(num_srfs);
             if( TRACE_SUCCESS != tracer->TracePupilRay(ray, seq_path, pupil, fld, wvl) ){
                 break;
             }

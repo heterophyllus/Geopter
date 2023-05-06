@@ -50,7 +50,8 @@ std::shared_ptr<DataGrid> WavefrontMap::Create(const Field *fld, double wvl, int
 
     SequentialPath seq_path = tracer->CreateSequentialPath(wvl);
 
-    const auto chief_ray = std::make_shared<Ray>(seq_path.Size());
+    const auto chief_ray = std::make_shared<Ray>();
+    chief_ray->Allocate(seq_path.Size());
     int trace_result = tracer->TracePupilRay(chief_ray, seq_path, Eigen::Vector2d({0.0, 0.0}), fld, wvl);
 
     const double step = 2.0/static_cast<double>(ndim-1);
@@ -59,7 +60,8 @@ std::shared_ptr<DataGrid> WavefrontMap::Create(const Field *fld, double wvl, int
     Eigen::Vector2d pupil;
 
     double epd = 2.0*opt_sys_->GetFirstOrderData()->entrance_pupil_radius;
-    RayPtr ray = std::make_shared<Ray>(seq_path.Size());
+    RayPtr ray = std::make_shared<Ray>();
+    ray->Allocate(seq_path.Size());
 
     auto data_grid = std::make_shared<DataGrid>(ndim, ndim, epd, epd);
 

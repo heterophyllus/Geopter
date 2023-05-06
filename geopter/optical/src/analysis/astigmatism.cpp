@@ -92,7 +92,8 @@ std::shared_ptr<PlotData> Astigmatism::plot(int num_rays)
 
     Eigen::Vector2d s_t({0.0, 0.0});
 
-    auto ray = std::make_shared<Ray>(num_srfs);
+    auto ray = std::make_shared<Ray>();
+    ray->Allocate(num_srfs);
 
     for(int wi = 0; wi < num_wvls; wi++){
 

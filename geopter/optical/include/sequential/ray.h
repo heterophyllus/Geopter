@@ -57,14 +57,14 @@ public:
 
     void SetReachedSurfaceIndex(int i);
 
-    int Size() const { return ray_at_srfs_.size();}
+    int NumberOfSegments() const { return segments_.size();}
 
     int GetReachedSurfaceIndex() const { return reached_surface_index_; }
 
-    RaySegment* GetAt(int i) { return ray_at_srfs_[i].get(); }
-    RaySegment* GetFront() const { return ray_at_srfs_.front().get();}
-    RaySegment* GetBack() const { return ray_at_srfs_.back().get();}
-    RaySegment* GetLensBack() const { int len = ray_at_srfs_.size(); return ray_at_srfs_[len-2].get();}
+    RaySegment* GetSegmentAt(int i) { return segments_[i].get(); }
+    RaySegment* GetFront() const { return segments_.front().get();}
+    RaySegment* GetBack() const { return segments_.back().get();}
+    RaySegment* GetLensBack() const { int len = segments_.size(); return segments_[len-2].get();}
     TraceError Status() const { return status_;}
     double Savelength() const { return wvl_;}
     const Eigen::Vector2d& PupilCoordinate() const { return pupil_crd_;}
@@ -80,11 +80,11 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 private:
-    std::vector< std::unique_ptr<RaySegment> > ray_at_srfs_;
+    std::vector< std::unique_ptr<RaySegment> > segments_;
     TraceError status_;
     double wvl_;
     double opl_;
-    int size_;
+    int num_segments_;
     int reached_surface_index_;
     Eigen::Vector2d pupil_crd_;
 };

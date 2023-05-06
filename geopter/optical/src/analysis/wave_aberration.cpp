@@ -32,15 +32,15 @@ double WaveAberration::wave_abr_full_calc(const std::shared_ptr<Ray>& ray, const
     Eigen::Vector3d ref_dir = ref_sphere.ReferenceDirection();
     double ref_sphere_radius = ref_sphere.Radius();
 
-    double e1 = eic_distance(ray->GetAt(1)->IntersectPt(), ray->GetAt(0)->Direction(),
-                             chief_ray->GetAt(1)->IntersectPt(), chief_ray->GetAt(0)->Direction());
+    double e1 = eic_distance(ray->GetSegmentAt(1)->IntersectPt(), ray->GetSegmentAt(0)->Direction(),
+                             chief_ray->GetSegmentAt(1)->IntersectPt(), chief_ray->GetSegmentAt(0)->Direction());
 
-    double ekp = eic_distance(ray->GetAt(k)->IntersectPt(), ray->GetAt(k)->Direction(),
-                              chief_ray->GetAt(k)->IntersectPt(), chief_ray->GetAt(k)->Direction());
+    double ekp = eic_distance(ray->GetSegmentAt(k)->IntersectPt(), ray->GetSegmentAt(k)->Direction(),
+                              chief_ray->GetSegmentAt(k)->IntersectPt(), chief_ray->GetSegmentAt(k)->Direction());
 
     Eigen::Vector3d ray_inc_pt_before_img;
     Eigen::Vector3d ray_dir_before_img;
-    transform_after_surface(ray_inc_pt_before_img, ray_dir_before_img, srf,ray->GetAt(k));
+    transform_after_surface(ray_inc_pt_before_img, ray_dir_before_img, srf,ray->GetSegmentAt(k));
     double dst = ekp - cr_exp_dist;
     Eigen::Vector3d eic_exp_pt = ray_inc_pt_before_img - dst*ray_dir_before_img;
     Eigen::Vector3d p_coord = eic_exp_pt - cr_exp_pt;
@@ -105,15 +105,15 @@ double WaveAberration::wave_abr_full_calc(const std::shared_ptr<Ray>& ray, const
     // <---
 
     // ---> 3. calculate opd
-    double e1 = eic_distance(ray->GetAt(1)->IntersectPt(), ray->GetAt(0)->Direction(),
-                             chief_ray->GetAt(1)->IntersectPt(), chief_ray->GetAt(0)->Direction());
+    double e1 = eic_distance(ray->GetSegmentAt(1)->IntersectPt(), ray->GetSegmentAt(0)->Direction(),
+                             chief_ray->GetSegmentAt(1)->IntersectPt(), chief_ray->GetSegmentAt(0)->Direction());
 
-    double ekp = eic_distance(ray->GetAt(k)->IntersectPt(), ray->GetAt(k)->Direction(),
-                              chief_ray->GetAt(k)->IntersectPt(), chief_ray->GetAt(k)->Direction());
+    double ekp = eic_distance(ray->GetSegmentAt(k)->IntersectPt(), ray->GetSegmentAt(k)->Direction(),
+                              chief_ray->GetSegmentAt(k)->IntersectPt(), chief_ray->GetSegmentAt(k)->Direction());
 
     Eigen::Vector3d ray_inc_pt_before_img;
     Eigen::Vector3d ray_dir_before_img;
-    transform_after_surface(ray_inc_pt_before_img, ray_dir_before_img, srf,ray->GetAt(k));
+    transform_after_surface(ray_inc_pt_before_img, ray_dir_before_img, srf,ray->GetSegmentAt(k));
     double dst = ekp - cr_exp_dist;
     Eigen::Vector3d eic_exp_pt = ray_inc_pt_before_img - dst*ray_dir_before_img;
     Eigen::Vector3d p_coord = eic_exp_pt - cr_exp_pt;
@@ -216,7 +216,7 @@ void WaveAberration::get_chief_ray_exp_segment(Eigen::Vector3d& cr_exp_pt, doubl
     Eigen::Vector3d cr_inc_pt_before_img;
     Eigen::Vector3d cr_dir_before_img;
 
-    transform_after_surface(cr_inc_pt_before_img, cr_dir_before_img, srf, chief_ray->GetAt(k));
+    transform_after_surface(cr_inc_pt_before_img, cr_dir_before_img, srf, chief_ray->GetSegmentAt(k));
 
     double h = cr_inc_pt_before_img(1);
     double u = cr_dir_before_img(1);

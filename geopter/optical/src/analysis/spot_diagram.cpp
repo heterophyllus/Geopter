@@ -47,7 +47,8 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
 
     SequentialPath ref_seq_path = seq_paths_[ref_wvl_idx_];
     // trace chief ray
-    auto chief_ray = std::make_shared<Ray>(ref_seq_path.Size());
+    auto chief_ray = std::make_shared<Ray>();
+    chief_ray->Allocate(ref_seq_path.Size());
     if(TRACE_SUCCESS != tracer->TracePupilRay(chief_ray, ref_seq_path, Eigen::Vector2d({0.0,0.0}), fld, ref_wvl_val_) ){
         std::cerr << "Failed to trace chief ray" << std::endl;
         delete tracer;
@@ -61,7 +62,8 @@ std::shared_ptr<PlotData> SpotDiagram::plot(const Field* fld, int pattern, int m
     // trace patterned rays for all wavelengths
     Eigen::Vector2d pupil;
 
-    auto ray = std::make_shared<Ray>(chief_ray->Size());
+    auto ray = std::make_shared<Ray>();
+    ray->Allocate(chief_ray->NumberOfSegments());
 
     for(int wi = 0; wi < num_wvl_; wi++){
 

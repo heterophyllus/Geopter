@@ -68,10 +68,10 @@ void MarginalHeightSolve::Apply(OpticalSystem* opt_sys)
         auto ray = std::make_shared<Ray>(seq_path.Size());
         tracer->TracePupilRay(ray, seq_path, pupil, fld, ref_wvl);
 
-        double y = ray->GetAt(surface_index)->Y();
-        double z = ray->GetAt(surface_index)->Z(); // surface sag
-        double M = ray->GetAt(surface_index)->M();
-        double N = ray->GetAt(surface_index)->N();
+        double y = ray->GetSegmentAt(surface_index)->Y();
+        double z = ray->GetSegmentAt(surface_index)->Z(); // surface sag
+        double M = ray->GetSegmentAt(surface_index)->M();
+        double N = ray->GetSegmentAt(surface_index)->N();
         double tanU = M/N;
 
         double t = (height_ - y)/tanU + z;
