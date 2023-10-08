@@ -27,6 +27,7 @@
 #ifndef GEOPTER_SOLVE_H
 #define GEOPTER_SOLVE_H
 
+#include <string>
 
 namespace geopter{
 
@@ -54,11 +55,17 @@ public:
     virtual void Apply(OpticalSystem* opt_sys) = 0;
 
     /** Returns solve type as integer. If -1, no valid solve is set */
-    int GetSolveType() const {return solve_type_;}
+    virtual int GetSolveType() const{return -1;}
 
-    virtual void SetParameters(int index, double param1, double param2=0.0, double param3=0.0) = 0;
+    virtual std::string GetSolveTypeStr() const{return "";}
+
+    virtual void SetParameters(double param1, double param2=0.0, double param3=0.0, double param4=0.0) = 0;
+    virtual void GetParameters(double *param1=nullptr, double *param2=nullptr, double *param3=nullptr, double *param4=nullptr) = 0;
+
+    void SetGapIndex(int gi) { gap_index_ = gi; }
 
 protected:
+    int gap_index_;
     int solve_type_;
 };
 

@@ -28,6 +28,15 @@
 
 using namespace geopter;
 
+OverallLengthSolve::OverallLengthSolve()
+{
+    solve_type_ = SolveType::OverallLength;
+    surface1_ = 0;
+    surface2_ = 1;
+    gap_index_ = 0;
+    value_ = 0.0;
+}
+
 OverallLengthSolve::OverallLengthSolve(int gi, double value, int s1, int s2) : Solve()
 {
     solve_type_ = SolveType::OverallLength;
@@ -37,25 +46,35 @@ OverallLengthSolve::OverallLengthSolve(int gi, double value, int s1, int s2) : S
     value_ = value;
 }
 
-bool OverallLengthSolve::check(const OpticalSystem *opt_sys)
+bool OverallLengthSolve::Check(const OpticalSystem *opt_sys)
 {
     if(surface1_ >= surface2_) return false;
-    if(surface2_ > opt_sys->optical_assembly()->surface_count()-1) return false;
-    if(gap_index_ > opt_sys->optical_assembly()->gap_count()-1) return false;
+    if(surface2_ > opt_sys->GetOpticalAssembly()->NumberOfSurfaces()-1) return false;
+    if(gap_index_ > opt_sys->GetOpticalAssembly()->NumberOfGaps()-1) return false;
 
     return true;
 }
 
-void OverallLengthSolve::apply(OpticalSystem *opt_sys)
+void OverallLengthSolve::Apply(OpticalSystem *opt_sys)
 {
-    double cur_oal = opt_sys->optical_assembly()->overall_length(surface1_, surface2_);
-    double cur_thi = opt_sys->optical_assembly()->gap(gap_index_)->thi();
+    double cur_oal = opt_sys->GetOpticalAssembly()->OverallLength(surface1_, surface2_);
+    double cur_thi = opt_sys->GetOpticalAssembly()->GetGap(gap_index_)->Thickness();
     double new_thi = (value_ - cur_oal) + cur_thi;
 
-    opt_sys->optical_assembly()->gap(gap_index_)->set_thi(new_thi);
+    opt_sys->GetOpticalAssembly()->GetGap(gap_index_)->SetThickness(new_thi);
 }
 
-void OverallLengthSolve::set_parameters(int index, double param1, double param2, double param3)
+void OverallLengthSolve::SetParameters(double param1, double param2, double param3, double /*param4*/)
 {
+    surface1_ = static_cast<int>(param1);
+    surface2_ = static_cast<int>(param2);
+    value_    = param3;
+}
 
+void OverallLengthSolve::GetParameters(double *param1, double *param2, double *param3, double *param4)
+{
+    *param1 = static_cast<double>(surface1_);
+    *param2 = static_cast<double>(surface2_);
+    param3 = nullptr;
+    param4 = nullptr;
 }

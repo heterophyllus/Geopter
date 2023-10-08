@@ -49,7 +49,9 @@
 
 #include "assembly/optical_assembly.h"
 
+#include "solve/fixed_solve.h"
 #include "solve/edge_thickness_solve.h"
+#include "solve/overall_length_solve.h"
 #include "solve/marginal_ray_height_solve.h"
 
 #include "material/material_library.h"

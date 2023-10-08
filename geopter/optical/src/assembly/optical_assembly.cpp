@@ -62,6 +62,12 @@ void OpticalAssembly::UpdateTransforms()
 void OpticalAssembly::UpdateSolve()
 {
     const int num_srfs = interfaces_.size();
+
+    // update gap index
+    for(int i = 0; i < num_gaps_; i++){
+        gaps_[i]->SetGapIndex(i);
+    }
+
     for(int i = 0; i < num_srfs; i++){
         if(this->GetSurface(i)->HasSolve()){
             this->GetSurface(i)->GetSolve()->Apply(parent_);
@@ -165,7 +171,7 @@ void OpticalAssembly::CreateMinimumAssembly()
     Clear();
 
     // add object interface and gap
-    auto s_obj = std::make_unique<Surface>("Obj");
+    auto s_obj = std::make_unique<Surface>();
     interfaces_.push_back(std::move(s_obj));
 
     //auto air = std::make_shared<Air>();
@@ -174,7 +180,7 @@ void OpticalAssembly::CreateMinimumAssembly()
     gaps_.push_back(std::move(g));
 
     // add stop interface and gap
-    auto s_stop = std::make_unique<Surface>("Stop");
+    auto s_stop = std::make_unique<Surface>();
     interfaces_.push_back(std::move(s_stop));
 
     auto g_stop = std::make_unique<Gap>(0.0, air);
@@ -184,7 +190,7 @@ void OpticalAssembly::CreateMinimumAssembly()
 
 
     // add image interface and dummy gap
-    auto s_img = std::make_unique<Surface>("Img");
+    auto s_img = std::make_unique<Surface>();
     interfaces_.push_back(std::move(s_img));
 
     auto g_img = std::make_unique<Gap>(0.0, air);
@@ -247,7 +253,8 @@ void OpticalAssembly::Insert(int i, double r, double t, const std::string &mat_n
     }
 
     // insert the surface
-    auto s = std::make_unique<Surface>(r);
+    auto s = std::make_unique<Surface>();
+    s->Profile<Spherical>()->SetRadius(r);
 
     if(is_appending){
         interfaces_.push_back(std::move(s));

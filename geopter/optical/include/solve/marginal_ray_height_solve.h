@@ -22,13 +22,16 @@ namespace geopter {
 class MarginalHeightSolve : public Solve
 {
 public:
+    MarginalHeightSolve();
     MarginalHeightSolve(int gi, double value, double zone);
     bool Check(const OpticalSystem* opt_sys) override;
     void Apply(OpticalSystem* opt_sys) override;
-    void SetParameters(int index, double param1, double param2, double param3) override;
+    int GetSolveType() const override { return SolveType::MarginalHeight; }
+    std::string GetSolveTypeStr() const override { return "M"; }
+    void SetParameters(double param1, double param2, double param3, double param4) override;
+    void GetParameters(double *param1=nullptr, double *param2=nullptr, double *param3=nullptr, double *param4=nullptr) override;
 
 private:
-    int gap_index_;
     double height_;
     double pupil_zone_;
 };

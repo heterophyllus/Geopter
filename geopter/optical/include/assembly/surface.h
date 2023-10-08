@@ -47,8 +47,7 @@ namespace geopter {
 class Surface
 {
 public:
-    Surface(std::string lbl="");
-    Surface(double r);
+    Surface();
     ~Surface();
 
     std::string InteractMode() const { return interact_mode_;}
@@ -155,14 +154,6 @@ public:
         }
     }
 
-    template<class Shape>
-    void SetEdgeAperture(double x_dimension, double y_dimension){
-        if constexpr (std::is_same_v<Shape, NoneAperture>){
-            edge_aperture_ = Aperture<NoneAperture>();
-        }else if(std::is_same_v<Shape, Circular>){
-            edge_aperture_ = Aperture<Circular>(x_dimension, y_dimension);
-        }
-    }
 
     /** Remove all clear apertures from the surface */
     void RemoveClearAperture();
@@ -191,7 +182,6 @@ protected:
 
     std::variant<SurfaceProfile<Spherical>, SurfaceProfile<EvenPolynomial>, SurfaceProfile<OddPolynomial> > profile_;
 
-    std::variant<Aperture<NoneAperture>, Aperture<Circular>> edge_aperture_;
     std::variant<Aperture<NoneAperture>, Aperture<Circular>> clear_aperture_;
 
     std::unique_ptr<DecenterData> decenter_;

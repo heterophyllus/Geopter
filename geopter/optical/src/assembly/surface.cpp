@@ -30,9 +30,9 @@
 
 using namespace geopter;
 
-Surface::Surface(std::string lbl)
+Surface::Surface()
 {
-    label_ = lbl;
+    label_ = "";
     interact_mode_ = "Transmit";
     lcl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
     lcl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
@@ -47,23 +47,6 @@ Surface::Surface(std::string lbl)
     decenter_ = nullptr;
 }
 
-Surface::Surface(double r)
-{
-    label_ = "";
-    interact_mode_ = "Transmit";
-
-    profile_ = SurfaceProfile<Spherical>(1/r);
-
-    lcl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
-    lcl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
-
-    gbl_tfrm_.rotation = Eigen::Matrix3d::Identity(3,3);
-    gbl_tfrm_.transfer = Eigen::Vector3d::Zero(3);
-
-    solve_ = nullptr;
-
-    decenter_ = nullptr;
-}
 
 Surface::~Surface()
 {

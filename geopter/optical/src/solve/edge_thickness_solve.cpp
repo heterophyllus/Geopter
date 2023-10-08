@@ -28,18 +28,22 @@
 
 using namespace geopter;
 
-EdgeThicknessSolve::EdgeThicknessSolve(int gap_index, double height, double value) :
-    Solve()
+EdgeThicknessSolve::EdgeThicknessSolve()
+{
+    solve_type_ = SolveType::EdgeThickness;
+}
+
+EdgeThicknessSolve::EdgeThicknessSolve(int gap_index, double thickness, double radial_height)
 {
     solve_type_ = SolveType::EdgeThickness;
     gap_index_ = gap_index;
-    height_ = height;
-    value_ = value;
+    thickness_ = thickness;
+    radial_height_ = radial_height;
 }
 
 bool EdgeThicknessSolve::Check(const OpticalSystem *opt_sys)
 {
-    if(gap_index_ < 0 || height_ < 0.0 || value_ < 0.0) return false;
+    if(gap_index_ < 0 || radial_height_ < 0.0 || thickness_ < 0.0) return false;
 
     if(gap_index_ > opt_sys->GetOpticalAssembly()->NumberOfGaps() -1) return false;
 
@@ -50,15 +54,25 @@ void EdgeThicknessSolve::Apply(OpticalSystem* opt_sys)
 {
     int s1 = gap_index_;
     int s2 = s1+1;
-    double sag1 = opt_sys->GetOpticalAssembly()->GetSurface(s1)->Sag(0.0, height_);
-    double sag2 = opt_sys->GetOpticalAssembly()->GetSurface(s2)->Sag(0.0, height_);
+    double sag1 = opt_sys->GetOpticalAssembly()->GetSurface(s1)->Sag(0.0, radial_height_);
+    double sag2 = opt_sys->GetOpticalAssembly()->GetSurface(s2)->Sag(0.0, radial_height_);
 
-    double thi = value_ - ( -sag1 + sag2); //et = -sag1 + thi + sag2;
+    double thi = thickness_ - ( -sag1 + sag2); //et = -sag1 + thi + sag2;
 
     opt_sys->GetOpticalAssembly()->GetGap(gap_index_)->SetThickness(thi);
 }
 
-void EdgeThicknessSolve::SetParameters(int index, double param1, double param2, double param3)
+void EdgeThicknessSolve::SetParameters(double param1, double param2, double /*param3*/, double /*param4*/)
 {
-
+    thickness_ = param1;
+    radial_height_ = param2;
 }
+
+void EdgeThicknessSolve::GetParameters(double *param1, double *param2, double *param3, double *param4)
+{
+    *param1 = thickness_;
+    *param2 = radial_height_;
+    param3 = nullptr;
+    param4 = nullptr;
+}
+

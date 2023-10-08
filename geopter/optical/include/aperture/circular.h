@@ -1,11 +1,11 @@
 /*******************************************************************************
 ** Geopter
-** Copyright (C) 2021 Hiiragi All Rights Reserved.
+** Copyright (C) 2021 Hiiragi
 ** 
 ** This file is part of Geopter.
 **
 ** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU General Public
+** modify it under the terms of the GNU Lesser General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
 ** 
@@ -24,57 +24,54 @@
 ********************************************************************************/
 
 
-#include "assembly/gap.h"
-#include "solve/fixed_solve.h"
+#ifndef CIRCULAR_H
+#define CIRCULAR_H
 
-using namespace geopter;
+#define _USE_MATH_DEFINES
+#include <math.h>
 
-Gap::Gap()
+#include "aperture/aperture.h"
+
+namespace geopter {
+
+
+class Circular : public Aperture
 {
-    thi_ = 0.0;
-    material_ = MaterialLibrary::GetAir();
-    solve_ = std::make_unique<FixedSolve>();
-}
-
-Gap::Gap(double t, std::shared_ptr<Material> m){
-    thi_ = t;
-    if(m){
-        material_ = m;
-    }else{
-        material_ = MaterialLibrary::GetAir();
-    }
-    solve_ = std::make_unique<FixedSolve>();
-}
-
-Gap::~Gap()
-{
-    material_ = nullptr;
-}
-
-void Gap::SetMaterial(std::shared_ptr<Material> m)
-{
-    if(m){
-        material_ = m;
-    }else{
-        material_ = MaterialLibrary::GetAir();
-    }
-}
-
-bool Gap::HasSolve() const {
-    if(!solve_) return false;
-
-    if(solve_->GetSolveType() == Solve::SolveType::Fixed){
-        return false;
+public:
+    Circular(){
+        aperture_name_ = "Circular";
+        radius_ = 1.0;
     }
 
-    return true;
-
-}
-
-int Gap::SolveType() const {
-    if(solve_){
-        return solve_->GetSolveType();
-    }else{
-        return -1;
+    Circular(double r){
+        radius_ = r;
     }
-}
+
+    void SetRadius(double r){
+        radius_ = r;
+    }
+
+    double Radius() const{
+        return radius_;
+    }
+
+    double MaxDimension() const override{
+        return radius_;
+    }
+
+    bool PointInside(double x, double y) const override{
+        if( (x*x + y*y) <= (radius_*radius_) ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+private:
+    double radius_;
+};
+
+} //namespace
+
+
+#endif // CIRCULAR_H

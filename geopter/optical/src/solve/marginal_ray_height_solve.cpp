@@ -19,9 +19,15 @@ If not, see <https://www.gnu.org/licenses/>.
 
 using namespace geopter;
 
+MarginalHeightSolve::MarginalHeightSolve()
+{
+    solve_type_ = SolveType::MarginalHeight;
+    gap_index_ = 0;
+    height_ = 0.0;
+    pupil_zone_ = 0.0;
+}
 
-MarginalHeightSolve::MarginalHeightSolve(int gi, double value, double zone) :
-    Solve()
+MarginalHeightSolve::MarginalHeightSolve(int gi, double value, double zone)
 {
     solve_type_ = SolveType::MarginalHeight;
     gap_index_ = gi;
@@ -83,7 +89,14 @@ void MarginalHeightSolve::Apply(OpticalSystem* opt_sys)
 
 }
 
-void MarginalHeightSolve::SetParameters(int index, double param1, double param2, double param3)
+void MarginalHeightSolve::SetParameters(double param1, double param2, double param3, double /*param4*/)
 {
+    height_ = param1;
+    pupil_zone_ = param2;
+}
 
+void MarginalHeightSolve::GetParameters(double *param1, double *param2, double *param3, double */*param4*/)
+{
+    *param1 = height_;
+    *param2 = pupil_zone_;
 }

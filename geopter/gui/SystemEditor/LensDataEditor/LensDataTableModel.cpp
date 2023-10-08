@@ -84,7 +84,9 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
         }else if (LensDataColumn::Thickness == j){
             return m_opt_sys->GetOpticalAssembly()->GetGap(i)->Thickness();
         }else if( LensDataColumn::Material == j){
-            return QString().fromStdString(m_opt_sys->GetOpticalAssembly()->GetGap(i)->GetMaterial()->Name());
+            QString material_name = QString().fromStdString(m_opt_sys->GetOpticalAssembly()->GetGap(i)->GetMaterial()->Name());
+            if ("AIR" == material_name) {material_name = tr("");}
+            return material_name;
         }else if(LensDataColumn::Mode == j){
             return QString().fromStdString(m_opt_sys->GetOpticalAssembly()->GetSurface(i)->InteractMode());
         }else if (LensDataColumn::SemiDiameter == j){
@@ -97,8 +99,10 @@ QVariant LensDataTableModel::data(const QModelIndex &index, int role) const
                 return aperture_shape;
             }
         }else if(LensDataColumn::ThicknessSolve == j){
-            if(m_opt_sys->GetOpticalAssembly()->GetGap(i)->HasSolve()){
-                return tr("S");
+            if( m_opt_sys->GetOpticalAssembly()->GetGap(i)->GetSolve()->GetSolveType() > 1 ){
+                return QString().fromStdString(m_opt_sys->GetOpticalAssembly()->GetGap(i)->GetSolve()->GetSolveTypeStr());
+            }else{
+                return tr("");
             }
         }else{
             return QVariant();

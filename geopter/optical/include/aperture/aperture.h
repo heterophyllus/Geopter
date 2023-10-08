@@ -1,6 +1,6 @@
 /*******************************************************************************
 ** Geopter
-** Copyright (C) 2021 Hiiragi All Rights Reserved.
+** Copyright (C) 2021 Hiiragi
 ** 
 ** This file is part of Geopter.
 **
@@ -24,57 +24,35 @@
 ********************************************************************************/
 
 
-#include "assembly/gap.h"
-#include "solve/fixed_solve.h"
+#ifndef APERTURE_H
+#define APERTURE_H
 
-using namespace geopter;
+#include <string>
+#include "Eigen/Core"
 
-Gap::Gap()
+
+namespace geopter{
+
+
+/** Apertures on surfaces used to define and limit the light beam passing through a lens system */
+
+class Aperture
 {
-    thi_ = 0.0;
-    material_ = MaterialLibrary::GetAir();
-    solve_ = std::make_unique<FixedSolve>();
-}
+public:
+    Aperture(){};
 
-Gap::Gap(double t, std::shared_ptr<Material> m){
-    thi_ = t;
-    if(m){
-        material_ = m;
-    }else{
-        material_ = MaterialLibrary::GetAir();
-    }
-    solve_ = std::make_unique<FixedSolve>();
-}
-
-Gap::~Gap()
-{
-    material_ = nullptr;
-}
-
-void Gap::SetMaterial(std::shared_ptr<Material> m)
-{
-    if(m){
-        material_ = m;
-    }else{
-        material_ = MaterialLibrary::GetAir();
-    }
-}
-
-bool Gap::HasSolve() const {
-    if(!solve_) return false;
-
-    if(solve_->GetSolveType() == Solve::SolveType::Fixed){
-        return false;
+    const std::string& ApertureName() const{
+        return aperture_name_;
     }
 
-    return true;
+    virtual double MaxDimension() const = 0;
 
-}
+    virtual bool PointInside(double x, double y) const = 0;
 
-int Gap::SolveType() const {
-    if(solve_){
-        return solve_->GetSolveType();
-    }else{
-        return -1;
-    }
-}
+protected:
+    std::string aperture_name_;
+};
+
+} //namespace
+
+#endif // APERTURE_H

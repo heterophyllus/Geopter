@@ -58,6 +58,7 @@ set(GEOPTER_GUI_HEADERS
     SystemEditor/LensDataEditor/GridTableHeaderView.h
     SystemEditor/LensDataEditor/GridTableHeaderModel.h
     SystemEditor/LensDataEditor/SurfacePropertyDlg.h
+    SystemEditor/LensDataEditor/SolveSettingDlg.h
 
     SystemEditor/SolveDlg/SolveSelectionDlg.h
     SystemEditor/SolveDlg/EdgeThicknessSolveDlg.h
@@ -122,6 +123,7 @@ set(GEOPTER_GUI_SOURCES
     SystemEditor/LensDataEditor/GridTableHeaderView.cpp
     SystemEditor/LensDataEditor/GridTableHeaderModel.cpp
     SystemEditor/LensDataEditor/SurfacePropertyDlg.cpp
+    SystemEditor/LensDataEditor/SolveSettingDlg.cpp
 
     SystemEditor/Delegate/FloatDelegate.cpp
     SystemEditor/Delegate/OneByteDelegate.cpp
@@ -155,6 +157,7 @@ set(GEOPTER_GUI_FORMS
 
     GeneralConfigDlg.ui
     SystemEditor/LensDataEditor/SurfacePropertyDlg.ui
+    SystemEditor/LensDataEditor/SolveSettingDlg.ui
     SystemEditor/SpecEditor/SpecEditorDlg.ui
 
     AnalysisDlg/PrescriptionDlg.ui

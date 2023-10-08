@@ -61,17 +61,25 @@ public:
     Material* GetMaterial() const { return material_.get();}
     void SetMaterial(std::shared_ptr<Material> m);
 
-    void SetSolve(std::unique_ptr<Solve> solve) { solve_ = std::move(solve);}
+    template <class T>
+    Solve* CreateSolve() {
+        solve_ = std::make_unique<T>();
+        return solve_.get();
+    }
     void RemoveSolve() { solve_.reset(); }
     Solve* GetSolve() const { return solve_.get();}
 
     bool HasSolve() const;
     int SolveType() const;
 
+    int GetGapIndex() const { return gap_index_; }
+    void SetGapIndex(int i) { gap_index_ = i; }
+
 private:
     double thi_;
     std::shared_ptr<Material> material_;
     std::unique_ptr<Solve> solve_;
+    int gap_index_;
 };
 
 

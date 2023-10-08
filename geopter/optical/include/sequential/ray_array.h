@@ -1,6 +1,6 @@
 /*******************************************************************************
 ** Geopter
-** Copyright (C) 2021 Hiiragi All Rights Reserved.
+** Copyright (C) 2023 Hiiragi
 **
 ** This file is part of Geopter.
 **
@@ -14,41 +14,35 @@
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** Lesser General Public License for more details.
 **
-** You should have received a copy of the GNU General Public
+** You should have received a copy of the GNU Lesser General Public
 ** License along with this library; If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************************
 **           Author: Hiiragi
 **          Website: https://github.com/heterophyllus/Geopter
 **          Contact: heterophyllus.work@gmail.com
-**             Date: October 9th, 2022
+**             Date: May 13th, 2023
 ********************************************************************************/
 
-#ifndef GEOPTER_OVERALL_LENGTH_SOLVE_H
-#define GEOPTER_OVERALL_LENGTH_SOLVE_H
+#ifndef RAY_ARRAY_H
+#define RAY_ARRAY_H
 
-#include "solve/solve.h"
+#include "ray.h"
 
 namespace geopter {
 
-class OverallLengthSolve : public Solve
+class RayArray
 {
 public:
-    OverallLengthSolve();
-    OverallLengthSolve(int gi, double value, int s1, int s2);
-    bool Check(const OpticalSystem* opt_sys) override;
-    void Apply(OpticalSystem* opt_sys) override;
-    int GetSolveType() const override { return SolveType::OverallLength;}
-    std::string GetSolveTypeStr() const override{ return "O";}
-    void SetParameters(double param1, double param2, double param3, double param4) override;
-    void GetParameters(double *param1=nullptr, double *param2=nullptr, double *param3=nullptr, double *param4=nullptr) override;
+    RayArray();
+    ~RayArray();
 
-private:
-    int surface1_;
-    int surface2_;
-    double value_;
+
 };
 
 }
 
 
-#endif //GEOPTER_OVERALL_LENGTH_SOLVE_H
+#endif
+
+
+

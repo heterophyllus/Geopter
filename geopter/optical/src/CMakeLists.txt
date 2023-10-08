@@ -26,6 +26,7 @@ set(OPTICAL_SRCS
     assembly/decenter_data.cpp
     assembly/transformation.cpp
 
+    solve/overall_length_solve.cpp
     solve/marginal_ray_height_solve.cpp
     solve/edge_thickness_solve.cpp
 

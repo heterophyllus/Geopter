@@ -7,10 +7,7 @@
 #include "SystemEditor/Delegate/FloatDelegate.h"
 #include "SystemEditor/Delegate/OneByteDelegate.h"
 #include "SurfacePropertyDlg.h"
-#include "SystemEditor/SolveDlg/SolveSelectionDlg.h"
-#include "SystemEditor/SolveDlg/EdgeThicknessSolveDlg.h"
-#include "SystemEditor/SolveDlg/OverallLengthSolveDlg.h"
-#include "SystemEditor/SolveDlg/MarginalHeightSolveDlg.h"
+#include "SystemEditor/LensDataEditor/SolveSettingDlg.h"
 
 LensDataTableView::LensDataTableView(std::shared_ptr<OpticalSystem> opt_sys, QWidget *parent) :
     QTableView(parent),
@@ -221,42 +218,50 @@ void LensDataTableView::showSurfacePropertyDlg()
 
 void LensDataTableView::showSolveSelectionDlg(int si)
 {
-    int currentSolveIndex = m_opt_sys->GetOpticalAssembly()->GetGap(si)->SolveType();
+    Gap* gap = m_opt_sys->GetOpticalAssembly()->GetGap(si);
+    auto currentSolve = m_opt_sys->GetOpticalAssembly()->GetGap(si)->GetSolve();
+    int currentSolveIndex = currentSolve->GetSolveType();
     if(currentSolveIndex < 0){
         currentSolveIndex = 0;
     }
-    SolveSelectionDlg solveDlg(currentSolveIndex, this);
+
+    double param1, param2, param3, param4;
+    currentSolve->GetParameters(&param1, &param2, &param3, &param4);
+
+
+    SolveSettingDlg solveDlg(this);
+
+    solveDlg.SetParameters(currentSolveIndex, param1, param2, param3, param4);
 
     if(solveDlg.exec() == QDialog::Accepted){
-        int selectedIndex = solveDlg.selectedIndex();
+        int solvetype;
+        double param1, param2, param3, param4;
+        solveDlg.GetParameters(&solvetype, &param1, &param2, &param3, &param4);
+        Solve* solve;
 
-        if(selectedIndex == Solve::EdgeThickness){
-            EdgeThicknessSolveDlg *edgeDlg = new EdgeThicknessSolveDlg();
-            if(edgeDlg->exec() == QDialog::Accepted){
-                auto solve = std::make_unique<EdgeThicknessSolve>(si, edgeDlg->height(), edgeDlg->value());
-                if(solve->Check(m_opt_sys.get())){
-                    m_opt_sys->GetOpticalAssembly()->GetGap(si)->SetSolve(std::move(solve));
-                    m_opt_sys->UpdateModel();
-                }else{
-                    solve.reset();
-                }
-            }
-            delete edgeDlg;
+        if(solvetype == Solve::Fixed){
+            solve = gap->CreateSolve<FixedSolve>();
+        }else if(solvetype == Solve::EdgeThickness){
+            solve = gap->CreateSolve<EdgeThicknessSolve>();
+        }else if(solvetype == Solve::OverallLength){
+            solve = gap->CreateSolve<OverallLengthSolve>();
+        }else if(solvetype == Solve::MarginalHeight){
+            solve = gap->CreateSolve<MarginalHeightSolve>();
+        }else{
+            qDebug() << "Unknown solve setting";
+        }
 
-        }else if(selectedIndex == Solve::MarginalHeight){
-            MarginalHeightSolveDlg *dlg = new MarginalHeightSolveDlg();
-            if(dlg->exec() == QDialog::Accepted){
-                auto solve = std::make_unique<MarginalHeightSolve>(si, dlg->value(), dlg->zone());
-                if(solve->Check(m_opt_sys.get())){
-                    m_opt_sys->GetOpticalAssembly()->GetGap(si)->SetSolve(std::move(solve));
-                    m_opt_sys->UpdateModel();
-                }
-            }
-            delete dlg;
-        }else{ // Solve "Fixed"
-            m_opt_sys->GetOpticalAssembly()->GetGap(si)->RemoveSolve();
+        solve->SetGapIndex(si);
+        solve->SetParameters(param1, param2, param3, param4);
+
+        if( ! solve->Check(m_opt_sys.get())){
+            gap->RemoveSolve();
+        }else{
+            gap->GetSolve()->Apply(m_opt_sys.get());
         }
     }
+
+    m_opt_sys->UpdateModel();
 
 
 }

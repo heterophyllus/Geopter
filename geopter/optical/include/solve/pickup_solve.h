@@ -12,35 +12,30 @@ You should have received a copy of the GNU General Public License along with Geo
 If not, see <https://www.gnu.org/licenses/>.
 **/
 
-
-#ifndef GEOPTER_EDGE_THICKNESS_SOLVE_H
-#define GEOPTER_EDGE_THICKNESS_SOLVE_H
+#ifndef GEOPTER_PICKUP_SOLVE_H
+#define GEOPTER_PICKUP_SOLVE_H
 
 #include "solve/solve.h"
 
 namespace geopter {
 
+class Gap;
 
-class EdgeThicknessSolve : public Solve
+class PickupSolve : public Solve
 {
-public:
-    EdgeThicknessSolve();
-    EdgeThicknessSolve(int gap_index, double thickness, double radial_height);
-    bool Check(const OpticalSystem* opt_sys) override;
+    PickupSolve(Gap* gap);
     void Apply(OpticalSystem* opt_sys) override;
-    int GetSolveType() const override { return Solve::EdgeThickness; }
-    std::string GetSolveTypeStr() const override { return "E"; }
-    void SetParameters(double param1, double param2, double param3, double param4) override;
+    void SetParameters(double param1, double param2, double param3=0, double param4=0) override;
     void GetParameters(double *param1, double *param2, double *param3, double *param4) override;
 
 private:
-    int gap_index_;
-    double thickness_;
-    double radial_height_;
+    Gap* gap_;
+    int from_gap_index_;
+    double scale_;
+    double offset_;
 };
 
 }
 
-
-#endif //GEOPTER_EDGE_THICKNESS_SOLVE_H
+#endif //GEOPTER_PICKUP_SOLVE_H
 
