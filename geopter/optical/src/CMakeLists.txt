@@ -79,6 +79,8 @@ set(OPTICAL_SRCS
     common/matrix_tool.cpp
     common/string_tool.cpp
 
+    project/project.cpp
+
 )
 
 

@@ -84,11 +84,11 @@ GlassCatalog* MaterialLibrary::GetGlassCatalog(int i)
     }
 }
 
-GlassCatalog* MaterialLibrary::GetGlassCatalog(const std::string catname)
+GlassCatalog* MaterialLibrary::GetGlassCatalog(const std::string& catalog_name)
 {
     for(auto &cat : catalogs_)
     {
-        if(catname == cat->Name()){
+        if(catalog_name == cat->Name()){
             return cat.get();
         }
     }
@@ -100,7 +100,7 @@ int MaterialLibrary::NumberOfCatalogs() const
     return catalogs_.size();
 }
 
-std::shared_ptr<Material> MaterialLibrary::Find(std::string material_name)
+std::shared_ptr<Material> MaterialLibrary::Find(const std::string& material_name)
 {
     if(StringTool::Contains(material_name, "_")){
         // assume real glass (ex. N-BK7_SCHOTT)

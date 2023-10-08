@@ -49,7 +49,7 @@ public:
     virtual ~Material(){}
 
     virtual std::string Name() const { return name_; }
-    virtual void SetName(std::string name) { name_ = name; }
+    virtual void SetName(const std::string& name) { name_ = name; }
 
     /** Return refractive index at specified wavelength */
     virtual double RefractiveIndex(double /*wv_nm*/) const { return n_; }

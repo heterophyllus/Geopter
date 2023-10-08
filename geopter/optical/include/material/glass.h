@@ -46,6 +46,7 @@ public:
     double RefractiveIndex(double wv_nm) const override;
 
     std::string Name() const override { return product_name_ + "_" + supplier_name_;}
+    void SetName(const std::string& /*name*/) override { }
 
     void SetDispersionFormula(int i);
     void SetDispersionCoefs(int i, double val);
