@@ -23,16 +23,21 @@
 **             Date: October 9th, 2023
 ********************************************************************************/
 
-#ifndef GEOPTER_OPTICAL_PROJECT_H
-#define GEOPTER_OPTICAL_PROJECT_H
+#ifndef GEOPTER_PROJECT_SETTING_H
+#define GEOPTER_PROJECT_SETTING_H
 
 namespace geopter{
 
-class OpticalProject
+class ProjectSetting
 {
 public:
-    OpticalProject();
+    ProjectSetting();
 
+    static void SetDecimals(int n);
+    static int GetDecimals();
+
+private:
+    static int decimals_;
 
 };
 

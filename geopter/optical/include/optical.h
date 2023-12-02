@@ -81,4 +81,6 @@
 
 #include "environment/environment.h"
 
+#include "project/project.h"
+
 #endif // OPTICAL_H

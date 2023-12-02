@@ -5,11 +5,11 @@
 ## Introduction
 Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-This project was launched primarily to provide optical design tool that was accessible for everyone, introducing opportunity for optical design.
+This project was launched with the primary aim to make optical design more accessible for everyone.
 
-Geopter also wishes to prompt a global community of optical designers, optics researchers, and software engineers.  The co-working by diverse individuals united around improving the project is believed to bring more eyes and inspire the fruitful discussion.
+We also wishes to prompt a global community of optical engineers.  As is an open-source project, Geopter could be a unique platform to share diverse optics knowledge from all over the world.
 
-Geopter is very work-in-progress.  Contributions, feedbacks, comments, etc are greatly appreciated.
+Geopter is very work-in-progress.  Any contributions, feedbacks and comments are greatly appreciated.
 
 
 ## Getting Started
@@ -57,6 +57,6 @@ Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, 
 
 
 ## Contact
-- Hiiragi [ e-mail ](mailto:heterophyllus.work@gmail.com)
+- [ e-mail ](mailto:heterophyllus.work@gmail.com)
 
 

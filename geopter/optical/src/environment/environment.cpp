@@ -24,7 +24,6 @@
 ********************************************************************************/
 
 #include "environment/environment.h"
-#include "material/air.h"
 
 
 using namespace geopter;

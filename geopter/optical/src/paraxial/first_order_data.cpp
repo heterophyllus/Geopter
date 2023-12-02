@@ -2,6 +2,7 @@
 
 #include "system/optical_system.h"
 #include "paraxial/paraxial_trace.h"
+#include "project/project.h"
 
 using namespace geopter;
 
@@ -179,7 +180,7 @@ void FirstOrderData::Update()
 void FirstOrderData::Print(std::ostringstream &oss)
 {
     constexpr int fixed_w = 30;
-    constexpr int pre = 4;
+    int pre = ProjectSetting::GetDecimals();
 
     oss << std::setw(fixed_w) << std::left << "Effective Focal Length";
     oss << std::setw(fixed_w) << std::right << std::fixed << std::setprecision(pre) << effective_focal_length << std::endl;

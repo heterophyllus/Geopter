@@ -55,7 +55,7 @@ public:
     bool LoadAgfFiles(const std::vector<std::string>& agf_paths);
 
     /** Serach material from the loaded library. If not found, return nullptr */
-    static std::shared_ptr<Material> Find(const std::string& material_name);
+    static std::shared_ptr<Material> Find(std::string material_name);
 
     static std::shared_ptr<Air> GetAir();
 
