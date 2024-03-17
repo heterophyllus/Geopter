@@ -5,12 +5,13 @@
 ## Introduction
 Geopter is <u>**opt**</u>ical design software based on <u>**geo**</u>metrical ray tracing.
 
-This project was launched with the primary aim to make optical design more accessible for everyone.
+Optical design has been aided by powerful computer and professional software such as CODE-V and Zemax, though these software are too expensive for personal users.
 
-We also wishes to prompt a global community of optical engineers.  As is an open-source project, Geopter could be a unique platform to share diverse optics knowledge from all over the world.
+There have been developed and distributed increasing number of optics library.  One of the disadvantage of such library is to require matured programming skills to master them.
 
-Geopter is very work-in-progress.  Any contributions, feedbacks and comments are greatly appreciated.
+This project aims to be in mid-ground. Geopter features to be open-sorce and to put a higher priority to intuitive GUI allowing to focus on optical design process. 
 
+This project is very work-in-progress. Any contributions or feedbacks are greatly appreciated.
 
 ## Getting Started
 ### Prebuilt Binaries

@@ -179,7 +179,7 @@ set(GEOPTER_GUI_FORMS
 add_executable(${PROJECT_NAME} ${GEOPTER_GUI_SOURCES} ${GEOPTER_GUI_HEADERS} ${GEOPTER_GUI_FORMS})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/3rdparty/Qt-Advanced-Docking
+    ${CMAKE_SOURCE_DIR}/3rdparty/Qt-Advanced-Docking-System/src
     ${CMAKE_SOURCE_DIR}/3rdparty/qcustomplot
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/src
     ${CMAKE_SOURCE_DIR}/3rdparty/pythonqt/extensions/PythonQt_QtAll
@@ -213,7 +213,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     #Qt5::Xml
     #Qt5::XmlPatterns
     Qt5::UiTools
-    qtadvanceddocking
+    qt5advanceddocking
     QCustomPlot
     geopter-optical
     PythonQt
