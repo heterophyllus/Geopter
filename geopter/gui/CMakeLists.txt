@@ -176,7 +176,8 @@ set(GEOPTER_GUI_FORMS
     AnalysisDlg/FFT_MTFDlg.ui
 )
 
-add_executable(${PROJECT_NAME} ${GEOPTER_GUI_SOURCES} ${GEOPTER_GUI_HEADERS} ${GEOPTER_GUI_FORMS})
+add_executable(${PROJECT_NAME} ${GEOPTER_GUI_SOURCES} ${GEOPTER_GUI_HEADERS} ${GEOPTER_GUI_FORMS}
+    resource.qrc)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/Qt-Advanced-Docking-System/src

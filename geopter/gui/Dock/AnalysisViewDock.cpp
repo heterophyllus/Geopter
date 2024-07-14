@@ -39,14 +39,25 @@ AnalysisViewDock::AnalysisViewDock(QString label, OpticalSystem* sys, bool texto
     // Tool Bar
     m_toolbar = new QToolBar(this);
 
-    auto actionUpdate = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_BrowserReload ),"Update");
-    auto actionSetting = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_FileDialogContentsView ),"Setting");
-    auto actionSave = m_toolbar->addAction(QApplication::style()->standardIcon( QStyle::SP_DialogSaveButton ),"Save");
+    auto actionUpdate = m_toolbar->addAction("Update");
+    actionUpdate->setIcon(QIcon(":/Resource/sync_icon.png"));
+    auto actionSetting = m_toolbar->addAction("Setting");
+    actionSetting->setIcon(QIcon(":/Resource/settings_icon.png"));
+    auto actionSave = m_toolbar->addAction("Save");
+    actionSave->setIcon(QIcon(":/Resource/save_icon.png"));
+    auto actionCopy = m_toolbar->addAction("Copy");
+    actionCopy->setIcon(QIcon(":/Resource/content_copy_icon.png"));
+
+
+    m_toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     this->setToolBar(m_toolbar);
 
     QObject::connect(actionUpdate,  SIGNAL(triggered()), this, SLOT(updateContent()));
     QObject::connect(actionSetting, SIGNAL(triggered()), this, SLOT(showSettingDlg()));
     QObject::connect(actionSave,    SIGNAL(triggered()), this, SLOT(saveToFile()));
+    QObject::connect(actionCopy,    SIGNAL(triggered()), this, SLOT(copyToClipboard()));
+
+    this->update();
 }
 
 AnalysisViewDock::~AnalysisViewDock()
@@ -93,7 +104,17 @@ void AnalysisViewDock::saveToFile()
         m_customPlot->savePng(filePath);
     }
 
+}
 
+void AnalysisViewDock::copyToClipboard()
+{
+    QClipboard * clipboard = QApplication::clipboard();
+    QPalette mypalette=this ->palette();
+    mypalette.setColor(QPalette::Window,Qt::white);
+    m_customPlot->setPalette(mypalette);
+    //QPixmap pixmap= QPixmap::grabWidget(this);
+    QPixmap pixmap = m_customPlot->toPixmap();
+    clipboard->setPixmap(pixmap);
 }
 
 void AnalysisViewDock::updateContent()

@@ -45,6 +45,8 @@ public slots:
 
     void saveToFile();
 
+    void copyToClipboard();
+
     virtual void updateContent();
 
 protected:

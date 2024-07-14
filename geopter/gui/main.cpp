@@ -14,21 +14,21 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 
-    /*
+
     // set the stylesheet
-    QFile styleSheetFile("data/QSS/Diffnes/Diffnes.qss");
+    QFile styleSheetFile("data/QSS/Medize/Medize.qss");
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     a.setStyleSheet(styleSheet);
-    */
+
 
 
     // Set monospaced font to align text
 #ifdef _WIN64
-    QFont fnt("monospace",12);
+    QFont fnt("Arial",11);
     a.setFont(fnt);
 #elif __APPLE__
-    QFont fnt("monaco",12);
+    QFont fnt("monaco",11);
     a.setFont(fnt);
 #endif
 
