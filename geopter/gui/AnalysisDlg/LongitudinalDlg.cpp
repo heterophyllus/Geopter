@@ -1,5 +1,5 @@
 #include "LongitudinalDlg.h"
-#include "ui_longitudinaldlg.h"
+#include "ui_LongitudinalDlg.h"
 
 #include <QCheckBox>
 #include <QLineEdit>

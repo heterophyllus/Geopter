@@ -1,5 +1,5 @@
 #include "SurfacePropertyDlg.h"
-#include "ui_surfacepropertydlg.h"
+#include "ui_SurfacePropertyDlg.h"
 
 SurfacePropertyDlg::SurfacePropertyDlg(std::shared_ptr<OpticalSystem> opt_sys, int surface_index, QWidget *parent) :
     QDialog(parent),

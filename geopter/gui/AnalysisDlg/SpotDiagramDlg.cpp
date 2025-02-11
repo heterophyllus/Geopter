@@ -1,5 +1,5 @@
 #include "SpotDiagramDlg.h"
-#include "ui_spotdiagramdlg.h"
+#include "ui_SpotDiagramDlg.h"
 
 #include <iostream>
 #include <QLineEdit>

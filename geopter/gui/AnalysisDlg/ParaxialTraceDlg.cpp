@@ -3,7 +3,7 @@
 #include <iomanip>
 
 #include "ParaxialTraceDlg.h"
-#include "ui_paraxialtracedlg.h"
+#include "ui_ParaxialTraceDlg.h"
 
 
 ParaxialTraceDlg::ParaxialTraceDlg(OpticalSystem* sys, AnalysisViewDock *parent) :

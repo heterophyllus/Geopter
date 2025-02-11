@@ -1,5 +1,5 @@
 #include "SingleRayTraceDlg.h"
-#include "ui_singleraytracedlg.h"
+#include "ui_SingleRayTraceDlg.h"
 
 #include <QDebug>
 #include <iostream>
