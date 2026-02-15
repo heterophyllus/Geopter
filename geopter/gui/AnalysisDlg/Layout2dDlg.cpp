@@ -1,5 +1,5 @@
 #include "Layout2dDlg.h"
-#include "ui_layout2ddlg.h"
+#include "ui_Layout2dDlg.h"
 
 #include <QCheckBox>
 #include <QLineEdit>

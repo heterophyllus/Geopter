@@ -3,7 +3,7 @@
 #include <iomanip>
 
 #include "PrescriptionDlg.h"
-#include "ui_prescriptiondlg.h"
+#include "ui_PrescriptionDlg.h"
 
 PrescriptionDlg::PrescriptionDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),

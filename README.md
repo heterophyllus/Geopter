@@ -9,7 +9,7 @@ Optical design has been aided by powerful computer and professional software suc
 
 There have been developed and distributed increasing number of optics library.  One of the disadvantage of such library is to require matured programming skills to master them.
 
-This project aims to be in mid-ground. Geopter features to be open-sorce and to put a higher priority to intuitive GUI allowing to focus on optical design process. 
+This project aims to be in mid-ground. Geopter features to be open-source and to put a higher priority to intuitive GUI allowing to focus on optical design process. 
 
 This project is very work-in-progress. Any contributions or feedbacks are greatly appreciated.
 
@@ -34,7 +34,7 @@ In Geopter, the array indexes(fields, wavelengths, etc) start at 0 to keep consi
 |Library|Description|
 |---|---|
 |[Qt](https://www.qt.io)|widget toolkit for GUI|
-|[Qt Advansed Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System)|Flexible docking layout system|
+|[Qt Advanced Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System)|Flexible docking layout system|
 |[QCustomPlot](https://www.qcustomplot.com)|Graph plotting library |
 |[nlohman/json](https://github.com/nlohmann/json)|JSON utility|
 |[Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)|template library for linear algebra|

@@ -13,7 +13,7 @@ set(CMAKE_AUTORCC ON)
 # If cmake raises "QT_DIR not found" error, set Qt install path explicitly.
 # set(CMAKE_PREFIX_PATH "C:/Qt/(version)/(kit)")
 
-find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Multimedia MultimediaWidgets OpenGL SVG uitools REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Multimedia MultimediaWidgets OpenGL Svg UiTools REQUIRED)
 
 
 ## ***************************************************************************************

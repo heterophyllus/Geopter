@@ -1,5 +1,5 @@
 #include "TransverseRayFanDlg.h"
-#include "ui_transverserayfandlg.h"
+#include "ui_TransverseRayFanDlg.h"
 
 #include <QLineEdit>
 #include <QValidator>

@@ -2,7 +2,7 @@
 
 #include <ostream>
 
-#include "ui_chromaticfocusshiftdlg.h"
+#include "ui_ChromaticFocusShiftDlg.h"
 
 ChromaticFocusShiftDlg::ChromaticFocusShiftDlg(OpticalSystem* sys, AnalysisViewDock *parent) :
     AnalysisSettingDlg(sys, parent),

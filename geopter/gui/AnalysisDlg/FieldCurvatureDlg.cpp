@@ -1,5 +1,5 @@
 #include "FieldCurvatureDlg.h"
-#include "ui_fieldcurvaturedlg.h"
+#include "ui_FieldCurvatureDlg.h"
 
 
 #include <QCheckBox>

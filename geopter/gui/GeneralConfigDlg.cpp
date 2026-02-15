@@ -1,5 +1,5 @@
 #include "GeneralConfigDlg.h"
-#include "ui_generalconfigdlg.h"
+#include "ui_GeneralConfigDlg.h"
 
 #include <QFileDialog>
 #include "optical.h"

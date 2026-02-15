@@ -15,7 +15,7 @@ SpecEditorDlg::SpecEditorDlg(QWidget *parent) :
     ui->setupUi(this);
 
     //pupil
-    QStringList pupilTypeList({"Entrance Pupil Diameter", "F-Number", "NA(Image Space)", "NA(Object Space"});
+    QStringList pupilTypeList({"Entrance Pupil Diameter", "F-Number", "NA(Image Space)", "NA(Object Space)"});
     ui->pupilTypeCombo->addItems(pupilTypeList);
     ui->pupilValueEdit->setValidator(new QDoubleValidator(this));
 
